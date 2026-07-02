@@ -1,12 +1,12 @@
 # Lab 07 — Secrets management & deploying the database with your code
 
-**Day 4 · afternoon session.** One **I do / we do / you do** covering the two things
+**Day 4 · afternoon session.** One **We-do / we do / you do** covering the two things
 your pipeline still can't handle: values that must never be committed, and state
 that isn't files. Then the **capstone brief** closes the course.
 
 **Duration:** ~3 hours
 * 60 min teaching ([`slides/teaching.html`](../slides/teaching.html))
-* 45–60 min I do / we do (demos below, woven into the teaching)
+* 45–60 min We-do / we do (demos below, woven into the teaching)
 * 60 min you do ([`slides/assignment.html`](../slides/assignment.html) mirrors this file)
 * Debrief + capstone Q&A
 
@@ -39,7 +39,7 @@ deploy workflow in Phase 2 runs on the bundled self-hosted runner.
 
 ---
 
-## I do (instructor demos)
+## We-do (instructor demos)
 
 ### Demo 1 — a leak is forever
 

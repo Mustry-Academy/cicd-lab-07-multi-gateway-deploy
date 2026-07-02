@@ -713,7 +713,7 @@ jobs:
       <div>
         <div class="callout" style="margin-top:0">
           <div class="lab" style="color:var(--blue)">Enforcement, not vigilance</div>
-          <p>Humans forget; hooks and CI don't. This repo's <code>scripts/validate.sh</code> runs a <b>secret scan</b> (gitleaks) and <code>ci.yml</code> repeats it on every PR — a leaked key fails the build before a reviewer ever sees it.<!-- TODO(infra): gitleaks wiring pending --></p>
+          <p>Humans forget; hooks and CWe-don't. This repo's <code>scripts/validate.sh</code> runs a <b>secret scan</b> (gitleaks) and <code>ci.yml</code> repeats it on every PR — a leaked key fails the build before a reviewer ever sees it.<!-- TODO(infra): gitleaks wiring pending --></p>
         </div>
         <div class="code" style="margin-top:14px"><pre><span class="cm"># .gitignore — the relevant lines</span>
 .env
@@ -1022,20 +1022,20 @@ CREATE TABLE recipe_params (…);</pre>
 <section class="slide dark">
   <div class="topbar">
     <div class="on-dark brandrow"><img class="logo-img" src="logos/OriginalLight.png" alt="Mustry Solutions"></div>
-    <div class="stage on-dark">Teaching → I-do → You-do</div>
+    <div class="stage on-dark">Teaching → We-do → You-do</div>
   </div>
 
   <div class="body">
     <div class="eyebrow">Now we make it real</div>
     <div class="title" style="max-width:24ch;color:#fff">In the lab, you'll <em style="font-style:normal;color:var(--peri2)">move a secret up the ladder</em> and <em style="font-style:normal;color:var(--peri2)">ship a schema change</em>.</div>
     <ul class="checks" style="max-width:940px;margin-top:22px">
-      <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span><b>I-do.</b> The leak-is-forever demo live in a scratch repo · one credential climbing the ladder — <span class="mono">.env</span> → Docker secret → referenced secret in the gateway · a migration applied, then illegally edited, so you see the checksum error once before it's yours.</span></li>
+      <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span><b>We-do.</b> The leak-is-forever demo live in a scratch repo · one credential climbing the ladder — <span class="mono">.env</span> → Docker secret → referenced secret in the gateway · a migration applied, then illegally edited, so you see the checksum error once before it's yours.</span></li>
       <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span><b>You-do (breakout rooms).</b> Two warm-ups (secret triage, leak &amp; rotate drill), then Phase 1: secrets ladder on your own stack · Phase 2: write <span class="mono">V2__…</span> and watch <span class="mono">deploy.yml</span> migrate dev before it ships your screen.</span></li>
       <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span><b>Then:</b> capstone questions in the office hour — bring your plant's real topology and we'll sketch <i>your</i> pipeline.</span></li>
     </ul>
   </div>
 
-  <div class="foot"><span>Mustry Academy · CI/CD for Ignition</span><span>Next → I-do (14:00)</span></div>
+  <div class="foot"><span>Mustry Academy · CI/CD for Ignition</span><span>Next → We-do (14:00)</span></div>
 </section>
 
 </div>

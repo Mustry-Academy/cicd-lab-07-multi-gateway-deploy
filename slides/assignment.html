@@ -167,7 +167,7 @@ body{
 <section class="slide dark">
   <div class="topbar">
     <div class="on-dark brandrow"><img class="logo-img logo-lg" src="logos/OriginalLight.png" alt="Mustry Solutions"></div>
-    <!-- [VERIFY] assignment timebox — lab.md says ~60 min you-do after the 14:00 I-do/we-do block; exact start time TBC -->
+    <!-- [VERIFY] assignment timebox — lab.md says ~60 min you-do after the 14:00 we-do block; exact start time TBC -->
     <div class="stage on-dark">Lab 07 · The assignment · 15:00 – 16:00</div>
   </div>
   <div class="cover">
@@ -288,7 +288,7 @@ scripts/validate.sh        <span class="cm"># secret scan → 0 findings</span><
     <div class="stage">Warm-up · together</div>
   </div>
   <div class="body">
-    <div class="sechead"><span class="num warm">WARM-UP · 2</span><div><div class="title">Leak &amp; rotate drill</div><div class="lead">The I-do demo, now in your hands: leak a <b>fake</b> key on a scratch branch and prove to yourself that Git never forgets.</div></div></div>
+    <div class="sechead"><span class="num warm">WARM-UP · 2</span><div><div class="title">Leak &amp; rotate drill</div><div class="lead">The We-do demo, now in your hands: leak a <b>fake</b> key on a scratch branch and prove to yourself that Git never forgets.</div></div></div>
     <div class="cols2">
       <div class="steps">
         <div class="step"><div class="ix t">1</div><div class="tx"><b>Scratch branch:</b> <span class="inlinecode">git switch -c drill/leak</span>. Commit an obviously fake key (see snippet).</div></div>
@@ -327,7 +327,7 @@ git switch main &amp;&amp; git branch -D drill/leak</pre></div>
   <div class="body">
     <div class="eyebrow">Phase 1 · solo · climb the secrets ladder</div>
     <div class="title" style="color:#fff;max-width:22ch">One credential, two rungs up</div>
-    <p class="lead">You'll take the Postgres password — rung 1 since Lab 02 — and move it up the ladder on your own stack, exactly like the I-do demo.</p>
+    <p class="lead">You'll take the Postgres password — rung 1 since Lab 02 — and move it up the ladder on your own stack, exactly like the We-do demo.</p>
     <ul class="checks" style="margin-top:22px;max-width:900px">
       <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span><b>Part A</b> — from Compose <span class="mono" style="color:#dbe4f0">environment:</span> to a <b>Docker secret</b> at <span class="mono" style="color:#dbe4f0">/run/secrets/</span>.</span></li>
       <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span><b>Part B</b> — an Ignition <b>secret provider</b>, and the gateway DB connection re-pointed at a <b>referenced</b> secret.</span></li>
