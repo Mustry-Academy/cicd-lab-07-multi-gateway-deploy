@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Lab 07 — Assignment: Secrets &amp; deploying the database with your code</title>
+<title>Lab 07: Assignment - Secrets &amp; deploying the database with your code</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -167,13 +167,13 @@ body{
 <section class="slide dark">
   <div class="topbar">
     <div class="on-dark brandrow"><img class="logo-img logo-lg" src="logos/OriginalLight.png" alt="Mustry Solutions"></div>
-    <!-- [VERIFY] assignment timebox — lab.md says ~60 min you-do after the 14:00 we-do block; exact start time TBC -->
-    <div class="stage on-dark">Lab 07 · The assignment · 15:00 – 16:00</div>
+    <!-- [VERIFY] assignment timebox: lab.md says ~60 min you-do after the 14:00 we-do block; exact start time TBC -->
+    <div class="stage on-dark">Lab 07 · The assignment · 15:00-16:00</div>
   </div>
   <div class="cover">
     <div class="eyebrow">The assignment · breakout rooms · 60 min</div>
     <div class="big">Move a secret up the ladder &amp; <em>ship your schema</em>.</div>
-    <div class="sub">Two short warm-ups, then two solo phases on your own stack. First you'll climb the secrets ladder for real — <span class="mono" style="color:#dbe4f0">.env</span> → Docker secret → a referenced secret in the gateway. Then you'll write a schema migration and watch the deploy pipeline run it against dev <em style="color:#fff;font-style:normal">before</em> it ships your screens. The last two gaps in your pipeline, closed by you.</div>
+    <div class="sub">Two short warm-ups, then two solo phases on your own stack. First you'll climb the secrets ladder for real: <span class="mono" style="color:#dbe4f0">.env</span> → Docker secret → a referenced secret in the gateway. Then you'll write a schema migration and watch the deploy pipeline run it against dev <em style="color:#fff;font-style:normal">before</em> it ships your screens. The last two gaps in your pipeline, closed by you.</div>
     <div class="for">
       <span>Floating to help</span>
       <span class="pill"><b>Sam</b></span>
@@ -182,7 +182,7 @@ body{
       <span class="pill">share your screen</span>
     </div>
   </div>
-  <div class="foot"><span>Mustry Academy · CI/CD for Ignition</span><span>Lab 07 — Secrets &amp; the database</span></div>
+  <div class="foot"><span>Mustry Academy · CI/CD for Ignition</span><span>Lab 07: Secrets &amp; the database</span></div>
 </section>
 
 <!-- 2 · HOW THIS WORKS / RULES -->
@@ -194,14 +194,14 @@ body{
   <div class="body">
     <div class="sechead"><span class="num">READ FIRST</span><div><div class="title">How this works</div></div></div>
     <ul class="checks" style="max-width:940px">
-      <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span><b>Share your screen</b> in your breakout room — this is a "look over your shoulder" class. We'll drop in where it's useful.</span></li>
-      <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span><b>Pre-flight before anything else:</b> <span class="inlinecode">cp .env.example .env</span> → <span class="inlinecode">scripts/setup.sh</span> → <span class="inlinecode">scripts/validate.sh</span> green. Same fork + PAT setup as Lab 04 — Phase 2 needs the self-hosted runner.</span></li>
-      <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span><b>Keep notes in <span class="inlinecode">NOTES.local.md</span></b> (gitignored) — the warm-ups and Phase 1 ask you to write things down.</span></li>
-      <li><span class="ck bad"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M6 6l12 12M18 6L6 18"/></svg></span><span><b>Never commit a real secret — not even in this lab.</b> The only key you'll ever commit is the <i>obviously fake</i> one in Warm-up 2, on a scratch branch you delete.</span></li>
+      <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span><b>Share your screen</b> in your breakout room. This is a "look over your shoulder" class, so we'll drop in where it's useful.</span></li>
+      <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span><b>Pre-flight before anything else:</b> <span class="inlinecode">cp .env.example .env</span> → <span class="inlinecode">scripts/setup.sh</span> → <span class="inlinecode">scripts/validate.sh</span> green. Same fork + PAT setup as Lab 04, because Phase 2 needs the self-hosted runner.</span></li>
+      <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span><b>Keep notes in <span class="inlinecode">NOTES.local.md</span></b> (gitignored): the warm-ups and Phase 1 ask you to write things down.</span></li>
+      <li><span class="ck bad"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M6 6l12 12M18 6L6 18"/></svg></span><span><b>Never commit a real secret, not even in this lab.</b> The only key you'll ever commit is the <i>obviously fake</i> one in Warm-up 2, on a scratch branch you delete.</span></li>
     </ul>
     <div class="goal good-g">
       <span class="badge">Ask early</span>
-      <p>Stuck for more than a couple of minutes? <b>Say so in the room.</b> Don't sit blocked in silence — that's exactly what we're here for.</p>
+      <p>Stuck for more than a couple of minutes? <b>Say so in the room.</b> Don't sit blocked in silence. That's exactly what we're here for.</p>
     </div>
   </div>
   <div class="foot"><span>Mustry Academy · CI/CD for Ignition</span><span>Warm-ups → Phase 1 → Phase 2</span></div>
@@ -225,51 +225,51 @@ body{
       <div class="pcard p1">
         <div class="pn">PHASE 1 · SOLO</div>
         <h4>Climb the secrets ladder</h4>
-        <p><b>A</b> — Postgres password becomes a Docker secret. <b>B</b> — the gateway DB connection uses a <i>referenced</i> secret; the export carries no secret material.</p>
+        <p><b>A:</b> Postgres password becomes a Docker secret. <b>B:</b> the gateway DB connection uses a <i>referenced</i> secret; the export carries no secret material.</p>
         <div class="gate">gate → validate.sh ✅ (secret scan: zero)</div>
       </div>
       <div class="pcard p2">
         <div class="pn">PHASE 2 · SOLO</div>
         <h4>Ship a schema change</h4>
-        <p><b>C</b> — write <span class="inlinecode">V2__…</span>, migrate locally, read the history table. <b>D</b> — the deploy workflow migrates dev <i>before</i> shipping your files.</p>
+        <p><b>C:</b> write <span class="inlinecode">V2__…</span>, migrate locally, read the history table. <b>D:</b> the deploy workflow migrates dev <i>before</i> shipping your files.</p>
         <div class="gate">gate → green deploy run on dev</div>
       </div>
     </div>
     <div class="goal">
       <span class="badge">Why this order</span>
-      <p>Phase 2 ends with a <b>push through the pipeline</b>. Phase 1's gate — <span class="inlinecode">scripts/validate.sh</span> with a clean secret scan — is what makes that push safe. <b>Green gate first, then ship.</b></p>
+      <p>Phase 2 ends with a <b>push through the pipeline</b>. Phase 1's gate (<span class="inlinecode">scripts/validate.sh</span> with a clean secret scan) is what makes that push safe. <b>Green gate first, then ship.</b></p>
     </div>
   </div>
   <div class="foot"><span>Mustry Academy · CI/CD for Ignition</span><span>Do Phase 1 before Phase 2</span></div>
 </section>
 
-<!-- 4 · WARM-UP 1 — SECRET TRIAGE -->
+<!-- 4 · WARM-UP 1: SECRET TRIAGE -->
 <section class="slide">
   <div class="topbar">
     <div class="brandrow"><img class="logo-img" src="logos/OriginalDark.png" alt="Mustry Solutions"></div>
     <div class="stage">Warm-up · together</div>
   </div>
   <div class="body">
-    <div class="sechead"><span class="num warm">WARM-UP · 1</span><div><div class="title">Secret triage</div><div class="lead">The three-boxes slide, applied to your own clone: what here is public, per-environment, secret — and is the secret stuff actually ignored?</div></div></div>
+    <div class="sechead"><span class="num warm">WARM-UP · 1</span><div><div class="title">Secret triage</div><div class="lead">The three-boxes slide, applied to your own clone: what here is public, per-environment, secret, and is the secret stuff actually ignored?</div></div></div>
     <div class="cols2">
       <div class="steps">
         <div class="step"><div class="ix t">1</div><div class="tx"><b>Hunt for candidates.</b> Grep the repo for secret-shaped values (see command). Every hit goes in one of the three boxes.</div></div>
-        <div class="step"><div class="ix t">2</div><div class="tx"><b>Sort them</b> in <span class="inlinecode">NOTES.local.md</span>: public / per-environment / secret. Defaults like <span class="inlinecode">${POSTGRES_PASSWORD:-ignition}</span> — which box, and why?</div></div>
-        <div class="step"><div class="ix t">3</div><div class="tx"><b>Check the fence:</b> <span class="inlinecode">git check-ignore</span> must confirm <span class="inlinecode">.env</span> and <span class="inlinecode">secrets/</span> contents are ignored — and the <span class="inlinecode">*.example</span> files are <b>not</b>.</div></div>
+        <div class="step"><div class="ix t">2</div><div class="tx"><b>Sort them</b> in <span class="inlinecode">NOTES.local.md</span>: public / per-environment / secret. Defaults like <span class="inlinecode">${POSTGRES_PASSWORD:-ignition}</span>: which box, and why?</div></div>
+        <div class="step"><div class="ix t">3</div><div class="tx"><b>Check the fence:</b> <span class="inlinecode">git check-ignore</span> must confirm <span class="inlinecode">.env</span> and <span class="inlinecode">secrets/</span> contents are ignored, and the <span class="inlinecode">*.example</span> files are <b>not</b>.</div></div>
         <div class="step"><div class="ix t">4</div><div class="tx"><b>Run the scanner:</b> <span class="inlinecode">scripts/validate.sh</span> includes a secret scan (gitleaks). Zero findings = the baseline you must protect all lab.</div></div>
-        <!-- [VERIFY] gitleaks step in validate.sh is still a repo TODO — confirm the script exists and prints a per-check summary before teaching this verbatim -->
+        <!-- [VERIFY] gitleaks step in validate.sh is still a repo TODO. Confirm the script exists and prints a per-check summary before teaching this verbatim -->
       </div>
       <div>
-        <div class="code"><pre><span class="cm"># 1 — secret-shaped strings in tracked files</span>
+        <div class="code"><pre><span class="cm"># 1: secret-shaped strings in tracked files</span>
 grep -rniE <span class="cmd2">"password|api_key|token|secret"</span> \
   --exclude-dir=.git .
 
-<span class="cm"># 3 — is the fence up?</span>
+<span class="cm"># 3: is the fence up?</span>
 git check-ignore -v .env secrets/postgres_password.txt
 git check-ignore secrets/postgres_password.txt.example \
   <span class="cm">&amp;&amp; echo "BAD: example must be tracked!"</span>
 
-<span class="cm"># 4 — the scanner</span>
+<span class="cm"># 4: the scanner</span>
 scripts/validate.sh        <span class="cm"># secret scan → 0 findings</span></pre></div>
         <div class="goal" style="margin-top:18px">
           <span class="badge">Three boxes</span>
@@ -281,7 +281,7 @@ scripts/validate.sh        <span class="cm"># secret scan → 0 findings</span><
   <div class="foot"><span>Mustry Academy · CI/CD for Ignition</span><span>Warm-up 1 of 2</span></div>
 </section>
 
-<!-- 5 · WARM-UP 2 — LEAK & ROTATE DRILL -->
+<!-- 5 · WARM-UP 2: LEAK & ROTATE DRILL -->
 <section class="slide">
   <div class="topbar">
     <div class="brandrow"><img class="logo-img" src="logos/OriginalDark.png" alt="Mustry Solutions"></div>
@@ -294,7 +294,7 @@ scripts/validate.sh        <span class="cm"># secret scan → 0 findings</span><
         <div class="step"><div class="ix t">1</div><div class="tx"><b>Scratch branch:</b> <span class="inlinecode">git switch -c drill/leak</span>. Commit an obviously fake key (see snippet).</div></div>
         <div class="step"><div class="ix t">2</div><div class="tx"><b>"Fix" it</b> the way everyone does: delete the file, commit again. Feels solved.</div></div>
         <div class="step"><div class="ix t">3</div><div class="tx"><b>Prove it isn't:</b> <span class="inlinecode">git log -p</span> reads the key straight back out of history. It would be in every clone and fork, forever.</div></div>
-        <div class="step"><div class="ix t">4</div><div class="tx"><b>Write the incident response</b> in <span class="inlinecode">NOTES.local.md</span> — two lines: <b>1. rotate</b> the credential, <b>2. then</b> (best-effort) scrub history. In that order, always.</div></div>
+        <div class="step"><div class="ix t">4</div><div class="tx"><b>Write the incident response</b> in <span class="inlinecode">NOTES.local.md</span>, two lines: <b>1. rotate</b> the credential, <b>2. then</b> (best-effort) scrub history. In that order, always.</div></div>
         <div class="step"><div class="ix t">5</div><div class="tx"><b>Clean up:</b> back to <span class="inlinecode">main</span>, delete the scratch branch. Don't push it.</div></div>
       </div>
       <div>
@@ -310,7 +310,7 @@ git log -p -- oops.txt | grep ak_live
 git switch main &amp;&amp; git branch -D drill/leak</pre></div>
         <div class="goal bad-g" style="margin-top:18px">
           <span class="badge">Iron rule</span>
-          <p><b>A pushed secret is a burned secret.</b> Deleting the line — even force-pushing — without rotating is theatre.</p>
+          <p><b>A pushed secret is a burned secret.</b> Deleting the line (even force-pushing) without rotating is theatre.</p>
         </div>
       </div>
     </div>
@@ -318,7 +318,7 @@ git switch main &amp;&amp; git branch -D drill/leak</pre></div>
   <div class="foot"><span>Mustry Academy · CI/CD for Ignition</span><span>Warm-up 2 of 2 → now go solo</span></div>
 </section>
 
-<!-- 6 · PHASE 1 — DIVIDER -->
+<!-- 6 · PHASE 1: DIVIDER -->
 <section class="slide dark">
   <div class="topbar">
     <div class="on-dark brandrow"><img class="logo-img" src="logos/OriginalLight.png" alt="Mustry Solutions"></div>
@@ -327,17 +327,17 @@ git switch main &amp;&amp; git branch -D drill/leak</pre></div>
   <div class="body">
     <div class="eyebrow">Phase 1 · solo · climb the secrets ladder</div>
     <div class="title" style="color:#fff;max-width:22ch">One credential, two rungs up</div>
-    <p class="lead">You'll take the Postgres password — rung 1 since Lab 02 — and move it up the ladder on your own stack, exactly like the We-do demo.</p>
+    <p class="lead">You'll take the Postgres password (rung 1 since Lab 02) and move it up the ladder on your own stack, exactly like the We-do demo.</p>
     <ul class="checks" style="margin-top:22px;max-width:900px">
-      <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span><b>Part A</b> — from Compose <span class="mono" style="color:#dbe4f0">environment:</span> to a <b>Docker secret</b> at <span class="mono" style="color:#dbe4f0">/run/secrets/</span>.</span></li>
-      <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span><b>Part B</b> — an Ignition <b>secret provider</b>, and the gateway DB connection re-pointed at a <b>referenced</b> secret.</span></li>
-      <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span><b>Gate</b> — <span class="mono" style="color:#dbe4f0">scripts/validate.sh</span> green, secret scan finding <b>zero</b> plaintext secrets in tracked files.</span></li>
+      <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span><b>Part A:</b> from Compose <span class="mono" style="color:#dbe4f0">environment:</span> to a <b>Docker secret</b> at <span class="mono" style="color:#dbe4f0">/run/secrets/</span>.</span></li>
+      <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span><b>Part B:</b> an Ignition <b>secret provider</b>, and the gateway DB connection re-pointed at a <b>referenced</b> secret.</span></li>
+      <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span><b>Gate:</b> <span class="mono" style="color:#dbe4f0">scripts/validate.sh</span> green, secret scan finding <b>zero</b> plaintext secrets in tracked files.</span></li>
     </ul>
   </div>
   <div class="foot"><span>Mustry Academy · CI/CD for Ignition</span><span>Phase 1 · Part A → B → gate</span></div>
 </section>
 
-<!-- 7 · PHASE 1 PART A — DOCKER SECRET -->
+<!-- 7 · PHASE 1 PART A: DOCKER SECRET -->
 <section class="slide">
   <div class="topbar">
     <div class="brandrow"><img class="logo-img" src="logos/OriginalDark.png" alt="Mustry Solutions"></div>
@@ -353,7 +353,7 @@ git switch main &amp;&amp; git branch -D drill/leak</pre></div>
         <div class="step"><div class="ix p">4</div><div class="tx"><b>Recreate the service</b> and prove the leak is gone: inspect shows no password, but the file is there at <span class="inlinecode">/run/secrets/postgres_password</span>.</div></div>
       </div>
       <div>
-        <div class="code"><pre><span class="cm"># docker-compose.yaml — the change</span>
+        <div class="code"><pre><span class="cm"># docker-compose.yaml: the change</span>
 secrets:
   postgres_password:
     file: ./secrets/postgres_password.txt
@@ -369,10 +369,10 @@ docker compose up -d --force-recreate timescaledb
 docker inspect lab07-timescaledb | grep -i postgres_
 docker compose exec timescaledb \
   cat /run/secrets/postgres_password</pre></div>
-        <!-- [VERIFY] service/container names ("timescaledb" / "lab07-timescaledb") — compose stack not built yet; also confirm same-value swap so the existing volume's password still matches -->
+        <!-- [VERIFY] service/container names ("timescaledb" / "lab07-timescaledb"): compose stack not built yet. Also confirm same-value swap so the existing volume's password still matches -->
         <div class="goal warn-g" style="margin-top:16px">
           <span class="badge">Careful</span>
-          <p>Use the <b>same password value</b> as before — Postgres only sets the password on first volume init, so changing the value here won't change the running database's password.</p>
+          <p>Use the <b>same password value</b> as before. Postgres only sets the password on first volume init, so changing the value here won't change the running database's password.</p>
         </div>
       </div>
     </div>
@@ -380,7 +380,7 @@ docker compose exec timescaledb \
   <div class="foot"><span>Mustry Academy · CI/CD for Ignition</span><span>Part A · rung 2 reached → Part B</span></div>
 </section>
 
-<!-- 8 · PHASE 1 PART B — REFERENCED SECRET + GATE -->
+<!-- 8 · PHASE 1 PART B: REFERENCED SECRET + GATE -->
 <section class="slide">
   <div class="topbar">
     <div class="brandrow"><img class="logo-img" src="logos/OriginalDark.png" alt="Mustry Solutions"></div>
@@ -391,25 +391,25 @@ docker compose exec timescaledb \
     <div class="cols2">
       <div class="steps">
         <div class="step"><div class="ix p">5</div><div class="tx"><b>Create a secret provider</b> on your local gateway's web UI (Config → Secrets<!-- [VERIFY] exact 8.3 UI path + provider type; teaching deck intentionally avoids quoting a menu path until verified -->) that reads the file <span class="inlinecode">/run/secrets/postgres_password</span>.</div></div>
-        <div class="step"><div class="ix p">6</div><div class="tx"><b>Re-point the DB connection:</b> edit the gateway's database connection so the password is the <b>referenced secret</b>, not a pasted value. Test the connection — still <span class="inlinecode">Valid</span>.</div></div>
-        <div class="step"><div class="ix p">7</div><div class="tx"><b>Prove nothing leaked:</b> export the gateway config as in Lab 04's file-based flow, then grep the export for the password. You should find a <b>reference by name</b> — no plaintext, no ciphertext.<!-- [VERIFY] how the reference is serialized in an 8.3 config.json export --></div></div>
-        <div class="step"><div class="ix p">8</div><div class="tx"><b>The gate:</b> <span class="inlinecode">scripts/validate.sh</span> — green, with the secret scan at <b>zero findings</b>. Note in <span class="inlinecode">NOTES.local.md</span>: why would this exact config now work on dev and prod unchanged?</div></div>
+        <div class="step"><div class="ix p">6</div><div class="tx"><b>Re-point the DB connection:</b> edit the gateway's database connection so the password is the <b>referenced secret</b>, not a pasted value. Test the connection: still <span class="inlinecode">Valid</span>.</div></div>
+        <div class="step"><div class="ix p">7</div><div class="tx"><b>Prove nothing leaked:</b> export the gateway config as in Lab 04's file-based flow, then grep the export for the password. You should find a <b>reference by name</b>: no plaintext, no ciphertext.<!-- [VERIFY] how the reference is serialized in an 8.3 config.json export --></div></div>
+        <div class="step"><div class="ix p">8</div><div class="tx"><b>The gate:</b> <span class="inlinecode">scripts/validate.sh</span> green, with the secret scan at <b>zero findings</b>. Note in <span class="inlinecode">NOTES.local.md</span>: why would this exact config now work on dev and prod unchanged?</div></div>
       </div>
       <div>
-        <div class="code"><pre><span class="cm"># 7 — the export must not contain the value</span>
+        <div class="code"><pre><span class="cm"># 7: the export must not contain the value</span>
 grep -rn <span class="cmd2">"$(cat secrets/postgres_password.txt)"</span> \
   ignition-data/ <span class="cm"># or your exported config dir</span>
 <span class="grn"># no matches = nothing leaked</span>
 
 grep -rn <span class="cmd2">"postgres_password"</span> ignition-data/config.json
-<span class="cm"># → a reference by NAME is fine — that's the point</span>
+<span class="cm"># → a reference by NAME is fine; that's the point</span>
 
-<span class="cm"># 8 — the gate</span>
+<span class="cm"># 8: the gate</span>
 scripts/validate.sh        <span class="cm"># → ✅  secret scan: 0</span></pre></div>
-        <!-- [VERIFY] export location/name (ignition-data/config.json is the lab-04 convention) — confirm against the built stack -->
+        <!-- [VERIFY] export location/name (ignition-data/config.json is the lab-04 convention). Confirm against the built stack -->
         <div class="goal good-g" style="margin-top:16px">
           <span class="badge">✅ Gate</span>
-          <p><b>Embedded = pet gateway. Referenced = pipeline.</b> Green here means your config can travel local → dev → prod — and you're cleared for Phase 2.</p>
+          <p><b>Embedded = pet gateway. Referenced = pipeline.</b> Green here means your config can travel local → dev → prod, and you're cleared for Phase 2.</p>
         </div>
       </div>
     </div>
@@ -417,7 +417,7 @@ scripts/validate.sh        <span class="cm"># → ✅  secret scan: 0</span></pr
   <div class="foot"><span>Mustry Academy · CI/CD for Ignition</span><span>Green ✅? → Phase 2</span></div>
 </section>
 
-<!-- 9 · PHASE 2 — DIVIDER -->
+<!-- 9 · PHASE 2: DIVIDER -->
 <section class="slide dark">
   <div class="topbar">
     <div class="on-dark brandrow"><img class="logo-img" src="logos/OriginalLight.png" alt="Mustry Solutions"></div>
@@ -426,16 +426,16 @@ scripts/validate.sh        <span class="cm"># → ✅  secret scan: 0</span></pr
   <div class="body">
     <div class="eyebrow">Phase 2 · solo · deploy the database with your code</div>
     <div class="title" style="color:#fff;max-width:22ch">A schema change rides the pipeline</div>
-    <p class="lead">Remember: <span class="mono" style="color:#dbe4f0">db-init/</span> is bootstrap — it will never touch an existing database. Change ships as a <b style="color:#fff">migration</b>, and the pipeline applies it before your screens arrive.</p>
+    <p class="lead">Remember: <span class="mono" style="color:#dbe4f0">db-init/</span> is bootstrap. It will never touch an existing database. Change ships as a <b style="color:#fff">migration</b>, and the pipeline applies it before your screens arrive.</p>
     <ul class="checks" style="margin-top:22px;max-width:900px">
-      <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span><b>Part C</b> — write <span class="mono" style="color:#dbe4f0">V2__add_downtime_log.sql</span>, apply it locally, read the history table.</span></li>
-      <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span><b>Part D</b> — the <span class="mono" style="color:#dbe4f0">migrate</span> step in <span class="mono" style="color:#dbe4f0">deploy.yml</span>, then a PR to <span class="mono" style="color:#dbe4f0">develop</span> and a green run: <b>migrate → ship → scan → verify</b>.</span></li>
+      <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span><b>Part C:</b> write <span class="mono" style="color:#dbe4f0">V2__add_downtime_log.sql</span>, apply it locally, read the history table.</span></li>
+      <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span><b>Part D:</b> the <span class="mono" style="color:#dbe4f0">migrate</span> step in <span class="mono" style="color:#dbe4f0">deploy.yml</span>, then a PR to <span class="mono" style="color:#dbe4f0">develop</span> and a green run: <b>migrate → ship → scan → verify</b>.</span></li>
     </ul>
   </div>
   <div class="foot"><span>Mustry Academy · CI/CD for Ignition</span><span>Phase 2 · Part C → D</span></div>
 </section>
 
-<!-- 10 · PHASE 2 PART C — WRITE & APPLY V2 -->
+<!-- 10 · PHASE 2 PART C: WRITE & APPLY V2 -->
 <section class="slide">
   <div class="topbar">
     <div class="brandrow"><img class="logo-img" src="logos/OriginalDark.png" alt="Mustry Solutions"></div>
@@ -445,10 +445,10 @@ scripts/validate.sh        <span class="cm"># → ✅  secret scan: 0</span></pr
     <div class="sechead"><span class="num phase2">PART C</span><div><div class="title">Write <span class="mono" style="font-size:30px">V2__…</span>, migrate locally</div><div class="lead">Your first versioned migration: a new table the example project's screen will read.</div></div></div>
     <div class="cols2">
       <div class="steps">
-        <div class="step"><div class="ix p">1</div><div class="tx"><b>Write the file:</b> <span class="inlinecode">migrations/V2__add_downtime_log.sql</span>. Versioned prefix, double underscore, description — the name is a contract.</div></div>
-        <div class="step"><div class="ix p">2</div><div class="tx"><b>Apply it:</b> <span class="inlinecode">scripts/migrate.sh</span> against your local database.<!-- [VERIFY] migrate.sh default target (local) and any flags — script is still a repo TODO; slides assume Flyway --></div></div>
-        <div class="step"><div class="ix p">3</div><div class="tx"><b>Read the ledger:</b> query <span class="inlinecode">flyway_schema_history</span> — find V1 (baseline) and your V2, each with a checksum. Run <span class="inlinecode">migrate.sh</span> again: <b>nothing reapplies.</b></div></div>
-        <div class="step"><div class="ix p">4</div><div class="tx"><b>See it in the gateway:</b> open the example project's downtime screen — it reads the new table.<!-- [VERIFY] the Perspective screen consuming downtime_log is a repo TODO(infra); confirm project/view name --> Empty is fine; <i>erroring</i> is not.</div></div>
+        <div class="step"><div class="ix p">1</div><div class="tx"><b>Write the file:</b> <span class="inlinecode">migrations/V2__add_downtime_log.sql</span>. Versioned prefix, double underscore, description: the name is a contract.</div></div>
+        <div class="step"><div class="ix p">2</div><div class="tx"><b>Apply it:</b> <span class="inlinecode">scripts/migrate.sh</span> against your local database.<!-- [VERIFY] migrate.sh default target (local) and any flags. Script is still a repo TODO; slides assume Flyway --></div></div>
+        <div class="step"><div class="ix p">3</div><div class="tx"><b>Read the ledger:</b> query <span class="inlinecode">flyway_schema_history</span> to find V1 (baseline) and your V2, each with a checksum. Run <span class="inlinecode">migrate.sh</span> again: <b>nothing reapplies.</b></div></div>
+        <div class="step"><div class="ix p">4</div><div class="tx"><b>See it in the gateway:</b> open the example project's downtime screen, which reads the new table.<!-- [VERIFY] the Perspective screen consuming downtime_log is a repo TODO(infra); confirm project/view name --> Empty is fine; <i>erroring</i> is not.</div></div>
         <div class="step"><div class="ix p">5</div><div class="tx"><b>Feel the immutability rule:</b> edit your applied <span class="inlinecode">V2</span> (add a space), re-run <span class="inlinecode">migrate.sh</span> → <b>checksum mismatch, hard fail</b>. Undo the edit. Changes go in <span class="inlinecode">V3</span>, never in V2.</div></div>
       </div>
       <div>
@@ -465,10 +465,10 @@ scripts/migrate.sh
 docker compose exec timescaledb psql -U ignition \
   -d ignition_dev -c <span class="cmd2">"SELECT version, description
   FROM flyway_schema_history;"</span></pre></div>
-        <!-- [VERIFY] psql user/database names (ignition / ignition_dev) — follow lab 04/05 db-init conventions once the stack exists -->
+        <!-- [VERIFY] psql user/database names (ignition / ignition_dev): follow lab 04/05 db-init conventions once the stack exists -->
         <div class="goal" style="margin-top:16px">
           <span class="badge">git log for schema</span>
-          <p>Versioned · append-only · checksummed. <b>V1 is never edited</b> — history only grows. Same instinct as commits.</p>
+          <p>Versioned · append-only · checksummed. <b>V1 is never edited</b>; history only grows. Same instinct as commits.</p>
         </div>
       </div>
     </div>
@@ -476,7 +476,7 @@ docker compose exec timescaledb psql -U ignition \
   <div class="foot"><span>Mustry Academy · CI/CD for Ignition</span><span>Part C · local green → Part D</span></div>
 </section>
 
-<!-- 11 · PHASE 2 PART D — THROUGH THE PIPELINE -->
+<!-- 11 · PHASE 2 PART D: THROUGH THE PIPELINE -->
 <section class="slide">
   <div class="topbar">
     <div class="brandrow"><img class="logo-img" src="logos/OriginalDark.png" alt="Mustry Solutions"></div>
@@ -486,10 +486,10 @@ docker compose exec timescaledb psql -U ignition \
     <div class="sechead"><span class="num phase2">PART D</span><div><div class="title">Watch the pipeline migrate dev before it ships</div><div class="lead">The whole point of the afternoon: schema and screens travel in the <b>same PR</b>, and the database is ready <b>before</b> the gateway scans.</div></div></div>
     <div class="cols2">
       <div class="steps">
-        <div class="step"><div class="ix p">6</div><div class="tx"><b>Open <span class="inlinecode">.github/workflows/deploy.yml</span></b> and add/enable the <span class="inlinecode">migrate</span> step — <b>before</b> the ship-files step, targeting the <b>dev</b> database.<!-- [VERIFY] whether the step ships commented-out (enable) or must be written from scratch (add) — deploy.yml is a repo TODO --></div></div>
+        <div class="step"><div class="ix p">6</div><div class="tx"><b>Open <span class="inlinecode">.github/workflows/deploy.yml</span></b> and add/enable the <span class="inlinecode">migrate</span> step, <b>before</b> the ship-files step, targeting the <b>dev</b> database.<!-- [VERIFY] whether the step ships commented-out (enable) or must be written from scratch (add): deploy.yml is a repo TODO --></div></div>
         <div class="step"><div class="ix p">7</div><div class="tx"><b>Branch, commit, PR:</b> migration + workflow change on a feature branch, PR to <span class="inlinecode">develop</span>. CI must be green (your secret scan runs here too).</div></div>
         <div class="step"><div class="ix p">8</div><div class="tx"><b>Merge and watch the run</b> on the self-hosted runner: <b>validate → migrate dev DB → ship files → scan → verify</b>. Find the migrate step's log lines.</div></div>
-        <div class="step"><div class="ix p">9</div><div class="tx"><b>Prove it:</b> query <span class="inlinecode">flyway_schema_history</span> in the <b>dev</b> database — V2 applied by the pipeline, not by you. Check the dev gateway's screen.</div></div>
+        <div class="step"><div class="ix p">9</div><div class="tx"><b>Prove it:</b> query <span class="inlinecode">flyway_schema_history</span> in the <b>dev</b> database: V2 applied by the pipeline, not by you. Check the dev gateway's screen.</div></div>
       </div>
       <div>
         <div class="code"><pre>git switch -c feature/downtime-log
@@ -499,12 +499,12 @@ git commit -m <span class="cmd2">"feat(db): downtime_log + migrate step"</span>
 git push -u origin feature/downtime-log
 gh pr create --base develop --fill
 
-<span class="cm"># after merge — watch it go</span>
+<span class="cm"># after merge: watch it go</span>
 gh run watch
 <span class="cm"># migrate dev DB → ship → scan → verify ✅</span></pre></div>
         <div class="goal good-g" style="margin-top:16px">
           <span class="badge">Order is the point</span>
-          <p><b>Old screens tolerate a new table; new screens don't tolerate a missing one.</b> If migrate fails, the run stops — no screens ship. That's the safety property you just built.</p>
+          <p><b>Old screens tolerate a new table; new screens don't tolerate a missing one.</b> If migrate fails, the run stops: no screens ship. That's the safety property you just built.</p>
         </div>
       </div>
     </div>
@@ -512,20 +512,20 @@ gh run watch
   <div class="foot"><span>Mustry Academy · CI/CD for Ignition</span><span>Part D · green run = lab complete</span></div>
 </section>
 
-<!-- 12 · STRETCH 1 — EXPAND–CONTRACT -->
+<!-- 12 · STRETCH 1: EXPAND-CONTRACT -->
 <section class="slide">
   <div class="topbar">
     <div class="brandrow"><img class="logo-img" src="logos/OriginalDark.png" alt="Mustry Solutions"></div>
     <div class="stage">Optional stretch</div>
   </div>
   <div class="body">
-    <div class="sechead"><span class="num warm">OPTIONAL · S1</span><div><div class="title">Stretch 1 — rename a column, break nothing</div><div class="lead">The higher-value one. A rename is a <b>drop in disguise</b> — do it as two migrations with a working system in between.</div></div></div>
+    <div class="sechead"><span class="num warm">OPTIONAL · S1</span><div><div class="title">Stretch 1: rename a column, break nothing</div><div class="lead">The higher-value one. A rename is a <b>drop in disguise</b>, so do it as two migrations with a working system in between.</div></div></div>
     <div class="cols2">
       <div class="steps">
-        <div class="step"><div class="ix t">1</div><div class="tx"><b>Expand:</b> <span class="inlinecode">V3__downtime_add_reason_code.sql</span> — add the new column, copy the data over. Old screens still read the old column: <b>nothing breaks</b>.</div></div>
+        <div class="step"><div class="ix t">1</div><div class="tx"><b>Expand:</b> in <span class="inlinecode">V3__downtime_add_reason_code.sql</span>, add the new column and copy the data over. Old screens still read the old column: <b>nothing breaks</b>.</div></div>
         <div class="step"><div class="ix t">2</div><div class="tx"><b>Switch the readers:</b> update the screen/named query to the new column, ship it through the pipeline (same PR as V3, or after).</div></div>
-        <div class="step"><div class="ix t">3</div><div class="tx"><b>Contract:</b> only when nothing reads the old column — <span class="inlinecode">V4__downtime_drop_reason.sql</span> drops it. In real life this ships <i>releases</i> later.</div></div>
-        <div class="step"><div class="ix t">4</div><div class="tx"><b>Ask yourself:</b> at which points between V3 and V4 could a gateway run <i>old</i> screens against the <i>new</i> schema — and does anything break? (It shouldn't. That's the choreography.)</div></div>
+        <div class="step"><div class="ix t">3</div><div class="tx"><b>Contract:</b> only when nothing reads the old column, <span class="inlinecode">V4__downtime_drop_reason.sql</span> drops it. In real life this ships <i>releases</i> later.</div></div>
+        <div class="step"><div class="ix t">4</div><div class="tx"><b>Ask yourself:</b> at which points between V3 and V4 could a gateway run <i>old</i> screens against the <i>new</i> schema, and does anything break? (It shouldn't. That's the choreography.)</div></div>
       </div>
       <div>
         <div class="code"><pre><span class="cm">-- V3 (expand): add + backfill, drop nothing</span>
@@ -538,12 +538,12 @@ UPDATE downtime_log SET reason_code = reason;
 ALTER TABLE downtime_log DROP COLUMN reason;</pre></div>
         <div class="goal warn-g" style="margin-top:16px">
           <span class="badge">Never</span>
-          <p><b>Never rename in one step while gateways are live</b> — between the migration and the screen deploy, every query against the old name 500s.</p>
+          <p><b>Never rename in one step while gateways are live:</b> between the migration and the screen deploy, every query against the old name 500s.</p>
         </div>
       </div>
     </div>
   </div>
-  <div class="foot"><span>Mustry Academy · CI/CD for Ignition</span><span>Stretch 1 of 3 — optional</span></div>
+  <div class="foot"><span>Mustry Academy · CI/CD for Ignition</span><span>Stretch 1 of 3 (optional)</span></div>
 </section>
 
 <!-- 13 · STRETCH 2 + 3 -->
@@ -553,11 +553,11 @@ ALTER TABLE downtime_log DROP COLUMN reason;</pre></div>
     <div class="stage">Optional stretch</div>
   </div>
   <div class="body">
-    <div class="sechead"><span class="num phase2">OPTIONAL · S2 + S3</span><div><div class="title">Seed data as code · scanner in CI</div><div class="lead">Two smaller ones — pick whichever gap bothers you more.</div></div></div>
+    <div class="sechead"><span class="num phase2">OPTIONAL · S2 + S3</span><div><div class="title">Seed data as code · scanner in CI</div><div class="lead">Two smaller ones. Pick whichever gap bothers you more.</div></div></div>
     <div class="cols2">
       <div>
         <div class="steps">
-          <div class="step"><div class="ix p">S2</div><div class="tx"><b>Repeatable seed migration.</b> Put reference data in <span class="inlinecode">migrations/R__seed_reference_data.sql</span> — idempotent SQL (upserts). Run <span class="inlinecode">migrate.sh</span> twice, then <b>edit the file</b> and run again. When do repeatables re-run? Check the history table for the answer.<!-- [VERIFY] repeatable-migration behaviour as configured in this repo — slides assume Flyway R__ semantics: re-runs on checksum change, after versioned migrations --></div></div>
+          <div class="step"><div class="ix p">S2</div><div class="tx"><b>Repeatable seed migration.</b> Put reference data in <span class="inlinecode">migrations/R__seed_reference_data.sql</span>: idempotent SQL (upserts). Run <span class="inlinecode">migrate.sh</span> twice, then <b>edit the file</b> and run again. When do repeatables re-run? Check the history table for the answer.<!-- [VERIFY] repeatable-migration behaviour as configured in this repo. Slides assume Flyway R__ semantics: re-runs on checksum change, after versioned migrations --></div></div>
           <div class="step"><div class="ix p">S3</div><div class="tx"><b>Secret scan in CI.</b> Add a <span class="inlinecode">secret-scan</span> job to <span class="inlinecode">.github/workflows/ci.yml</span> so a leaked key fails the PR. Test it: PR a fake key from Warm-up 2 → red ❌ → close the PR without merging.</div></div>
         </div>
       </div>
@@ -567,7 +567,7 @@ INSERT INTO downtime_reasons (code, label)
 VALUES (<span class="cmd2">'MECH'</span>,<span class="cmd2">'Mechanical'</span>), (<span class="cmd2">'ELEC'</span>,<span class="cmd2">'Electrical'</span>)
 ON CONFLICT (code) DO UPDATE SET label = EXCLUDED.label;
 
-<span class="cm"># S3 · ci.yml — new job</span>
+<span class="cm"># S3 · ci.yml: new job</span>
 secret-scan:
   runs-on: ubuntu-latest
   steps:
@@ -577,12 +577,12 @@ secret-scan:
         <!-- [VERIFY] gitleaks-action version/licensing and whether the lab pins a specific release; also downtime_reasons table must exist (seed it in the R__ file or a V migration) -->
         <div class="goal" style="margin-top:16px">
           <span class="badge">Why fetch-depth 0</span>
-          <p>The scanner must see <b>history</b>, not just the tip — Warm-up 2 showed you exactly why a tip-only scan misses the burned key.</p>
+          <p>The scanner must see <b>history</b>, not just the tip. Warm-up 2 showed you exactly why a tip-only scan misses the burned key.</p>
         </div>
       </div>
     </div>
   </div>
-  <div class="foot"><span>Mustry Academy · CI/CD for Ignition</span><span>Stretches 2–3 of 3 — optional</span></div>
+  <div class="foot"><span>Mustry Academy · CI/CD for Ignition</span><span>Stretches 2 to 3 of 3 (optional)</span></div>
 </section>
 
 <!-- 14 · DONE → CAPSTONE -->
@@ -592,20 +592,20 @@ secret-scan:
     <div class="stage on-dark">The assignment → Debrief · capstone</div>
   </div>
   <div class="body">
-    <div class="eyebrow">Nicely done — that was the last lab</div>
+    <div class="eyebrow">Nicely done. That was the last lab</div>
     <div class="title" style="color:#fff;max-width:24ch">Your pipeline has no more gaps.</div>
     <ul class="checks" style="max-width:940px;margin-top:22px">
-      <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span>A credential climbed the ladder: <b>.env → Docker secret → referenced secret</b> — and your committed gateway config carries <b>no secret material</b>.</span></li>
-      <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span>A schema change shipped as a <b>versioned migration</b>, applied by the <b>same pipeline run</b> that shipped the screens that need it — migrate first, always.</span></li>
+      <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span>A credential climbed the ladder: <b>.env → Docker secret → referenced secret</b>, and your committed gateway config carries <b>no secret material</b>.</span></li>
+      <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span>A schema change shipped as a <b>versioned migration</b>, applied by the <b>same pipeline run</b> that shipped the screens that need it: migrate first, always.</span></li>
       <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span>Bring one <b>surprise</b> and one <b>question</b> per room to the debrief.</span></li>
     </ul>
     <div class="goal" style="background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.14);border-left-color:var(--peri2)">
       <span class="badge" style="background:var(--peri2);color:var(--navy)">Next → the capstone</span>
-      <p style="color:#c4cfde">The teaching deck's <b style="color:#fff">capstone brief</b> is now <i>your</i> assignment: a CI/CD-managed Ignition project from an empty repo — history, CI, deploy, migrations, zero secrets in Git. Every lab is a reference implementation you may steal from. <b style="color:#fff">Bring your questions (and your plant's real topology) to the 16:00 office hour.</b></p>
-      <!-- [VERIFY] capstone scope/timeline/rubric are still TODO(instructors) in teaching.html slide 21 — keep this handoff generic until finalized -->
+      <p style="color:#c4cfde">The teaching deck's <b style="color:#fff">capstone brief</b> is now <i>your</i> assignment: a CI/CD-managed Ignition project from an empty repo: history, CI, deploy, migrations, zero secrets in Git. Every lab is a reference implementation you may steal from. <b style="color:#fff">Bring your questions (and your plant's real topology) to the 16:00 office hour.</b></p>
+      <!-- [VERIFY] capstone scope/timeline/rubric are still TODO(instructors) in teaching.html slide 21. Keep this handoff generic until finalized -->
     </div>
   </div>
-  <div class="foot"><span>Mustry Academy · CI/CD for Ignition</span><span>Lab 07 complete — course labs done · capstone ahead</span></div>
+  <div class="foot"><span>Mustry Academy · CI/CD for Ignition</span><span>Lab 07 complete, course labs done · capstone ahead</span></div>
 </section>
 
 </div>
