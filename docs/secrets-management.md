@@ -87,7 +87,7 @@ Vault, AWS Secrets Manager, Azure Key Vault… Same referenced-secret idea with
 central rotation, auditing and access control. Mentioned in the teaching deck
 as "where this ladder keeps going"; not exercised in the lab.
 
-## 4. What must NEVER be committed — checklist
+## 4. What should NEVER be committed
 
 - `.env` (any real one; `.env.example` with placeholders is fine)
 - `secrets/` contents (only `*.example` files are tracked)
