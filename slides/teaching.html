@@ -1052,6 +1052,7 @@ const bar=document.getElementById('bar');
 const pager=document.getElementById('pager');
 const hint=document.getElementById('hint');
 function pad(n){return String(n).padStart(2,'0')}
+const POS_KEY='deckpos:'+location.pathname;
 function curIndex(){return Math.round(deck.scrollTop/window.innerHeight)}
 function update(){
   const i=curIndex();
@@ -1060,7 +1061,18 @@ function update(){
   const dark=slides[i]&&slides[i].classList.contains('dark');
   pager.classList.toggle('on-dark',dark);
   hint.classList.toggle('on-dark',dark);
+  try{localStorage.setItem(POS_KEY,String(i))}catch(e){}
 }
+// On a reload (Live Server save, or manual F5), jump back to the slide you were
+// on. A fresh open (new tab / typed URL) is nav type 'navigate' → starts at 1.
+(function restorePos(){
+  try{
+    const nav=performance.getEntriesByType('navigation')[0];
+    if(!nav||nav.type!=='reload')return;
+    const saved=parseInt(localStorage.getItem(POS_KEY)||'0',10);
+    if(saved>0)deck.scrollTop=saved*window.innerHeight;
+  }catch(e){}
+})();
 deck.addEventListener('scroll',()=>{requestAnimationFrame(update)});
 window.addEventListener('keydown',e=>{
   if(e.target.tagName==='BUTTON')return;
