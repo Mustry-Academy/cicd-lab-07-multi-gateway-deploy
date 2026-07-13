@@ -176,8 +176,12 @@ releases/
 
 (Sites 1 and 4 plus central are the minimum scope; the full fleet is stretch 1.)
 
-One file per gateway, every project pinned. Everyone starts on `v2.0.0` — the
-hotfix is promoted in 2B, not baked in here:
+One file per gateway, every project pinned. Each version is one of that
+project's own **prefixed tags** (`oatmakers@v2.0.0` style — the tag names its
+project, and CI builds only the folder the prefix names). The parent project
+`oatmakers-shared` is pinned in **every** file, alongside the projects that
+inherit from it. Everyone starts on `v2.0.0` — the hotfix is promoted in 2B,
+not baked in here:
 
 ```yaml
 # releases/prod/gw-site4-frontend.yaml
@@ -223,7 +227,9 @@ waves:
     gateways: [gw-central]
 ```
 
-PR, quick review (does every gateway have a file? is dev unpinned?), merge.
+PR, review against the checklist: every gateway has a file · the parent is
+pinned in each · **the same `oatmakers-shared` version across all of prod**
+(tested together = ships together) · dev is unpinned. Merge.
 
 #### 2B — the promotion
 
@@ -231,12 +237,13 @@ PR, quick review (does every gateway have a file? is dev unpinned?), merge.
    in **`gw-site4-frontend.yaml` only** (the HMI runs on the frontend
    gateway; the backend file doesn't pin `oatmakers` at all). Title:
    `Promote oatmakers v2.0.1 to prod (wave 1: site 4)`.
-2. **Review:** your room-mate checks: only site 4 changed · the pin matches
-   the tagged hotfix from the scenario · `rollout.yaml` says site 4 goes
-   first. They approve; you merge.
+2. **Review:** your room-mate checks four things: only site 4 changed · the
+   pin matches the tagged hotfix (`oatmakers@v2.0.1`) · the parent version is
+   untouched · `rollout.yaml` says site 4 goes first. They approve; you merge.
 3. **Narrate the machine:** as a PR comment, write what a pipeline would log:
-   which runner picks the job up, what it deploys, what it verifies during
-   the soak.
+   which runner picks the job up, what it deploys (the project **and its
+   parent**, to that one site), what it verifies during the soak, and which
+   gateways stay unchanged.
 4. **Fleet PR:** branch `promote/v2.0.1-wave2`, bump the remaining prod files
    that pin `oatmakers` (`gw-site1-frontend.yaml` and `gw-central.yaml` in
    the minimum scope). Review, merge.
@@ -282,7 +289,8 @@ honest cost.
 1. **Part 1:** `ARCHITECTURE.md` merged, five sections filled, both hard
    constraints answered in writing.
 2. **Part 2:** complete `releases/` folder (every gateway in scope has a
-   file, dev is unpinned, `rollout.yaml` has three waves) and two merged,
+   file, the parent pinned in each at one `oatmakers-shared` version across
+   prod, dev is unpinned, `rollout.yaml` has three waves) and two merged,
    reviewed promotion PRs.
 3. **Part 3:** `TAGS.md` merged and it survived both incidents in review.
 
@@ -296,7 +304,13 @@ honest cost.
    and site 7 release files with the vendor's own version numbers. Decide
    whether the vendor may open promotion PRs in your releases repo, or hands
    versions over another way. Write the rule into `ARCHITECTURE.md`.
-3. **Sketch the submodule.** In `ARCHITECTURE.md`, sketch what changes if
+3. **Cut the tags for real.** In your design repo, create the prefixed tags
+   your release files reference: `git tag oatmakers@v2.0.0`,
+   `git tag oatmakers@v2.0.1`, `git tag oatmakers-shared@v1.9.2`. Then add
+   one sentence to `ARCHITECTURE.md`: what does CI do with the prefix?
+   (From the teaching: parse it, build only that project's folder, publish
+   one artifact.)
+4. **Sketch the submodule.** In `ARCHITECTURE.md`, sketch what changes if
    `oatmakers-shared` becomes a git submodule in a repo-per-site layout:
    which repos contain it, what the pinned commit means, and what a library
    upgrade looks like as PRs. No commands needed — it's the shape that

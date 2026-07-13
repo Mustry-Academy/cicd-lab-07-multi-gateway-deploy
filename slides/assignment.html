@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Lab 07: Assignment - Secrets &amp; deploying the database with your code</title>
+<title>Lab 07 Assignment: Design the multi-gateway deployment: architecture, releases and tag ownership</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -81,7 +81,7 @@ body{
 
 /* ---- cover ---- */
 .cover{flex:1;display:flex;flex-direction:column;justify-content:center;gap:8px}
-.cover .big{font-weight:800;font-size:58px;line-height:1.02;letter-spacing:-1.6px;color:#fff;max-width:18ch}
+.cover .big{font-weight:800;font-size:50px;line-height:1.06;letter-spacing:-1.4px;color:#fff;max-width:24ch}
 .cover .big em{font-style:normal;color:var(--peri2)}
 .cover .sub{font-size:17px;color:#aebbcd;max-width:64ch;line-height:1.55;margin-top:18px}
 .cover .for{margin-top:30px;display:flex;align-items:center;gap:14px;font-size:13px;color:#8fa0b6;flex-wrap:wrap}
@@ -167,13 +167,12 @@ body{
 <section class="slide dark">
   <div class="topbar">
     <div class="on-dark brandrow"><img class="logo-img logo-lg" src="logos/OriginalLight.png" alt="Mustry Solutions"></div>
-    <!-- [VERIFY] assignment timebox: lab.md says ~60 min you-do after the 14:00 we-do block; exact start time TBC -->
-    <div class="stage on-dark">Lab 07 · The assignment · 15:00-16:00</div>
+    <div class="stage on-dark">Lab 07 · The assignment · Day 4</div>
   </div>
   <div class="cover">
-    <div class="eyebrow">The assignment · breakout rooms · 60 min</div>
-    <div class="big">Move a secret up the ladder &amp; <em>ship your schema</em>.</div>
-    <div class="sub">Two short warm-ups, then two solo phases on your own stack. First you'll climb the secrets ladder for real: <span class="mono" style="color:#dbe4f0">.env</span> → Docker secret → a referenced secret in the gateway. Then you'll write a schema migration and watch the deploy pipeline run it against dev <em style="color:#fff;font-style:normal">before</em> it ships your screens. The last two gaps in your pipeline, closed by you.</div>
+    <div class="eyebrow">The assignment · breakout rooms · ±60 min</div>
+    <div class="big">Design the multi-gateway deployment: architecture, <em>releases</em> and tag ownership</div>
+    <div class="sub">This one is design work, and that is on purpose: it is the work you will actually do first at your own plant. You choose an architecture and repository layout for Oatmakers' eight sites and write it down, you build the releases folder for real in a repo of your own and run the v2.0.1 promotion as a reviewed pull request, and you write the tag-ownership policy that keeps deploys and operators out of each other's way.</div>
     <div class="for">
       <span>Floating to help</span>
       <span class="pill"><b>Sam</b></span>
@@ -182,10 +181,10 @@ body{
       <span class="pill">share your screen</span>
     </div>
   </div>
-  <div class="foot"><span>Mustry Academy · CI/CD for Ignition</span><span>Lab 07: Secrets &amp; the database</span></div>
+  <div class="foot"><span>Mustry Academy · CI/CD for Ignition</span><span>Lab 07: Multi-gateway deployments</span></div>
 </section>
 
-<!-- 2 · HOW THIS WORKS / RULES -->
+<!-- 2 · HOW THIS WORKS -->
 <section class="slide">
   <div class="topbar">
     <div class="brandrow"><img class="logo-img" src="logos/OriginalDark.png" alt="Mustry Solutions"></div>
@@ -194,17 +193,19 @@ body{
   <div class="body">
     <div class="sechead"><span class="num">READ FIRST</span><div><div class="title">How this works</div></div></div>
     <ul class="checks" style="max-width:940px">
-      <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span><b>Share your screen</b> in your breakout room. This is a "look over your shoulder" class, so we'll drop in where it's useful.</span></li>
-      <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span><b>Pre-flight before anything else:</b> <span class="inlinecode">cp .env.example .env</span> → <span class="inlinecode">scripts/setup.sh</span> → <span class="inlinecode">scripts/validate.sh</span> green. Same fork + PAT setup as Lab 04, because Phase 2 needs the self-hosted runner.</span></li>
-      <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span><b>Keep notes in <span class="inlinecode">NOTES.local.md</span></b> (gitignored): the warm-ups and Phase 1 ask you to write things down.</span></li>
-      <li><span class="ck bad"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M6 6l12 12M18 6L6 18"/></svg></span><span><b>Never commit a real secret, not even in this lab.</b> The only key you'll ever commit is the <i>obviously fake</i> one in Warm-up 2, on a scratch branch you delete.</span></li>
+      <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span><b>Share your screen</b> in your breakout room, and we'll drop in where it's useful.</span></li>
+      <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span><b>The exercise file is the source of truth:</b> <span class="inlinecode">exercises/lab.md</span>. It has the full Oatmakers scenario, the file skeletons and the example yamls. These slides are the map, not the territory.</span></li>
+      <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span><b>No gateways, no Docker today.</b> You need a GitHub account and a browser or editor: your deliverables are markdown and yaml files in a fresh repository, shipped through pull requests.</span></li>
+      <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span><b>Pair up for reviews.</b> Your room-mate reviews your promotion PR and your policies, and you review theirs. The review <b>is</b> the exercise: it plays the role of the release approval gate from the teaching.</span></li>
+      <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span><b>GitHub flow, as always:</b> after the warm-up, every change to your design repo goes feature branch → PR → merge. Practice what you design.</span></li>
+      <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span><b>Stuck?</b> Re-read the matching teaching slide first, then say so in the room.</span></li>
     </ul>
     <div class="goal good-g">
       <span class="badge">Ask early</span>
-      <p>Stuck for more than a couple of minutes? <b>Say so in the room.</b> Don't sit blocked in silence. That's exactly what we're here for.</p>
+      <p>Stuck for more than a couple of minutes? <b>Say so in the room.</b> Don't sit blocked in silence; that's exactly what we're here for.</p>
     </div>
   </div>
-  <div class="foot"><span>Mustry Academy · CI/CD for Ignition</span><span>Warm-ups → Phase 1 → Phase 2</span></div>
+  <div class="foot"><span>Mustry Academy · CI/CD for Ignition</span><span>Warm-up → Part 1 → Part 2 → Part 3</span></div>
 </section>
 
 <!-- 3 · THE PLAN -->
@@ -214,404 +215,322 @@ body{
     <div class="stage">The assignment · the plan</div>
   </div>
   <div class="body">
-    <div class="sechead"><span class="num">THE PLAN</span><div><div class="title">Three stops, in order</div></div></div>
+    <div class="sechead"><span class="num">THE PLAN</span><div><div class="title">One warm-up together, then three parts solo</div><div class="lead">The warm-up sets up your design repo and places Oatmakers on the architecture map together. Then each part matches a part of the teaching.</div></div></div>
     <div class="pmap">
-      <div class="pcard">
-        <div class="pn">WARM-UPS · TOGETHER</div>
-        <h4>Triage &amp; the leak drill</h4>
-        <p>Sort every value in the repo into public / per-environment / secret, then leak a fake key on purpose and prove that "deleting" it fixes nothing.</p>
-        <div class="gate">leads into Phase 1</div>
-      </div>
       <div class="pcard p1">
-        <div class="pn">PHASE 1 · SOLO</div>
-        <h4>Climb the secrets ladder</h4>
-        <p><b>A:</b> Postgres password becomes a Docker secret. <b>B:</b> the gateway DB connection uses a <i>referenced</i> secret; the export carries no secret material.</p>
-        <div class="gate">gate → validate.sh ✅ (secret scan: zero)</div>
+        <div class="pn">PART 1 · SOLO · ±20 MIN</div>
+        <h4>Choose the architecture and repository layout</h4>
+        <p>Write <span class="inlinecode">ARCHITECTURE.md</span>: which reference architecture, which repositories exist, who can see which one (there is a vendor in the scenario), where the runners live, and the file tree of your main repo.</p>
+        <div class="gate">gate → the vendor and shared-library constraints are both answered</div>
       </div>
       <div class="pcard p2">
-        <div class="pn">PHASE 2 · SOLO</div>
-        <h4>Ship a schema change</h4>
-        <p><b>C:</b> write <span class="inlinecode">V2__…</span>, migrate locally, read the history table. <b>D:</b> the deploy workflow migrates dev <i>before</i> shipping your files.</p>
-        <div class="gate">gate → green deploy run on dev</div>
+        <div class="pn">PART 2 · SOLO · ±25 MIN</div>
+        <h4>Build the releases folder and run a promotion</h4>
+        <p>Create <span class="inlinecode">releases/</span> for real: one file per gateway, each pinning its projects <b>and the parent project alongside</b>, plus <span class="inlinecode">rollout.yaml</span>. Then promote <span class="inlinecode">v2.0.1</span> to the canary site as a PR your room-mate reviews and merges.</p>
+        <div class="gate">gate → two merged, reviewed promotion PRs</div>
+      </div>
+      <div class="pcard">
+        <div class="pn">PART 3 · SOLO · ±15 MIN</div>
+        <h4>Write the tag-ownership policy</h4>
+        <p>Write <span class="inlinecode">TAGS.md</span>: pick a master-of-tags model for the two scenario incidents and turn it into five concrete, enforceable rules.</p>
+        <div class="gate">gate → a model plus five rules a pipeline could enforce</div>
       </div>
     </div>
-    <div class="goal">
+    <div class="goal" style="margin-top:22px">
       <span class="badge">Why this order</span>
-      <p>Phase 2 ends with a <b>push through the pipeline</b>. Phase 1's gate (<span class="inlinecode">scripts/validate.sh</span> with a clean secret scan) is what makes that push safe. <b>Green gate first, then ship.</b></p>
+      <p>Part 1 decides <b>where things live</b>; Part 2 makes the version bookkeeping for that layout <b>real and clickable</b>; Part 3 settles the one data stream that flows against the deploy direction. Together they are the design document you would bring to your own plant.</p>
     </div>
   </div>
-  <div class="foot"><span>Mustry Academy · CI/CD for Ignition</span><span>Do Phase 1 before Phase 2</span></div>
+  <div class="foot"><span>Mustry Academy · CI/CD for Ignition</span><span>Warm-up → Part 1 → Part 2 → Part 3</span></div>
 </section>
 
-<!-- 4 · WARM-UP 1: SECRET TRIAGE -->
+<!-- 4 · WARM-UP -->
 <section class="slide">
   <div class="topbar">
     <div class="brandrow"><img class="logo-img" src="logos/OriginalDark.png" alt="Mustry Solutions"></div>
     <div class="stage">Warm-up · together</div>
   </div>
   <div class="body">
-    <div class="sechead"><span class="num warm">WARM-UP · 1</span><div><div class="title">Secret triage</div><div class="lead">The three-boxes slide, applied to your own clone: what here is public, per-environment, secret, and is the secret stuff actually ignored?</div></div></div>
+    <div class="sechead"><span class="num warm">WARM-UP</span><div><div class="title">Create the design repo and place Oatmakers on the architecture map</div><div class="lead">Ten minutes together. At the end everyone has a repo, the scenario in front of them, and a shared answer to "what is Oatmakers today?"</div></div></div>
     <div class="cols2">
       <div class="steps">
-        <div class="step"><div class="ix t">1</div><div class="tx"><b>Hunt for candidates.</b> Grep the repo for secret-shaped values (see command). Every hit goes in one of the three boxes.</div></div>
-        <div class="step"><div class="ix t">2</div><div class="tx"><b>Sort them</b> in <span class="inlinecode">NOTES.local.md</span>: public / per-environment / secret. Defaults like <span class="inlinecode">${POSTGRES_PASSWORD:-ignition}</span>: which box, and why?</div></div>
-        <div class="step"><div class="ix t">3</div><div class="tx"><b>Check the fence:</b> <span class="inlinecode">git check-ignore</span> must confirm <span class="inlinecode">.env</span> and <span class="inlinecode">secrets/</span> contents are ignored, and the <span class="inlinecode">*.example</span> files are <b>not</b>.</div></div>
-        <div class="step"><div class="ix t">4</div><div class="tx"><b>Run the scanner:</b> <span class="inlinecode">scripts/validate.sh</span> includes a secret scan (gitleaks). Zero findings = the baseline you must protect all lab.</div></div>
-        <!-- [VERIFY] gitleaks step in validate.sh is still a repo TODO. Confirm the script exists and prints a per-check summary before teaching this verbatim -->
+        <div class="step"><div class="ix t">1</div><div class="tx"><b>Create a repository</b> on your GitHub account: <span class="inlinecode">oatmakers-deployment-design</span> (private is fine). Add your room-mate as a collaborator: they will review your PRs.</div></div>
+        <div class="step"><div class="ix t">2</div><div class="tx"><b>Copy the scenario</b> from <span class="inlinecode">exercises/lab.md</span> into <span class="inlinecode">SCENARIO.md</span> and read it together: eight sites, the same two projects everywhere, a shared library, one vendor, one central reporting level.</div></div>
+        <div class="step"><div class="ix t">3</div><div class="tx"><b>Place Oatmakers today</b> on the three reference architectures: eight independent standalone gateways, no enterprise level. Which picture is each site? Which picture is the company?</div></div>
+        <div class="step"><div class="ix t">4</div><div class="tx"><b>Agree the target as a room:</b> what should it become, and why? (There are several defensible answers; hearing them is the point.)</div></div>
+        <div class="step"><div class="ix t">5</div><div class="tx">Commit <span class="inlinecode">SCENARIO.md</span> to <span class="inlinecode">main</span>. That's the last direct commit: <b>everything after this goes through a PR</b>.</div></div>
       </div>
       <div>
-        <div class="code"><pre><span class="cm"># 1: secret-shaped strings in tracked files</span>
-grep -rniE <span class="cmd2">"password|api_key|token|secret"</span> \
-  --exclude-dir=.git .
-
-<span class="cm"># 3: is the fence up?</span>
-git check-ignore -v .env secrets/postgres_password.txt
-git check-ignore secrets/postgres_password.txt.example \
-  <span class="cm">&amp;&amp; echo "BAD: example must be tracked!"</span>
-
-<span class="cm"># 4: the scanner</span>
-scripts/validate.sh        <span class="cm"># secret scan → 0 findings</span></pre></div>
+        <div class="code"><pre><span class="cm"># the scenario, in one block</span>
+Oatmakers
+├─ 8 production sites
+│    each: gw-backend + gw-frontend + site DB
+│    all run: <span class="cmd2">oatmakers</span> + <span class="cmd2">oatmakers-packaging</span>
+│    shared library: <span class="cmd2">oatmakers-shared</span>
+├─ 1 vendor
+│    builds the palletizer project
+│    for sites 2 and 7 · <span class="red">may not see the rest</span>
+└─ 1 enterprise level (planned)
+     gw-central · central DB · reporting</pre></div>
         <div class="goal" style="margin-top:18px">
-          <span class="badge">Three boxes</span>
-          <p><b>Public</b> → committed plain. <b>Per-environment</b> → committed default + env var. <b>Secret</b> → never committed. Sorting is 80% of secrets management.</p>
+          <span class="badge">Together</span>
+          <p>We do this on screen with you. If you finish early, start sketching Part 1's repo list on paper: it pays off immediately.</p>
         </div>
       </div>
     </div>
   </div>
-  <div class="foot"><span>Mustry Academy · CI/CD for Ignition</span><span>Warm-up 1 of 2</span></div>
+  <div class="foot"><span>Mustry Academy · CI/CD for Ignition</span><span>Warm-up → now go solo</span></div>
 </section>
 
-<!-- 5 · WARM-UP 2: LEAK & ROTATE DRILL -->
-<section class="slide">
-  <div class="topbar">
-    <div class="brandrow"><img class="logo-img" src="logos/OriginalDark.png" alt="Mustry Solutions"></div>
-    <div class="stage">Warm-up · together</div>
-  </div>
-  <div class="body">
-    <div class="sechead"><span class="num warm">WARM-UP · 2</span><div><div class="title">Leak &amp; rotate drill</div><div class="lead">The We-do demo, now in your hands: leak a <b>fake</b> key on a scratch branch and prove to yourself that Git never forgets.</div></div></div>
-    <div class="cols2">
-      <div class="steps">
-        <div class="step"><div class="ix t">1</div><div class="tx"><b>Scratch branch:</b> <span class="inlinecode">git switch -c drill/leak</span>. Commit an obviously fake key (see snippet).</div></div>
-        <div class="step"><div class="ix t">2</div><div class="tx"><b>"Fix" it</b> the way everyone does: delete the file, commit again. Feels solved.</div></div>
-        <div class="step"><div class="ix t">3</div><div class="tx"><b>Prove it isn't:</b> <span class="inlinecode">git log -p</span> reads the key straight back out of history. It would be in every clone and fork, forever.</div></div>
-        <div class="step"><div class="ix t">4</div><div class="tx"><b>Write the incident response</b> in <span class="inlinecode">NOTES.local.md</span>, two lines: <b>1. rotate</b> the credential, <b>2. then</b> (best-effort) scrub history. In that order, always.</div></div>
-        <div class="step"><div class="ix t">5</div><div class="tx"><b>Clean up:</b> back to <span class="inlinecode">main</span>, delete the scratch branch. Don't push it.</div></div>
-      </div>
-      <div>
-        <div class="code"><pre>git switch -c drill/leak
-echo <span class="cmd2">'API_KEY="ak_live_0badc0ffee"'</span> &gt; oops.txt
-git add oops.txt &amp;&amp; git commit -m <span class="cmd2">"wire up historian"</span>
-
-git rm oops.txt &amp;&amp; git commit -m <span class="cmd2">"remove key"</span>  <span class="cm"># "phew"</span>
-
-git log -p -- oops.txt | grep ak_live
-<span class="red">+API_KEY="ak_live_0badc0ffee"</span>   <span class="cm">← still there</span>
-
-git switch main &amp;&amp; git branch -D drill/leak</pre></div>
-        <div class="goal bad-g" style="margin-top:18px">
-          <span class="badge">Iron rule</span>
-          <p><b>A pushed secret is a burned secret.</b> Deleting the line (even force-pushing) without rotating is theatre.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="foot"><span>Mustry Academy · CI/CD for Ignition</span><span>Warm-up 2 of 2 → now go solo</span></div>
-</section>
-
-<!-- 6 · PHASE 1: DIVIDER -->
+<!-- 5 · PART 1 DIVIDER -->
 <section class="slide dark">
   <div class="topbar">
     <div class="on-dark brandrow"><img class="logo-img" src="logos/OriginalLight.png" alt="Mustry Solutions"></div>
-    <div class="stage on-dark">Solo · Phase 1</div>
+    <div class="stage on-dark">Solo · Part 1 · Architecture</div>
   </div>
   <div class="body">
-    <div class="eyebrow">Phase 1 · solo · climb the secrets ladder</div>
-    <div class="title" style="color:#fff;max-width:22ch">One credential, two rungs up</div>
-    <p class="lead">You'll take the Postgres password (rung 1 since Lab 02) and move it up the ladder on your own stack, exactly like the We-do demo.</p>
-    <ul class="checks" style="margin-top:22px;max-width:900px">
-      <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span><b>Part A:</b> from Compose <span class="mono" style="color:#dbe4f0">environment:</span> to a <b>Docker secret</b> at <span class="mono" style="color:#dbe4f0">/run/secrets/</span>.</span></li>
-      <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span><b>Part B:</b> an Ignition <b>secret provider</b>, and the gateway DB connection re-pointed at a <b>referenced</b> secret.</span></li>
-      <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span><b>Gate:</b> <span class="mono" style="color:#dbe4f0">scripts/validate.sh</span> green, secret scan finding <b>zero</b> plaintext secrets in tracked files.</span></li>
+    <div class="eyebrow">Part 1 · solo · ±20 min · exercises/lab.md</div>
+    <div class="title" style="color:#fff;max-width:26ch">Choose the architecture and repository layout, and write it down</div>
+    <p class="lead">Every situation is different; this scenario has enough constraints to force real choices. Your deliverable is <span class="mono" style="color:#dbe4f0">ARCHITECTURE.md</span>: short, concrete, and defensible.</p>
+    <ul class="checks" style="margin-top:22px;max-width:920px">
+      <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span><b>1A:</b> pick the target <b>reference architecture</b> and justify it in three sentences.</span></li>
+      <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span><b>1B:</b> list the <b>repositories</b>: name, contents, who can see it. The vendor and the shared library must both have a home.</span></li>
+      <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span><b>1C:</b> draw the <b>file tree</b> of your main repo and say where the <b>runners</b> live and which labels they carry.</span></li>
     </ul>
   </div>
-  <div class="foot"><span>Mustry Academy · CI/CD for Ignition</span><span>Phase 1 · Part A → B → gate</span></div>
+  <div class="foot"><span>Mustry Academy · CI/CD for Ignition</span><span>Part 1 · A → B → C</span></div>
 </section>
 
-<!-- 7 · PHASE 1 PART A: DOCKER SECRET -->
+<!-- 6 · PART 1 STEPS -->
 <section class="slide">
   <div class="topbar">
     <div class="brandrow"><img class="logo-img" src="logos/OriginalDark.png" alt="Mustry Solutions"></div>
-    <div class="stage">Phase 1 · Part A</div>
+    <div class="stage">Part 1 · the design</div>
   </div>
   <div class="body">
-    <div class="sechead"><span class="num">PART A</span><div><div class="title">Postgres password → Docker secret</div><div class="lead">Rung 1 → rung 2: the value leaves the container's environment and becomes a mounted file.</div></div></div>
+    <div class="sechead"><span class="num">1</span><div><div class="title">Write ARCHITECTURE.md: architecture, repositories, file tree, runners</div><div class="lead">Work on a branch (<span class="inlinecode">design/architecture</span>), open a PR when done. The skeleton with all required sections is in <span class="inlinecode">exercises/lab.md</span>.</div></div></div>
     <div class="cols2">
       <div class="steps">
-        <div class="step"><div class="ix p">1</div><div class="tx"><b>See the leak first:</b> <span class="inlinecode">docker inspect</span> the database container and find <span class="inlinecode">POSTGRES_PASSWORD</span> in plaintext. That's what you're fixing.</div></div>
-        <div class="step"><div class="ix p">2</div><div class="tx"><b>Create the secret file</b> from its committed example: <span class="inlinecode">secrets/postgres_password.txt</span> (gitignored).</div></div>
-        <div class="step"><div class="ix p">3</div><div class="tx"><b>Edit <span class="inlinecode">docker-compose.yaml</span>:</b> add the top-level <span class="inlinecode">secrets:</span> block, attach it to the DB service, and swap <span class="inlinecode">POSTGRES_PASSWORD</span> for <span class="inlinecode">POSTGRES_PASSWORD_FILE</span>.</div></div>
-        <div class="step"><div class="ix p">4</div><div class="tx"><b>Recreate the service</b> and prove the leak is gone: inspect shows no password, but the file is there at <span class="inlinecode">/run/secrets/postgres_password</span>.</div></div>
+        <div class="step"><div class="ix">1</div><div class="tx"><b>The architecture:</b> which reference architecture per site (standalone or frontend-backend?) and for the company (multi-site with enterprise level?). Three sentences of why.</div></div>
+        <div class="step"><div class="ix">2</div><div class="tx"><b>The repository list:</b> a table: repo name · what's inside · who has access. Test it against the two hard constraints: the <b>vendor may only see the palletizer project</b>, and <b>oatmakers-shared is used by every project</b>.</div></div>
+        <div class="step"><div class="ix">3</div><div class="tx"><b>The file tree</b> of your main repo: <span class="inlinecode">projects/</span>, a config folder per gateway, migrations, workflows. Copy the shape from the teaching and adapt it.</div></div>
+        <div class="step"><div class="ix">4</div><div class="tx"><b>The runners:</b> which machine at which site registers a runner, with which labels (<span class="inlinecode">site-1</span> … <span class="inlinecode">site-8</span>, <span class="inlinecode">central</span>), and which deploy jobs land on each.</div></div>
+        <div class="step"><div class="ix">5</div><div class="tx"><b>Open the PR</b> and ask your room-mate to poke one hole in it. Answer the hole in the doc, not just in chat, then merge.</div></div>
       </div>
       <div>
-        <div class="code"><pre><span class="cm"># docker-compose.yaml: the change</span>
-secrets:
-  postgres_password:
-    file: ./secrets/postgres_password.txt
+        <div class="code"><pre><span class="cm"># ARCHITECTURE.md: required sections</span>
+## Target architecture      <span class="cm">(and 3 sentences why)</span>
+## Repositories             <span class="cm">(name · contents · access)</span>
+## Main repo file tree
+## Runners                  <span class="cm">(site · machine · labels)</span>
+## What one deploy run does <span class="cm">(trigger → route → verify)</span>
 
-services:
-  timescaledb:                <span class="cm"># the DB service</span>
-    secrets: [postgres_password]
-    environment:
-      POSTGRES_PASSWORD_FILE: <span class="cmd2">/run/secrets/postgres_password</span>
-
-<span class="cm"># prove it (steps 1 &amp; 4)</span>
-docker compose up -d --force-recreate timescaledb
-docker inspect lab07-timescaledb | grep -i postgres_
-docker compose exec timescaledb \
-  cat /run/secrets/postgres_password</pre></div>
-        <!-- [VERIFY] service/container names ("timescaledb" / "lab07-timescaledb"): compose stack not built yet. Also confirm same-value swap so the existing volume's password still matches -->
-        <div class="goal warn-g" style="margin-top:16px">
-          <span class="badge">Careful</span>
-          <p>Use the <b>same password value</b> as before. Postgres only sets the password on first volume init, so changing the value here won't change the running database's password.</p>
+<span class="cm"># the two constraints your design must answer:</span>
+<span class="red">1. vendor sees ONLY the palletizer project</span>
+<span class="red">2. oatmakers-shared reaches every project</span></pre></div>
+        <div class="goal" style="margin-top:18px">
+          <span class="badge">✅ Part 1 gate</span>
+          <p>A merged PR with <b>all five sections filled in</b>, and a written answer to both constraints. If your layout can't answer one of them, the layout is not done.</p>
         </div>
       </div>
     </div>
   </div>
-  <div class="foot"><span>Mustry Academy · CI/CD for Ignition</span><span>Part A · rung 2 reached → Part B</span></div>
+  <div class="foot"><span>Mustry Academy · CI/CD for Ignition</span><span>Part 1 · the design</span></div>
 </section>
 
-<!-- 8 · PHASE 1 PART B: REFERENCED SECRET + GATE -->
-<section class="slide">
-  <div class="topbar">
-    <div class="brandrow"><img class="logo-img" src="logos/OriginalDark.png" alt="Mustry Solutions"></div>
-    <div class="stage">Phase 1 · Part B · the gate</div>
-  </div>
-  <div class="body">
-    <div class="sechead"><span class="num">PART B</span><div><div class="title">A referenced secret in the gateway</div><div class="lead">Rung 3: gateway config stops <i>containing</i> the credential and starts <i>referencing</i> it. This is what makes your committed config portable.</div></div></div>
-    <div class="cols2">
-      <div class="steps">
-        <div class="step"><div class="ix p">5</div><div class="tx"><b>Create a secret provider</b> on your local gateway's web UI (Config → Secrets<!-- [VERIFY] exact 8.3 UI path + provider type; teaching deck intentionally avoids quoting a menu path until verified -->) that reads the file <span class="inlinecode">/run/secrets/postgres_password</span>.</div></div>
-        <div class="step"><div class="ix p">6</div><div class="tx"><b>Re-point the DB connection:</b> edit the gateway's database connection so the password is the <b>referenced secret</b>, not a pasted value. Test the connection: still <span class="inlinecode">Valid</span>.</div></div>
-        <div class="step"><div class="ix p">7</div><div class="tx"><b>Prove nothing leaked:</b> export the gateway config as in Lab 04's file-based flow, then grep the export for the password. You should find a <b>reference by name</b>: no plaintext, no ciphertext.<!-- [VERIFY] how the reference is serialized in an 8.3 config.json export --></div></div>
-        <div class="step"><div class="ix p">8</div><div class="tx"><b>The gate:</b> <span class="inlinecode">scripts/validate.sh</span> green, with the secret scan at <b>zero findings</b>. Note in <span class="inlinecode">NOTES.local.md</span>: why would this exact config now work on dev and prod unchanged?</div></div>
-      </div>
-      <div>
-        <div class="code"><pre><span class="cm"># 7: the export must not contain the value</span>
-grep -rn <span class="cmd2">"$(cat secrets/postgres_password.txt)"</span> \
-  ignition-data/ <span class="cm"># or your exported config dir</span>
-<span class="grn"># no matches = nothing leaked</span>
-
-grep -rn <span class="cmd2">"postgres_password"</span> ignition-data/config.json
-<span class="cm"># → a reference by NAME is fine; that's the point</span>
-
-<span class="cm"># 8: the gate</span>
-scripts/validate.sh        <span class="cm"># → ✅  secret scan: 0</span></pre></div>
-        <!-- [VERIFY] export location/name (ignition-data/config.json is the lab-04 convention). Confirm against the built stack -->
-        <div class="goal good-g" style="margin-top:16px">
-          <span class="badge">✅ Gate</span>
-          <p><b>Embedded = pet gateway. Referenced = pipeline.</b> Green here means your config can travel local → dev → prod, and you're cleared for Phase 2.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="foot"><span>Mustry Academy · CI/CD for Ignition</span><span>Green ✅? → Phase 2</span></div>
-</section>
-
-<!-- 9 · PHASE 2: DIVIDER -->
+<!-- 7 · PART 2 DIVIDER -->
 <section class="slide dark">
   <div class="topbar">
     <div class="on-dark brandrow"><img class="logo-img" src="logos/OriginalLight.png" alt="Mustry Solutions"></div>
-    <div class="stage on-dark">Solo · Phase 2</div>
+    <div class="stage on-dark">Solo · Part 2 · Releases</div>
   </div>
   <div class="body">
-    <div class="eyebrow">Phase 2 · solo · deploy the database with your code</div>
-    <div class="title" style="color:#fff;max-width:22ch">A schema change rides the pipeline</div>
-    <p class="lead">Remember: <span class="mono" style="color:#dbe4f0">db-init/</span> is bootstrap. It will never touch an existing database. Change ships as a <b style="color:#fff">migration</b>, and the pipeline applies it before your screens arrive.</p>
-    <ul class="checks" style="margin-top:22px;max-width:900px">
-      <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span><b>Part C:</b> write <span class="mono" style="color:#dbe4f0">V2__add_downtime_log.sql</span>, apply it locally, read the history table.</span></li>
-      <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span><b>Part D:</b> the <span class="mono" style="color:#dbe4f0">migrate</span> step in <span class="mono" style="color:#dbe4f0">deploy.yml</span>, then a PR to <span class="mono" style="color:#dbe4f0">develop</span> and a green run: <b>migrate → ship → scan → verify</b>.</span></li>
+    <div class="eyebrow">Part 2 · solo · ±25 min · exercises/lab.md</div>
+    <div class="title" style="color:#fff;max-width:26ch">Build the releases folder and run the v2.0.1 promotion as a PR</div>
+    <p class="lead">Not a sketch: real files, in your repo, changed through a real reviewed pull request. Your room-mate plays release approver.</p>
+    <ul class="checks" style="margin-top:22px;max-width:920px">
+      <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span><b>2A:</b> build <span class="mono" style="color:#dbe4f0">releases/</span> with <span class="mono" style="color:#dbe4f0">dev/</span>, <span class="mono" style="color:#dbe4f0">test/</span> and <span class="mono" style="color:#dbe4f0">prod/</span>: one file per gateway, each pinning its projects at their own tags and the parent <span class="mono" style="color:#dbe4f0">oatmakers-shared</span> alongside, plus <span class="mono" style="color:#dbe4f0">rollout.yaml</span>.</span></li>
+      <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span><b>2B:</b> promote the hotfix: one PR pins <span class="mono" style="color:#dbe4f0">v2.0.1</span> on the canary site, review, merge; then a second PR rolls the fleet.</span></li>
     </ul>
   </div>
-  <div class="foot"><span>Mustry Academy · CI/CD for Ignition</span><span>Phase 2 · Part C → D</span></div>
+  <div class="foot"><span>Mustry Academy · CI/CD for Ignition</span><span>Part 2 · A → B</span></div>
 </section>
 
-<!-- 10 · PHASE 2 PART C: WRITE & APPLY V2 -->
+<!-- 8 · PART 2A -->
 <section class="slide">
   <div class="topbar">
     <div class="brandrow"><img class="logo-img" src="logos/OriginalDark.png" alt="Mustry Solutions"></div>
-    <div class="stage">Phase 2 · Part C</div>
+    <div class="stage">Part 2 · A</div>
   </div>
   <div class="body">
-    <div class="sechead"><span class="num phase2">PART C</span><div><div class="title">Write <span class="mono" style="font-size:30px">V2__…</span>, migrate locally</div><div class="lead">Your first versioned migration: a new table the example project's screen will read.</div></div></div>
+    <div class="sechead"><span class="num phase2">2A</span><div><div class="title">Build the releases folder: one file per gateway, plus the rollout order</div><div class="lead">Full yaml examples are in <span class="inlinecode">exercises/lab.md</span>. Everyone starts on <span class="inlinecode">v2.0.0</span>: the hotfix comes in 2B.</div></div></div>
     <div class="cols2">
       <div class="steps">
-        <div class="step"><div class="ix p">1</div><div class="tx"><b>Write the file:</b> <span class="inlinecode">migrations/V2__add_downtime_log.sql</span>. Versioned prefix, double underscore, description: the name is a contract.</div></div>
-        <div class="step"><div class="ix p">2</div><div class="tx"><b>Apply it:</b> <span class="inlinecode">scripts/migrate.sh</span> against your local database.<!-- [VERIFY] migrate.sh default target (local) and any flags. Script is still a repo TODO; slides assume Flyway --></div></div>
-        <div class="step"><div class="ix p">3</div><div class="tx"><b>Read the ledger:</b> query <span class="inlinecode">flyway_schema_history</span> to find V1 (baseline) and your V2, each with a checksum. Run <span class="inlinecode">migrate.sh</span> again: <b>nothing reapplies.</b></div></div>
-        <div class="step"><div class="ix p">4</div><div class="tx"><b>See it in the gateway:</b> open the example project's downtime screen, which reads the new table.<!-- [VERIFY] the Perspective screen consuming downtime_log is a repo TODO(infra); confirm project/view name --> Empty is fine; <i>erroring</i> is not.</div></div>
-        <div class="step"><div class="ix p">5</div><div class="tx"><b>Feel the immutability rule:</b> edit your applied <span class="inlinecode">V2</span> (add a space), re-run <span class="inlinecode">migrate.sh</span> → <b>checksum mismatch, hard fail</b>. Undo the edit. Changes go in <span class="inlinecode">V3</span>, never in V2.</div></div>
+        <div class="step"><div class="ix p">1</div><div class="tx">On a branch, create the folders: <span class="inlinecode">releases/dev/</span>, <span class="inlinecode">releases/test/</span>, <span class="inlinecode">releases/prod/</span>.</div></div>
+        <div class="step"><div class="ix p">2</div><div class="tx"><b>Prod:</b> one yaml per gateway for at least <b>sites 1 and 4</b> (backend + frontend each) and <span class="inlinecode">gw-central</span>. Pin every project that runs there: frontend files carry all three, backend files the parent only. Each version is one of that project's own <b>prefixed tags</b> (<span class="inlinecode">oatmakers@v2.0.0</span> style), and the parent <span class="inlinecode">oatmakers-shared</span> is pinned in <b>every</b> file, alongside. Copy the examples from the exercise file.</div></div>
+        <div class="step"><div class="ix p">3</div><div class="tx"><b>Test and dev:</b> <span class="inlinecode">test/gw-test.yaml</span> pinned like prod; <span class="inlinecode">dev/gw-dev.yaml</span> is the odd one out: <span class="inlinecode">track: main</span>, no pins.</div></div>
+        <div class="step"><div class="ix p">4</div><div class="tx"><b><span class="inlinecode">rollout.yaml</span>:</b> three waves: canary (site 4, with a soak time), fleet, enterprise last.</div></div>
+        <div class="step"><div class="ix p">5</div><div class="tx">PR, review against the checklist: every gateway has a file · the parent is pinned in each · <b>the same <span class="inlinecode">oatmakers-shared</span> version across all of prod</b> (tested together = ships together) · dev is unpinned. Merge.</div></div>
       </div>
       <div>
-        <div class="code"><pre><span class="cm">-- migrations/V2__add_downtime_log.sql</span>
-CREATE TABLE downtime_log (
-  id      BIGSERIAL PRIMARY KEY,
-  ts      TIMESTAMPTZ NOT NULL DEFAULT now(),
-  reason  TEXT NOT NULL,
-  minutes INT
-);
+        <div class="code"><pre><span class="cm"># releases/prod/gw-site4-frontend.yaml</span>
+gateway: <span class="cmd2">gw-site4-frontend</span>
+projects:
+  oatmakers:           <span class="cmd2">v2.0.0</span>   <span class="cm"># its own tag</span>
+  oatmakers-packaging: <span class="cmd2">v1.4.0</span>
+  oatmakers-shared:    <span class="cmd2">v1.9.2</span>   <span class="cm"># the parent, alongside</span>
 
-<span class="cm"># apply + inspect the ledger</span>
-scripts/migrate.sh
-docker compose exec timescaledb psql -U ignition \
-  -d ignition_dev -c <span class="cmd2">"SELECT version, description
-  FROM flyway_schema_history;"</span></pre></div>
-        <!-- [VERIFY] psql user/database names (ignition / ignition_dev): follow lab 04/05 db-init conventions once the stack exists -->
-        <div class="goal" style="margin-top:16px">
-          <span class="badge">git log for schema</span>
-          <p>Versioned · append-only · checksummed. <b>V1 is never edited</b>; history only grows. Same instinct as commits.</p>
+<span class="cm"># releases/dev/gw-dev.yaml</span>
+gateway: <span class="cmd2">gw-dev</span>
+track: <span class="grn">main</span>      <span class="cm"># every merge, automatically</span></pre></div>
+        <div class="goal" style="margin-top:18px">
+          <span class="badge">The point</span>
+          <p>When this folder exists, "which version runs on site 4?" is <b>a file you open</b>, and "who changed it, when, why?" is <b>git log</b>. That's the whole trick.</p>
         </div>
       </div>
     </div>
   </div>
-  <div class="foot"><span>Mustry Academy · CI/CD for Ignition</span><span>Part C · local green → Part D</span></div>
+  <div class="foot"><span>Mustry Academy · CI/CD for Ignition</span><span>Part 2 · A of B</span></div>
 </section>
 
-<!-- 11 · PHASE 2 PART D: THROUGH THE PIPELINE -->
+<!-- 9 · PART 2B -->
 <section class="slide">
   <div class="topbar">
     <div class="brandrow"><img class="logo-img" src="logos/OriginalDark.png" alt="Mustry Solutions"></div>
-    <div class="stage">Phase 2 · Part D</div>
+    <div class="stage">Part 2 · B · the promotion</div>
   </div>
   <div class="body">
-    <div class="sechead"><span class="num phase2">PART D</span><div><div class="title">Watch the pipeline migrate dev before it ships</div><div class="lead">The whole point of the afternoon: schema and screens travel in the <b>same PR</b>, and the database is ready <b>before</b> the gateway scans.</div></div></div>
+    <div class="sechead"><span class="num phase2">2B</span><div><div class="title">Promote v2.0.1: canary PR first, then the fleet PR</div><div class="lead">The Oatmakers hotfix from day one, done the multi-gateway way. Your room-mate is the release approver; make them earn it.</div></div></div>
     <div class="cols2">
       <div class="steps">
-        <div class="step"><div class="ix p">6</div><div class="tx"><b>Open <span class="inlinecode">.github/workflows/deploy.yml</span></b> and add/enable the <span class="inlinecode">migrate</span> step, <b>before</b> the ship-files step, targeting the <b>dev</b> database.<!-- [VERIFY] whether the step ships commented-out (enable) or must be written from scratch (add): deploy.yml is a repo TODO --></div></div>
-        <div class="step"><div class="ix p">7</div><div class="tx"><b>Branch, commit, PR:</b> migration + workflow change on a feature branch, PR to <span class="inlinecode">develop</span>. CI must be green (your secret scan runs here too).</div></div>
-        <div class="step"><div class="ix p">8</div><div class="tx"><b>Merge and watch the run</b> on the self-hosted runner: <b>validate → migrate dev DB → ship files → scan → verify</b>. Find the migrate step's log lines.</div></div>
-        <div class="step"><div class="ix p">9</div><div class="tx"><b>Prove it:</b> query <span class="inlinecode">flyway_schema_history</span> in the <b>dev</b> database: V2 applied by the pipeline, not by you. Check the dev gateway's screen.</div></div>
+        <div class="step"><div class="ix p">1</div><div class="tx"><b>The canary PR:</b> on a branch, bump <span class="inlinecode">oatmakers</span> to <span class="inlinecode">v2.0.1</span> in <span class="inlinecode">gw-site4-frontend.yaml</span> <b>only</b> (the HMI runs on the frontend gateway). PR title: <span class="inlinecode">Promote oatmakers v2.0.1 to prod (wave 1: site 4)</span>.</div></div>
+        <div class="step"><div class="ix p">2</div><div class="tx"><b>The review:</b> your room-mate checks four things: only site 4 changed · the pin matches the tagged hotfix (<span class="inlinecode">oatmakers@v2.0.1</span>) · <b>the parent version is untouched</b> · the rollout order says site 4 goes first. Then they approve and <b>you merge</b>.</div></div>
+        <div class="step"><div class="ix p">3</div><div class="tx"><b>Narrate the machine:</b> in the PR conversation, write the comment a pipeline would log: which runner picks this up, what it deploys (the project <b>and its parent</b>, to that one site), what it verifies during the soak, and which gateways stay <b>unchanged</b>.</div></div>
+        <div class="step"><div class="ix p">4</div><div class="tx"><b>The fleet PR:</b> second branch, bump the remaining prod gateway files (site 1 and <span class="inlinecode">gw-central</span> in your set). Review, merge.</div></div>
+        <div class="step"><div class="ix p">5</div><div class="tx"><b>Read your own audit trail:</b> <span class="inlinecode">git log --oneline releases/prod/</span>: two commits, two reviewed promotions, zero gateway logins.</div></div>
       </div>
       <div>
-        <div class="code"><pre>git switch -c feature/downtime-log
-git add migrations/V2__add_downtime_log.sql \
-        .github/workflows/deploy.yml
-git commit -m <span class="cmd2">"feat(db): downtime_log + migrate step"</span>
-git push -u origin feature/downtime-log
-gh pr create --base develop --fill
+        <div class="code"><pre><span class="cm"># the canary PR diff, in full</span>
+<span class="cm">releases/prod/gw-site4-frontend.yaml</span>
+-  oatmakers:           <span class="red">v2.0.0</span>
++  oatmakers:           <span class="grn">v2.0.1</span>
 
-<span class="cm"># after merge: watch it go</span>
-gh run watch
-<span class="cm"># migrate dev DB → ship → scan → verify ✅</span></pre></div>
-        <div class="goal good-g" style="margin-top:16px">
-          <span class="badge">Order is the point</span>
-          <p><b>Old screens tolerate a new table; new screens don't tolerate a missing one.</b> If migrate fails, the run stops: no screens ship. That's the safety property you just built.</p>
+<span class="cm"># after both merges</span>
+git log --oneline releases/prod/
+<span class="cmd2">e41c2af</span> Promote v2.0.1 (wave 2: fleet + central)
+<span class="cmd2">9b03d71</span> Promote v2.0.1 (wave 1: site 4)</pre></div>
+        <div class="goal good-g" style="margin-top:18px">
+          <span class="badge">✅ Part 2 gate</span>
+          <p><b>Two merged promotion PRs, each reviewed by your room-mate</b>, and you can answer: how would you roll this back? (One word, starts with "revert".)</p>
         </div>
       </div>
     </div>
   </div>
-  <div class="foot"><span>Mustry Academy · CI/CD for Ignition</span><span>Part D · green run = lab complete</span></div>
+  <div class="foot"><span>Mustry Academy · CI/CD for Ignition</span><span>Part 2 · B of B</span></div>
 </section>
 
-<!-- 12 · STRETCH 1: EXPAND-CONTRACT -->
+<!-- 10 · PART 3 -->
+<section class="slide dark">
+  <div class="topbar">
+    <div class="on-dark brandrow"><img class="logo-img" src="logos/OriginalLight.png" alt="Mustry Solutions"></div>
+    <div class="stage on-dark">Solo · Part 3 · Tags</div>
+  </div>
+  <div class="body">
+    <div class="eyebrow">Part 3 · solo · ±15 min · exercises/lab.md</div>
+    <div class="title" style="color:#fff;max-width:26ch">Write the tag-ownership policy for Oatmakers</div>
+    <p class="lead">Two incidents from the scenario land on your desk: the overwritten alarm limit, and the forty engineer-created tags that exist only on prod. <span class="mono" style="color:#dbe4f0">TAGS.md</span> is your answer.</p>
+    <ul class="checks" style="margin-top:22px;max-width:920px">
+      <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span><b>Pick a master-of-tags model</b> (development is master, production is master, or split ownership) and say in two sentences why it fits Oatmakers.</span></li>
+      <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span><b>Write five concrete rules</b> a pipeline could enforce: who may create tags where · what a deploy may overwrite · what it must never touch · how prod-created tags reach dev and the repo · what happens to operator setpoints on deploy day.</span></li>
+      <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span><b>Name the cost.</b> Every model trades something away: write one honest sentence about what yours gives up.</span></li>
+      <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span><b>PR it</b>; your room-mate reviews by attacking it with the two incidents: does each rule survive both?</span></li>
+    </ul>
+  </div>
+  <div class="foot"><span>Mustry Academy · CI/CD for Ignition</span><span>Part 3 · the policy</span></div>
+</section>
+
+<!-- 11 · DONE GATE -->
+<section class="slide">
+  <div class="topbar">
+    <div class="brandrow"><img class="logo-img" src="logos/OriginalDark.png" alt="Mustry Solutions"></div>
+    <div class="stage">Definition of done</div>
+  </div>
+  <div class="body">
+    <div class="sechead"><span class="num">GATE</span><div><div class="title">Definition of done for all three parts</div><div class="lead">Walk these three gates before you call it. If one fails, that part isn't done, however tidy the repo looks.</div></div></div>
+    <div class="steps" style="max-width:1000px">
+      <div class="step"><div class="ix">1</div><div class="tx"><b>Part 1:</b> <span class="inlinecode">ARCHITECTURE.md</span> merged with all five sections, and a written answer to both constraints: the vendor sees <b>only</b> the palletizer project, and <span class="inlinecode">oatmakers-shared</span> reaches every project that needs it.</div></div>
+      <div class="step"><div class="ix p">2</div><div class="tx"><b>Part 2:</b> a complete <span class="inlinecode">releases/</span> folder (every gateway in your scope has a file, the parent is pinned in each at <b>one <span class="inlinecode">oatmakers-shared</span> version across prod</b>, dev is unpinned, <span class="inlinecode">rollout.yaml</span> has three waves) and <b>two merged promotion PRs, each reviewed</b> by your room-mate.</div></div>
+      <div class="step"><div class="ix">3</div><div class="tx"><b>Part 3:</b> <span class="inlinecode">TAGS.md</span> merged: one model, five enforceable rules, one honest cost, and it survived your room-mate attacking it with both incidents.</div></div>
+    </div>
+    <div class="goal warn-g" style="margin-top:22px">
+      <span class="badge">Debrief fuel</span>
+      <p>Bring answers: which repository layout did your room choose, and where did you disagree? · what belongs in the releases file that we didn't include (modules? config version? migrations?) · who is the master of tags at <b>your</b> plant today, and does anything enforce it?</p>
+    </div>
+  </div>
+  <div class="foot"><span>Mustry Academy · CI/CD for Ignition</span><span>The gate → stretch or debrief</span></div>
+</section>
+
+<!-- 12 · STRETCH -->
 <section class="slide">
   <div class="topbar">
     <div class="brandrow"><img class="logo-img" src="logos/OriginalDark.png" alt="Mustry Solutions"></div>
     <div class="stage">Optional stretch</div>
   </div>
   <div class="body">
-    <div class="sechead"><span class="num warm">OPTIONAL · S1</span><div><div class="title">Stretch 1: rename a column, break nothing</div><div class="lead">The higher-value one. A rename is a <b>drop in disguise</b>, so do it as two migrations with a working system in between.</div></div></div>
+    <div class="sechead"><span class="num warm">OPTIONAL</span><div><div class="title">Stretch: four ways to go deeper</div><div class="lead">Pick by appetite. Each one extends a different part of the hour.</div></div></div>
     <div class="cols2">
       <div class="steps">
-        <div class="step"><div class="ix t">1</div><div class="tx"><b>Expand:</b> in <span class="inlinecode">V3__downtime_add_reason_code.sql</span>, add the new column and copy the data over. Old screens still read the old column: <b>nothing breaks</b>.</div></div>
-        <div class="step"><div class="ix t">2</div><div class="tx"><b>Switch the readers:</b> update the screen/named query to the new column, ship it through the pipeline (same PR as V3, or after).</div></div>
-        <div class="step"><div class="ix t">3</div><div class="tx"><b>Contract:</b> only when nothing reads the old column, <span class="inlinecode">V4__downtime_drop_reason.sql</span> drops it. In real life this ships <i>releases</i> later.</div></div>
-        <div class="step"><div class="ix t">4</div><div class="tx"><b>Ask yourself:</b> at which points between V3 and V4 could a gateway run <i>old</i> screens against the <i>new</i> schema, and does anything break? (It shouldn't. That's the choreography.)</div></div>
+        <div class="step"><div class="ix t">1</div><div class="tx"><b>All eight sites, plus disaster recovery.</b> Extend <span class="inlinecode">releases/prod/</span> to the full fleet and add <span class="inlinecode">gw-dr.yaml</span>. Then the real question: <b>which wave does DR belong in</b>, and should it ever lag prod on purpose? Write your answer into <span class="inlinecode">rollout.yaml</span> as a comment.</div></div>
+        <div class="step"><div class="ix t">2</div><div class="tx"><b>The vendor's release file.</b> Add the palletizer project to the site 2 and site 7 release files, pinned to the vendor's own version numbers. Decide: may the vendor open promotion PRs in <b>your</b> releases repo, or do they hand versions over another way? Write the rule into <span class="inlinecode">ARCHITECTURE.md</span>.</div></div>
+        <div class="step"><div class="ix t">3</div><div class="tx"><b>Cut the tags for real.</b> In your design repo, create the prefixed tags your release files reference: <span class="inlinecode">git tag oatmakers@v2.0.0</span>, <span class="inlinecode">oatmakers@v2.0.1</span>, <span class="inlinecode">oatmakers-shared@v1.9.2</span>. Then add one sentence to <span class="inlinecode">ARCHITECTURE.md</span>: what does CI do with the prefix? (From the teaching: parse it, build only that project's folder, publish one artifact.)</div></div>
+        <div class="step"><div class="ix t">4</div><div class="tx"><b>Sketch the submodule.</b> In <span class="inlinecode">ARCHITECTURE.md</span>, sketch what changes if <span class="inlinecode">oatmakers-shared</span> becomes a git submodule in a repo-per-site layout: which repos contain it, what the pinned commit means, and what a library upgrade looks like as PRs. No commands needed: it's the shape that matters.</div></div>
       </div>
       <div>
-        <div class="code"><pre><span class="cm">-- V3 (expand): add + backfill, drop nothing</span>
-ALTER TABLE downtime_log ADD COLUMN reason_code TEXT;
-UPDATE downtime_log SET reason_code = reason;
-
-<span class="cm">-- …screens switch to reason_code, deploy, soak…</span>
-
-<span class="cm">-- V4 (contract): only once nothing reads it</span>
-ALTER TABLE downtime_log DROP COLUMN reason;</pre></div>
-        <div class="goal warn-g" style="margin-top:16px">
-          <span class="badge">Never</span>
-          <p><b>Never rename in one step while gateways are live:</b> between the migration and the screen deploy, every query against the old name 500s.</p>
+        <div class="code"><pre><span class="cm"># stretch 1: the question in file form</span>
+<span class="cm"># releases/prod/rollout.yaml</span>
+waves:
+  - name: canary      <span class="cm"># site 4 · soak 30m</span>
+  - name: fleet       <span class="cm"># sites 1-3, 5-8</span>
+  - name: enterprise  <span class="cm"># gw-central</span>
+  - name: dr          <span class="cm"># gw-dr … or should it</span>
+                      <span class="cm"># lag a full release?</span></pre></div>
+        <div class="goal" style="margin-top:18px">
+          <span class="badge">No wrong answers</span>
+          <p>All three stretches are judgment calls, not lookups. The deliverable is your <b>reasoning in the repo</b>, where the next engineer can find it.</p>
         </div>
       </div>
     </div>
   </div>
-  <div class="foot"><span>Mustry Academy · CI/CD for Ignition</span><span>Stretch 1 of 3 (optional)</span></div>
+  <div class="foot"><span>Mustry Academy · CI/CD for Ignition</span><span>Stretch · optional</span></div>
 </section>
 
-<!-- 13 · STRETCH 2 + 3 -->
-<section class="slide">
-  <div class="topbar">
-    <div class="brandrow"><img class="logo-img" src="logos/OriginalDark.png" alt="Mustry Solutions"></div>
-    <div class="stage">Optional stretch</div>
-  </div>
-  <div class="body">
-    <div class="sechead"><span class="num phase2">OPTIONAL · S2 + S3</span><div><div class="title">Seed data as code · scanner in CI</div><div class="lead">Two smaller ones. Pick whichever gap bothers you more.</div></div></div>
-    <div class="cols2">
-      <div>
-        <div class="steps">
-          <div class="step"><div class="ix p">S2</div><div class="tx"><b>Repeatable seed migration.</b> Put reference data in <span class="inlinecode">migrations/R__seed_reference_data.sql</span>: idempotent SQL (upserts). Run <span class="inlinecode">migrate.sh</span> twice, then <b>edit the file</b> and run again. When do repeatables re-run? Check the history table for the answer.<!-- [VERIFY] repeatable-migration behaviour as configured in this repo. Slides assume Flyway R__ semantics: re-runs on checksum change, after versioned migrations --></div></div>
-          <div class="step"><div class="ix p">S3</div><div class="tx"><b>Secret scan in CI.</b> Add a <span class="inlinecode">secret-scan</span> job to <span class="inlinecode">.github/workflows/ci.yml</span> so a leaked key fails the PR. Test it: PR a fake key from Warm-up 2 → red ❌ → close the PR without merging.</div></div>
-        </div>
-      </div>
-      <div>
-        <div class="code"><pre><span class="cm">-- S2 · R__seed_reference_data.sql (idempotent!)</span>
-INSERT INTO downtime_reasons (code, label)
-VALUES (<span class="cmd2">'MECH'</span>,<span class="cmd2">'Mechanical'</span>), (<span class="cmd2">'ELEC'</span>,<span class="cmd2">'Electrical'</span>)
-ON CONFLICT (code) DO UPDATE SET label = EXCLUDED.label;
-
-<span class="cm"># S3 · ci.yml: new job</span>
-secret-scan:
-  runs-on: ubuntu-latest
-  steps:
-    - uses: actions/checkout@v4
-      with: { fetch-depth: 0 }   <span class="cm"># full history!</span>
-    - uses: gitleaks/gitleaks-action@v2</pre></div>
-        <!-- [VERIFY] gitleaks-action version/licensing and whether the lab pins a specific release; also downtime_reasons table must exist (seed it in the R__ file or a V migration) -->
-        <div class="goal" style="margin-top:16px">
-          <span class="badge">Why fetch-depth 0</span>
-          <p>The scanner must see <b>history</b>, not just the tip. Warm-up 2 showed you exactly why a tip-only scan misses the burned key.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="foot"><span>Mustry Academy · CI/CD for Ignition</span><span>Stretches 2 to 3 of 3 (optional)</span></div>
-</section>
-
-<!-- 14 · DONE → CAPSTONE -->
+<!-- 13 · DONE -->
 <section class="slide dark">
   <div class="topbar">
     <div class="on-dark brandrow"><img class="logo-img" src="logos/OriginalLight.png" alt="Mustry Solutions"></div>
-    <div class="stage on-dark">The assignment → Debrief · capstone</div>
+    <div class="stage on-dark">The assignment → Debrief</div>
   </div>
   <div class="body">
-    <div class="eyebrow">Nicely done. That was the last lab</div>
-    <div class="title" style="color:#fff;max-width:24ch">Your pipeline has no more gaps.</div>
+    <div class="eyebrow">Nicely done</div>
+    <div class="title" style="color:#fff;max-width:26ch">You designed a multi-gateway deployment, end to end.</div>
     <ul class="checks" style="max-width:940px;margin-top:22px">
-      <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span>A credential climbed the ladder: <b>.env → Docker secret → referenced secret</b>, and your committed gateway config carries <b>no secret material</b>.</span></li>
-      <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span>A schema change shipped as a <b>versioned migration</b>, applied by the <b>same pipeline run</b> that shipped the screens that need it: migrate first, always.</span></li>
-      <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span>Bring one <b>surprise</b> and one <b>question</b> per room to the debrief.</span></li>
+      <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span>An <b>architecture and repository layout</b> that answers the two hard constraints: vendor access and the shared library.</span></li>
+      <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span>A <b>releases folder</b> where "which version runs where" is a file, and two <b>promotions that happened as reviewed pull requests</b>: with rollback one revert away.</span></li>
+      <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span>A <b>tag-ownership policy</b> that survives both scenario incidents, with its cost stated honestly.</span></li>
+      <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span>Bring one <b>surprise</b> and one <b>question</b> to the debrief.</span></li>
     </ul>
     <div class="goal" style="background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.14);border-left-color:var(--peri2)">
-      <span class="badge" style="background:var(--peri2);color:var(--navy)">Next → the capstone</span>
-      <p style="color:#c4cfde">The teaching deck's <b style="color:#fff">capstone brief</b> is now <i>your</i> assignment: a CI/CD-managed Ignition project from an empty repo: history, CI, deploy, migrations, zero secrets in Git. Every lab is a reference implementation you may steal from. <b style="color:#fff">Bring your questions (and your plant's real topology) to the 16:00 office hour.</b></p>
-      <!-- [VERIFY] capstone scope/timeline/rubric are still TODO(instructors) in teaching.html slide 21. Keep this handoff generic until finalized -->
+      <span class="badge" style="background:var(--peri2);color:var(--navy)">Next</span>
+      <p style="color:#c4cfde">The course debrief: four days from <b style="color:#fff">git init</b> to a fleet-wide promotion. We close with the question that matters: <b style="color:#fff">what will you build first, back at your own plant?</b></p>
     </div>
   </div>
-  <div class="foot"><span>Mustry Academy · CI/CD for Ignition</span><span>Lab 07 complete, course labs done · capstone ahead</span></div>
+  <div class="foot"><span>Mustry Academy · CI/CD for Ignition</span><span>Lab 07 complete · course complete</span></div>
 </section>
 
 </div>
 
 <div class="hud"><div class="bar" id="bar"></div></div>
-<div class="pager" id="pager">01 / 14</div>
+<div class="pager" id="pager">01 / 13</div>
 <div class="hint" id="hint">↑ ↓ / scroll to navigate</div>
 
 <script>
