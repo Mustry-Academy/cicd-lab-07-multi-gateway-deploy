@@ -1,94 +1,315 @@
-# Lab 07 — Secrets management & deploying the database with your code
+# Lab 07 — Deployments in a multi-gateway architecture
 
-**Day 4 · afternoon session.** One **We-do / we do / you do** covering the two things
-your pipeline still can't handle: values that must never be committed, and state
-that isn't files. Then the **capstone brief** closes the course.
+**Day 4 · afternoon session.** Everything so far deployed one repository to one
+gateway. This lab lays out what changes when there are more: the reference
+architectures, the repository layouts that map onto them, the releases folder
+that records which version runs where, and the tag-ownership decision that has
+to be made before any of it goes live.
 
 **Duration:** ~3 hours
+
 * 60 min teaching ([`slides/teaching.html`](../slides/teaching.html))
-* 45–60 min We-do / we do (demos below, woven into the teaching)
-* 60 min you do ([`slides/assignment.html`](../slides/assignment.html) mirrors this file)
-* Debrief + capstone Q&A
+* 30–45 min we-do (below, woven into the teaching)
+* 60 min you-do ([`slides/assignment.html`](../slides/assignment.html) mirrors this file)
+* Debrief — this is the last lab, so the debrief also closes the course
+
+The full teaching content is written out in
+[`docs/multi-gateway-deployments.md`](../docs/multi-gateway-deployments.md);
+use it to re-read anything from the hour.
 
 ## Goal
 
 You should leave this lab able to:
 
-- Sort configuration into **public / per-environment / secret**, and say where each kind lives
-- Explain why a secret that has ever been pushed is **burned** — and that the fix is *rotate*, not *delete*
-- Climb the secrets ladder: `.env` + Compose interpolation → Docker secrets (`/run/secrets/`) → Ignition 8.3 secret providers (embedded vs **referenced**)
-- Explain why *referenced* secrets make Ignition gateway config portable across environments <!-- [VERIFY] exact 8.3 behaviour of embedded ciphertext across gateways -->
-- Explain why `db-init/` (labs 04/05) is bootstrap, not deployment
-- Write a schema **migration** as a versioned SQL file, apply it with the migration runner, and read the history table
-- Wire a migration step into `deploy.yml` so the database ships in the same pipeline run as the project files
-
-Read-ahead: [`docs/secrets-management.md`](../docs/secrets-management.md).
+- Recognize your own plant in one of the three **reference architectures**: standalone, frontend-backend, multi-site with an enterprise level
+- Map a repository layout onto each architecture, and name the trade-offs: **one repo for everything**, **repo per site + enterprise**, **vendor repo per project**, **config repos split from a projects repo**
+- Explain how a **shared library project** travels in each layout (one folder in a monorepo, or a git submodule pinned per repo)
+- Explain where **self-hosted runners** live in a multi-site deploy (one per site, inside the site network, selected by `runs-on` labels) and why nothing needs inbound access
+- Build a **releases folder**: one folder per environment, one file per gateway, each project pinned to a version, `rollout.yaml` for wave ordering, and dev tracking main unpinned
+- Version projects independently inside one repository with **prefixed tags** (`oatmakers@v2.0.1` releases only that project), and say why the shared **parent project** (`oatmakers-shared`) is pinned per gateway alongside the projects, with one parent version per environment
+- Run a **promotion as a pull request** in the releases repo, with review as the approval gate and `git revert` as the rollback
+- Decide **who is the master of tags** (development, production, or split ownership), and write rules a pipeline can enforce
 
 ## Pre-flight
 
-<!-- TODO(infra): setup.sh / compose stack not built yet — see README TODO section. -->
+This assignment needs **no gateways and no Docker**. You need:
 
-```bash
-cp .env.example .env
-scripts/setup.sh          # idempotent — safe if the stack is already up
-scripts/validate.sh       # green before you start
-```
+- A GitHub account you can create a repository on
+- Your breakout room-mate added as a collaborator (they review your PRs)
+- A browser or editor for markdown and yaml
 
-You'll need the same fork + PAT + API-key setup as Lab 04 (see its README) — the
-deploy workflow in Phase 2 runs on the bundled self-hosted runner.
+---
+
+## The scenario
+
+All three parts work against this scenario. Copy it into `SCENARIO.md` during
+the warm-up.
+
+> **Oatmakers** runs **8 production sites**. Every site runs the same two
+> Ignition projects, `oatmakers` (the HMI) and `oatmakers-packaging`, plus the
+> shared library project `oatmakers-shared` that both depend on.
+>
+> Each site is getting a **backend gateway** (devices, tag providers, history),
+> a **frontend gateway** (Perspective sessions) and a **site database**.
+>
+> An external **vendor** builds the **palletizer** project for sites 2 and 7.
+> Contractually, the vendor **may not see anything except the palletizer
+> project** — not the HMI, not the gateway config, not the other sites.
+>
+> Management wants an **enterprise level**: `gw-central` with a central
+> database for company-wide reporting.
+>
+> Current versions in production: `oatmakers v2.0.0`,
+> `oatmakers-packaging v1.4.0`, `oatmakers-shared v1.9.2`. A hotfix
+> `oatmakers v2.0.1` has just been tagged and must be promoted: **site 4
+> first** (it reported the bug), then the rest of the fleet, then central.
+>
+> Two incidents from last quarter, for Part 3:
+>
+> 1. Night shift at site 3 trimmed an alarm limit at 03:00 to silence a
+>    nuisance alarm. Saturday's deploy shipped the tag export from Git and
+>    silently put the old limit back.
+> 2. A process engineer created ~40 new tags directly on site 6's production
+>    gateway. Dev has never seen them; nothing can be tested against them; a
+>    strict "make production match Git" deploy would delete them.
 
 ---
 
 ## We-do (instructor demos)
 
-### Demo 1 — a leak is forever
+### Demo 1 — placing Oatmakers on the architecture map
 
-1. Commit a fake API key on a branch, push, then "remove" it in a follow-up commit.
-2. `git log -p` / GitHub UI: the key is still perfectly readable in history.
-3. Talk through the real-world response: **rotate the credential**, then (optionally) scrub history (`git filter-repo` / BFG) — and why scrubbing alone is never enough on a shared remote.
+1. The three reference architecture diagrams side by side (`architectures/`).
+2. Oatmakers today: eight independent standalone gateways, no enterprise level.
+3. Sketch the target live: frontend-backend per site, hub-and-spoke to central.
 
-### Demo 2 — the secrets ladder on the lab stack
+### Demo 2 — one release PR, end to end
 
-1. Show the `.env` → Compose interpolation the labs have used since Lab 02 (`${POSTGRES_PASSWORD:-ignition}`), and where it leaks: `docker inspect`, `docker compose config`, process env.
-2. Convert one credential (the Postgres password) to a **Docker secret**: top-level `secrets:` block, file under `secrets/`, mounted at `/run/secrets/postgres_password` in the container. <!-- [VERIFY] official Ignition image `_FILE`-suffix env var support for reading secrets from files -->
-3. In the Ignition gateway UI: create a **secret provider**, store the DB password there, and point the database connection at the *reference* instead of a pasted plaintext value. Export config; diff `config.json` — the secret value is not in the export. <!-- [VERIFY] exact 8.3 UI path + provider type (environment-variable vs file vs embedded) and how the reference appears in config.json -->
+1. A releases folder in the layout from the teaching, on screen.
+2. Bump `oatmakers: v2.0.0 → v2.0.1` in `gw-site4-frontend.yaml` (the HMI
+   runs on the frontend gateway), open the PR, read the diff as a release
+   note.
+3. Read `rollout.yaml` and narrate what the pipeline would do wave by wave,
+   and what a `git revert` of the merge would do.
 
-### Demo 3 — migrations, live
+### Demo 3 — multi-site repo layouts on screen
 
-1. `db-init/` recap: rename the volume → SQL runs; existing volume → it doesn't. Bootstrap, not deployment.
-2. Add `V2__add_downtime_log.sql` to `migrations/`, run `scripts/migrate.sh` against the local DB, inspect the `flyway_schema_history` table. <!-- TODO(infra): decide Flyway vs Liquibase vs hand-rolled; slides assume Flyway -->
-3. Edit an already-applied migration → checksum mismatch error → the "migrations are immutable" rule, discovered live.
-
-## We do (together)
-
-- Walk the repo's config together and sort every value into public / per-environment / secret. <!-- TODO: worksheet or shared doc -->
-- Sketch the deploy pipeline on the whiteboard and place the `migrate` step: before the file ship? after? what happens on migration failure? (Answer: migrate first, fail the run — never ship screens that need a table that isn't there.)
+1. Sketch option A (one repo for everything) and option B (splits) live,
+   against the scenario's constraints: the vendor and the shared library.
+2. Where the runners live: one per site, `runs-on: [self-hosted, site-4]`,
+   inside the site network, no inbound access needed.
 
 ## You do (breakout rooms)
 
-Follows [`slides/assignment.html`](../slides/assignment.html) 1:1.
+Follows [`slides/assignment.html`](../slides/assignment.html) 1:1. After the
+warm-up, **everything goes through a feature branch and a PR** (GitHub flow),
+reviewed by your room-mate.
 
-### Warm-up 1 — secret triage
-Grep your clone for candidate secrets; check `.gitignore` covers `.env` and `secrets/`; run the secret scanner in `scripts/validate.sh`. <!-- TODO(infra): gitleaks (or similar) step in validate.sh -->
+### Warm-up (together) — create the design repo and place Oatmakers
 
-### Warm-up 2 — leak & rotate drill
-Repeat Demo 1 yourself on a scratch branch; convince yourself the "deleted" secret is still in history; write the two-line incident response in `NOTES.local.md` (rotate → scrub).
+1. Create `oatmakers-deployment-design` on your GitHub account (private is
+   fine). Add your room-mate as collaborator.
+2. Copy the scenario above into `SCENARIO.md`.
+3. As a room: which reference architecture is one Oatmakers site today? Which
+   is the company? What should the target be?
+4. Commit `SCENARIO.md` to `main` — the last direct commit you make today.
 
-### Phase 1 — climb the secrets ladder (solo)
-- **A.** Move the Postgres password from Compose `environment:` to a Docker secret.
-- **B.** Create an Ignition secret provider and re-point the gateway DB connection at a referenced secret. Export + diff config to prove no plaintext/ciphertext left the gateway. <!-- [VERIFY] -->
-- **Gate:** `scripts/validate.sh` green — includes the secret scan finding **zero** plaintext secrets in tracked files.
+### Part 1 (solo, ±20 min) — choose the architecture and repository layout
 
-### Phase 2 — ship a schema change through the pipeline (solo)
-- **C.** Write `V2__…` (new table for the example project), migrate locally, verify in `flyway_schema_history` and in the gateway (Perspective screen reads the new table). <!-- TODO(infra): example-project screen that consumes the table -->
-- **D.** Add/enable the `migrate` step in `deploy.yml`, push to `develop` via PR, watch the run: migrate dev DB → ship files → scan → verify.
+Branch: `design/architecture`. Deliverable: `ARCHITECTURE.md` with **all five
+sections**:
 
-### Stretch (optional)
-- **S1.** Expand–contract: rename a column with two migrations and no broken screens in between.
-- **S2.** Seed data as a repeatable migration (`R__seed_reference_data.sql`) — when do repeatables re-run?
-- **S3.** Add a secret-scanning job to `ci.yml` so a leaked key fails the PR.
+```markdown
+# Oatmakers deployment architecture
 
-## Debrief + capstone brief
+## Target architecture
+<!-- which reference architecture per site and for the company, and 3 sentences why -->
 
-- One surprise, one question, per room.
-- **Capstone brief** (final teaching slides): the course-closing assignment that ties labs 01–07 together. <!-- TODO: finalize capstone scope, deliverables, rubric, and how/when it's reviewed -->
+## Repositories
+<!-- a table: repo name · what's inside · who has access -->
+| Repo | Contents | Access |
+|---|---|---|
+
+## Main repo file tree
+<!-- projects/, a config folder per gateway, migrations, workflows -->
+
+## Runners
+<!-- site · machine · labels · which deploy jobs land on it -->
+| Site | Machine | Labels | Deploys |
+|---|---|---|---|
+
+## What one deploy run does
+<!-- trigger → what routes where → how it's verified -->
+```
+
+Your design must give a written answer to **both hard constraints**:
+
+1. The vendor sees **only** the palletizer project.
+2. `oatmakers-shared` reaches every project that needs it.
+
+Open the PR; your room-mate's job is to poke one hole in the design. Answer
+the hole **in the document**, then merge.
+
+**Gate:** merged PR, five sections filled, both constraints answered in
+writing.
+
+### Part 2 (solo, ±25 min) — build the releases folder and promote v2.0.1
+
+#### 2A — the folder
+
+Branch: `design/releases`. Build:
+
+```
+releases/
+├─ prod/
+│  ├─ gw-site1-backend.yaml
+│  ├─ gw-site1-frontend.yaml
+│  ├─ gw-site4-backend.yaml
+│  ├─ gw-site4-frontend.yaml
+│  ├─ gw-central.yaml
+│  └─ rollout.yaml          # wave ordering
+├─ test/
+│  └─ gw-test.yaml
+└─ dev/
+   └─ gw-dev.yaml           # tracks main, auto
+```
+
+(Sites 1 and 4 plus central are the minimum scope; the full fleet is stretch 1.)
+
+One file per gateway, every project pinned. Everyone starts on `v2.0.0` — the
+hotfix is promoted in 2B, not baked in here:
+
+```yaml
+# releases/prod/gw-site4-frontend.yaml
+gateway: gw-site4-frontend
+projects:
+  oatmakers:           v2.0.0
+  oatmakers-packaging: v1.4.0
+  oatmakers-shared:    v1.9.2
+```
+
+```yaml
+# releases/prod/gw-site4-backend.yaml
+gateway: gw-site4-backend
+projects:
+  oatmakers-shared:    v1.9.2   # devices and tags are config; the backend
+                                # runs the shared library the scripts live in
+```
+
+```yaml
+# releases/dev/gw-dev.yaml
+gateway: gw-dev
+track: main            # every merge deploys automatically — no pins on dev
+```
+
+```yaml
+# releases/test/gw-test.yaml
+gateway: gw-test
+projects:
+  oatmakers:           v2.0.0
+  oatmakers-packaging: v1.4.0
+  oatmakers-shared:    v1.9.2
+```
+
+```yaml
+# releases/prod/rollout.yaml — wave ordering for prod promotions
+waves:
+  - name: canary
+    gateways: [gw-site4-backend, gw-site4-frontend]
+    soak: 30m          # verify + wait before the next wave
+  - name: fleet
+    gateways: [gw-site1-backend, gw-site1-frontend]   # + sites 2-3, 5-8 at full scope
+  - name: enterprise
+    gateways: [gw-central]
+```
+
+PR, quick review (does every gateway have a file? is dev unpinned?), merge.
+
+#### 2B — the promotion
+
+1. **Canary PR:** branch `promote/v2.0.1-wave1`. Bump `oatmakers` to `v2.0.1`
+   in **`gw-site4-frontend.yaml` only** (the HMI runs on the frontend
+   gateway; the backend file doesn't pin `oatmakers` at all). Title:
+   `Promote oatmakers v2.0.1 to prod (wave 1: site 4)`.
+2. **Review:** your room-mate checks: only site 4 changed · the pin matches
+   the tagged hotfix from the scenario · `rollout.yaml` says site 4 goes
+   first. They approve; you merge.
+3. **Narrate the machine:** as a PR comment, write what a pipeline would log:
+   which runner picks the job up, what it deploys, what it verifies during
+   the soak.
+4. **Fleet PR:** branch `promote/v2.0.1-wave2`, bump the remaining prod files
+   that pin `oatmakers` (`gw-site1-frontend.yaml` and `gw-central.yaml` in
+   the minimum scope). Review, merge.
+5. Read the audit trail you just created:
+   `git log --oneline releases/prod/`.
+
+**Gate:** two merged promotion PRs, each reviewed, and you can say how
+rollback works (revert the PR; the pipeline makes the old pins true again).
+
+### Part 3 (solo, ±15 min) — write the tag-ownership policy
+
+Branch: `design/tags`. Deliverable: `TAGS.md`:
+
+```markdown
+# Tag ownership at Oatmakers
+
+## The model
+<!-- development is master / production is master / split ownership -->
+<!-- 2 sentences: why this fits Oatmakers -->
+
+## The rules (enforceable by a pipeline)
+1. Who may create tags, and where:
+2. What a deploy may overwrite:
+3. What a deploy must never touch:
+4. How tags created on production reach dev and the repo:
+5. What happens to operator setpoints on deploy day:
+
+## The cost
+<!-- one honest sentence about what this model gives up -->
+```
+
+Your room-mate reviews by attacking the policy with both scenario incidents
+(the 03:00 alarm limit, the 40 engineer-created tags): every rule must survive
+both. Then merge.
+
+**Gate:** merged `TAGS.md` with one model, five enforceable rules and one
+honest cost.
+
+---
+
+## Definition of done
+
+1. **Part 1:** `ARCHITECTURE.md` merged, five sections filled, both hard
+   constraints answered in writing.
+2. **Part 2:** complete `releases/` folder (every gateway in scope has a
+   file, dev is unpinned, `rollout.yaml` has three waves) and two merged,
+   reviewed promotion PRs.
+3. **Part 3:** `TAGS.md` merged and it survived both incidents in review.
+
+## Stretch (optional)
+
+1. **All eight sites, plus disaster recovery.** Extend `releases/prod/` to
+   the full fleet and add `gw-dr.yaml`. Decide which wave DR belongs in, and
+   whether it should lag prod on purpose. Write the answer into
+   `rollout.yaml` as a comment.
+2. **The vendor's release file.** Add the palletizer project to the site 2
+   and site 7 release files with the vendor's own version numbers. Decide
+   whether the vendor may open promotion PRs in your releases repo, or hands
+   versions over another way. Write the rule into `ARCHITECTURE.md`.
+3. **Sketch the submodule.** In `ARCHITECTURE.md`, sketch what changes if
+   `oatmakers-shared` becomes a git submodule in a repo-per-site layout:
+   which repos contain it, what the pinned commit means, and what a library
+   upgrade looks like as PRs. No commands needed — it's the shape that
+   matters.
+
+## Debrief
+
+Bring answers:
+
+- Which repository layout did your room choose, and where did you disagree?
+- What belongs in a release file that we didn't include — modules, a config
+  version, migrations?
+- Who is the master of tags at **your** plant today, and does anything
+  enforce it?
+- And the course-closing question: **what will you build first, back at your
+  own plant?**
