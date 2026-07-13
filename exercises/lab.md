@@ -1,77 +1,104 @@
 # Lab 07 — Deployments in a multi-gateway architecture
 
-**Day 4 · afternoon session.** Everything so far deployed one repository to one
-gateway. This lab lays out what changes when there are more: the reference
-architectures, the repository layouts that map onto them, the releases folder
-that records which version runs where, and the tag-ownership decision that has
-to be made before any of it goes live.
+**Day 4 · afternoon session.** One exercise, end to end: you ship a real change
+through a two-repo pipeline — tag a project, watch CI build exactly that
+project, deploy it by pull request through dev → test → prod, then change the
+shared parent project and watch the pipeline protect you from shipping an
+untested combination.
 
 **Duration:** ~3 hours
 
 * 60 min teaching ([`slides/teaching.html`](../slides/teaching.html))
 * 30–45 min we-do (below, woven into the teaching)
-* 60 min you-do ([`slides/assignment.html`](../slides/assignment.html) mirrors this file)
+* 60–75 min you-do ([`slides/assignment.html`](../slides/assignment.html) mirrors this file)
 * Debrief — this is the last lab, so the debrief also closes the course
 
 The full teaching content is written out in
 [`docs/multi-gateway-deployments.md`](../docs/multi-gateway-deployments.md);
 use it to re-read anything from the hour.
 
+<!-- TODO(infra): the two lab repos and their CI are not built yet. Needed:
+     - ignition-projects: projects/{oatmakers-shared,oatmakers,oatmakers-packaging}/
+       seeded with history and tags (oatmakers@v1.9.0/v2.0.0,
+       oatmakers-packaging@v1.3.0/v1.4.0, oatmakers-shared@v1.9.0/v1.9.2),
+       published artifacts for the current tags, plus a prepared BREAKING
+       oatmakers-shared@v2.0.0 tag the instructor hands out in Part 4
+     - ignition-projects CI: path-filtered tests per project; tag build that
+       parses the prefix, builds only that folder, writes manifest.json
+       (project/version/commit/requires) into the artifact; impact report
+       posted on PRs that touch oatmakers-shared
+     - ignition-gateways: gateways/{dev/gw-dev,test/gw-test,
+       prod/gw-oatmakers-01,prod/gw-oatmakers-02}/release.yaml + rollout.yaml
+     - ignition-gateways CI: plan posted on every PR; deploy on merge (pull
+       artifact, ship, smoke test); topological ordering (parent before
+       children); manifest guard (block major parent mismatch, allow
+       compatible minor); second-approver rule scoped to prod/**
+     - .ci/matrix.py (versions per gateway grid) and .ci/show-manifest.py
+     - compose stack: four gateways + runner, sized for course laptops -->
+
 ## Goal
 
 You should leave this lab able to:
 
-- Recognize your own plant in one of the three **reference architectures**: standalone, frontend-backend, multi-site with an enterprise level
-- Map a repository layout onto each architecture, and name the trade-offs: **one repo for everything**, **repo per site + enterprise**, **vendor repo per project**, **config repos split from a projects repo**
-- Explain how a **shared library project** travels in each layout (one folder in a monorepo, or a git submodule pinned per repo)
-- Explain where **self-hosted runners** live in a multi-site deploy (one per site, inside the site network, selected by `runs-on` labels) and why nothing needs inbound access
-- Build a **releases folder**: one folder per environment, one file per gateway, each project pinned to a version, `rollout.yaml` for wave ordering, and dev tracking main unpinned
-- Version projects independently inside one repository with **prefixed tags** (`oatmakers@v2.0.1` releases only that project), and say why the shared **parent project** (`oatmakers-shared`) is pinned per gateway alongside the projects, with one parent version per environment
-- Run a **promotion as a pull request** in the releases repo, with review as the approval gate and `git revert` as the rollback
-- Decide **who is the master of tags** (development, production, or split ownership), and write rules a pipeline can enforce
+- Read the fleet's state from the gateways repo (`matrix.py`) and explain why **the YAML file, not the gateway, is the source of truth**
+- Ship a change to one project and watch **path-filtered CI** build and test only that project
+- Explain why **merging is not deploying**: main means "built and could ship"
+- Cut a **prefixed tag** (`oatmakers@v2.0.1`) and watch CI parse the prefix, build one folder, publish one artifact
+- Read an artifact's **manifest** and say what `requires` records, and why
+- Deploy by PR: a **one-line version bump** in a release file, a plan on the PR, merge as the trigger
+- Promote dev → test → prod as **the same version moving through a sequence of files** — environments are directories on main, not branches
+- Execute a **staged prod rollout** (one gateway first) and read the resulting drift in the matrix
+- Change the **parent project** and watch: every child tested, an impact report on the PR, parent-first deploy ordering, children's versions untouched
+- Explain how the **manifest check** refuses an untested parent/child combination, and why a compatible minor passes while a major is blocked
+
+## What you're working with
+
+Two repos, already set up for you. **The pipelines are already written. You
+will not be writing CI today. You will be using it, and watching what it
+does.**
+
+`ignition-projects` contains three Ignition projects:
+
+```
+projects/
+  oatmakers-shared/     inheritable parent. utility scripts, common styles.
+  oatmakers/            the main site project. parent: oatmakers-shared
+  oatmakers-packaging/  the packaging line project. parent: oatmakers-shared
+```
+
+`ignition-gateways` holds the desired state of every gateway:
+
+```
+gateways/
+  dev/gw-dev/release.yaml
+  test/gw-test/release.yaml
+  prod/gw-oatmakers-01/release.yaml
+  prod/gw-oatmakers-02/release.yaml
+rollout.yaml
+```
+
+## The mental model, before you start
+
+Two repos, two different jobs:
+
+- **`ignition-projects` answers "what have we built?"** You merge, you tag, an
+  artifact is published. This repo does not know gateways exist.
+- **`ignition-gateways` answers "what is actually running, right now,
+  where?"** You change a version number in a YAML file, and a deploy happens.
+
+The seam between them is a **version string**. That's it. Nothing else
+crosses.
+
+The single most important thing to internalise today: **the gateway is not
+the source of truth. The YAML file is.** If they disagree, the YAML file is
+right and the gateway is wrong, and the drift detector will say so.
 
 ## Pre-flight
 
-This assignment needs **no gateways and no Docker**. You need:
-
-- A GitHub account you can create a repository on
-- Your breakout room-mate added as a collaborator (they review your PRs)
-- A browser or editor for markdown and yaml
-
----
-
-## The scenario
-
-All three parts work against this scenario. Copy it into `SCENARIO.md` during
-the warm-up.
-
-> **Oatmakers** runs **8 production sites**. Every site runs the same two
-> Ignition projects, `oatmakers` (the HMI) and `oatmakers-packaging`, plus the
-> shared library project `oatmakers-shared` that both depend on.
->
-> Each site is getting a **backend gateway** (devices, tag providers, history),
-> a **frontend gateway** (Perspective sessions) and a **site database**.
->
-> An external **vendor** builds the **palletizer** project for sites 2 and 7.
-> Contractually, the vendor **may not see anything except the palletizer
-> project** — not the HMI, not the gateway config, not the other sites.
->
-> Management wants an **enterprise level**: `gw-central` with a central
-> database for company-wide reporting.
->
-> Current versions in production: `oatmakers v2.0.0`,
-> `oatmakers-packaging v1.4.0`, `oatmakers-shared v1.9.2`. A hotfix
-> `oatmakers v2.0.1` has just been tagged and must be promoted: **site 4
-> first** (it reported the bug), then the rest of the fleet, then central.
->
-> Two incidents from last quarter, for Part 3:
->
-> 1. Night shift at site 3 trimmed an alarm limit at 03:00 to silence a
->    nuisance alarm. Saturday's deploy shipped the tag export from Git and
->    silently put the old limit back.
-> 2. A process engineer created ~40 new tags directly on site 6's production
->    gateway. Dev has never seen them; nothing can be tested against them; a
->    strict "make production match Git" deploy would delete them.
+- Fork both repos, **Actions enabled** (same setup as labs 04–06).
+- `cp .env.example .env` → `scripts/setup.sh` → the four gateways and the
+  runner come up. `scripts/validate.sh` green before you start.
+- You need a room-mate: the prod deploy requires a **second approver**.
 
 ---
 
@@ -86,244 +113,328 @@ the warm-up.
 ### Demo 2 — one release PR, end to end
 
 1. A releases folder in the layout from the teaching, on screen.
-2. Bump `oatmakers: v2.0.0 → v2.0.1` in `gw-site4-frontend.yaml` (the HMI
-   runs on the frontend gateway), open the PR, read the diff as a release
-   note.
+2. Bump `oatmakers: v2.0.0 → v2.0.1` in a release file, open the PR, read the
+   diff as a release note.
 3. Read `rollout.yaml` and narrate what the pipeline would do wave by wave,
    and what a `git revert` of the merge would do.
 
 ### Demo 3 — multi-site repo layouts on screen
 
 1. Sketch option A (one repo for everything) and option B (splits) live,
-   against the scenario's constraints: the vendor and the shared library.
+   against the constraints from the teaching: the vendor and the shared library.
 2. Where the runners live: one per site, `runs-on: [self-hosted, site-4]`,
    inside the site network, no inbound access needed.
 
-## You do (breakout rooms)
+## You do (breakout rooms) — one exercise, four parts
 
-Follows [`slides/assignment.html`](../slides/assignment.html) 1:1. After the
-warm-up, **everything goes through a feature branch and a PR** (GitHub flow),
-reviewed by your room-mate.
+Follows [`slides/assignment.html`](../slides/assignment.html) 1:1.
 
-### Warm-up (together) — create the design repo and place Oatmakers
+### Part 1 (±10 min) — see the current state
 
-1. Create `oatmakers-deployment-design` on your GitHub account (private is
-   fine). Add your room-mate as collaborator.
-2. Copy the scenario above into `SCENARIO.md`.
-3. As a room: which reference architecture is one Oatmakers site today? Which
-   is the company? What should the target be?
-4. Commit `SCENARIO.md` to `main` — the last direct commit you make today.
+Clone both repos and look at what's running.
 
-### Part 1 (solo, ±20 min) — choose the architecture and repository layout
+```bash
+git clone <url>/ignition-projects.git
+git clone <url>/ignition-gateways.git
 
-Branch: `design/architecture`. Deliverable: `ARCHITECTURE.md` with **all five
-sections**:
-
-```markdown
-# Oatmakers deployment architecture
-
-## Target architecture
-<!-- which reference architecture per site and for the company, and 3 sentences why -->
-
-## Repositories
-<!-- a table: repo name · what's inside · who has access -->
-| Repo | Contents | Access |
-|---|---|---|
-
-## Main repo file tree
-<!-- projects/, a config folder per gateway, migrations, workflows -->
-
-## Runners
-<!-- site · machine · labels · which deploy jobs land on it -->
-| Site | Machine | Labels | Deploys |
-|---|---|---|---|
-
-## What one deploy run does
-<!-- trigger → what routes where → how it's verified -->
+cd ignition-gateways
+python .ci/matrix.py
 ```
 
-Your design must give a written answer to **both hard constraints**:
-
-1. The vendor sees **only** the palletizer project.
-2. `oatmakers-shared` reaches every project that needs it.
-
-Open the PR; your room-mate's job is to poke one hole in the design. Answer
-the hole **in the document**, then merge.
-
-**Gate:** merged PR, five sections filled, both constraints answered in
-writing.
-
-### Part 2 (solo, ±25 min) — build the releases folder and promote v2.0.1
-
-#### 2A — the folder
-
-Branch: `design/releases`. Build:
+You should get something like:
 
 ```
-releases/
-├─ prod/
-│  ├─ gw-site1-backend.yaml
-│  ├─ gw-site1-frontend.yaml
-│  ├─ gw-site4-backend.yaml
-│  ├─ gw-site4-frontend.yaml
-│  ├─ gw-central.yaml
-│  └─ rollout.yaml          # wave ordering
-├─ test/
-│  └─ gw-test.yaml
-└─ dev/
-   └─ gw-dev.yaml           # tracks main, auto
+                  oatmakers-shared   oatmakers   oatmakers-packaging
+gw-dev                 v1.9.2          v2.0.0          v1.4.0
+gw-test                v1.9.2          v2.0.0          v1.4.0
+gw-oatmakers-01        v1.9.2          v2.0.0          v1.4.0
+gw-oatmakers-02        v1.9.2          v2.0.0          v1.4.0
 ```
 
-(Sites 1 and 4 plus central are the minimum scope; the full fleet is stretch 1.)
+Everything aligned. Enjoy it, it won't last.
 
-One file per gateway, every project pinned. Each version is one of that
-project's own **prefixed tags** (`oatmakers@v2.0.0` style — the tag names its
-project, and CI builds only the folder the prefix names). The parent project
-`oatmakers-shared` is pinned in **every** file, alongside the projects that
-inherit from it. Everyone starts on `v2.0.0` — the hotfix is promoted in 2B,
-not baked in here:
+Now look at the tags in the projects repo:
 
-```yaml
-# releases/prod/gw-site4-frontend.yaml
-gateway: gw-site4-frontend
-projects:
-  oatmakers:           v2.0.0
-  oatmakers-packaging: v1.4.0
-  oatmakers-shared:    v1.9.2
+```bash
+cd ../ignition-projects
+git tag --list
 ```
 
-```yaml
-# releases/prod/gw-site4-backend.yaml
-gateway: gw-site4-backend
-projects:
-  oatmakers-shared:    v1.9.2   # devices and tags are config; the backend
-                                # runs the shared library the scripts live in
+```
+oatmakers@v1.9.0
+oatmakers@v2.0.0
+oatmakers-packaging@v1.3.0
+oatmakers-packaging@v1.4.0
+oatmakers-shared@v1.9.0
+oatmakers-shared@v1.9.2
 ```
 
-```yaml
-# releases/dev/gw-dev.yaml
-gateway: gw-dev
-track: main            # every merge deploys automatically — no pins on dev
+Notice: **three independent version sequences in one repo.** `oatmakers` is
+on v2.0.0 while `oatmakers-packaging` is on v1.4.0. They do not move
+together. The tag prefix is what tells CI which project to build.
+
+Confirm that:
+
+```bash
+git show oatmakers@v2.0.0 --stat
+git log --oneline oatmakers@v1.9.0..oatmakers@v2.0.0 -- projects/oatmakers/
 ```
 
-```yaml
-# releases/test/gw-test.yaml
-gateway: gw-test
-projects:
-  oatmakers:           v2.0.0
-  oatmakers-packaging: v1.4.0
-  oatmakers-shared:    v1.9.2
+### Part 2 (±15 min) — ship a change to one project
+
+You're going to fix something in `oatmakers` **only**. Nothing else should
+move.
+
+```bash
+git switch -c fix/oatmakers-alarm-label
 ```
 
-```yaml
-# releases/prod/rollout.yaml — wave ordering for prod promotions
-waves:
-  - name: canary
-    gateways: [gw-site4-backend, gw-site4-frontend]
-    soak: 30m          # verify + wait before the next wave
-  - name: fleet
-    gateways: [gw-site1-backend, gw-site1-frontend]   # + sites 2-3, 5-8 at full scope
-  - name: enterprise
-    gateways: [gw-central]
+Open `projects/oatmakers/` and make a small, visible change. Change an alarm
+label, a view title — whatever your instructor points you at.
+
+```bash
+git add projects/oatmakers/
+git commit -m "fix: correct alarm label on line 2 overview"
+git push -u origin fix/oatmakers-alarm-label
 ```
 
-PR, review against the checklist: every gateway has a file · the parent is
-pinned in each · **the same `oatmakers-shared` version across all of prod**
-(tested together = ships together) · dev is unpinned. Merge.
+Open the PR. Watch the CI checks.
 
-#### 2B — the promotion
+- **Observe:** only `oatmakers` tests run. `oatmakers-shared` and
+  `oatmakers-packaging` are not built, not tested, not touched. That's
+  path-filtered CI. In a poly-repo you'd get this for free; here you get it
+  *and* you keep everything in one place.
 
-1. **Canary PR:** branch `promote/v2.0.1-wave1`. Bump `oatmakers` to `v2.0.1`
-   in **`gw-site4-frontend.yaml` only** (the HMI runs on the frontend
-   gateway; the backend file doesn't pin `oatmakers` at all). Title:
-   `Promote oatmakers v2.0.1 to prod (wave 1: site 4)`.
-2. **Review:** your room-mate checks four things: only site 4 changed · the
-   pin matches the tagged hotfix (`oatmakers@v2.0.1`) · the parent version is
-   untouched · `rollout.yaml` says site 4 goes first. They approve; you merge.
-3. **Narrate the machine:** as a PR comment, write what a pipeline would log:
-   which runner picks the job up, what it deploys (the project **and its
-   parent**, to that one site), what it verifies during the soak, and which
-   gateways stay unchanged.
-4. **Fleet PR:** branch `promote/v2.0.1-wave2`, bump the remaining prod files
-   that pin `oatmakers` (`gw-site1-frontend.yaml` and `gw-central.yaml` in
-   the minimum scope). Review, merge.
-5. Read the audit trail you just created:
-   `git log --oneline releases/prod/`.
+Merge the PR.
 
-**Gate:** two merged promotion PRs, each reviewed, and you can say how
-rollback works (revert the PR; the pipeline makes the old pins true again).
+- **Observe:** merging to main did **not** deploy anything. Main means
+  "built and could ship," not "shipped." Nothing has moved yet.
 
-### Part 3 (solo, ±15 min) — write the tag-ownership policy
+Now tag it:
 
-Branch: `design/tags`. Deliverable: `TAGS.md`:
-
-```markdown
-# Tag ownership at Oatmakers
-
-## The model
-<!-- development is master / production is master / split ownership -->
-<!-- 2 sentences: why this fits Oatmakers -->
-
-## The rules (enforceable by a pipeline)
-1. Who may create tags, and where:
-2. What a deploy may overwrite:
-3. What a deploy must never touch:
-4. How tags created on production reach dev and the repo:
-5. What happens to operator setpoints on deploy day:
-
-## The cost
-<!-- one honest sentence about what this model gives up -->
+```bash
+git switch main
+git pull
+git tag oatmakers@v2.0.1
+git push origin oatmakers@v2.0.1
 ```
 
-Your room-mate reviews by attacking the policy with both scenario incidents
-(the 03:00 alarm limit, the 40 engineer-created tags): every rule must survive
-both. Then merge.
+- **Observe:** the tag triggers a build. Watch the CI job parse the prefix
+  `oatmakers`, build only that project, and publish `oatmakers-v2.0.1.zip`.
 
-**Gate:** merged `TAGS.md` with one model, five enforceable rules and one
-honest cost.
+Check the artifact's manifest:
+
+```bash
+# from the CI artifact, or:
+python .ci/show-manifest.py oatmakers v2.0.1
+```
+
+```json
+{
+  "project": "oatmakers",
+  "version": "v2.0.1",
+  "commit": "a3f9c21",
+  "requires": { "oatmakers-shared": "v1.9.2" }
+}
+```
+
+- **This is the important bit.** The build recorded which `oatmakers-shared`
+  it was compiled and tested against. Remember this. It comes back in Part 4.
+
+Still nothing has deployed. You have an artifact. That's all.
+
+### Part 3 (±20 min) — deploy it, dev → test → prod
+
+Now switch to the gateways repo. This is where deploys happen.
+
+```bash
+cd ../ignition-gateways
+git switch -c deploy/oatmakers-v2.0.1-dev
+```
+
+Edit `gateways/dev/gw-dev/release.yaml`:
+
+```diff
+ gateway: gw-dev
+ projects:
+   oatmakers-shared:    v1.9.2
+-  oatmakers:           v2.0.0
++  oatmakers:           v2.0.1
+   oatmakers-packaging: v1.4.0
+```
+
+One line. Commit, push, open a PR.
+
+```bash
+git commit -am "deploy: oatmakers v2.0.1 to dev"
+git push -u origin deploy/oatmakers-v2.0.1-dev
+```
+
+- **Observe:** the PR check runs a **plan**. It tells you exactly what will
+  change on which gateway *before* you merge. Read it.
+
+Merge.
+
+- **Observe:** now it deploys. Watch the pipeline pull
+  `oatmakers-v2.0.1.zip`, push it to gw-dev, and run the smoke test. Open the
+  dev gateway and confirm your change is live.
+
+The pattern you just executed: **the PR is the deploy request. The approval
+is the change control. The merge is the trigger.**
+
+Now promote to test. Same move, different file:
+
+```bash
+git switch main && git pull
+git switch -c deploy/oatmakers-v2.0.1-test
+# edit gateways/test/gw-test/release.yaml, same one-line bump
+git commit -am "deploy: oatmakers v2.0.1 to test"
+git push -u origin deploy/oatmakers-v2.0.1-test
+```
+
+- **Notice what promotion is:** the same version number moving right through
+  a sequence of files. Not a merge between branches. **Environments are
+  directories, all on main.** If you'd made them branches, you'd now be
+  cherry-picking and fighting merge conflicts between dev and prod. You
+  aren't.
+
+Merge. Then prod, **one gateway only**:
+
+```bash
+# edit gateways/prod/gw-oatmakers-01/release.yaml
+```
+
+- **Observe:** the prod PR requires a **second approver**. Get your room-mate
+  to approve it. Note that this rule is path-based — it applies to `prod/`
+  and not to `dev/`.
+
+Merge, and watch it deploy to gw-oatmakers-01 **and only that one**.
+gw-oatmakers-02 is untouched. That's staged rollout: least critical first,
+bake, then the rest.
+
+```bash
+python .ci/matrix.py
+```
+
+```
+                  oatmakers-shared   oatmakers   oatmakers-packaging
+gw-dev                 v1.9.2          v2.0.1          v1.4.0
+gw-test                v1.9.2          v2.0.1          v1.4.0
+gw-oatmakers-01        v1.9.2          v2.0.1          v1.4.0
+gw-oatmakers-02        v1.9.2          v2.0.0  ←       v1.4.0
+```
+
+Drift is now visible. **That's the point of the matrix.**
+
+### Part 4 (±15 min) — change the shared library
+
+This is the interesting part.
+
+```bash
+cd ../ignition-projects
+git switch -c feat/shared-timestamp-util
+```
+
+Add a function to `oatmakers-shared`'s script library. Something both
+`oatmakers` and `oatmakers-packaging` could use.
+
+```bash
+git commit -am "feat: add format_shift_timestamp to oatmakers-shared"
+git push -u origin feat/shared-timestamp-util
+```
+
+Open the PR. Now watch the CI carefully.
+
+- **Observe:** this time, `oatmakers-shared` tests run **and so do
+  `oatmakers` and `oatmakers-packaging` tests**. A change to the parent is a
+  change to every child. CI knows this because they're in one repo and it can
+  see the whole graph.
+- **Observe:** the **impact report** posts on the PR. It statically scans
+  every project for call sites of anything you touched. Read it. This is the
+  thing that answers "I cannot possibly know what I just broke."
+
+Merge and tag:
+
+```bash
+git switch main && git pull
+git tag oatmakers-shared@v1.10.0
+git push origin oatmakers-shared@v1.10.0
+```
+
+Deploy to dev. In `gateways/dev/gw-dev/release.yaml`:
+
+```diff
+-  oatmakers-shared:    v1.9.2
++  oatmakers-shared:    v1.10.0
+   oatmakers:           v2.0.1
+```
+
+- **Observe the deploy ordering.** The parent must land before its children.
+  Watch the pipeline topologically sort and deploy `oatmakers-shared` first.
+  If it deployed `oatmakers` first, `oatmakers` would briefly reference a
+  library that isn't there.
+- **Observe what you did NOT have to do:** you did not bump `oatmakers` or
+  `oatmakers-packaging`. Their versions are unchanged. The library moved;
+  they didn't. Independent version sequences.
+
+And note: this deploy **passed** the manifest check, even though
+`oatmakers@v2.0.1` was built against `v1.9.2`. A compatible **minor** bump
+(v1.9.2 → v1.10.0) is allowed. Semver doing its job.
+
+**Now break it.** Ask your instructor for the breaking
+`oatmakers-shared@v2.0.0` tag, and try to pair it with `oatmakers@v2.0.1` on
+`gw-oatmakers-01`:
+
+```
+✗ gw-oatmakers-01
+  oatmakers@v2.0.1 was built against oatmakers-shared@v1.9.2
+  gateway declares oatmakers-shared@v2.0.0
+  Major version mismatch. This combination has never been tested.
+```
+
+**This is the payoff for the manifest.** The artifact remembered what it was
+built against, and the pipeline refused to ship a combination nobody has
+ever run. Without this, that deploy succeeds and breaks at 2am.
 
 ---
 
 ## Definition of done
 
-1. **Part 1:** `ARCHITECTURE.md` merged, five sections filled, both hard
-   constraints answered in writing.
-2. **Part 2:** complete `releases/` folder (every gateway in scope has a
-   file, the parent pinned in each at one `oatmakers-shared` version across
-   prod, dev is unpinned, `rollout.yaml` has three waves) and two merged,
-   reviewed promotion PRs.
-3. **Part 3:** `TAGS.md` merged and it survived both incidents in review.
+1. **Part 1:** you can read the matrix and name the three independent version
+   streams in one repo.
+2. **Part 2:** a merged PR, the tag `oatmakers@v2.0.1`, one published
+   artifact whose manifest records `requires: oatmakers-shared v1.9.2` — and
+   **nothing deployed**.
+3. **Part 3:** v2.0.1 live on dev, test and gw-oatmakers-01 through three
+   one-line PRs; the prod PR carries a second approval; gw-oatmakers-02 still
+   runs v2.0.0 and `matrix.py` shows the drift.
+4. **Part 4:** `oatmakers-shared@v1.10.0` live on dev, deployed **before**
+   its children, with the children's versions untouched — and the
+   major-version deploy **refused** by the manifest check, with you able to
+   explain the error message line by line.
 
 ## Stretch (optional)
 
-1. **All eight sites, plus disaster recovery.** Extend `releases/prod/` to
-   the full fleet and add `gw-dr.yaml`. Decide which wave DR belongs in, and
-   whether it should lag prod on purpose. Write the answer into
-   `rollout.yaml` as a comment.
-2. **The vendor's release file.** Add the palletizer project to the site 2
-   and site 7 release files with the vendor's own version numbers. Decide
-   whether the vendor may open promotion PRs in your releases repo, or hands
-   versions over another way. Write the rule into `ARCHITECTURE.md`.
-3. **Cut the tags for real.** In your design repo, create the prefixed tags
-   your release files reference: `git tag oatmakers@v2.0.0`,
-   `git tag oatmakers@v2.0.1`, `git tag oatmakers-shared@v1.9.2`. Then add
-   one sentence to `ARCHITECTURE.md`: what does CI do with the prefix?
-   (From the teaching: parse it, build only that project's folder, publish
-   one artifact.)
-4. **Sketch the submodule.** In `ARCHITECTURE.md`, sketch what changes if
-   `oatmakers-shared` becomes a git submodule in a repo-per-site layout:
-   which repos contain it, what the pinned commit means, and what a library
-   upgrade looks like as PRs. No commands needed — it's the shape that
-   matters.
+1. **Finish the rollout.** Promote v2.0.1 to `gw-oatmakers-02`, and read
+   `rollout.yaml`: write one sentence in the PR on why gw-01 went first.
+2. **Roll back.** `git revert` the gw-oatmakers-01 deploy PR and watch the
+   pipeline put v2.0.0 back. Nobody logs into a gateway; the file is the
+   state.
+3. **Read the plan like an operator.** Open any merged deploy PR and
+   reconstruct from its plan + logs exactly what changed, where, when, and
+   who approved it. That's your audit trail — no archaeology.
 
 ## Debrief
 
 Bring answers:
 
-- Which repository layout did your room choose, and where did you disagree?
-- What belongs in a release file that we didn't include — modules, a config
-  version, migrations?
-- Who is the master of tags at **your** plant today, and does anything
-  enforce it?
+- The seam between the two repos is a version string. What else at your plant
+  currently crosses that seam, and should it?
+- Who at your plant should be able to merge in `ignition-gateways`? Is it the
+  same list as `ignition-projects`?
+- Where would the vendor from the teaching fit: which repo, which paths,
+  which approvals?
+- Who is the master of tags at your plant today (teaching Part 4), and does
+  anything enforce it?
 - And the course-closing question: **what will you build first, back at your
   own plant?**
