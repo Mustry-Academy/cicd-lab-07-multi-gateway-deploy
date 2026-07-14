@@ -8,6 +8,8 @@
 #   caddy       ports 80 + 443     TLS termination (auto Let's Encrypt),
 #                                  reverse proxy to the gateway
 #   ignition    no published port  the gateway itself, only reachable via caddy
+#   postgres    no published port  the course database: the lab's referenced-
+#                                  secret DB connection, migrations, tag history
 #   runner      no ports           GitHub Actions self-hosted runner, applies
 #                                  changes to this stack
 #
@@ -93,6 +95,48 @@ services:
     networks:
       - default
 
+  # The course database for Lab 07's Part 2 challenges: the gateway's DB
+  # connection authenticates with the file-based secrets below (the same
+  # values live as GitHub Actions secrets POSTGRES_USERNAME /
+  # POSTGRES_PASSWORD — the Deploy workflow materializes them for the
+  # gateway's file secret provider and runs the db-migration pairs against
+  # this container before every ship). No ports: — see IRON RULE above; the
+  # gateway, the runner and migrate containers reach it on the compose
+  # network as `postgres` or `cicd-capstone-postgres`.
+  postgres:
+    image: postgres:17.5
+    container_name: cicd-capstone-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ignition
+      # Username and password come in as FILES, not env vars — rung 2 of the
+      # Lab 07 secrets ladder; `docker inspect` shows nothing.
+      POSTGRES_USER_FILE: /run/secrets/postgres_username
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
+      TZ: "Europe/Brussels"
+    secrets:
+      - postgres_username
+      - postgres_password
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      # pg_isready only checks that the server answers; $$ keeps compose from
+      # interpolating the shell substitution.
+      test: ["CMD-SHELL", "pg_isready -U \"$$(cat /run/secrets/postgres_username)\" -d ignition"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+        reservations:
+          memory: 256M
+    logging: *logging
+    networks:
+      - default
+
   # Applies this repo to the server: deploy-capstone.yml runs on this runner
   # and does `git pull` at /opt/cicd-lab-07 + `docker compose up -d` in its
   # capstone/ dir (the clone is bind-mounted below at the SAME path, so
@@ -149,9 +193,14 @@ services:
 secrets:
   gateway_admin_password:
     file: ./secrets/gateway_admin_password.txt
+  postgres_username:
+    file: ./secrets/postgres_username.txt
+  postgres_password:
+    file: ./secrets/postgres_password.txt
 
 volumes:
   gateway-data:
   caddy-data:
   caddy-config:
   runner-state:
+  postgres-data:

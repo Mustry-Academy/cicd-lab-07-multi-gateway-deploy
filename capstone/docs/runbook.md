@@ -20,6 +20,12 @@ Then: watch `docker compose logs -f caddy` until the certificate is issued,
 check the runner appears under the repo's Settings -> Actions -> Runners, and
 open https://cloud.mustrysolutions.com.
 
+One credential lives in two homes: the postgres username/password that
+`setup.sh` generated must also be set as GitHub Actions secrets
+(`POSTGRES_USERNAME` / `POSTGRES_PASSWORD`) — the lab's Deploy workflow
+materializes them for the gateway's file secret provider and runs migrations
+with them. Commands in `secrets/README.md`.
+
 Rebuild-after-loss is the same, plus a gwbk restore (§7) and license
 re-activation (§8).
 
@@ -81,7 +87,8 @@ Nightly cron (root):
 10 3 * * * /opt/cicd-lab-07/capstone/scripts/backup.sh >> /var/log/cicd-capstone-backup.log 2>&1
 ```
 
-Drops a `.gwbk` in `/opt/cicd-lab-07/capstone/backups/`, keeps the newest 14
+Drops a `.gwbk` **and** a gzipped `pg_dump` of the course database in
+`/opt/cicd-lab-07/capstone/backups/`, keeps the newest 14 of each
 (`gwcmd.sh -b`, verified working on the 8.3.7 image).
 Off-server copies: pull one down whenever you touch the box —
 `scp root@cloud.mustrysolutions.com:/opt/cicd-lab-07/capstone/backups/<latest>.gwbk ~/backups/`.
@@ -97,6 +104,15 @@ docker compose up -d ignition
 
 (The image's `-r` flag restores on start. Verify the gateway comes up, then
 check licensing — a restore onto a fresh volume needs re-activation, §8.)
+
+Course database, from the nightly dump (fresh volumes re-run initdb from the
+secret files, so credentials come back by themselves; migrations' ledger is
+in the dump):
+
+```bash
+gunzip -c backups/cicd-capstone-db-<stamp>.sql.gz | docker exec -i cicd-capstone-postgres \
+  sh -c 'psql -U "$(cat /run/secrets/postgres_username)" ignition'
+```
 
 ## 8. Licensing
 
