@@ -1,0 +1,80 @@
+{
+  "custom": {},
+  "params": {},
+  "props": {
+    "defaultSize": {
+      "height": 600,
+      "width": 1000
+    }
+  },
+  "root": {
+    "children": [
+      {
+        "meta": {
+          "name": "Eyebrow"
+        },
+        "position": {
+          "basis": "auto",
+          "shrink": 0
+        },
+        "props": {
+          "style": {
+            "color": "#2563eb",
+            "fontSize": "12px",
+            "fontWeight": 700,
+            "letterSpacing": "2px",
+            "textTransform": "uppercase"
+          },
+          "text": "OATMAKERS · SITE 7"
+        },
+        "type": "ia.display.label"
+      },
+      {
+        "meta": {
+          "name": "Title"
+        },
+        "position": {
+          "basis": "auto",
+          "shrink": 0
+        },
+        "props": {
+          "style": {
+            "color": "#15233a",
+            "fontSize": "34px",
+            "fontWeight": 800,
+            "marginTop": "8px"
+          },
+          "text": "Shared production project"
+        },
+        "type": "ia.display.label"
+      },
+      {
+        "meta": {
+          "name": "Subtitle"
+        },
+        "position": {
+          "basis": "auto",
+          "shrink": 0
+        },
+        "props": {
+          "style": {
+            "color": "#5a6a7e",
+            "fontSize": "15px",
+            "marginTop": "10px"
+          },
+          "text": "Deployed by release.yaml — your Part 2 challenge lands in this project."
+        },
+        "type": "ia.display.label"
+      }
+    ],
+    "meta": {
+      "name": "root"
+    },
+    "props": {
+      "alignItems": "center",
+      "direction": "column",
+      "justify": "center"
+    },
+    "type": "ia.container.flex"
+  }
+}

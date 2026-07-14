@@ -1,0 +1,79 @@
+{
+  "_comment": "ign-lint rules for the lab Perspective views. Component min_length is 1: this lab ships dense KPI/status tiles whose leaf label/value/unit components use single-character names (L, V, U, S) by design. All other rules match the course standard. Docs: https://bw-design-group.github.io/ignition-lint",
+  "NamePatternRule": {
+    "enabled": true,
+    "kwargs": {
+      "node_type_specific_rules": {
+        "component": {
+          "convention": "PascalCase",
+          "min_length": 1,
+          "severity": "error"
+        },
+        "property": {
+          "convention": "camelCase",
+          "min_length": 1,
+          "severity": "warning"
+        },
+        "message_handler": {
+          "convention": "kebab-case",
+          "min_length": 2,
+          "severity": "warning"
+        },
+        "custom_method": {
+          "convention": "snake_case",
+          "min_length": 2,
+          "severity": "error"
+        }
+      }
+    }
+  },
+  "PollingIntervalRule": {
+    "enabled": true,
+    "kwargs": {
+      "minimum_interval": 1000
+    }
+  },
+  "PylintScriptRule": {
+    "enabled": true,
+    "kwargs": {
+      "pylintrc": null,
+      "debug": false,
+      "debug_dir": ".ignition-lint/debug/",
+      "batch_mode": false,
+      "category_mapping": {
+        "F": "error",
+        "E": "error",
+        "W": "warning",
+        "C": "warning",
+        "R": "warning"
+      }
+    }
+  },
+  "BadComponentReferenceRule": {
+    "enabled": true,
+    "kwargs": {
+      "severity": "error"
+    }
+  },
+  "ComponentReferenceValidationRule": {
+    "enabled": true,
+    "kwargs": {
+      "validate_expressions": true,
+      "validate_property_bindings": true,
+      "validate_scripts": true
+    }
+  },
+  "UnusedCustomPropertiesRule": {
+    "enabled": true,
+    "kwargs": {}
+  },
+  "ExcessiveContextDataRule": {
+    "enabled": true,
+    "kwargs": {
+      "max_array_size": 50,
+      "max_sibling_properties": 50,
+      "max_nesting_depth": 5,
+      "max_data_points": 1000
+    }
+  }
+}

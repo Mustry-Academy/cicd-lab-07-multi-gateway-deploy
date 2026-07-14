@@ -1,0 +1,59 @@
+{
+  "custom": {},
+  "params": {},
+  "props": {
+    "defaultSize": {
+      "height": 600,
+      "width": 1000
+    }
+  },
+  "root": {
+    "children": [
+      {
+        "meta": {
+          "name": "Name"
+        },
+        "position": {
+          "basis": "auto",
+          "shrink": 0
+        },
+        "props": {
+          "style": {
+            "color": "#15233a",
+            "fontSize": "40px",
+            "fontWeight": 800
+          },
+          "text": "YOUR NAME HERE"
+        },
+        "type": "ia.display.label"
+      },
+      {
+        "meta": {
+          "name": "Subtitle"
+        },
+        "position": {
+          "basis": "auto",
+          "shrink": 0
+        },
+        "props": {
+          "style": {
+            "color": "#5a6a7e",
+            "fontSize": "15px",
+            "marginTop": "10px"
+          },
+          "text": "Shipped through a PR, a tag and a release.yaml line."
+        },
+        "type": "ia.display.label"
+      }
+    ],
+    "meta": {
+      "name": "root"
+    },
+    "props": {
+      "alignItems": "center",
+      "direction": "column",
+      "justify": "center"
+    },
+    "type": "ia.container.flex"
+  }
+}
