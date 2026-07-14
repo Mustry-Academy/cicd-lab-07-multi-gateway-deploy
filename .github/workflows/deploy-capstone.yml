@@ -1,0 +1,71 @@
+# GitOps apply: push to main -> this runs ON the server (self-hosted runner
+# inside the stack it manages) -> the server converges on what main says.
+#
+# Note the shape: no actions/checkout into the runner workspace. The stack
+# lives in /opt/cicd-lab-07/capstone (a git clone, bind-mounted into the runner at
+# the same path so compose's relative bind mounts resolve identically for the
+# host daemon). Deploying = fast-forwarding that clone to main and letting
+# compose reconcile. Rollback = `git revert` + push; this same workflow
+# applies the revert.
+#
+# Self-recreation caveat: if a push changes the RUNNER's own service config,
+# `compose up -d` recreates the runner mid-job and the job dies with an
+# "runner lost communication" error AFTER the change is applied. Expected;
+# re-run the workflow to get a green check if you care about the badge.
+
+name: deploy-capstone
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "capstone/**"
+      - ".github/workflows/deploy-capstone.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-cicd-capstone
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+env:
+  CLONE_DIR: /opt/cicd-lab-07
+  STACK_DIR: /opt/cicd-lab-07/capstone
+  PUBLIC_URL: https://cloud.mustrysolutions.com
+
+jobs:
+  deploy:
+    runs-on: [self-hosted, cicd-capstone]
+    timeout-minutes: 20
+    steps:
+      - name: Fast-forward the server clone to main
+        run: |
+          # The clone is bind-mounted from the host (root-owned); the runner's
+          # git refuses "dubious ownership" without this.
+          git config --global --add safe.directory "$CLONE_DIR"
+          git -C "$CLONE_DIR" fetch "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" main
+          git -C "$CLONE_DIR" merge --ff-only FETCH_HEAD
+          echo "Now at: $(git -C "$CLONE_DIR" log -1 --oneline)"
+
+      - name: Validate compose file before touching anything
+        run: docker compose -f "$STACK_DIR/docker-compose.yaml" config -q
+
+      - name: Reconcile the stack
+        run: |
+          cd "$STACK_DIR"
+          docker compose pull -q
+          docker compose up -d --remove-orphans
+
+      - name: Smoke check — gateway answers through caddy on the public URL
+        run: |
+          for i in $(seq 1 30); do
+            if curl -fsS --max-time 5 "$PUBLIC_URL/StatusPing" | grep -q RUNNING; then
+              echo "Gateway RUNNING behind $PUBLIC_URL"
+              exit 0
+            fi
+            echo "waiting ($i/30)…"; sleep 10
+          done
+          echo "Gateway did not come up within 5 minutes" >&2
+          exit 1

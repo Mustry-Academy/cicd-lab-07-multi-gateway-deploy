@@ -1,0 +1,11 @@
+# Server-local runtime values — never committed
+.env
+
+# Real secrets — only the .example files ship
+secrets/*
+!secrets/*.example
+!secrets/README.md
+
+# Nightly gateway backups land here on the server
+backups/*
+!backups/.gitkeep

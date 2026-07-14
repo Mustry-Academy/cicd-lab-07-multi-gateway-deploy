@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+# First bring-up of the cicd-capstone stack ON THE SERVER. Run once; after
+# this, all changes flow through git (push to main -> deploy.yml).
+#
+# The one thing GitOps cannot do is deploy the deployer — this script is that
+# bootstrap. Preconditions it checks rather than assumes:
+#   - running from /opt/cicd-lab-07/capstone (a clone of this repo)
+#   - .env exists (copy .env.example, set RUNNER_GITHUB_PAT or RUNNER_TOKEN)
+#   - real secret files exist under secrets/
+set -euo pipefail
+cd "$(dirname "$0")/.."
+
+STACK_DIR_EXPECTED=/opt/cicd-lab-07/capstone
+[ "$(pwd)" = "$STACK_DIR_EXPECTED" ] || {
+  echo "Run from $STACK_DIR_EXPECTED (the runner bind-mounts that exact path); you are in $(pwd)" >&2
+  exit 1
+}
+
+[ -f .env ] || { echo "No .env — cp .env.example .env and fill it in." >&2; exit 1; }
+
+if [ ! -s secrets/gateway_admin_password.txt ]; then
+  echo "Generating secrets/gateway_admin_password.txt"
+  openssl rand -base64 24 > secrets/gateway_admin_password.txt
+fi
+# Owned by the in-container ignition user (uid 2003), mode 400: compose
+# bind-mounts secret files as-is, and the gateway must be able to read it
+# (root-owned 600 = AccessDeniedException at commissioning).
+chmod 400 secrets/*.txt
+chown 2003:2003 secrets/*.txt
+
+# Runner needs one of the two auth paths (see .env.example).
+if ! grep -qE '^(RUNNER_GITHUB_PAT|RUNNER_TOKEN)=.+' .env; then
+  echo "Set RUNNER_GITHUB_PAT (preferred) or a fresh RUNNER_TOKEN in .env." >&2
+  echo "Mint a token from a laptop with:" >&2
+  echo "  gh api -X POST repos/Mustry-Academy/cicd-lab-07-multi-gateway-deploy/actions/runners/registration-token --jq .token" >&2
+  exit 1
+fi
+
+# The gateway container runs as the ignition user (uid 2003) and must be able
+# to write nightly backups into ./backups.
+mkdir -p backups
+chown 2003:2003 backups
+
+docker compose config -q
+docker compose up -d
+
+echo
+echo "Stack starting. Watch it with: docker compose ps ; docker compose logs -f"
+echo "Gateway (via caddy, once the cert is issued): https://cloud.mustrysolutions.com"
+echo "Runner registration: check https://github.com/Mustry-Academy/cicd-lab-07-multi-gateway-deploy/settings/actions/runners"

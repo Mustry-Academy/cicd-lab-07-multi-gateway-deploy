@@ -1,0 +1,157 @@
+# Mustry Academy — cicd-capstone gateway (cloud.mustrysolutions.com)
+#
+# The shared, licensed Ignition gateway that course participants deploy to in
+# the capstone of the CI/CD for Ignition Masterclass. This repo is the single
+# source of truth for everything running on the server: push to main and the
+# on-server runner applies this file (see .github/workflows/deploy-capstone.yml).
+#
+#   caddy       ports 80 + 443     TLS termination (auto Let's Encrypt),
+#                                  reverse proxy to the gateway
+#   ignition    no published port  the gateway itself, only reachable via caddy
+#   runner      no ports           GitHub Actions self-hosted runner, applies
+#                                  changes to this stack
+#
+# IRON RULE: no service other than caddy may publish a port. Docker's published
+# ports bypass UFW (Docker writes its own iptables rules ahead of ufw's), so
+# the firewall model of this server is exactly "published ports == caddy's
+# 80/443, everything else binds nowhere or to 127.0.0.1".
+#
+# Secrets never live in this file. Runtime values come from .env (gitignored,
+# see .env.example) and from file-based Docker secrets under ./secrets/
+# (gitignored, see secrets/*.example) — the same ladder Lab 07 teaches.
+
+name: cicd-capstone
+
+services:
+  caddy:
+    image: caddy:2.11.4
+    container_name: cicd-capstone-caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data        # certificates + ACME account — must persist
+      - caddy-config:/config
+    logging: &logging
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - default
+
+  ignition:
+    # Pin deliberately; upgrade = bump this tag in a PR, merge, done (the
+    # deploy workflow pulls and recreates). Latest 8.3 patch on purpose — this
+    # box has a public IP, so security patches beat lockstep with the labs
+    # (which run 8.3.6; projects are compatible within 8.3).
+    image: inductiveautomation/ignition:8.3.7
+    container_name: cicd-capstone-gateway
+    hostname: cicd-capstone-gateway
+    restart: unless-stopped
+    # No ports: — see IRON RULE above. Caddy reaches it on the compose network.
+    volumes:
+      - gateway-data:/usr/local/bin/ignition/data
+      - ./backups:/backups   # nightly gwbk drops (scripts/backup.sh), rotated
+    environment:
+      ACCEPT_IGNITION_EULA: "Y"
+      IGNITION_EDITION: standard
+      TZ: "Europe/Brussels"
+      # First-boot commissioning (ignored once the gateway is commissioned).
+      # Password comes in as a FILE, not an env var — `docker inspect` shows
+      # nothing (rung 2 of the Lab 07 secrets ladder).
+      GATEWAY_ADMIN_USERNAME: "${GATEWAY_ADMIN_USERNAME:-admin}"
+      GATEWAY_ADMIN_PASSWORD_FILE: /run/secrets/gateway_admin_password
+      # Behind a TLS-terminating proxy the gateway must advertise its PUBLIC
+      # address, or redirects and Designer launch links point at the
+      # unreachable internal 8088.
+      GATEWAY_PUBLIC_ADDRESS: cloud.mustrysolutions.com
+      GATEWAY_PUBLIC_HTTP_PORT: "80"
+      GATEWAY_PUBLIC_HTTPS_PORT: "443"
+    secrets:
+      - gateway_admin_password
+    command: >
+      -n cicd-capstone
+      -m 2048
+      --
+      wrapper.java.initmemory=512
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8088/StatusPing"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 90s
+    deploy:
+      resources:
+        limits:
+          memory: 3G
+        reservations:
+          memory: 1G
+    logging: *logging
+    networks:
+      - default
+
+  # Applies this repo to the server: deploy-capstone.yml runs on this runner
+  # and does `git pull` at /opt/cicd-lab-07 + `docker compose up -d` in its
+  # capstone/ dir (the clone is bind-mounted below at the SAME path, so
+  # compose's relative bind mounts resolve identically for the host daemon). The docker socket makes this runner
+  # root-equivalent on the host. This repo is PUBLIC, so that runner scope is
+  # a deliberate, documented risk: see docs/security-model.md §4 for the
+  # mitigations (push-to-main-only trigger, fork-PR approval gate, and the
+  # iron rule that no pull_request workflow may ever use these labels).
+  github-runner:
+    image: myoung34/github-runner:latest
+    container_name: cicd-capstone-runner
+    hostname: cicd-capstone-runner
+    restart: unless-stopped
+    environment:
+      REPO_URL: "https://github.com/Mustry-Academy/cicd-lab-07-multi-gateway-deploy"
+      # Preferred: fine-grained PAT scoped to ONLY this repo → the
+      # runner self-registers on every (re)start, unattended forever.
+      # Fallback: a short-lived registration token (gh-minted, 1 h) in
+      # RUNNER_TOKEN — fine for bootstrap, but a recreated container needs a
+      # fresh one. The image prefers ACCESS_TOKEN when both are set.
+      ACCESS_TOKEN: "${RUNNER_GITHUB_PAT:-}"
+      RUNNER_TOKEN: "${RUNNER_TOKEN:-}"
+      RUNNER_NAME: "${RUNNER_NAME:-cicd-capstone-runner}"
+      RUNNER_SCOPE: repo
+      LABELS: "self-hosted,cicd-capstone"
+      # No EPHEMERAL on purpose: the image treats ANY non-empty value (even
+      # "false") as "enable --ephemeral". Leave unset for a persistent runner.
+      DISABLE_AUTO_UPDATE: "true"
+      # Persist the registration across container recreation. Without this,
+      # every recreate needs a fresh registration credential — and a deploy
+      # that recreates the runner would strand it (single-use RUNNER_TOKEN
+      # already consumed). Learned the hard way on first bring-up.
+      CONFIGURED_ACTIONS_RUNNER_FILES_DIR: /runner-state
+      # Required with state reuse: without it the entrypoint deregisters on
+      # TERM, poisoning the persisted state for the next start.
+      DISABLE_AUTOMATIC_DEREGISTRATION: "true"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /opt/cicd-lab-07:/opt/cicd-lab-07
+      - runner-state:/runner-state
+      # Use the HOST's compose plugin (static Go binary), not the image's
+      # bundled one. Compose versions hash service configs differently; a
+      # version mismatch makes `compose up -d` from a deploy job see EVERY
+      # service as changed and recreate the whole stack (first bring-up did
+      # exactly that: host 5.2.0 vs bundled 2.35.1 -> gateway+caddy torn
+      # down, runner killed its own job). Same binary everywhere = reconcile
+      # only what actually changed. (Only the plugin: the host's docker CLI
+      # itself needs a newer glibc than this image has.)
+      - /usr/libexec/docker/cli-plugins/docker-compose:/usr/libexec/docker/cli-plugins/docker-compose:ro
+    logging: *logging
+    networks:
+      - default
+
+secrets:
+  gateway_admin_password:
+    file: ./secrets/gateway_admin_password.txt
+
+volumes:
+  gateway-data:
+  caddy-data:
+  caddy-config:
+  runner-state:

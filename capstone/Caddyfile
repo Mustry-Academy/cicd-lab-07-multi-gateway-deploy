@@ -1,0 +1,13 @@
+# Caddy fronts the gateway: terminates TLS on 443 with an auto-provisioned,
+# auto-renewed Let's Encrypt certificate, redirects 80 -> 443, and proxies
+# everything (websockets included — Perspective and Designer need them) to the
+# gateway's internal 8088. The gateway itself publishes no ports.
+
+{
+	email sam.donche@mustrysolutions.com
+}
+
+cloud.mustrysolutions.com {
+	encode gzip
+	reverse_proxy ignition:8088
+}
