@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Lab 07 Assignment: Run the two-repo pipeline end to end: ship, promote and guard a release</title>
+<title>Lab 07 Assignment: Contribute to the shared production repo and bring your work live</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -153,7 +153,7 @@ body{
 .pcard p{font-size:12.5px;color:var(--txt-dim);line-height:1.5;margin-top:8px}
 .pcard .gate{font-family:'IBM Plex Mono';font-size:10.5px;color:var(--blue);font-weight:600;margin-top:12px}
 
-/* the two-repo model panels */
+/* challenge / model panels */
 .does{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px 22px;box-shadow:var(--shadow)}
 .does .hd{font-family:'IBM Plex Mono';font-size:13px;font-weight:700;color:var(--blue-d);margin-bottom:4px}
 .does .q{font-size:17px;font-weight:800;letter-spacing:-.3px;margin-bottom:10px}
@@ -162,6 +162,14 @@ body{
 .does li .d{flex:none;width:7px;height:7px;border-radius:50%;background:var(--blue);margin-top:7px}
 .does li b{color:var(--txt)}
 .does li code{font-family:'IBM Plex Mono';font-size:12.5px;color:var(--blue-d)}
+
+/* comparison / owner table */
+.tbl{width:100%;border-collapse:separate;border-spacing:0;background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:var(--shadow);margin-top:8px}
+.tbl th{font-size:11.5px;letter-spacing:.6px;text-transform:uppercase;color:var(--txt-faint);text-align:left;padding:12px 16px;border-bottom:1px solid var(--line);background:var(--panel2)}
+.tbl td{font-size:13px;color:var(--txt-dim);padding:11px 16px;border-bottom:1px solid var(--line);line-height:1.45;vertical-align:top}
+.tbl tr:last-child td{border-bottom:none}
+.tbl td b{color:var(--txt)}
+.tbl td code{font-family:'IBM Plex Mono';font-size:11.5px;color:var(--blue-d)}
 
 /* two-column for parts */
 .cols2{display:grid;grid-template-columns:1fr 1fr;gap:28px}
@@ -189,10 +197,10 @@ body{
   </div>
   <div class="cover">
     <div class="eyebrow">The assignment · breakout rooms · ±75 min</div>
-    <div class="big">Run the two-repo pipeline end to end: ship, promote and <em>guard</em> a release</div>
-    <div class="sub">One exercise, four parts, two repos we set up for you. You read the fleet's state, fix one project and tag it, deploy the fix by pull request through dev, test and one production gateway, then change the shared parent project and watch the pipeline refuse to ship a combination nobody has ever tested. The pipelines are already written: you will not write CI today, you will use it and watch what it does.</div>
+    <div class="big">Contribute to the shared production repo and bring your work <em>live</em></div>
+    <div class="sub">For once, you will not fork our repo. Everyone works as a contributor on one locked-down repository, and every approved merge deploys straight to a real production gateway on the internet. Three parts: bring a project with your own name live, then land one of five team challenges on the shared oatmakers project, then build on each other's work. Real reviews, real deploys, real merge conflicts.</div>
     <div class="for">
-      <span>Floating to help</span>
+      <span>Reviewing your PRs</span>
       <span class="pill"><b>Sam</b></span>
       <span class="pill"><b>Jasper</b></span>
       <span>·</span>
@@ -209,21 +217,23 @@ body{
     <div class="stage">The assignment · ground rules</div>
   </div>
   <div class="body">
-    <div class="sechead"><span class="num">READ FIRST</span><div><div class="title">How this works</div></div></div>
-    <ul class="checks" style="max-width:960px">
-      <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span><b>Two repos, already set up for you.</b> <span class="inlinecode">ignition-projects</span> holds the three Ignition projects (<span class="inlinecode">oatmakers-shared</span> is the inheritable parent). <span class="inlinecode">ignition-gateways</span> holds one <span class="inlinecode">release.yaml</span> per gateway: the desired state of the fleet.</span></li>
-      <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span><b>The pipelines are already written.</b> You will not write CI today. You will <b>use</b> it, and watch what it does. The "Observe" boxes on these slides are the actual exercise: stop and read what CI did before moving on.</span></li>
-      <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span><b>Pre-flight:</b> fork both repos with Actions enabled → <span class="inlinecode">cp .env.example .env</span> → <span class="inlinecode">scripts/setup.sh</span> (the four gateways and the runner come up) → <span class="inlinecode">scripts/validate.sh</span> green.</span></li>
-      <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span><b>You need your room-mate:</b> the prod deploy requires a <b>second approver</b>, and that will be them.</span></li>
+    <div class="sechead"><span class="num">READ FIRST</span><div><div class="title">How this works: you are contributors now, and the repo is locked down</div></div></div>
+    <ul class="checks" style="max-width:1020px">
+      <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span><b>We're here to get reps in.</b> Everything from the past four days, on repeat: feature branch, commits, PR, tag, deploy. By the end of the afternoon that loop should feel like muscle memory.</span></li>
+      <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span><b>No fork this time. Welcome to the big league.</b> Accept the contributor invite for <span class="inlinecode">git@github.com:Mustry-Academy/cicd-lab-07-multi-gateway-deploy.git</span>, clone it, and push your branches straight to our repo.</span></li>
+      <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span><b>We locked the repo down, so no funny business.</b> Nothing reaches main without a pull request, green checks and an approval. Yes, we tried pushing to main. It says no, even to us.</span></li>
+      <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span><b>Only <span class="inlinecode">release.yaml</span> decides what gets deployed.</b> And it deploys straight to production: no dev, no test, no net. That's why the lock is on the door.</span></li>
+      <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span><b>Sam or Jasper approves every PR.</b> Two reviewers, five of you: there will be a queue. Small, tidy PRs jump it.</span></li>
+      <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span><b>You deploy to site 7.</b> The deploy workflow runs on that site's runner: <span class="inlinecode">runs-on: [self-hosted, oatmakers-site-7]</span>. Already set up; you never touch the workflows.</span></li>
+      <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span><b>You get admin on our real online gateway:</b> <span class="inlinecode">https://cloud.mustrysolutions.com</span>, login <span class="inlinecode">admin</span> / <span class="inlinecode">MergeIntoMain!</span>. Have a look around before you start, and please be gentle with it: everyone's work lands on this one gateway.</span></li>
       <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span><b>The exercise file is the source of truth:</b> <span class="inlinecode">exercises/lab.md</span> has every command ready to copy. These slides are the map, not the territory.</span></li>
-      <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span><b>Stuck?</b> Re-read the matching teaching slide first, then say so in the room.</span></li>
     </ul>
     <div class="goal good-g">
       <span class="badge">Ask early</span>
       <p>Stuck for more than a couple of minutes? <b>Say so in the room.</b> Don't sit blocked in silence; that's exactly what we're here for.</p>
     </div>
   </div>
-  <div class="foot"><span>Mustry Academy · CI/CD for Ignition</span><span>Part 1 → 2 → 3 → 4</span></div>
+  <div class="foot"><span>Mustry Academy · CI/CD for Ignition</span><span>Part 1 → 2 → 3</span></div>
 </section>
 
 <!-- 3 · MENTAL MODEL -->
@@ -233,37 +243,33 @@ body{
     <div class="stage">The assignment · the mental model</div>
   </div>
   <div class="body">
-    <div class="sechead"><span class="num">MODEL</span><div><div class="title">Two repos, two jobs: the seam between them is a version string</div><div class="lead">Keep this picture in your head for the whole hour. Every part of the exercise is one move across this seam.</div></div></div>
+    <div class="sechead"><span class="num">MODEL</span><div><div class="title">One repository, two jobs: the projects and the release file live together</div><div class="lead">Keep this picture in your head for the whole hour. Every move you make is on one side of it, and the seam between the two sides is still a version string.</div></div></div>
     <div class="cols2">
       <div class="does">
-        <div class="hd">ignition-projects</div>
+        <div class="hd">projects/ + config</div>
         <div class="q">"What have we built?"</div>
         <ul>
-          <li><span class="d"></span><span>You merge, you <b>tag</b>, an artifact is published.</span></li>
-          <li><span class="d"></span><span>The tag prefix (<code>oatmakers@v2.0.1</code>) decides <b>which project</b> builds.</span></li>
-          <li><span class="d"></span><span>This repo <b>does not know gateways exist</b>.</span></li>
+          <li><span class="d"></span><span>Everything the gateway runs lives here: the <b>projects</b> and the <b>config</b>, which includes the Ignition tags.</span></li>
+          <li><span class="d"></span><span>A git tag like <code>wout@v1.0.0</code> marks a <b>version</b>: a point in history you can deploy. Nothing gets compiled; the deploy ships the files as they are at that tag.</span></li>
+          <li><span class="d"></span><span>A tag that was never pushed is a release that <b>does not exist</b>.</span></li>
         </ul>
       </div>
       <div class="does">
-        <div class="hd" style="color:var(--teal)">ignition-gateways</div>
-        <div class="q">"What is actually running, right now, where?"</div>
+        <div class="hd" style="color:var(--teal)">release.yaml</div>
+        <div class="q">"What runs on production, right now?"</div>
         <ul>
-          <li><span class="d" style="background:var(--teal)"></span><span>One <code>release.yaml</code> per gateway: the <b>desired state</b>.</span></li>
-          <li><span class="d" style="background:var(--teal)"></span><span>You change a version number in a YAML file, and <b>a deploy happens</b>.</span></li>
-          <li><span class="d" style="background:var(--teal)"></span><span>Environments are <b>directories on main</b>, not branches.</span></li>
+          <li><span class="d" style="background:var(--teal)"></span><span>One file, one production gateway: <b>site 7</b>, the desired state.</span></li>
+          <li><span class="d" style="background:var(--teal)"></span><span>You change a version number, and <b>a deploy happens</b>.</span></li>
+          <li><span class="d" style="background:var(--teal)"></span><span>Nothing deploys any other way: <b>the file is the only trigger</b>.</span></li>
         </ul>
       </div>
     </div>
     <div class="goal" style="margin-top:20px">
-      <span class="badge">The seam</span>
-      <p>The seam between the two repos is a <b>version string</b>. That's it. Nothing else crosses.</p>
-    </div>
-    <div class="goal bad-g" style="margin-top:12px">
-      <span class="badge">Source of truth</span>
-      <p><b>The gateway is not the source of truth. The YAML file is.</b> If they disagree, the YAML file is right and the gateway is wrong, and the drift detector will say so.</p>
+      <span class="badge">One repo, by choice</span>
+      <p>In the teaching you saw <b>option B</b>: split the infra part (release files, gateway config) into its own repo, owned by another team. Both are valid. One repo keeps this lab small, and the seam between the two jobs is still a version string.</p>
     </div>
   </div>
-  <div class="foot"><span>Mustry Academy · CI/CD for Ignition</span><span>build side · run side · one version string between them</span></div>
+  <div class="foot"><span>Mustry Academy · CI/CD for Ignition</span><span>what we built · what runs · one version string between them</span></div>
 </section>
 
 <!-- 4 · THE PLAN -->
@@ -273,319 +279,267 @@ body{
     <div class="stage">The assignment · the plan</div>
   </div>
   <div class="body">
-    <div class="sechead"><span class="num">THE PLAN</span><div><div class="title">One exercise in four parts: the same change travels the whole pipeline</div><div class="lead">Each part hands the next one its state. Do them in order; the timings are generous.</div></div></div>
-    <div class="pmap">
+    <div class="sechead"><span class="num">THE PLAN</span><div><div class="title">Three parts: your project live, five team challenges, then build on each other</div><div class="lead">Part 1 is everyone alone. Parts 2 and 3 are five people on one project, one version stream and one production gateway.</div></div></div>
+    <div class="pmap" style="grid-template-columns:repeat(3,1fr)">
       <div class="pcard p1">
-        <div class="pn">PART 1 · ±10 MIN</div>
-        <h4>See the current state</h4>
-        <p>Clone both repos. Read the fleet with <span class="inlinecode">matrix.py</span> and the three independent version streams with <span class="inlinecode">git tag --list</span>.</p>
-        <div class="gate">gate → you can name what runs where</div>
+        <div class="pn">PART 1 · ±20 MIN</div>
+        <h4>Create your project and bring it live</h4>
+        <p>Add <span class="inlinecode">projects/&lt;yourname&gt;/</span> by PR, tag <span class="inlinecode">&lt;yourname&gt;@v1.0.0</span>, pin it in <span class="inlinecode">release.yaml</span>, watch the action deploy it to site 7.</p>
+        <div class="gate">gate → your name live on cloud.mustrysolutions.com</div>
       </div>
       <div class="pcard p2">
-        <div class="pn">PART 2 · ±15 MIN</div>
-        <h4>Ship a change to one project</h4>
-        <p>Fix an alarm label in <span class="inlinecode">oatmakers</span> only. PR, merge, tag <span class="inlinecode">oatmakers@v2.0.1</span>, read the artifact's manifest.</p>
-        <div class="gate">gate → one artifact, nothing deployed</div>
-      </div>
-      <div class="pcard">
-        <div class="pn">PART 3 · ±20 MIN</div>
-        <h4>Deploy it: dev → test → prod</h4>
-        <p>Three one-line PRs in the gateways repo. Read the plan, merge to deploy, stage the prod rollout, watch drift appear in the matrix.</p>
-        <div class="gate">gate → v2.0.1 live on 3 gateways, gw-02 drifting</div>
+        <div class="pn">PART 2 · ±35 MIN</div>
+        <h4>Five challenges on the shared oatmakers project</h4>
+        <p>A module, a JAR, a database with migrations and a secret, live tags from a simulator, and a dashboard on top. Everyone ships their own challenge through review.</p>
+        <div class="gate">gate → your challenge live via oatmakers@v2.0.X</div>
       </div>
       <div class="pcard p4">
-        <div class="pn">PART 4 · ±15 MIN</div>
-        <h4>Change the shared parent</h4>
-        <p>Add a function to <span class="inlinecode">oatmakers-shared</span>. Watch every child get tested, deploy parent-first, then try to ship an untested pair and get refused.</p>
-        <div class="gate">gate → the manifest check blocks the bad deploy</div>
+        <div class="pn">PART 3 · REMAINING TIME</div>
+        <h4>Use each other's work</h4>
+        <p>Store tags in the database, extend the migrations, chart someone else's data. Small fast PRs, and the merge conflicts that come with them.</p>
+        <div class="gate">gate → one PR that builds on someone else's work</div>
       </div>
     </div>
     <div class="goal" style="margin-top:20px">
       <span class="badge">Why this order</span>
-      <p>Part 1 shows you the aligned world you're about to disturb. Part 2 produces a version; Part 3 moves that version through the fleet; Part 4 changes the thing every project depends on, which is where the guardrails earn their keep.</p>
+      <p>Part 1 proves the whole pipeline to you alone: PR, review, tag, release, live. Part 2 puts five people on one project and one version stream, which is where coordination starts to hurt. Part 3 is what real teams do all day: build on work that is still landing.</p>
     </div>
   </div>
-  <div class="foot"><span>Mustry Academy · CI/CD for Ignition</span><span>state → ship → deploy → guard</span></div>
+  <div class="foot"><span>Mustry Academy · CI/CD for Ignition</span><span>your project → your challenge → the team's product</span></div>
 </section>
 
-<!-- 5 · PART 1 -->
+<!-- 5 · PART 1A -->
 <section class="slide">
   <div class="topbar">
     <div class="brandrow"><img class="logo-img" src="logos/OriginalDark.png" alt="Mustry Solutions"></div>
-    <div class="stage">Part 1 · see the current state</div>
+    <div class="stage">Part 1 · your project · A</div>
   </div>
   <div class="body">
-    <div class="sechead"><span class="num">1</span><div><div class="title">Read the fleet's state and the three version streams</div><div class="lead">Before you change anything, learn to read what is running where. Two commands, one grid, one tag list.</div></div></div>
+    <div class="sechead"><span class="num">1A</span><div><div class="title">Create the project with your name and get it through review</div><div class="lead">Clone the shared repo, add a project named after yourself, and take it through the same review gate everything else goes through.</div></div></div>
     <div class="cols2">
       <div class="steps">
-        <div class="step"><div class="ix">1</div><div class="tx"><b>Clone both repos</b> and run the matrix: <span class="inlinecode">cd ignition-gateways</span> → <span class="inlinecode">python .ci/matrix.py</span>. Everything is aligned. Enjoy it, it won't last.</div></div>
-        <div class="step"><div class="ix">2</div><div class="tx"><b>List the tags:</b> <span class="inlinecode">git tag --list</span> in <span class="inlinecode">ignition-projects</span>. Three independent version sequences in one repo: <span class="inlinecode">oatmakers</span> is on v2.0.0 while <span class="inlinecode">oatmakers-packaging</span> is on v1.4.0. They do not move together.</div></div>
-        <div class="step"><div class="ix">3</div><div class="tx"><b>Prove the tag is per project:</b> <span class="inlinecode">git show oatmakers@v2.0.0 --stat</span> and <span class="inlinecode">git log --oneline oatmakers@v1.9.0..oatmakers@v2.0.0 -- projects/oatmakers/</span>. The prefix is what tells CI which project to build.</div></div>
+        <div class="step"><div class="ix">1</div><div class="tx"><b>Accept the invite and clone.</b> No fork: your branches go straight to the shared repo.</div></div>
+        <div class="step"><div class="ix">2</div><div class="tx"><b>Branch and add your project:</b> <span class="inlinecode">projects/&lt;yourname&gt;/</span> with one simple Perspective view that shows your name. The exercise file points at a skeleton you can copy.</div></div>
+        <div class="step"><div class="ix">3</div><div class="tx"><b>Push and open the PR.</b> Watch the checks, then wait for Sam or Jasper to approve. If you get review comments, address them and push again: same PR.</div></div>
+        <div class="step"><div class="ix">4</div><div class="tx"><b>Merge</b> once it's green and approved.</div></div>
       </div>
       <div>
-        <div class="code"><pre><span class="cm">$ python .ci/matrix.py</span>
-                 <span class="cmd2">oatm.-shared  oatmakers  oatm.-packaging</span>
-gw-dev              v1.9.2     v2.0.0      v1.4.0
-gw-test             v1.9.2     v2.0.0      v1.4.0
-gw-oatmakers-01     v1.9.2     v2.0.0      v1.4.0
-gw-oatmakers-02     v1.9.2     v2.0.0      v1.4.0
+        <div class="code"><pre>git clone git@github.com:Mustry-Academy/cicd-lab-07-multi-gateway-deploy.git
+cd cicd-lab-07-multi-gateway-deploy
+git switch -c feature/wout-project
+<span class="cm"># add projects/wout/ with your welcome view …</span>
+git add projects/wout/
+git commit -m <span class="cmd2">"feat: add wout project with welcome view"</span>
+git push -u origin feature/wout-project</pre></div>
+        <div class="obs"><span class="ob">Observe</span><p><b>Only your project's checks run.</b> Path-filtered CI: five people can open five PRs and nobody waits on anyone else's tests.</p></div>
+        <div class="obs"><span class="ob">Observe</span><p><b>Merging deployed nothing.</b> Main means "built and could ship", not "shipped". Your project is not on production yet.</p></div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>Mustry Academy · CI/CD for Ignition</span><span>Part 1 · A of B</span></div>
+</section>
 
-<span class="cm">$ git tag --list</span>
-oatmakers@v1.9.0        oatmakers@<span class="grn">v2.0.0</span>
-oatmakers-packaging@v1.3.0 … @<span class="grn">v1.4.0</span>
-oatmakers-shared@v1.9.0 … @<span class="grn">v1.9.2</span></pre></div>
+<!-- 6 · PART 1B -->
+<section class="slide">
+  <div class="topbar">
+    <div class="brandrow"><img class="logo-img" src="logos/OriginalDark.png" alt="Mustry Solutions"></div>
+    <div class="stage">Part 1 · your project · B</div>
+  </div>
+  <div class="body">
+    <div class="sechead"><span class="num">1B</span><div><div class="title">Tag your release and add your project to release.yaml to deploy it</div><div class="lead">Two moves: make the release exist, then point production at it. In that order, or the deploy has nothing to ship.</div></div></div>
+    <div class="cols2">
+      <div class="steps">
+        <div class="step"><div class="ix">1</div><div class="tx"><b>Tag it:</b> <span class="inlinecode">git switch main</span> → <span class="inlinecode">git pull</span> → <span class="inlinecode">git tag &lt;yourname&gt;@v1.0.0</span> → push the tag. The tag is the release: a named version of your project that <span class="inlinecode">release.yaml</span> can point at. <b>Now the release exists.</b></div></div>
+        <div class="step"><div class="ix">2</div><div class="tx"><b>Pin it:</b> new branch, add one line to <span class="inlinecode">release.yaml</span>: your project at <span class="inlinecode">v1.0.0</span>. PR, approval, merge.</div></div>
+        <div class="step"><div class="ix">3</div><div class="tx"><b>Watch the deploy action</b> pick the job up on the site 7 runner and ship your project to production.</div></div>
+        <div class="step"><div class="ix">4</div><div class="tx"><b>Verify live:</b> open <span class="inlinecode">https://cloud.mustrysolutions.com</span>, log in with <span class="inlinecode">admin</span> / <span class="inlinecode">MergeIntoMain!</span>, find your view.</div></div>
+      </div>
+      <div>
+        <div class="code"><pre><span class="cm"># release.yaml</span>
+ gateway: oatmakers-site-7
+ projects:
+   oatmakers:        v2.0.0
+<span class="grn">+  wout:             v1.0.0</span></pre></div>
+        <div class="obs"><span class="ob">Observe</span><p><b>The deploy checks out your tag and copies your project's files to the gateway.</b> Nothing gets built. And that is why the tag came first: <code>release.yaml</code> can only point at versions that exist.</p></div>
+        <div class="obs"><span class="ob">Observe</span><p><b>The runner label routes the deploy:</b> <code>runs-on: [self-hosted, oatmakers-site-7]</code>. Same repo, but only site 7's runner picks this job up. More sites would mean more labels, not more pipelines.</p></div>
+      </div>
+    </div>
+    <div class="goal" style="margin-top:16px">
+      <span class="badge">✅ Part 1 gate</span>
+      <p><b>Your project, your tag, your line in release.yaml, your view live on production.</b> You just did the full loop every deploy in this lab will use.</p>
+    </div>
+  </div>
+  <div class="foot"><span>Mustry Academy · CI/CD for Ignition</span><span>Part 1 · B of B</span></div>
+</section>
+
+<!-- 7 · PART 2 INTRO -->
+<section class="slide">
+  <div class="topbar">
+    <div class="brandrow"><img class="logo-img" src="logos/OriginalDark.png" alt="Mustry Solutions"></div>
+    <div class="stage">Part 2 · the team round · how it works</div>
+  </div>
+  <div class="body">
+    <div class="sechead"><span class="num phase2">2</span><div><div class="title">Five challenges on the shared oatmakers project: who does what</div><div class="lead">One project, five contributors, one version stream. Everything in these challenges is a move you made in an earlier lab; the new part is doing it together.</div></div></div>
+    <div class="cols2" style="grid-template-columns:.85fr 1.15fr">
+      <div class="steps">
+        <div class="step"><div class="ix p">1</div><div class="tx"><b>All work lands in <span class="inlinecode">projects/oatmakers/</span></b> plus the folders you know from lab 06: <span class="inlinecode">third-party-modules/</span>, <span class="inlinecode">modules/jar/</span>, <span class="inlinecode">db-migration/</span>.</div></div>
+        <div class="step"><div class="ix p">2</div><div class="tx"><b>Finished means live:</b> merge your PR, cut the <b>next free</b> <span class="inlinecode">oatmakers@v2.0.X</span> tag, bump <span class="inlinecode">release.yaml</span> by PR.</div></div>
+        <div class="step"><div class="ix p">3</div><div class="tx"><b>Five people, one version stream:</b> pull main often. If someone claimed your tag number while you were typing, take the next one.</div></div>
+        <div class="step"><div class="ix p">4</div><div class="tx"><b>Sam or Jasper still approves everything.</b> Small PRs get through the queue first.</div></div>
+      </div>
+      <div>
+        <table class="tbl">
+          <tr><th style="width:22%">Who</th><th>Challenge</th></tr>
+          <tr><td><b>Nick</b></td><td>The <b>Embr Charts module</b>, auto-installed by the pipeline, plus a Perspective screen with a chart on it.</td></tr>
+          <tr><td><b>Stephan</b></td><td>The <b>Commons Lang3 JAR</b> plus a string reversing function proved from a view.</td></tr>
+          <tr><td><b>Tom</b></td><td>The <b>database connection</b> (secret <code>POSTGRES_USERNAME</code>), a migration with tables and a seed, and a view on that data.</td></tr>
+          <tr><td><b>Wout</b></td><td><b>Tags and an OPC UA simulator device</b> on a screen, deployed so values change live on production.</td></tr>
+          <tr><td><b>Gregory</b></td><td><b>Build on the others:</b> historize Wout's tags into Tom's database and visualise them in a dashboard.</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>Mustry Academy · CI/CD for Ignition</span><span>Part 2 · one project, five contributors</span></div>
+</section>
+
+<!-- 8 · PART 2 CHALLENGES: NICK, STEPHAN, WOUT -->
+<section class="slide">
+  <div class="topbar">
+    <div class="brandrow"><img class="logo-img" src="logos/OriginalDark.png" alt="Mustry Solutions"></div>
+    <div class="stage">Part 2 · challenges · module, JAR, tags</div>
+  </div>
+  <div class="body">
+    <div class="sechead"><span class="num phase2">2</span><div><div class="title">The assignments</div><div class="lead">Each one ends the same way: merge, tag the next <span class="inlinecode">oatmakers@v2.0.X</span>, bump <span class="inlinecode">release.yaml</span>, verify on production.</div></div></div>
+    <div class="cols2" style="grid-template-columns:repeat(3,1fr);gap:16px">
+      <div class="does">
+        <div class="hd">NICK</div>
+        <div class="q">Add the Embr Charts module and build a chart screen</div>
+        <ul>
+          <li><span class="d"></span><span>Download the module here:<br><a href="https://github.com/mussonindustrial/embr/releases/tag/releases%2F8.3%2F2026.6.17" style="font-family:'IBM Plex Mono';font-size:10.5px;color:var(--blue-d);word-break:break-all">github.com/mussonindustrial/embr/releases/tag/releases%2F8.3%2F2026.6.17</a></span></li>
+          <li><span class="d"></span><span>Add it to <code>third-party-modules/</code> and register it in <code>services/modules.json</code> with its <code>certFingerprint</code> and <code>licenseAgreementHash</code>: the lab 06 move. The pipeline installs it; <b>no hands on the gateway</b>.</span></li>
+          <li><span class="d"></span><span>Build a Perspective screen with a nice chart on it.</span></li>
+          <li><span class="d"></span><span>Verify on production: Config → Modules shows Embr Charts <b>Running</b>, and your chart renders.</span></li>
+        </ul>
+      </div>
+      <div class="does">
+        <div class="hd">STEPHAN</div>
+        <div class="q">Use the Commons Lang3 JAR in a string reversing function</div>
+        <ul>
+          <li><span class="d"></span><span>The <code>commons-lang3</code> JAR is <b>already in the repo</b>, in <code>modules/jar/</code>: we did the lab 06 download-and-pin move for you. Your job is to use it.</span></li>
+          <li><span class="d"></span><span>Add a project script function that reverses a string:</span></li>
+        </ul>
+        <div class="code" style="margin-top:10px"><pre style="font-size:12px">from org.apache.commons.lang3 <span class="cmd2">import</span> StringUtils
+flipped = StringUtils.reverse(<span class="grn">"Ignition"</span>)</pre></div>
+        <ul style="margin-top:10px">
+          <li><span class="d"></span><span>Build a Perspective screen that <b>calls your function</b> and shows the result: <b>noitingI</b>, live on production.</span></li>
+        </ul>
+      </div>
+      <div class="does">
+        <div class="hd">WOUT</div>
+        <div class="q">Create tags and a simulator device and show live values</div>
+        <ul>
+          <li><span class="d"></span><span>Add an <b>OPC UA simulator device</b> (the programmable device simulator) to the gateway config.</span></li>
+          <li><span class="d"></span><span>Create tags on it and use them on a Perspective screen.</span></li>
+          <li><span class="d"></span><span>Deploy: the device config and the tags travel with the pipeline, like everything else.</span></li>
+          <li><span class="d"></span><span>Verify on production: <b>values changing live</b>, on a gateway you never logged into to configure.</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>Mustry Academy · CI/CD for Ignition</span><span>Part 2 · Nick · Stephan · Wout</span></div>
+</section>
+
+<!-- 9 · PART 2 CHALLENGES: TOM, GREGORY -->
+<section class="slide">
+  <div class="topbar">
+    <div class="brandrow"><img class="logo-img" src="logos/OriginalDark.png" alt="Mustry Solutions"></div>
+    <div class="stage">Part 2 · challenges · database, dashboard</div>
+  </div>
+  <div class="body">
+    <div class="sechead"><span class="num phase2">2</span><div><div class="title">The assignments</div><div class="lead">Tom lays the data foundation; Gregory builds the dashboard on top.</div></div></div>
+    <div class="cols2">
+      <div class="does">
+        <div class="hd">TOM</div>
+        <div class="q">Set up the database connection, a migration with a seed, and a view on the data</div>
+        <ul>
+          <li><span class="d"></span><span>Create the DB connection using the <b>referenced secret</b> <code>POSTGRES_USERNAME</code>. The secret is already on the environment: you reference it, <b>you never see the value</b>. Lab 06's secrets ladder, for real.</span></li>
+          <li><span class="d"></span><span>Write a migration pair in <code>db-migration/migrate/</code>: <code>.up.sql</code> creates the tables and seeds them, <code>.down.sql</code> undoes it. <b>Always pairs.</b></span></li>
+          <li><span class="d"></span><span>Build a Perspective view that queries the seeded data.</span></li>
+          <li><span class="d"></span><span>Verify on production: the connection is <b>Valid</b>, the migration ran, your view shows rows.</span></li>
+        </ul>
+      </div>
+      <div class="does">
+        <div class="hd">GREGORY</div>
+        <div class="q">Historize the live tags into the database and build a dashboard</div>
+        <ul>
+          <li><span class="d"></span><span>Enable <b>tag history</b> on Wout's tags, storing into Tom's database connection.</span></li>
+          <li><span class="d"></span><span>Build a dashboard view visualising that history.</span></li>
+          <li><span class="d"></span><span>You will be merging into files the others just changed. <b>Merge conflicts are part of the challenge</b>, not an accident.</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="goal" style="margin-top:16px">
+      <span class="badge">✅ Part 2 gate</span>
+      <p><b>Your challenge is live on production</b> through a reviewed PR, an <span class="inlinecode">oatmakers@v2.0.X</span> tag you cut yourself, and a <span class="inlinecode">release.yaml</span> bump that went through review.</p>
+    </div>
+  </div>
+  <div class="foot"><span>Mustry Academy · CI/CD for Ignition</span><span>Part 2 · Tom · Gregory</span></div>
+</section>
+
+<!-- 10 · PART 3 -->
+<section class="slide">
+  <div class="topbar">
+    <div class="brandrow"><img class="logo-img" src="logos/OriginalDark.png" alt="Mustry Solutions"></div>
+    <div class="stage">Part 3 · extra · build on each other</div>
+  </div>
+  <div class="body">
+    <div class="sechead"><span class="num warm">3 · EXTRA</span><div><div class="title">Use each other's work: combine the tags, the database, the charts and the functions</div><div class="lead">Everything from Part 2 is now shared infrastructure. Build on it, fast, together.</div></div></div>
+    <div class="cols2">
+      <div class="steps">
+        <div class="step"><div class="ix t">1</div><div class="tx"><b>Cross the challenges:</b> store more tags in the database, add to the migration scripts, put an Embr chart on Tom's data, call Stephan's function from your view. Anything goes, as long as it ships by PR.</div></div>
+        <div class="step"><div class="ix t">2</div><div class="tx"><b>Keep PRs small and fast.</b> One small change that merges beats a big one that sits in review while main moves under it.</div></div>
+        <div class="step"><div class="ix t">3</div><div class="tx"><b>Stay current:</b> pull main often and rebase your branch. Most merge conflicts die before they are born.</div></div>
+        <div class="step"><div class="ix t">4</div><div class="tx"><b>Solve the conflicts that do happen.</b> With five people in one project they will. That is not the pipeline failing you; that is the pipeline making the collision visible <b>before</b> production.</div></div>
+      </div>
+      <div>
+        <div class="code"><pre><span class="cm"># the rhythm of part 3</span>
+git switch main && git pull
+git switch -c feature/chart-on-downtime-data
+<span class="cm"># small change, small commit …</span>
+git push -u origin feature/chart-on-downtime-data
+<span class="cm"># PR → review → merge → next free tag → release.yaml</span></pre></div>
         <div class="goal" style="margin-top:16px">
-          <span class="badge">✅ Part 1 gate</span>
-          <p>You can answer, from files alone: <b>what runs where, and which three version streams exist</b>. The gateway never had to be asked.</p>
+          <span class="badge">No script</span>
+          <p>This part has no steps to follow. <b>Work together, build fast, get through the PRs.</b> The team that keeps its PRs small will ship the most.</p>
         </div>
       </div>
     </div>
   </div>
-  <div class="foot"><span>Mustry Academy · CI/CD for Ignition</span><span>Part 1 · the aligned world</span></div>
+  <div class="foot"><span>Mustry Academy · CI/CD for Ignition</span><span>Part 3 · the team's product</span></div>
 </section>
 
-<!-- 6 · PART 2A -->
-<section class="slide">
-  <div class="topbar">
-    <div class="brandrow"><img class="logo-img" src="logos/OriginalDark.png" alt="Mustry Solutions"></div>
-    <div class="stage">Part 2 · ship a change · A</div>
-  </div>
-  <div class="body">
-    <div class="sechead"><span class="num phase2">2A</span><div><div class="title">Change one project and watch CI build only that project</div><div class="lead">You fix something in <span class="inlinecode">oatmakers</span> only. Nothing else should move, and you're going to watch CI agree.</div></div></div>
-    <div class="cols2">
-      <div class="steps">
-        <div class="step"><div class="ix p">1</div><div class="tx"><b>Branch:</b> <span class="inlinecode">git switch -c fix/oatmakers-alarm-label</span> in <span class="inlinecode">ignition-projects</span>.</div></div>
-        <div class="step"><div class="ix p">2</div><div class="tx"><b>Make a small, visible change</b> in <span class="inlinecode">projects/oatmakers/</span>: the alarm label your instructor points at. Commit, push, open the PR.</div></div>
-        <div class="step"><div class="ix p">3</div><div class="tx"><b>Watch the CI checks on the PR</b>, then merge.</div></div>
-      </div>
-      <div>
-        <div class="code"><pre>git switch -c fix/oatmakers-alarm-label
-<span class="cm"># edit projects/oatmakers/ …</span>
-git add projects/oatmakers/
-git commit -m <span class="cmd2">"fix: correct alarm label on line 2 overview"</span>
-git push -u origin fix/oatmakers-alarm-label</pre></div>
-      </div>
-    </div>
-    <div class="obs"><span class="ob">Observe</span><p><b>Only <code>oatmakers</code> tests run.</b> <code>oatmakers-shared</code> and <code>oatmakers-packaging</code> are not built, not tested, not touched. That's path-filtered CI: poly-repo isolation, and you still keep everything in one place.</p></div>
-    <div class="obs"><span class="ob">Observe</span><p><b>Merging deployed nothing.</b> Main means "built and could ship", not "shipped". Nothing has moved yet.</p></div>
-  </div>
-  <div class="foot"><span>Mustry Academy · CI/CD for Ignition</span><span>Part 2 · A of B</span></div>
-</section>
-
-<!-- 7 · PART 2B -->
-<section class="slide">
-  <div class="topbar">
-    <div class="brandrow"><img class="logo-img" src="logos/OriginalDark.png" alt="Mustry Solutions"></div>
-    <div class="stage">Part 2 · ship a change · B</div>
-  </div>
-  <div class="body">
-    <div class="sechead"><span class="num phase2">2B</span><div><div class="title">Tag oatmakers@v2.0.1 and read the artifact's manifest</div><div class="lead">The tag is the release. Watch what CI does with the prefix, then open the file that comes back in Part 4.</div></div></div>
-    <div class="cols2">
-      <div class="steps">
-        <div class="step"><div class="ix p">1</div><div class="tx"><b>Tag it:</b> <span class="inlinecode">git switch main</span> → <span class="inlinecode">git pull</span> → <span class="inlinecode">git tag oatmakers@v2.0.1</span> → <span class="inlinecode">git push origin oatmakers@v2.0.1</span>.</div></div>
-        <div class="step"><div class="ix p">2</div><div class="tx"><b>Watch the tag build:</b> CI parses the prefix <span class="inlinecode">oatmakers</span>, builds only that project, publishes <span class="inlinecode">oatmakers-v2.0.1.zip</span>.</div></div>
-        <div class="step"><div class="ix p">3</div><div class="tx"><b>Read the manifest:</b> <span class="inlinecode">python .ci/show-manifest.py oatmakers v2.0.1</span>.</div></div>
-      </div>
-      <div>
-        <div class="code"><pre><span class="cm">$ python .ci/show-manifest.py oatmakers v2.0.1</span>
-{
-  "project": <span class="cmd2">"oatmakers"</span>,
-  "version": <span class="cmd2">"v2.0.1"</span>,
-  "commit":  <span class="cmd2">"a3f9c21"</span>,
-  "requires": { "oatmakers-shared": <span class="grn">"v1.9.2"</span> }
-}</pre></div>
-      </div>
-    </div>
-    <div class="obs"><span class="ob">Observe</span><p><b>This is the important bit.</b> The build recorded which <code>oatmakers-shared</code> it was compiled and tested against. Remember this: it comes back in Part 4.</p></div>
-    <div class="goal" style="margin-top:14px">
-      <span class="badge">✅ Part 2 gate</span>
-      <p>A merged PR, the tag <span class="inlinecode">oatmakers@v2.0.1</span>, one published artifact with <span class="inlinecode">requires</span> in its manifest, and <b>still nothing deployed</b>. You have an artifact. That's all.</p>
-    </div>
-  </div>
-  <div class="foot"><span>Mustry Academy · CI/CD for Ignition</span><span>Part 2 · B of B</span></div>
-</section>
-
-<!-- 8 · PART 3A -->
-<section class="slide">
-  <div class="topbar">
-    <div class="brandrow"><img class="logo-img" src="logos/OriginalDark.png" alt="Mustry Solutions"></div>
-    <div class="stage">Part 3 · deploy · A</div>
-  </div>
-  <div class="body">
-    <div class="sechead"><span class="num">3A</span><div><div class="title">Deploy to dev: a one-line pull request in the gateways repo</div><div class="lead">Switch repos. This is where deploys happen, and the whole deploy is one line of YAML.</div></div></div>
-    <div class="cols2">
-      <div class="steps">
-        <div class="step"><div class="ix">1</div><div class="tx"><b>Branch in <span class="inlinecode">ignition-gateways</span>:</b> <span class="inlinecode">git switch -c deploy/oatmakers-v2.0.1-dev</span>.</div></div>
-        <div class="step"><div class="ix">2</div><div class="tx"><b>Edit <span class="inlinecode">gateways/dev/gw-dev/release.yaml</span>:</b> bump <span class="inlinecode">oatmakers</span> from v2.0.0 to v2.0.1. One line. Commit, push, open the PR.</div></div>
-        <div class="step"><div class="ix">3</div><div class="tx"><b>Read the plan on the PR</b>, then merge and watch the deploy: pull <span class="inlinecode">oatmakers-v2.0.1.zip</span>, ship to gw-dev, smoke test.</div></div>
-        <div class="step"><div class="ix">4</div><div class="tx"><b>Verify:</b> open the dev gateway and find your alarm label, live.</div></div>
-      </div>
-      <div>
-        <div class="code"><pre><span class="cm"># gateways/dev/gw-dev/release.yaml</span>
- gateway: gw-dev
- projects:
-   oatmakers-shared:    v1.9.2
-<span class="red">-  oatmakers:           v2.0.0</span>
-<span class="grn">+  oatmakers:           v2.0.1</span>
-   oatmakers-packaging: v1.4.0</pre></div>
-        <div class="obs"><span class="ob">Observe</span><p><b>The PR check runs a plan.</b> It tells you exactly what will change on which gateway <b>before</b> you merge. Read it. Then merge, and <b>now</b> it deploys.</p></div>
-      </div>
-    </div>
-    <div class="goal" style="margin-top:16px">
-      <span class="badge">The pattern</span>
-      <p><b>The PR is the deploy request. The approval is the change control. The merge is the trigger.</b> You will use this exact move for every deploy from here on.</p>
-    </div>
-  </div>
-  <div class="foot"><span>Mustry Academy · CI/CD for Ignition</span><span>Part 3 · A of B</span></div>
-</section>
-
-<!-- 9 · PART 3B -->
-<section class="slide">
-  <div class="topbar">
-    <div class="brandrow"><img class="logo-img" src="logos/OriginalDark.png" alt="Mustry Solutions"></div>
-    <div class="stage">Part 3 · deploy · B</div>
-  </div>
-  <div class="body">
-    <div class="sechead"><span class="num">3B</span><div><div class="title">Promote to test, then one prod gateway: drift becomes visible</div><div class="lead">Promotion is the same version number moving right through a sequence of files. Not a merge between branches.</div></div></div>
-    <div class="cols2">
-      <div class="steps">
-        <div class="step"><div class="ix">1</div><div class="tx"><b>Test:</b> same one-line bump in <span class="inlinecode">gateways/test/gw-test/release.yaml</span>, new branch, PR, merge.</div></div>
-        <div class="step"><div class="ix">2</div><div class="tx"><b>Prod, one gateway only:</b> bump <span class="inlinecode">gateways/prod/gw-oatmakers-01/release.yaml</span>. The prod PR requires a <b>second approver</b>: get your room-mate. Note the rule is path-based: it applies to <span class="inlinecode">prod/</span> and not to <span class="inlinecode">dev/</span>.</div></div>
-        <div class="step"><div class="ix">3</div><div class="tx"><b>Merge</b> and watch it deploy to gw-oatmakers-01 <b>and only that one</b>. gw-oatmakers-02 is untouched: staged rollout, least critical first, bake, then the rest.</div></div>
-        <div class="step"><div class="ix">4</div><div class="tx"><b>Run the matrix again</b> and find the drift arrow.</div></div>
-      </div>
-      <div>
-        <div class="code"><pre><span class="cm">$ python .ci/matrix.py</span>
-                 <span class="cmd2">oatm.-shared  oatmakers  oatm.-packaging</span>
-gw-dev              v1.9.2     <span class="grn">v2.0.1</span>      v1.4.0
-gw-test             v1.9.2     <span class="grn">v2.0.1</span>      v1.4.0
-gw-oatmakers-01     v1.9.2     <span class="grn">v2.0.1</span>      v1.4.0
-gw-oatmakers-02     v1.9.2     <span class="red">v2.0.0 ←</span>    v1.4.0</pre></div>
-        <div class="obs"><span class="ob">Notice</span><p><b>Environments are directories, all on main.</b> If you'd made them branches, you'd now be cherry-picking and fighting merge conflicts between dev and prod. You aren't.</p></div>
-      </div>
-    </div>
-    <div class="goal" style="margin-top:16px">
-      <span class="badge">✅ Part 3 gate</span>
-      <p>v2.0.1 live on dev, test and gw-oatmakers-01 through <b>three one-line PRs</b>, the prod PR carries a second approval, and the matrix shows gw-oatmakers-02 drifting. <b>Drift being visible is the point of the matrix.</b></p>
-    </div>
-  </div>
-  <div class="foot"><span>Mustry Academy · CI/CD for Ignition</span><span>Part 3 · B of B</span></div>
-</section>
-
-<!-- 10 · PART 4A -->
-<section class="slide">
-  <div class="topbar">
-    <div class="brandrow"><img class="logo-img" src="logos/OriginalDark.png" alt="Mustry Solutions"></div>
-    <div class="stage">Part 4 · the parent · A</div>
-  </div>
-  <div class="body">
-    <div class="sechead"><span class="num" style="background:var(--warn)">4A</span><div><div class="title">Change the parent project and watch every child get tested</div><div class="lead">This is the interesting part. A change to <span class="inlinecode">oatmakers-shared</span> is a change to every project that inherits from it, and CI knows.</div></div></div>
-    <div class="cols2">
-      <div class="steps">
-        <div class="step"><div class="ix">1</div><div class="tx"><b>Branch in <span class="inlinecode">ignition-projects</span>:</b> add a function to <span class="inlinecode">oatmakers-shared</span>'s script library (<span class="inlinecode">format_shift_timestamp</span>, per the exercise file). PR.</div></div>
-        <div class="step"><div class="ix">2</div><div class="tx"><b>Read the PR carefully</b>, then merge and tag: <span class="inlinecode">git tag oatmakers-shared@v1.10.0</span>, push the tag.</div></div>
-        <div class="step"><div class="ix">3</div><div class="tx"><b>Deploy to dev:</b> bump <span class="inlinecode">oatmakers-shared</span> to v1.10.0 in <span class="inlinecode">gw-dev/release.yaml</span>. PR, plan, merge.</div></div>
-      </div>
-      <div>
-        <div class="obs" style="margin-top:0"><span class="ob">Observe</span><p><b>All three test suites run this time.</b> A change to the parent is a change to every child, and CI can see the whole graph because they live in one repo.</p></div>
-        <div class="obs"><span class="ob">Observe</span><p><b>The impact report posts on the PR.</b> It statically scans every project for call sites of what you touched. This answers "I cannot possibly know what I just broke."</p></div>
-        <div class="obs"><span class="ob">Observe</span><p><b>The parent deploys first.</b> The pipeline topologically sorts: if it shipped <code>oatmakers</code> first, it would briefly reference a library that isn't there. And note what you did NOT do: <b>you never bumped the children</b>. The library moved; they didn't.</p></div>
-      </div>
-    </div>
-    <div class="goal" style="margin-top:16px">
-      <span class="badge">And it passed</span>
-      <p>This deploy passed the manifest check even though <span class="inlinecode">oatmakers@v2.0.1</span> was built against v1.9.2: a compatible <b>minor</b> bump (v1.9.2 → v1.10.0) is allowed. <b>Semver doing its job.</b> Now let's find the edge.</p>
-    </div>
-  </div>
-  <div class="foot"><span>Mustry Academy · CI/CD for Ignition</span><span>Part 4 · A of B</span></div>
-</section>
-
-<!-- 11 · PART 4B -->
-<section class="slide">
-  <div class="topbar">
-    <div class="brandrow"><img class="logo-img" src="logos/OriginalDark.png" alt="Mustry Solutions"></div>
-    <div class="stage">Part 4 · the parent · B</div>
-  </div>
-  <div class="body">
-    <div class="sechead"><span class="num" style="background:var(--warn)">4B</span><div><div class="title">Try to ship an untested combination and watch the manifest check refuse</div><div class="lead">Now break it, on purpose. Pair a major parent bump with a child that has never seen it.</div></div></div>
-    <div class="cols2">
-      <div class="steps">
-        <div class="step"><div class="ix">1</div><div class="tx"><b>Get the breaking tag</b> from your instructor: <span class="inlinecode">oatmakers-shared@v2.0.0</span>, a major bump with a renamed function.</div></div>
-        <div class="step"><div class="ix">2</div><div class="tx"><b>Try to deploy it to prod:</b> bump <span class="inlinecode">oatmakers-shared</span> to v2.0.0 in <span class="inlinecode">gw-oatmakers-01/release.yaml</span>, leaving <span class="inlinecode">oatmakers</span> at v2.0.1, which was built against v1.9.2. Open the PR.</div></div>
-        <div class="step"><div class="ix">3</div><div class="tx"><b>Read the refusal, line by line.</b> Then close the PR without merging: that red cross just saved your 02:00.</div></div>
-      </div>
-      <div>
-        <div class="code"><pre><span class="red">✗ gw-oatmakers-01</span>
-  oatmakers@v2.0.1 was built against
-    oatmakers-shared@<span class="grn">v1.9.2</span>
-  gateway declares
-    oatmakers-shared@<span class="red">v2.0.0</span>
-  Major version mismatch.
-  <span class="red">This combination has never been tested.</span></pre></div>
-      </div>
-    </div>
-    <div class="goal good-g" style="margin-top:16px">
-      <span class="badge">✅ Part 4 gate · the payoff</span>
-      <p><b>The artifact remembered what it was built against, and the pipeline refused to ship a combination nobody has ever run.</b> Without the manifest, that deploy succeeds and breaks at 2am. This is what Part 2's <span class="inlinecode">requires</span> line was for.</p>
-    </div>
-  </div>
-  <div class="foot"><span>Mustry Academy · CI/CD for Ignition</span><span>Part 4 · B of B</span></div>
-</section>
-
-<!-- 12 · DONE GATE -->
+<!-- 11 · DONE GATE -->
 <section class="slide">
   <div class="topbar">
     <div class="brandrow"><img class="logo-img" src="logos/OriginalDark.png" alt="Mustry Solutions"></div>
     <div class="stage">Definition of done</div>
   </div>
   <div class="body">
-    <div class="sechead"><span class="num">GATE</span><div><div class="title">Definition of done for all four parts</div><div class="lead">Walk these before you call it. If one fails, that part isn't done, however green your last run was.</div></div></div>
+    <div class="sechead"><span class="num">GATE</span><div><div class="title">Definition of done for all three parts</div><div class="lead">Walk these before you call it. Everything on this list is visible on GitHub or on the production gateway; nothing needs your laptop.</div></div></div>
     <div class="steps" style="max-width:1020px">
-      <div class="step"><div class="ix">1</div><div class="tx"><b>Part 1:</b> you can read the matrix and name the <b>three independent version streams</b> in one repo.</div></div>
-      <div class="step"><div class="ix p">2</div><div class="tx"><b>Part 2:</b> a merged PR, the tag <span class="inlinecode">oatmakers@v2.0.1</span>, one published artifact whose manifest records <span class="inlinecode">requires: oatmakers-shared v1.9.2</span>, and <b>nothing deployed</b>.</div></div>
-      <div class="step"><div class="ix">3</div><div class="tx"><b>Part 3:</b> v2.0.1 live on dev, test and gw-oatmakers-01 through three one-line PRs, a <b>second approval on the prod PR</b>, and <span class="inlinecode">matrix.py</span> showing gw-oatmakers-02 drifting on v2.0.0.</div></div>
-      <div class="step"><div class="ix" style="background:var(--warn-soft);color:var(--warn)">4</div><div class="tx"><b>Part 4:</b> <span class="inlinecode">oatmakers-shared@v1.10.0</span> live on dev, deployed <b>before</b> its children with the children's versions untouched, and the major-version deploy <b>refused</b> by the manifest check, with you able to explain the error line by line.</div></div>
+      <div class="step"><div class="ix">1</div><div class="tx"><b>Part 1:</b> <span class="inlinecode">projects/&lt;yourname&gt;/</span> merged through an approved PR, the tag <span class="inlinecode">&lt;yourname&gt;@v1.0.0</span> built, your line in <span class="inlinecode">release.yaml</span>, and your view <b>live on cloud.mustrysolutions.com</b>.</div></div>
+      <div class="step"><div class="ix p">2</div><div class="tx"><b>Part 2:</b> your challenge merged and <b>live on production</b> via an <span class="inlinecode">oatmakers@v2.0.X</span> tag you cut yourself and a reviewed <span class="inlinecode">release.yaml</span> bump.</div></div>
+      <div class="step"><div class="ix t">3</div><div class="tx"><b>Part 3:</b> at least one merged PR that <b>builds on someone else's work</b>, and at least one review comment or unblock you gave someone else.</div></div>
     </div>
     <div class="goal warn-g" style="margin-top:22px">
       <span class="badge">Debrief fuel</span>
-      <p>Bring answers: the seam between the repos is a version string: what else at your plant crosses it today, and should it? · who should be allowed to merge in <span class="inlinecode">ignition-gateways</span>, and is that the same list as <span class="inlinecode">ignition-projects</span>? · who is the master of tags at your plant, and does anything enforce it?</p>
+      <p>Bring answers: one repo carried five contributors to one production gateway today: when would you split it, like the teaching's option B? · who may merge what at your plant, and who are your Sam and Jasper? · what does "only validated commits reach main" mean in your organisation, and what enforces it?</p>
     </div>
   </div>
-  <div class="foot"><span>Mustry Academy · CI/CD for Ignition</span><span>The gate → stretch or debrief</span></div>
+  <div class="foot"><span>Mustry Academy · CI/CD for Ignition</span><span>The gate → debrief</span></div>
 </section>
 
-<!-- 13 · STRETCH -->
-<section class="slide">
-  <div class="topbar">
-    <div class="brandrow"><img class="logo-img" src="logos/OriginalDark.png" alt="Mustry Solutions"></div>
-    <div class="stage">Optional stretch</div>
-  </div>
-  <div class="body">
-    <div class="sechead"><span class="num warm">OPTIONAL</span><div><div class="title">Stretch: three ways to go deeper</div><div class="lead">Pick by appetite. All three stay inside the two repos you already have.</div></div></div>
-    <div class="cols2">
-      <div class="steps">
-        <div class="step"><div class="ix t">1</div><div class="tx"><b>Finish the rollout.</b> Promote v2.0.1 to <span class="inlinecode">gw-oatmakers-02</span>, and read <span class="inlinecode">rollout.yaml</span>: write one sentence in the PR on why gw-01 went first. The matrix goes fully green again.</div></div>
-        <div class="step"><div class="ix t">2</div><div class="tx"><b>Roll back.</b> <span class="inlinecode">git revert</span> the gw-oatmakers-01 deploy PR and watch the pipeline put v2.0.0 back. Nobody logs into a gateway: <b>the file is the state</b>, in both directions.</div></div>
-        <div class="step"><div class="ix t">3</div><div class="tx"><b>Read the plan like an operator.</b> Open any merged deploy PR and reconstruct, from its plan and logs alone: what changed, where, when, and who approved it. That's the audit trail: no archaeology.</div></div>
-      </div>
-      <div>
-        <div class="code"><pre><span class="cm"># stretch 2: rollback is a revert</span>
-git revert &lt;merge-commit-of-the-deploy-PR&gt;
-git push
-<span class="cm"># the pipeline reads the file and makes it
-# true again:</span>
-gw-oatmakers-01  oatmakers  <span class="grn">v2.0.1</span> → <span class="cmd2">v2.0.0</span></pre></div>
-        <div class="goal" style="margin-top:16px">
-          <span class="badge">Same machinery</span>
-          <p>All three stretches are the <b>same one-line-PR move</b> you've made all hour. That's the point: once state is files, every operation is the same operation.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="foot"><span>Mustry Academy · CI/CD for Ignition</span><span>Stretch · optional</span></div>
-</section>
-
-<!-- 14 · DONE -->
+<!-- 12 · DONE -->
 <section class="slide dark">
   <div class="topbar">
     <div class="on-dark brandrow"><img class="logo-img" src="logos/OriginalLight.png" alt="Mustry Solutions"></div>
@@ -593,17 +547,17 @@ gw-oatmakers-01  oatmakers  <span class="grn">v2.0.1</span> → <span class="cmd
   </div>
   <div class="body">
     <div class="eyebrow">Nicely done</div>
-    <div class="title" style="color:#fff;max-width:28ch">You ran the whole pipeline: build side, run side, and the guard between them.</div>
+    <div class="title" style="color:#fff;max-width:28ch">You shipped to a shared production gateway through a locked-down repo.</div>
     <ul class="checks" style="max-width:940px;margin-top:22px">
-      <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span>A fix shipped as <b>one project's own tag</b>, built by prefix, with its parent dependency recorded in the manifest.</span></li>
-      <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span>Three deploys, each a <b>one-line PR</b>: plan before merge, deploy on merge, second approver on prod, staged rollout with visible drift.</span></li>
-      <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span>A parent change that tested <b>every child</b>, deployed parent-first, and never touched the children's versions.</span></li>
-      <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span>And one deploy that <b>did not happen</b>, because the manifest check knew the combination had never been tested.</span></li>
+      <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span>Your own project, from <b>git clone to live on production</b>: a reviewed PR, a tag, a release.yaml line, a deploy on the site 7 runner.</span></li>
+      <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span>Five challenges on one shared project: a <b>module</b>, a <b>JAR</b>, a <b>database</b> with migrations and a referenced secret, <b>live tags</b> from a simulator, and a <b>dashboard</b> on top of it all.</span></li>
+      <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span>One version stream shared by five people: <b>tag races, merge conflicts and small fast PRs</b>, exactly like a real team on a real plant.</span></li>
+      <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span>And every one of those deploys was decided by <b>one file</b>, run by <b>one labelled runner</b>, and approved by <b>a human</b>.</span></li>
       <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span>Bring one <b>surprise</b> and one <b>question</b> to the debrief.</span></li>
     </ul>
     <div class="goal" style="background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.14);border-left-color:var(--peri2)">
       <span class="badge" style="background:var(--peri2);color:var(--navy)">Next</span>
-      <p style="color:#c4cfde">The course debrief: four days from <b style="color:#fff">git init</b> to a pipeline that refuses to ship an untested release. We close with the question that matters: <b style="color:#fff">what will you build first, back at your own plant?</b></p>
+      <p style="color:#c4cfde">The course debrief: four days from <b style="color:#fff">git init</b> to shipping a shared production gateway as a team. We close with the question that matters: <b style="color:#fff">what will you build first, back at your own plant?</b></p>
     </div>
   </div>
   <div class="foot"><span>Mustry Academy · CI/CD for Ignition</span><span>Lab 07 complete · course complete</span></div>
@@ -612,7 +566,7 @@ gw-oatmakers-01  oatmakers  <span class="grn">v2.0.1</span> → <span class="cmd
 </div>
 
 <div class="hud"><div class="bar" id="bar"></div></div>
-<div class="pager" id="pager">01 / 14</div>
+<div class="pager" id="pager">01 / 12</div>
 <div class="hint" id="hint">↑ ↓ / scroll to navigate</div>
 
 <script>
