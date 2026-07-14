@@ -1,0 +1,397 @@
+# PR validation — runs on every pull request into main (GitHub Flow).
+#
+# Five contributors share this repo, so the checks are PATH-FILTERED: the
+# `changes` job works out what a PR actually touches, and only the matching
+# jobs run. Five people can open five PRs and nobody waits on anyone else's
+# tests — the promise the assignment slides make.
+#
+#   projects/<name>/**        → validate-projects (a matrix job per project)
+#   release.yaml              → validate-release ("a pin may only point at a
+#                                tag that exists" is enforced HERE, at PR time)
+#   services/, modules/,      → validate-gateway-payload (manifest, JARs,
+#   third-party-modules/,       migration pairs)
+#   db-migration/
+#   capstone/**               → capstone (compose config, shellcheck, secrets
+#                                hygiene — the server stack ships by GitOps too)
+#
+# Branch protection on main should require exactly ONE status check: "CI OK".
+# It aggregates whatever ran; skipped jobs (docs-only PRs) don't block a merge.
+# Job ids double as status-check names — keep them stable, renaming silently
+# orphans required checks configured on main.
+
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+
+# Cancel any in-flight CI run for this PR when a new commit lands.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+# Least-privilege default.
+permissions:
+  contents: read
+
+jobs:
+  changes:
+    name: Detect changes
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      projects: ${{ steps.diff.outputs.projects }}
+      release: ${{ steps.diff.outputs.release }}
+      gateway_payload: ${{ steps.diff.outputs.gateway_payload }}
+      capstone: ${{ steps.diff.outputs.capstone }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Diff against the merge base
+        id: diff
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          set -euo pipefail
+          base="$(git merge-base "origin/$BASE_REF" HEAD)"
+          git diff --name-only "$base" HEAD > changed.txt
+          echo "changed files:"
+          sed 's/^/  /' changed.txt
+
+          # JSON array of project names touched by this PR, e.g. ["wout"].
+          projects="$( (grep -E '^projects/[^/]+/' changed.txt || true) \
+            | cut -d/ -f2 | sort -u | jq -R . | jq -sc .)"
+
+          flag() { if grep -qE "$1" changed.txt; then echo true; else echo false; fi; }
+          {
+            echo "projects=$projects"
+            echo "release=$(flag '^release\.yaml$')"
+            echo "gateway_payload=$(flag '^(services/|modules/|third-party-modules/|db-migration/)')"
+            echo "capstone=$(flag '^capstone/')"
+          } >> "$GITHUB_OUTPUT"
+
+  validate-projects:
+    name: Validate project ${{ matrix.project }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs: changes
+    if: needs.changes.outputs.projects != '[]'
+    strategy:
+      fail-fast: false
+      matrix:
+        project: ${{ fromJSON(needs.changes.outputs.projects) }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: JSON validity sweep
+        # Every *.json under this project must parse. Failures surface as PR
+        # annotations via the ::error syntax. Only THIS project is swept —
+        # someone else's broken view never fails your PR.
+        env:
+          PROJECT: ${{ matrix.project }}
+        run: |
+          set -euo pipefail
+          dir="projects/$PROJECT"
+          if [ ! -d "$dir" ]; then
+            echo "$dir was deleted in this PR — nothing to validate."
+            exit 0
+          fi
+          if [ ! -f "$dir/project.json" ]; then
+            echo "::error file=$dir::Missing project.json — is this a real Ignition project? Copy the skeleton."
+            exit 1
+          fi
+          fail=0
+          while IFS= read -r f; do
+            if ! python3 -m json.tool "$f" > /dev/null 2>&1; then
+              echo "::error file=$f::Invalid JSON"
+              fail=1
+            fi
+          done < <(find "$dir" -type f -name '*.json')
+          [ "$fail" -eq 0 ] && echo "All JSON in $dir parses cleanly."
+          exit "$fail"
+
+      - name: ignition-lint (Perspective views)
+        # Runs only once the repo carries a rule_config.json (same tooling as
+        # labs 04–06). Until then this is a documented no-op.
+        env:
+          PROJECT: ${{ matrix.project }}
+        run: |
+          set -euo pipefail
+          if [ ! -f rule_config.json ] || [ ! -d "projects/$PROJECT" ]; then
+            echo "No rule_config.json (or project deleted) — skipping ign-lint."
+            exit 0
+          fi
+          pip install ign-lint==0.6.1
+          ign-lint --config rule_config.json --files "projects/$PROJECT/**/view.json"
+
+  validate-release:
+    name: Validate release.yaml
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs: changes
+    if: needs.changes.outputs.release == 'true'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # The whole point of this job is "a pin may only point at a tag
+          # that exists" — so fetch the tags to check against.
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Schema + every pin points at an existing tag
+        run: |
+          set -euo pipefail
+          pip install pyyaml==6.0.2
+          python3 - <<'EOF'
+          import re, subprocess, sys, yaml
+
+          ERRORS = []
+          def err(msg): ERRORS.append(msg)
+
+          try:
+              with open("release.yaml") as f:
+                  data = yaml.safe_load(f)
+          except FileNotFoundError:
+              print("::error::release.yaml is gone — this file is the production state, it must exist at the repo root")
+              sys.exit(1)
+          except yaml.YAMLError as e:
+              print(f"::error file=release.yaml::Not valid YAML: {e}")
+              sys.exit(1)
+
+          if not isinstance(data, dict):
+              print("::error file=release.yaml::Expected a mapping with 'gateway' and 'projects'")
+              sys.exit(1)
+
+          if data.get("gateway") != "oatmakers-site-7":
+              err(f"gateway must be 'oatmakers-site-7', got {data.get('gateway')!r}")
+
+          unknown = set(data) - {"gateway", "projects"}
+          if unknown:
+              err(f"unknown top-level keys: {sorted(unknown)}")
+
+          projects = data.get("projects")
+          if not isinstance(projects, dict) or not projects:
+              err("'projects' must be a non-empty mapping of <project>: vX.Y.Z")
+              projects = {}
+
+          tags = set(subprocess.run(
+              ["git", "tag", "--list"],
+              capture_output=True, text=True, check=True).stdout.split())
+
+          for name, version in projects.items():
+              if not re.fullmatch(r"[A-Za-z][A-Za-z0-9_-]*", str(name)):
+                  err(f"project name {name!r} is not a valid name")
+                  continue
+              if not re.fullmatch(r"v\d+\.\d+\.\d+", str(version)):
+                  err(f"{name}: version {version!r} must look like v1.2.3")
+                  continue
+              tag = f"{name}@{version}"
+              if tag not in tags:
+                  err(f"{name}: pinned at {version} but tag '{tag}' does not exist — "
+                      "push the tag first, the release must exist before release.yaml may point at it")
+                  continue
+              tree = subprocess.run(
+                  ["git", "ls-tree", "-d", f"refs/tags/{tag}", "--", f"projects/{name}"],
+                  capture_output=True, text=True, check=True).stdout.strip()
+              if not tree:
+                  err(f"{name}: tag '{tag}' exists but contains no projects/{name}/ — "
+                      "tag a commit that actually has the project on main")
+
+          if "oatmakers" not in projects:
+              err("the 'oatmakers' pin is required — the shared project's tag also carries "
+                  "the gateway config, modules, JARs and migrations")
+
+          for e in ERRORS:
+              print(f"::error file=release.yaml::{e}")
+          if ERRORS:
+              sys.exit(1)
+          print(f"release.yaml OK — {len(projects)} pin(s), every tag exists.")
+          EOF
+
+  validate-gateway-payload:
+    name: Validate gateway payload
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs: changes
+    if: needs.changes.outputs.gateway_payload == 'true'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: JSON validity sweep (services/)
+        run: |
+          set -euo pipefail
+          [ -d services ] || { echo "No services/ — skipping."; exit 0; }
+          fail=0
+          while IFS= read -r f; do
+            if ! python3 -m json.tool "$f" > /dev/null 2>&1; then
+              echo "::error file=$f::Invalid JSON"
+              fail=1
+            fi
+          done < <(find services -type f -name '*.json')
+          [ "$fail" -eq 0 ] && echo "All JSON under services/ parses cleanly."
+          exit "$fail"
+
+      - name: Module manifest ↔ third-party-modules/ agree
+        # Every manifest entry under /third-party-modules/ must ship its .modl
+        # in this repo and record the trust pair (certFingerprint +
+        # licenseAgreementHash) — the lab 06 move. And every .modl in the
+        # folder must be registered, or the gateway would never load it.
+        run: |
+          set -euo pipefail
+          [ -f services/modules.json ] || { echo "No services/modules.json — skipping."; exit 0; }
+          python3 - <<'EOF'
+          import json, os, sys
+
+          with open("services/modules.json") as f:
+              manifest = json.load(f)
+
+          errors = []
+          referenced = set()
+          for module_id, entry in manifest.items():
+              filename = entry.get("filename", "")
+              if not filename.startswith("/third-party-modules/"):
+                  continue  # gateway-bundled module, nothing to ship
+              basename = os.path.basename(filename)
+              referenced.add(basename)
+              if not os.path.isfile(f"third-party-modules/{basename}"):
+                  errors.append(f"{module_id}: manifest points at {filename} but "
+                                f"third-party-modules/{basename} is not in the repo")
+              if entry.get("onStartup") == "enabled":
+                  for key in ("certFingerprint", "licenseAgreementHash"):
+                      if key not in entry:
+                          errors.append(f"{module_id}: enabled third-party module is missing "
+                                        f"'{key}' — the gateway will refuse to trust it")
+
+          if os.path.isdir("third-party-modules"):
+              for f in os.listdir("third-party-modules"):
+                  if f.endswith(".modl") and f not in referenced:
+                      errors.append(f"third-party-modules/{f} is not registered in "
+                                    "services/modules.json — it would never be installed")
+
+          for e in errors:
+              print(f"::error file=services/modules.json::{e}")
+          sys.exit(1 if errors else 0)
+          EOF
+          echo "Module manifest and third-party-modules/ agree."
+
+      - name: Migration pairs (.up.sql ↔ .down.sql)
+        # Always pairs: every up has a down, every down has an up.
+        run: |
+          set -euo pipefail
+          dir="db-migration/migrate"
+          [ -d "$dir" ] || { echo "No $dir — skipping."; exit 0; }
+          fail=0
+          shopt -s nullglob
+          for up in "$dir"/*.up.sql; do
+            down="${up%.up.sql}.down.sql"
+            if [ ! -f "$down" ]; then
+              echo "::error file=$up::Missing its .down.sql pair"
+              fail=1
+            fi
+          done
+          for down in "$dir"/*.down.sql; do
+            up="${down%.down.sql}.up.sql"
+            if [ ! -f "$up" ]; then
+              echo "::error file=$down::Missing its .up.sql pair"
+              fail=1
+            fi
+          done
+          [ "$fail" -eq 0 ] && echo "All migrations come in pairs."
+          exit "$fail"
+
+      - name: modules/jar/ hygiene
+        # Library JARs only (→ lib/core/gateway at deploy time), plus a README
+        # recording where each JAR came from.
+        run: |
+          set -euo pipefail
+          [ -d modules/jar ] || { echo "No modules/jar/ — skipping."; exit 0; }
+          fail=0
+          while IFS= read -r f; do
+            case "$f" in
+              *.jar|*/README.md|*/.gitkeep) ;;
+              *) echo "::error file=$f::Only *.jar (and a README) belong in modules/jar/"; fail=1 ;;
+            esac
+          done < <(find modules/jar -type f)
+          [ "$fail" -eq 0 ] && echo "modules/jar/ holds only JARs."
+          exit "$fail"
+
+  capstone:
+    name: Capstone stack
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs: changes
+    if: needs.changes.outputs.capstone == 'true'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: docker compose config
+        # The compose file references gitignored inputs (.env, secrets/*.txt);
+        # stub them so validation checks the file, not the server state.
+        run: |
+          set -euo pipefail
+          for ex in capstone/secrets/*.example; do
+            touch "${ex%.example}"
+          done
+          docker compose -f capstone/docker-compose.yaml config -q
+          echo "compose file validates."
+
+      - name: shellcheck
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends shellcheck
+          shellcheck capstone/scripts/*.sh
+
+      - name: No real secret files committed
+        # Only *.example files and the README are allowed under
+        # capstone/secrets/. Anything else tracked there is a leak — and a
+        # pushed secret is a burned secret: rotate it, don't just delete it.
+        run: |
+          set -euo pipefail
+          bad="$(git ls-files 'capstone/secrets/' | grep -vE '\.example$|/README\.md$' || true)"
+          if [ -n "$bad" ]; then
+            while IFS= read -r f; do
+              echo "::error file=$f::Secret file committed — rotate this credential NOW, then remove the file"
+            done <<< "$bad"
+            exit 1
+          fi
+          echo "capstone/secrets/ holds only example files."
+
+  lint-workflows:
+    name: Lint workflows
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: actionlint
+        uses: raven-actions/actionlint@v2
+
+  # The ONE required status check for branch protection. Aggregates whatever
+  # ran: a skipped job (path didn't match) is fine, a failed one blocks.
+  ci-ok:
+    name: CI OK
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    needs:
+      - changes
+      - validate-projects
+      - validate-release
+      - validate-gateway-payload
+      - capstone
+      - lint-workflows
+    if: always()
+    steps:
+      - name: Aggregate results
+        env:
+          RESULTS: ${{ join(needs.*.result, ' ') }}
+        run: |
+          set -euo pipefail
+          echo "job results: $RESULTS"
+          for r in $RESULTS; do
+            case "$r" in
+              failure|cancelled) echo "::error::A required job ended as '$r'"; exit 1 ;;
+            esac
+          done
+          echo "All checks that apply to this PR are green."

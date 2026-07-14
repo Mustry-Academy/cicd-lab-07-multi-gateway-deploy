@@ -1,0 +1,6 @@
+# Tell actionlint about the custom self-hosted runner label this repo's
+# deploy workflows target (the runner inside the capstone stack on
+# cloud.mustrysolutions.com). Without this, actionlint flags it as unknown.
+self-hosted-runner:
+  labels:
+    - cicd-capstone
