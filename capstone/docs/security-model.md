@@ -24,7 +24,10 @@ security review trigger.
 ## 2. SSH
 
 - `PasswordAuthentication no`, `PermitRootLogin prohibit-password` via
-  `/etc/ssh/sshd_config.d/70-hardening.conf` (drop-in, survives upgrades).
+  `/etc/ssh/sshd_config.d/00-hardening.conf`. Named `00-` deliberately: sshd
+  uses the FIRST value it reads per keyword, and Ubuntu's cloud-init ships a
+  `PasswordAuthentication yes` in `50-cloud-init.conf` that would otherwise
+  win over a later-sorted drop-in.
 - fail2ban with the default sshd jail bans brute-force sources.
 - Access = your public key in the relevant `authorized_keys`. No shared
   passwords exist.
