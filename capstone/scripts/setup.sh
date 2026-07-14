@@ -22,6 +22,17 @@ if [ ! -s secrets/gateway_admin_password.txt ]; then
   echo "Generating secrets/gateway_admin_password.txt"
   openssl rand -base64 24 > secrets/gateway_admin_password.txt
 fi
+# Postgres credentials are first-boot values (initdb); generated once, then
+# they live in the postgres-data volume. Remember to mirror them into the
+# repo's GitHub Actions secrets (see secrets/README.md).
+if [ ! -s secrets/postgres_username.txt ]; then
+  echo "Generating secrets/postgres_username.txt"
+  printf 'oat_%s' "$(openssl rand -hex 4)" > secrets/postgres_username.txt
+fi
+if [ ! -s secrets/postgres_password.txt ]; then
+  echo "Generating secrets/postgres_password.txt"
+  openssl rand -base64 24 | tr -d '\n' > secrets/postgres_password.txt
+fi
 # Owned by the in-container ignition user (uid 2003), mode 400: compose
 # bind-mounts secret files as-is, and the gateway must be able to read it
 # (root-owned 600 = AccessDeniedException at commissioning).
