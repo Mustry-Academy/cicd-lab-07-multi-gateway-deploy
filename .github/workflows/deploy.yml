@@ -172,6 +172,12 @@ jobs:
             fi
           done
 
+          # system-properties is per-gateway identity: the repo carries the
+          # LOCAL dev gateway's copy (systemName lab07-local), production
+          # keeps its own (cicd-capstone). Never ship it.
+          rm -rf payload/services/config/resources/core/ignition/system-properties
+          echo "  (stripped system-properties — per-gateway identity never ships)"
+
       - name: Verify deploy prerequisites
         run: |
           set -euo pipefail
@@ -284,6 +290,10 @@ jobs:
         #     and identity-provider/default/ — the internal identity;
         #     users.json holds THIS gateway's admin password hash. Wiping or
         #     overwriting it locks everyone out.
+        #   config/resources/core/ignition/system-properties/ — the gateway's
+        #     NAME. The repo copy is the local dev gateway's (lab07-local);
+        #     the payload never carries it, and the wipe leaves production's
+        #     (cicd-capstone) alone.
         run: |
           set -euo pipefail
           # -u root twice over: docker cp writes root-owned files, so only
@@ -309,7 +319,8 @@ jobs:
             fi
             if [ -d '$GATEWAY_DATA_PATH/config/resources/core/ignition' ]; then
               find '$GATEWAY_DATA_PATH/config/resources/core/ignition' -mindepth 1 -maxdepth 1 \
-                ! -name user-source ! -name identity-provider -exec rm -rf {} +
+                ! -name user-source ! -name identity-provider \
+                ! -name system-properties -exec rm -rf {} +
             fi
             if [ -d '$GATEWAY_DATA_PATH/config/resources/core/ignition/user-source' ]; then
               find '$GATEWAY_DATA_PATH/config/resources/core/ignition/user-source' -mindepth 1 -maxdepth 1 \

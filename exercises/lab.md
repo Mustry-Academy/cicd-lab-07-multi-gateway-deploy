@@ -129,8 +129,8 @@ Production is never your dev box. The repo brings its own local stack, the
 same move as every previous lab:
 
 ```bash
-docker compose up -d
-open http://localhost:8088     # admin / MergeIntoMain! — same login as the cloud gateway
+./scripts/setup.sh             # compose up + first-boot fix, idempotent
+open http://localhost:8088     # admin / password
 ```
 
 > **Coming straight from lab 06?** Shut its stack down first
@@ -142,10 +142,12 @@ open http://localhost:8088     # admin / MergeIntoMain! — same login as the cl
   tree: a save in the Designer lands in your working tree immediately, so
   `git status` is your export step. Review the diff; commit only what you
   meant to change (the `.gitignore` keeps gateway-owned noise out).
-- **Two files stay dirty on purpose:** first boot rewrites
-  `security-properties` and `system-properties` in the mounted config —
-  that's your local gateway stamping its own identity. Leave them out of
-  every commit (CI blocks the PR if they sneak in).
+- **First boot needs one fix-up — `setup.sh` does it:** commissioning
+  stamps a temporary identity into the mounted config (`temp` user source,
+  rewritten `security-properties`). `setup.sh` turns that into the standard
+  local identity — `default` user source, **admin / password** — and leaves
+  `git status` clean. Re-run it any time; CI blocks the PR if the
+  commissioning churn ever sneaks into a commit.
 - **Local database:** `ignition` on `localhost:5432`
   (`ignition` / `lab07-postgres-pw`). Test your migration pairs with
   `scripts/migrate.sh up` before they ever reach the PR.
