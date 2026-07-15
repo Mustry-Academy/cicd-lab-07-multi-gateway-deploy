@@ -50,7 +50,10 @@
 #                                 in-network HTTP (and even via caddy the
 #                                 request reaches Jetty unencrypted), so a
 #                                 secure-channel-only token can never
-#                                 authenticate a deploy scan.
+#                                 authenticate a deploy scan. Rotate with
+#                                 scripts/mint-api-key.sh (updates the
+#                                 resource AND the secret), then cut + pin
+#                                 the next oatmakers tag.
 #   Secret:   POSTGRES_USERNAME   The referenced secret Tom's DB connection
 #                                 reads via the file secret provider; also
 #                                 the user migrations run as.
