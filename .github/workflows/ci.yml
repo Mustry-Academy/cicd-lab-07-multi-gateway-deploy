@@ -189,8 +189,20 @@ jobs:
                   continue
               tag = f"{name}@{version}"
               if tag not in tags:
+                  # Tag races are part of the lab: tell the student what IS
+                  # released for this project and which number is free next.
+                  taken = sorted(
+                      tuple(map(int, m.groups()))
+                      for t in tags
+                      if (m := re.fullmatch(rf"{re.escape(str(name))}@v(\d+)\.(\d+)\.(\d+)", t)))
+                  if taken:
+                      latest = taken[-1]
+                      hint = (f"existing releases: {', '.join('v%d.%d.%d' % v for v in taken)} — "
+                              f"next free is v{latest[0]}.{latest[1]}.{latest[2] + 1}")
+                  else:
+                      hint = "no releases exist for this project yet — start at v1.0.0"
                   err(f"{name}: pinned at {version} but tag '{tag}' does not exist — "
-                      "push the tag first, the release must exist before release.yaml may point at it")
+                      f"push the tag first, the release must exist before release.yaml may point at it ({hint})")
                   continue
               tree = subprocess.run(
                   ["git", "ls-tree", "-d", f"refs/tags/{tag}", "--", f"projects/{name}"],
@@ -399,6 +411,66 @@ jobs:
       - name: actionlint
         uses: raven-actions/actionlint@v2
 
+  # Students author their own test-<name>.yml workflows (Part 0). The runner
+  # inside the capstone stack is root-equivalent on the production server, so
+  # exactly two workflows may ever target it — and no pull_request workflow
+  # may use ANY self-hosted runner (PR code is unreviewed by definition; see
+  # capstone/docs/security-model.md §4). This catches honest mistakes; review
+  # catches the rest.
+  workflow-hygiene:
+    name: Workflow hygiene
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: No student workflow on the production runner
+        run: |
+          set -euo pipefail
+          pip install pyyaml==6.0.2
+          python3 - <<'EOF'
+          import glob, sys, yaml
+
+          PROD_LABEL = "cicd-capstone"
+          PROD_ALLOWED = {"deploy.yml", "deploy-capstone.yml"}
+          ERRORS = []
+
+          def runs_on_labels(job):
+              ro = job.get("runs-on", [])
+              if isinstance(ro, str):
+                  return [ro]
+              if isinstance(ro, dict):  # runs-on: {group: ..., labels: [...]}
+                  labels = ro.get("labels", [])
+                  return [labels] if isinstance(labels, str) else list(labels)
+              return list(ro)
+
+          for path in sorted(glob.glob(".github/workflows/*.yml") + glob.glob(".github/workflows/*.yaml")):
+              name = path.rsplit("/", 1)[-1]
+              with open(path) as f:
+                  wf = yaml.safe_load(f) or {}
+              # PyYAML parses the 'on:' key as boolean True.
+              triggers = wf.get("on", wf.get(True, {}))
+              if isinstance(triggers, str):
+                  triggers = {triggers: None}
+              if isinstance(triggers, list):
+                  triggers = {t: None for t in triggers}
+              pr_triggered = any(t.startswith("pull_request") for t in triggers)
+              for job_id, job in (wf.get("jobs") or {}).items():
+                  labels = runs_on_labels(job or {})
+                  if PROD_LABEL in labels and name not in PROD_ALLOWED:
+                      ERRORS.append(f"{path}: job '{job_id}' targets the production "
+                                    f"runner label '{PROD_LABEL}' — only "
+                                    f"{sorted(PROD_ALLOWED)} may run there")
+                  if pr_triggered and "self-hosted" in labels:
+                      ERRORS.append(f"{path}: job '{job_id}' runs on a self-hosted "
+                                    "runner from a pull_request trigger — PR code is "
+                                    "unreviewed, this is never allowed")
+
+          for e in ERRORS:
+              print(f"::error::{e}")
+          sys.exit(1 if ERRORS else 0)
+          EOF
+          echo "All workflows respect the runner rules."
+
   # The ONE required status check for branch protection. Aggregates whatever
   # ran: a skipped job (path didn't match) is fine, a failed one blocks.
   ci-ok:
@@ -412,6 +484,7 @@ jobs:
       - validate-gateway-payload
       - capstone
       - lint-workflows
+      - workflow-hygiene
     if: always()
     steps:
       - name: Aggregate results

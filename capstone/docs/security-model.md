@@ -82,10 +82,16 @@ hold:
 
 - Reachable only through Caddy over TLS; the 8088 listener never touches the
   internet.
-- Licensed (no trial-reset churn), commissioned with a generated admin
-  password held by instructors; students do not get gateway admin.
-- Student deploys authenticate with an Ignition 8.3 **API token** scoped to
-  the scan endpoints, not with the admin account.
+- Students get the **shared admin login** for the duration of the course (it
+  is printed in the assignment slides). This is a deliberate, accepted risk,
+  bounded by three facts: the gateway holds only course content; every deploy
+  wipes UI-made config back to the repo's `services/config/`, so no UI change
+  outlives the next merge; and the credential is rotated after each cohort
+  (`gwcmd.sh -p`, then complete commissioning — runbook §4b — and update the
+  slides for the next group).
+- The pipeline never uses that account: deploys authenticate with an Ignition
+  8.3 **API token** (rotate with `scripts/mint-api-key.sh`), so a student
+  changing the admin password mid-lab cannot break the deploy channel.
 - `GATEWAY_PUBLIC_ADDRESS` pins redirects and Designer links to the public
   hostname, so the internal address never leaks into client flows.
 

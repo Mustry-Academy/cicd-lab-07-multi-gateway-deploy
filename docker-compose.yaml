@@ -108,6 +108,101 @@ services:
     networks:
       - default
 
+  # ---- Part 0: the personal test gateway (provided — this is not a docker
+  # course). Start it with:
+  #
+  #   LAB_USER=<yourname> RUNNER_TOKEN=<from Sam or Jasper> \
+  #     docker compose --profile test up -d
+  #
+  # It tracks a SECOND clone of this repo at ../lab07-test (make it first:
+  # git clone <this repo> ../lab07-test). Your test-<yourname>.yml workflow
+  # fast-forwards that clone and restarts this gateway; your working clone
+  # never gets touched by the pipeline. Plain `docker compose up -d` starts
+  # only the dev stack above — the test pair only rides the --profile flag.
+  test-gateway:
+    profiles: ["test"]
+    image: inductiveautomation/ignition:8.3.7
+    container_name: lab07-test-gateway
+    hostname: lab07-test-gateway
+    user: root
+    restart: unless-stopped
+    ports:
+      - "8090:8088"
+    volumes:
+      - test-gateway-data:/usr/local/bin/ignition/data
+      - ../lab07-test/projects:/usr/local/bin/ignition/data/projects
+      - ../lab07-test/services/config:/usr/local/bin/ignition/data/config
+      - ../lab07-test/services/modules.json:/usr/local/bin/ignition/data/modules.json
+      - ../lab07-test/third-party-modules:/third-party-modules
+      - ../lab07-test/dev/secrets:/run/secrets:ro
+    environment:
+      ACCEPT_IGNITION_EULA: "Y"
+      IGNITION_EDITION: standard
+      GATEWAY_ADMIN_USERNAME: admin
+      GATEWAY_ADMIN_PASSWORD: MergeIntoMain!
+      TZ: "Europe/Brussels"
+    command: >
+      -n lab07-test
+      -m 1024
+      --
+      wrapper.java.initmemory=256
+      -Dignition.allowunsignedmodules=true
+      -Dignition.gateway.externalModulesFolder=/third-party-modules
+      -Dignition.config.mode=dev
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8088/StatusPing"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 90s
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+        reservations:
+          memory: 512M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - default
+
+  # The laptop runner your test-<yourname>.yml runs on. Registration needs a
+  # repo-admin token, which contributors cannot mint — RUNNER_TOKEN comes
+  # from Sam or Jasper (valid 1 h; only needed on FIRST start, the
+  # registration persists in the runner-state volume afterwards).
+  test-runner:
+    profiles: ["test"]
+    image: myoung34/github-runner:latest
+    container_name: lab07-test-runner
+    hostname: lab07-test-runner
+    restart: unless-stopped
+    environment:
+      REPO_URL: "https://github.com/Mustry-Academy/cicd-lab-07-multi-gateway-deploy"
+      RUNNER_TOKEN: "${RUNNER_TOKEN:-}"
+      RUNNER_NAME: "${LAB_USER:-UNSET}-local-runner"
+      RUNNER_SCOPE: repo
+      # If this says UNSET you forgot LAB_USER=<yourname> on the compose command.
+      LABELS: "self-hosted,${LAB_USER:-UNSET}-local"
+      DISABLE_AUTO_UPDATE: "true"
+      # Persist the registration across recreates (same move as the capstone
+      # runner): first start needs RUNNER_TOKEN, later starts do not.
+      CONFIGURED_ACTIONS_RUNNER_FILES_DIR: /runner-state
+      DISABLE_AUTOMATIC_DEREGISTRATION: "true"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ../lab07-test:/workspace/lab07-test
+      - test-runner-state:/runner-state
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - default
+
   postgres:
     image: postgres:17.5
     container_name: lab07-postgres
@@ -136,4 +231,6 @@ services:
 
 volumes:
   gateway-data:
+  test-gateway-data:
+  test-runner-state:
   postgres-data:
