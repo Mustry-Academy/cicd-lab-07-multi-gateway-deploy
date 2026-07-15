@@ -22,6 +22,6 @@
   "scheduledBackupsEnabled": false,
   "scriptMessageEncoding": "Protobuf",
   "secondsBeforeFailover": 60,
-  "systemName": "cicd-capstone",
+  "systemName": "lab07-local",
   "useCondensedDialogFont": false
 }

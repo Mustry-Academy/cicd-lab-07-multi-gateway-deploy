@@ -288,13 +288,15 @@ jobs:
           EOF
           echo "Module manifest and third-party-modules/ agree."
 
-      - name: Gateway identity stays production's
-        # A fresh LOCAL dev gateway rewrites these two resources on first
-        # boot (systemName → lab07-local, and its auth commissioning drops
-        # the APIKEY security level that authorizes the deploy's scan API).
-        # That churn is expected in your working tree and must NEVER merge:
-        # shipped to production it would rename the gateway and break every
-        # deploy's scan step. Leave the two files out of your commits.
+      - name: Gateway identity resources stay clean
+        # Same model as the earlier labs: the repo carries the LOCAL
+        # gateway's identity (systemName lab07-local), and the deploy
+        # never ships system-properties — production keeps its own name.
+        # security-properties DOES deploy (permission policy, including
+        # the APIKEY security level the deploy's scan API needs), so
+        # first-boot commissioning churn (temp auth profile) must never
+        # merge. Run scripts/fix-first-boot.sh once after a fresh clone's
+        # first `docker compose up` and this stays green by itself.
         run: |
           set -euo pipefail
           sp="services/config/resources/core/ignition/security-properties/config.json"
@@ -305,18 +307,18 @@ jobs:
           fi
           fail=0
           if ! grep -q '"APIKEY"' "$sp"; then
-            echo "::error file=$sp::The APIKEY security level is gone — this is your LOCAL gateway's rewrite, don't commit it (git checkout the file)"
+            echo "::error file=$sp::The APIKEY security level is gone — this is first-boot commissioning churn, run scripts/fix-first-boot.sh (or git checkout the file)"
             fail=1
           fi
           if ! grep -q '"systemAuthProfile": "default"' "$sp"; then
-            echo "::error file=$sp::systemAuthProfile changed — local first-boot churn, don't commit it"
+            echo "::error file=$sp::systemAuthProfile is not default — first-boot commissioning churn, run scripts/fix-first-boot.sh (or git checkout the file)"
             fail=1
           fi
-          if ! grep -q '"systemName": "cicd-capstone"' "$syp"; then
-            echo "::error file=$syp::systemName is not cicd-capstone — local first-boot churn, don't commit it"
+          if ! grep -q '"systemName": "lab07-local"' "$syp"; then
+            echo "::error file=$syp::systemName is not lab07-local — the repo carries the LOCAL gateway's identity; don't commit another gateway's rewrite"
             fail=1
           fi
-          [ "$fail" -eq 0 ] && echo "Gateway identity resources match production."
+          [ "$fail" -eq 0 ] && echo "Gateway identity resources are clean."
           exit "$fail"
 
       - name: Migration pairs (.up.sql ↔ .down.sql)
