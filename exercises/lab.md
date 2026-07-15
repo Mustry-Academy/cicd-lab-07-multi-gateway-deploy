@@ -229,12 +229,12 @@ your machine.
 
 **3. Add your own workflow file** named for you,
 `.github/workflows/test-<yourname>.yml`. It triggers on push to `main`, runs
-on your label, fast-forwards the **test clone** to `main` (your runner
-already has it mounted at `/workspace/lab07-test`), and **restarts the test
-gateway container** (`lab07-test-gateway`) so it boots the fresh files — a gateway only
-reads externally-changed files at boot or on an authenticated scan, and a
-restart is the honest local version of what the production deploy does for
-boot-time payload:
+on your label and fast-forwards the **test clone** to `main` (your runner
+already has it mounted at `/workspace/lab07-test`). That is all it does: the
+test gateway runs in **dev config mode**, which watches the mounted files
+and applies changes as they land — no restart, no scan call. The production
+gateway runs in prod mode, where nothing applies until the deploy's
+authenticated scan:
 
 ```yaml
 name: test-<yourname>
@@ -279,9 +279,7 @@ git switch -c feature/<yourname>-project
 ```
 
 **2. Add your project:** `projects/<yourname>/` with one simple Perspective
-view that shows your name. Copy the skeleton in
-[`projects/skeleton/`](../projects/skeleton/README.md) and make it yours —
-its README is the three-step recipe.
+view that shows your name.
 
 ```bash
 git add projects/<yourname>/

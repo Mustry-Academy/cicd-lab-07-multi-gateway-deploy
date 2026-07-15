@@ -97,19 +97,21 @@ and all gateway config; the pipeline routes each piece to its gateway:
 
 ```
 oatmakers-repo/
-├─ projects/                  # one folder, all projects
-│  ├─ oatmakers/              # HMI            → gw-frontend
-│  ├─ oatmakers-packaging/    # HMI            → gw-frontend
-│  └─ oatmakers-shared/       # shared library → both gateways
-├─ gateways/                  # a config folder per gateway
-│  ├─ gw-frontend/            # sessions, auth, gateway network
-│  └─ gw-backend/             # devices, tag providers, history
+├─ projects/                       # one folder, all projects
+│  ├─ oatmakers/                   # HMI            → gw-frontend
+│  ├─ oatmakers-shared/            # its parent     → gw-frontend
+│  ├─ oatmakers-packaging/         # HMI            → gw-frontend
+│  └─ oatmakers-packaging-shared/  # its parent     → gw-frontend
+├─ gateways/                       # a config folder per gateway
+│  ├─ gw-frontend/                 # sessions, auth, gateway network
+│  └─ gw-backend/                  # devices, tag providers, history
 └─ .github/workflows/deploy.yml
 ```
 
 - Each project in `projects/` can deploy to a **different gateway**.
-- `oatmakers-shared` is the library project the HMIs inherit from and the
-  gateway scripts live in — it deploys to **both** gateways.
+- Each HMI has its **own parent project** it inherits from
+  (`oatmakers-shared`, `oatmakers-packaging-shared`); a parent deploys to
+  every gateway that runs its child.
 - Each gateway has its **own config folder** under `gateways/`.
 - The payoff of one repo: a screen change and its tag change are **one PR** —
   reviewed together, deployed together, to two different gateways.
@@ -131,41 +133,30 @@ oatmakers-releases/
 │  ├─ gw-site4-backend.yaml
 │  ├─ gw-site4-frontend.yaml
 │  ├─ … sites 2, 3, 5 … 8 …
-│  ├─ gw-central.yaml
-│  └─ rollout.yaml          # wave ordering
+│  └─ gw-central.yaml
 ├─ test/
 │  └─ gw-test.yaml
 └─ dev/
    └─ gw-dev.yaml           # tracks main, auto
 ```
 
-One file per gateway, each project pinned to a version:
+One file per gateway; each project pinned to a version, its parent pinned
+underneath it:
 
 ```yaml
 # releases/prod/gw-site4-frontend.yaml
 gateway: gw-site4-frontend
 projects:
-  oatmakers:           v2.0.1   # the hotfix
-  oatmakers-packaging: v1.4.0
-  oatmakers-shared:    v1.9.2   # shared library
+  oatmakers:
+    version: v2.0.1   # the hotfix
+    shared:  v1.9.2   # its parent, pinned with it
+  oatmakers-packaging:
+    version: v1.4.0
+    shared:  v1.2.0
 ```
 
 This file **is** the record of what runs on `gw-site4-frontend`. Change the
 file, and the pipeline makes it true.
-
-`rollout.yaml` orders the waves for prod:
-
-```yaml
-# releases/prod/rollout.yaml
-waves:
-  - name: canary
-    gateways: [gw-site4-backend, gw-site4-frontend]
-    soak: 30m
-  - name: fleet
-    gateways: [sites 1 to 3 and 5 to 8]
-  - name: enterprise
-    gateways: [gw-central]
-```
 
 And dev is the deliberate exception — no pins:
 
@@ -179,15 +170,16 @@ Pinning starts where humans need control: test and prod.
 
 ### A promotion is a pull request
 
-1. **The PR:** bump `oatmakers: v2.0.0 → v2.0.1` in the canary site's
+1. **The PR:** bump `oatmakers: v2.0.0 → v2.0.1` in site 4's
    frontend file (that is where the HMI runs). The
    diff *is* the release note: exactly what changes, exactly where.
 2. **Review is the approval gate.** The reviewer approves a promotion, not
    code. Merging is the trigger; nobody logs into a gateway.
-3. **Wave 1, the canary:** site 4's own runner deploys its two gateways,
-   then health checks and a soak period.
-4. **Later waves fan out** in `rollout.yaml` order — the fleet, then
-   `gw-central` last. A failed verify in any wave stops everything after it.
+3. **Site 4 goes first:** its own runner deploys its two gateways and runs
+   the health checks; then you deliberately wait half an hour and watch. The
+   least critical site proves the release before anything else moves.
+4. **The rest follows:** the same bump for the other sites, then
+   `gw-central` last. A failed check at any point stops everything after it.
 5. **Rollback is `git revert`** of the release PR: the file goes back, the
    pipeline makes the old pins true again. No snowflake knowledge, no 02:00
    archaeology — the file is the state.
@@ -206,16 +198,17 @@ runners live, and how versions are made inside a bigger repository.
 
 ### Option A — one repository deploying to every site
 
-The same idea scaled out. One repo holds every project (including the shared
-library `oatmakers-shared`), a config folder per gateway across all sites,
-and the migrations:
+The same idea scaled out. One repo holds every project (each HMI with its
+own parent project), a config folder per gateway across all sites, and the
+migrations:
 
 ```
 oatmakers-repo/
 ├─ projects/
-│  ├─ oatmakers/              # every site's HMI
+│  ├─ oatmakers/                   # every site's HMI
+│  ├─ oatmakers-shared/            # its parent, one copy
 │  ├─ oatmakers-packaging/
-│  └─ oatmakers-shared/       # shared library, one copy
+│  └─ oatmakers-packaging-shared/  # its parent
 ├─ gateways/
 │  ├─ gw-site1-backend/ … gw-site8-frontend/
 │  └─ gw-central/
@@ -229,7 +222,7 @@ oatmakers-repo/
   needs inbound access.
 - **db-migrations ship the same way:** each site's runner migrates that
   site's database before shipping the projects — exactly the lab 06 order.
-- **Payoff:** the shared library is one folder in one repo — change it once
+- **Payoff:** a parent project is one folder in one repo — change it once
   and every site's next deploy carries it.
 - **The release files from earlier in this part do the bookkeeping.** The
   repo says what exists; one file per gateway says which version runs where.
@@ -257,28 +250,31 @@ The other folders are present in the checkout and completely ignored; their
 version numbers don't move. Five commits, four tags, four independent version
 sequences in one repository.
 
-**The shared library is the parent project.** `oatmakers-shared` is versioned
-and tagged like any other project, and every gateway runs it **next to** its
-projects — the HMIs inherit from it. That is why it is pinned explicitly in
-every gateway's release file:
+**A parent project is versioned like any other project.** `oatmakers-shared`
+is tagged on its own stream, and every gateway that runs `oatmakers` runs the
+parent **next to** it — the HMI inherits from it. That is why each parent is
+pinned explicitly in every gateway's release file:
 
 ```yaml
 # releases/prod/gw-site4-frontend.yaml
 projects:
-  oatmakers:           v2.0.1   # its own tag
-  oatmakers-packaging: v1.4.0   # its own tag
-  oatmakers-shared:    v1.9.2   # the parent project, deployed alongside
+  oatmakers:
+    version: v2.0.1   # its own tag
+    shared:  v1.9.2   # its parent, deployed alongside
+  oatmakers-packaging:
+    version: v1.4.0
+    shared:  v1.2.0
 ```
 
-Delivery is unchanged: release files, promotion by PR, `rollout.yaml` waves,
-each site's runner delivering its own.
+Delivery is unchanged: release files, promotion by PR, each site's runner
+delivering its own.
 
 **One discipline: ship tested combinations only.** `oatmakers@v2.0.1` was
 built and tested against whatever `oatmakers-shared` state commit `e85`
 contained. Pair that artifact on a gateway with a *different* parent version
 and you ship a combination that has never run together. Two mitigations:
 
-1. **One `oatmakers-shared` version per environment.** Everything in test
+1. **One version of each parent per environment.** Everything in test
    runs the same parent; everything in prod runs the same parent. What you
    tested together is what ships together, by construction. Start here.
 2. **Record the dependency in the artifact.** At build time

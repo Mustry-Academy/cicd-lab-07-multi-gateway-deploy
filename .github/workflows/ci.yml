@@ -99,7 +99,7 @@ jobs:
             exit 0
           fi
           if [ ! -f "$dir/project.json" ]; then
-            echo "::error file=$dir::Missing project.json — is this a real Ignition project? Copy the skeleton."
+            echo "::error file=$dir::Missing project.json — is this a real Ignition project?"
             exit 1
           fi
           fail=0
