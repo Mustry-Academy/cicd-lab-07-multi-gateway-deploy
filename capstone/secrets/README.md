@@ -24,9 +24,36 @@ that is intended; secrets are not backed up through git.
 The two postgres values must ALSO exist as GitHub Actions secrets
 (`POSTGRES_USERNAME` / `POSTGRES_PASSWORD`) in this repo: the Deploy workflow
 materializes them for the gateway's file secret provider and uses them to run
-migrations. Same value, two homes — set both when you (re)generate them:
+migrations. Same value, two homes — `setup.sh` generates the files AND pushes
+both secrets on first bring-up (via `scripts/sync-github-secrets.sh`). For the
+push to work unattended on the server, the `RUNNER_GITHUB_PAT` in `.env` needs
+the fine-grained **"Secrets: Read and write"** repo permission; without it the
+script prints the two `gh secret set` commands to run from a laptop.
+
+Re-sync any time (idempotent):
 
 ```bash
-gh secret set POSTGRES_USERNAME --repo Mustry-Academy/cicd-lab-07-multi-gateway-deploy < secrets/postgres_username.txt
-gh secret set POSTGRES_PASSWORD --repo Mustry-Academy/cicd-lab-07-multi-gateway-deploy < secrets/postgres_password.txt
+capstone/scripts/sync-github-secrets.sh
 ```
+
+## Rotating
+
+**Postgres password** (the username survives rotation; it is baked into the
+data volume by initdb):
+
+```bash
+# on the server, in /opt/cicd-lab-07/capstone — write IN PLACE (>): the
+# compose file-secret is bind-mounted by inode, mv would detach it
+openssl rand -hex 24 | tr -d '\n' > secrets/postgres_password.txt
+docker exec cicd-capstone-postgres sh -c \
+  'u="$(cat /run/secrets/postgres_username)"; p="$(cat /run/secrets/postgres_password)"; \
+   psql -U "$u" -d ignition -c "ALTER USER \"$u\" WITH PASSWORD '\''$p'\'';"'
+scripts/sync-github-secrets.sh
+```
+
+Then re-run the Deploy workflow (workflow_dispatch) so the gateway's
+`/run/secrets/POSTGRES_*` files pick up the new value.
+
+**Ignition API key:** `scripts/mint-api-key.sh` at the repo root — updates the
+api-token resource and the `IGNITION_API_KEY` secret in one go, then walk the
+tag + pin flow it prints.
