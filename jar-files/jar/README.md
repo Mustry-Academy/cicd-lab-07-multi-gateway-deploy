@@ -1,4 +1,4 @@
-# modules/jar/
+# jar-files/jar/
 
 Library JARs the deploy copies into the gateway's `lib/core/gateway/` (loaded
 at boot — the deploy restarts the gateway when one changes). Pin exact
