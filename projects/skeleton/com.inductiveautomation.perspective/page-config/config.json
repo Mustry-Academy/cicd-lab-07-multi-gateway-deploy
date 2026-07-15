@@ -1,8 +1,0 @@
-{
-  "pages": {
-    "/": {
-      "title": "Welcome",
-      "viewPath": "welcome"
-    }
-  }
-}

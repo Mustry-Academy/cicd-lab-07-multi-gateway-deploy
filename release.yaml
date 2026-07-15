@@ -1,9 +1,5 @@
-# What runs on production (oatmakers-site-7), right now.
-#
-# This file is the ONLY deploy trigger: merge a change here and the Deploy
-# workflow makes it true. Each pin is a git tag "<project>@<version>" — the
-# tag must exist BEFORE this file may point at it (CI checks that on the PR).
-# Rollback = git revert of the release PR.
+
+
 gateway: oatmakers-site-7
 projects:
   oatmakers: v2.0.3
