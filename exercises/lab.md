@@ -134,6 +134,10 @@ open http://localhost:8088     # admin / MergeIntoMain! — same login as the cl
   tree: a save in the Designer lands in your working tree immediately, so
   `git status` is your export step. Review the diff; commit only what you
   meant to change (the `.gitignore` keeps gateway-owned noise out).
+- **Two files stay dirty on purpose:** first boot rewrites
+  `security-properties` and `system-properties` in the mounted config —
+  that's your local gateway stamping its own identity. Leave them out of
+  every commit (CI blocks the PR if they sneak in).
 - **Local database:** `ignition` on `localhost:5432`
   (`ignition` / `lab07-postgres-pw`). Test your migration pairs with
   `scripts/migrate.sh up` before they ever reach the PR.

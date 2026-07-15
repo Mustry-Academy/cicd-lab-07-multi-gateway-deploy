@@ -30,10 +30,13 @@ services/config/com.inductiveautomation.opcua/
 
 # The gateway-owned INTERNAL identity: users.json holds THIS gateway's admin
 # password hash. Committing it ships your local admin credentials to
-# production — and locks everyone out.
+# production — and locks everyone out. The temp/ variants are what
+# first-boot commissioning creates on a fresh local gateway.
 services/config/resources/core/ignition/user-source/default/
 services/config/resources/core/ignition/user-source/opcua-module/
+services/config/resources/core/ignition/user-source/temp/
 services/config/resources/core/ignition/identity-provider/default/
+services/config/resources/core/ignition/identity-provider/temp/
 
 # Internal content-addressed blob store + upgrade artifacts (rebuilt on scan)
 **/.resources/

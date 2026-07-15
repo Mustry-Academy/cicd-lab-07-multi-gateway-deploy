@@ -38,6 +38,12 @@
 # cloud gateway's keys and those keys never leave it. Re-save such a resource
 # locally if you need it working here, and do NOT commit that machine-local
 # rewrite (it would break the cloud gateway the same way in reverse).
+#
+# Expected first-boot churn: a fresh local gateway rewrites TWO tracked
+# files in the mounted config — system-properties (its own systemName) and
+# security-properties (its own auth setup, which drops the cloud's APIKEY
+# level). Leave them dirty locally and NEVER commit them; CI blocks the PR
+# if you do.
 
 name: lab07
 
