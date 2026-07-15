@@ -1,0 +1,19 @@
+{
+  "profile": {
+    "type": "file"
+  },
+  "settings": {
+    "files": {
+      "POSTGRES_USERNAME": {
+        "description": "Course database username (shipped by the Deploy workflow)",
+        "filePath": "/run/secrets/POSTGRES_USERNAME",
+        "fileType": "CLEARTEXT"
+      },
+      "POSTGRES_PASSWORD": {
+        "description": "Course database password (shipped by the Deploy workflow)",
+        "filePath": "/run/secrets/POSTGRES_PASSWORD",
+        "fileType": "CLEARTEXT"
+      }
+    }
+  }
+}

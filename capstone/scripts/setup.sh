@@ -63,6 +63,15 @@ fi
 mkdir -p backups
 chown 2003:2003 backups
 
+# Nightly gwbk + db-dump backup (scripts/backup.sh) — installed here so a
+# from-scratch rebuild needs no manual cron step. cron.d format (with user
+# field); idempotent overwrite.
+cat > /etc/cron.d/cicd-capstone-backup <<'CRON'
+10 3 * * * root /opt/cicd-lab-07/capstone/scripts/backup.sh >> /var/log/cicd-capstone-backup.log 2>&1
+CRON
+chmod 644 /etc/cron.d/cicd-capstone-backup
+echo "Backup cron installed at /etc/cron.d/cicd-capstone-backup"
+
 docker compose config -q
 docker compose up -d
 
