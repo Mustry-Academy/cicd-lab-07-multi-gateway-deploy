@@ -4,3 +4,7 @@
 self-hosted-runner:
   labels:
     - cicd-capstone
+    # Part 0: every student's personal test-gateway runner label follows the
+    # <yourname>-local convention — one glob covers them all, so a student's
+    # test-<yourname>.yml PR needs no edits here.
+    - "*-local"

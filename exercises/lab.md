@@ -133,6 +133,10 @@ docker compose up -d
 open http://localhost:8088     # admin / MergeIntoMain! — same login as the cloud gateway
 ```
 
+> **Coming straight from lab 06?** Shut its stack down first
+> (`docker compose down` in that repo) — it holds ports **8088, 8090 and
+> 5432**, all three of which this lab needs.
+
 - **The local gateway bind-mounts the repo.** `./projects`,
   `./services/config` and `./services/modules.json` ARE the gateway's file
   tree: a save in the Designer lands in your working tree immediately, so
@@ -192,27 +196,58 @@ It gives you a second local gateway that auto-deploys **every merge to
 `main`**, so you can see a change land somewhere safe before it is ever
 tagged for production. It reuses building blocks you already own: a
 self-hosted runner (labs 03-06), a `push: [main]` workflow, and Ignition's
-deployment modes (lab 04).
+config modes (lab 04).
 
-**1. Add a second gateway to `docker-compose.yaml`:** a `test-<yourname>`
-service on port `8090`, booted in **dev deployment mode**
-(`-Dignition.config.mode=dev`). Bind-mount the same repo folders as the
-local gateway (`./projects`, `./services/config`, `./services/modules.json`)
-so a fresh `main` is all it needs to reconcile.
+**1. Give the test gateway its own clone.** Your working clone is yours: you
+will be mid-branch all afternoon, and a deploy must never yank it around.
+The test gateway tracks `main` from a second, dedicated clone **next to**
+your working one:
 
-**2. Register a self-hosted runner on your laptop** with a label carrying
+```bash
+git clone git@github.com:Mustry-Academy/cicd-lab-07-multi-gateway-deploy.git ../lab07-test
+```
+
+**2. Add your gateway to `docker-compose.yaml`:** a `test-<yourname>`
+service on port `8090`, booted in **dev config mode**
+(`-Dignition.config.mode=dev` — the mode ships in the repo’s config export,
+`services/config/resources/dev/`). Bind-mount `../lab07-test`’s `projects`,
+`services/config` and `services/modules.json` — the same folders the local
+gateway mounts, but from the test clone. Put the service behind a **compose
+profile** named after you, so five people’s services can live in one file
+without five gateways fighting over port 8090 on every laptop:
+
+```yaml
+  test-<yourname>:
+    profiles: ["<yourname>"]
+    # ... the rest mirrors the local gateway service
+```
+
+Plain `docker compose up -d` keeps starting only the shared base stack;
+you start yours with:
+
+```bash
+docker compose --profile <yourname> up -d
+```
+
+**3. Register a self-hosted runner on your laptop** with a label carrying
 your name:
 
 ```
 [self-hosted, <yourname>-local]
 ```
 
-Only jobs asking for that label run on your machine.
+Only jobs asking for that label run on your machine. Give the runner
+container the docker socket and the `../lab07-test` clone as mounts — your
+workflow needs both. (CI already accepts any `*-local` label; stick to the
+naming convention.)
 
-**3. Add your own workflow file** named for you,
+**4. Add your own workflow file** named for you,
 `.github/workflows/test-<yourname>.yml`. It triggers on push to `main`, runs
-on your label, fast-forwards your clone to `main`, and lets your test gateway
-scan the change in:
+on your label, fast-forwards the **test clone** to `main`, and **restarts
+your test gateway container** so it boots the fresh files — a gateway only
+reads externally-changed files at boot or on an authenticated scan, and a
+restart is the honest local version of what the production deploy does for
+boot-time payload:
 
 ```yaml
 name: test-<yourname>
@@ -223,7 +258,7 @@ jobs:
     steps:
 ```
 
-**4. PR it in like anything else** — branch, PR, green checks, approval,
+**5. PR it in like anything else** — branch, PR, green checks, approval,
 merge. You only ever touched your own service and your own workflow file.
 
 **Verify it works:** open a small PR that changes a dashboard view. Once it
@@ -233,8 +268,11 @@ and **the change appear on `localhost:8090` on its own** — no tag, no
 
 - **Observe:** the runner **label** is the whole routing story. Five people
   can each have a `push: [main]` workflow and each one deploys only to its
-  owner's test gateway. It is the same mechanism as the site-labelled
+  owner’s test gateway. It is the same mechanism as the site-labelled
   production runner, `runs-on: [self-hosted, cicd-capstone]`.
+- **Observe:** your working clone never moved. The pipeline owns the test
+  clone; you own yours. That separation is exactly why the production
+  gateway gets its files from a **tag**, not from somebody’s desk.
 
 **Part 0 gate:** your `test-<yourname>.yml` and `test-<yourname>` gateway
 merged in, and a dashboard change proven to land on `localhost:8090` on its
