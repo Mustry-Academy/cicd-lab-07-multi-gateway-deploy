@@ -239,10 +239,72 @@ jobs:
           echo "migrate up → $POSTGRES_DB (network: $network)"
           docker start -a "$cid"
 
+      - name: Ship projects and config into gateway container
+        # Wipe-then-copy so "removed from release.yaml → removed from
+        # production" holds for projects, and "deleted in repo → deleted on
+        # gateway" holds for config. The preserved subtrees are the ones the
+        # GATEWAY owns and nothing in the payload can restore:
+        #   config/local/ and config/resources/local/  — per-instance identity
+        #     (UUID, OPC-UA keystores, machine-local system props)
+        #   config/ignition/keys/ — the gateway's secrets-management keys
+        #     (root key + KEKs) — and config/ignition/tags/ — the tag VALUE
+        #     store (retained values live there; the tag definitions ship as
+        #     resources)
+        #   config/resources/core/ignition/user-source/{default,opcua-module}/
+        #     and identity-provider/default/ — the internal identity;
+        #     users.json holds THIS gateway's admin password hash. Wiping or
+        #     overwriting it locks everyone out.
+        run: |
+          set -euo pipefail
+          # -u root twice over: docker cp writes root-owned files, so only
+          # root can wipe what the previous deploy shipped — and the chown
+          # afterwards hands the fresh files (back) to the gateway user
+          # (uid 2003), or the gateway couldn't manage its own data dir.
+          docker exec -u root "$IGNITION_CONTAINER" sh -c "
+            set -eu
+            rm -rf '$GATEWAY_DATA_PATH/projects/'*
+            find '$GATEWAY_DATA_PATH/config' -mindepth 1 -maxdepth 1 \
+              ! -name local ! -name resources ! -name ignition -exec rm -rf {} +
+            if [ -d '$GATEWAY_DATA_PATH/config/ignition' ]; then
+              find '$GATEWAY_DATA_PATH/config/ignition' -mindepth 1 -maxdepth 1 \
+                ! -name keys ! -name tags -exec rm -rf {} +
+            fi
+            if [ -d '$GATEWAY_DATA_PATH/config/resources' ]; then
+              find '$GATEWAY_DATA_PATH/config/resources' -mindepth 1 -maxdepth 1 \
+                ! -name local ! -name core -exec rm -rf {} +
+            fi
+            if [ -d '$GATEWAY_DATA_PATH/config/resources/core' ]; then
+              find '$GATEWAY_DATA_PATH/config/resources/core' -mindepth 1 -maxdepth 1 \
+                ! -name ignition -exec rm -rf {} +
+            fi
+            if [ -d '$GATEWAY_DATA_PATH/config/resources/core/ignition' ]; then
+              find '$GATEWAY_DATA_PATH/config/resources/core/ignition' -mindepth 1 -maxdepth 1 \
+                ! -name user-source ! -name identity-provider -exec rm -rf {} +
+            fi
+            if [ -d '$GATEWAY_DATA_PATH/config/resources/core/ignition/user-source' ]; then
+              find '$GATEWAY_DATA_PATH/config/resources/core/ignition/user-source' -mindepth 1 -maxdepth 1 \
+                ! -name default ! -name opcua-module -exec rm -rf {} +
+            fi
+            if [ -d '$GATEWAY_DATA_PATH/config/resources/core/ignition/identity-provider' ]; then
+              find '$GATEWAY_DATA_PATH/config/resources/core/ignition/identity-provider' -mindepth 1 -maxdepth 1 \
+                ! -name default -exec rm -rf {} +
+            fi
+          "
+          docker cp payload/projects/. "$IGNITION_CONTAINER:$GATEWAY_DATA_PATH/projects/"
+          if [ -d payload/services/config ]; then
+            docker cp payload/services/config/. "$IGNITION_CONTAINER:$GATEWAY_DATA_PATH/config/"
+          fi
+          docker exec -u root "$IGNITION_CONTAINER" \
+            chown -R 2003:2003 "$GATEWAY_DATA_PATH/projects" "$GATEWAY_DATA_PATH/config"
+          echo "Shipped project(s):"
+          find payload/projects -mindepth 1 -maxdepth 1 -type d -exec basename {} \; | sed 's/^/  /'
+
       - name: Ship boot-time payload (modules + JARs), restart if changed
-        # Modules and lib JARs only load at BOOT. Ship them, and restart the
-        # gateway only when something actually changed, so ordinary
-        # project/config deploys stay hot.
+        # Modules and lib JARs only load at BOOT. Deliberately the LAST ship
+        # step: if this restarts the gateway, nothing may touch its file
+        # tree while it boots (a wipe racing a boot faults the gateway —
+        # learned live), and the scan step below already rides out the 503s
+        # of a starting gateway.
         run: |
           set -euo pipefail
           restart=0
@@ -307,66 +369,6 @@ jobs:
           done
           echo "gateway did not come back after module restart" >&2
           exit 1
-
-      - name: Ship projects and config into gateway container
-        # Wipe-then-copy so "removed from release.yaml → removed from
-        # production" holds for projects, and "deleted in repo → deleted on
-        # gateway" holds for config. The preserved subtrees are the ones the
-        # GATEWAY owns and nothing in the payload can restore:
-        #   config/local/ and config/resources/local/  — per-instance identity
-        #     (UUID, OPC-UA keystores, machine-local system props)
-        #   config/ignition/keys/ — the gateway's secrets-management keys
-        #     (root key + KEKs) — and config/ignition/tags/ — the tag VALUE
-        #     store (retained values live there; the tag definitions ship as
-        #     resources)
-        #   config/resources/core/ignition/user-source/{default,opcua-module}/
-        #     and identity-provider/default/ — the internal identity;
-        #     users.json holds THIS gateway's admin password hash. Wiping or
-        #     overwriting it locks everyone out.
-        run: |
-          set -euo pipefail
-          # -u root twice over: docker cp writes root-owned files, so only
-          # root can wipe what the previous deploy shipped — and the chown
-          # afterwards hands the fresh files (back) to the gateway user
-          # (uid 2003), or the gateway couldn't manage its own data dir.
-          docker exec -u root "$IGNITION_CONTAINER" sh -c "
-            set -eu
-            rm -rf '$GATEWAY_DATA_PATH/projects/'*
-            find '$GATEWAY_DATA_PATH/config' -mindepth 1 -maxdepth 1 \
-              ! -name local ! -name resources ! -name ignition -exec rm -rf {} +
-            if [ -d '$GATEWAY_DATA_PATH/config/ignition' ]; then
-              find '$GATEWAY_DATA_PATH/config/ignition' -mindepth 1 -maxdepth 1 \
-                ! -name keys ! -name tags -exec rm -rf {} +
-            fi
-            if [ -d '$GATEWAY_DATA_PATH/config/resources' ]; then
-              find '$GATEWAY_DATA_PATH/config/resources' -mindepth 1 -maxdepth 1 \
-                ! -name local ! -name core -exec rm -rf {} +
-            fi
-            if [ -d '$GATEWAY_DATA_PATH/config/resources/core' ]; then
-              find '$GATEWAY_DATA_PATH/config/resources/core' -mindepth 1 -maxdepth 1 \
-                ! -name ignition -exec rm -rf {} +
-            fi
-            if [ -d '$GATEWAY_DATA_PATH/config/resources/core/ignition' ]; then
-              find '$GATEWAY_DATA_PATH/config/resources/core/ignition' -mindepth 1 -maxdepth 1 \
-                ! -name user-source ! -name identity-provider -exec rm -rf {} +
-            fi
-            if [ -d '$GATEWAY_DATA_PATH/config/resources/core/ignition/user-source' ]; then
-              find '$GATEWAY_DATA_PATH/config/resources/core/ignition/user-source' -mindepth 1 -maxdepth 1 \
-                ! -name default ! -name opcua-module -exec rm -rf {} +
-            fi
-            if [ -d '$GATEWAY_DATA_PATH/config/resources/core/ignition/identity-provider' ]; then
-              find '$GATEWAY_DATA_PATH/config/resources/core/ignition/identity-provider' -mindepth 1 -maxdepth 1 \
-                ! -name default -exec rm -rf {} +
-            fi
-          "
-          docker cp payload/projects/. "$IGNITION_CONTAINER:$GATEWAY_DATA_PATH/projects/"
-          if [ -d payload/services/config ]; then
-            docker cp payload/services/config/. "$IGNITION_CONTAINER:$GATEWAY_DATA_PATH/config/"
-          fi
-          docker exec -u root "$IGNITION_CONTAINER" \
-            chown -R 2003:2003 "$GATEWAY_DATA_PATH/projects" "$GATEWAY_DATA_PATH/config"
-          echo "Shipped project(s):"
-          find payload/projects -mindepth 1 -maxdepth 1 -type d -exec basename {} \; | sed 's/^/  /'
 
       - name: Trigger gateway scan
         # Hot reload of projects and config. Self-heal on 401/403: a gateway
