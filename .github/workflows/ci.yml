@@ -295,7 +295,7 @@ jobs:
         # security-properties DOES deploy (permission policy, including
         # the APIKEY security level the deploy's scan API needs), so
         # first-boot commissioning churn (temp auth profile) must never
-        # merge. Run scripts/fix-first-boot.sh once after a fresh clone's
+        # merge. Run scripts/setup.sh after a fresh clone's
         # first `docker compose up` and this stays green by itself.
         run: |
           set -euo pipefail
@@ -307,11 +307,11 @@ jobs:
           fi
           fail=0
           if ! grep -q '"APIKEY"' "$sp"; then
-            echo "::error file=$sp::The APIKEY security level is gone — this is first-boot commissioning churn, run scripts/fix-first-boot.sh (or git checkout the file)"
+            echo "::error file=$sp::The APIKEY security level is gone — this is first-boot commissioning churn, run scripts/setup.sh (or git checkout the file)"
             fail=1
           fi
           if ! grep -q '"systemAuthProfile": "default"' "$sp"; then
-            echo "::error file=$sp::systemAuthProfile is not default — first-boot commissioning churn, run scripts/fix-first-boot.sh (or git checkout the file)"
+            echo "::error file=$sp::systemAuthProfile is not default — first-boot commissioning churn, run scripts/setup.sh (or git checkout the file)"
             fail=1
           fi
           if ! grep -q '"systemName": "lab07-local"' "$syp"; then
