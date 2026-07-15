@@ -207,44 +207,31 @@ your working one:
 git clone git@github.com:Mustry-Academy/cicd-lab-07-multi-gateway-deploy.git ../lab07-test
 ```
 
-**2. Add your gateway to `docker-compose.yaml`:** a `test-<yourname>`
-service on port `8090`, booted in **dev config mode**
-(`-Dignition.config.mode=dev` — the mode ships in the repo’s config export,
-`services/config/resources/dev/`). Bind-mount `../lab07-test`’s `projects`,
-`services/config` and `services/modules.json` — the same folders the local
-gateway mounts, but from the test clone. Put the service behind a **compose
-profile** named after you, so five people’s services can live in one file
-without five gateways fighting over port 8090 on every laptop:
-
-```yaml
-  test-<yourname>:
-    profiles: ["<yourname>"]
-    # ... the rest mirrors the local gateway service
-```
-
-Plain `docker compose up -d` keeps starting only the shared base stack;
-you start yours with:
+**2. Start the provided test pair.** This is not a docker course, so the
+repo already carries both halves behind a compose **profile**: a
+`test-gateway` on port `8090` (booted in **dev config mode**,
+`-Dignition.config.mode=dev` — the mode ships in the config export,
+`services/config/resources/dev/`) and a `test-runner` for your laptop,
+labelled with your name. One command:
 
 ```bash
-docker compose --profile <yourname> up -d
+LAB_USER=<yourname> RUNNER_TOKEN=<ask Sam or Jasper> \
+  docker compose --profile test up -d
 ```
 
-**3. Register a self-hosted runner on your laptop** with a label carrying
-your name:
+Registering a runner needs repo-admin rights, which contributors don't
+have — that's why the registration token comes from us. It's only needed on
+the FIRST start; the registration persists afterwards. Plain
+`docker compose up -d` keeps starting only the dev stack; the test pair only
+rides the `--profile test` flag. Your runner's label is
+`[self-hosted, <yourname>-local]` — only jobs asking for that label run on
+your machine.
 
-```
-[self-hosted, <yourname>-local]
-```
-
-Only jobs asking for that label run on your machine. Give the runner
-container the docker socket and the `../lab07-test` clone as mounts — your
-workflow needs both. (CI already accepts any `*-local` label; stick to the
-naming convention.)
-
-**4. Add your own workflow file** named for you,
+**3. Add your own workflow file** named for you,
 `.github/workflows/test-<yourname>.yml`. It triggers on push to `main`, runs
-on your label, fast-forwards the **test clone** to `main`, and **restarts
-your test gateway container** so it boots the fresh files — a gateway only
+on your label, fast-forwards the **test clone** to `main` (your runner
+already has it mounted at `/workspace/lab07-test`), and **restarts the test
+gateway container** (`lab07-test-gateway`) so it boots the fresh files — a gateway only
 reads externally-changed files at boot or on an authenticated scan, and a
 restart is the honest local version of what the production deploy does for
 boot-time payload:
@@ -258,8 +245,8 @@ jobs:
     steps:
 ```
 
-**5. PR it in like anything else** — branch, PR, green checks, approval,
-merge. You only ever touched your own service and your own workflow file.
+**4. PR it in like anything else** — branch, PR, green checks, approval,
+merge. The only file you touched is your own workflow.
 
 **Verify it works:** open a small PR that changes a dashboard view. Once it
 merges to `main`, watch your `test-<yourname>` workflow run on your runner
@@ -274,8 +261,8 @@ and **the change appear on `localhost:8090` on its own** — no tag, no
   clone; you own yours. That separation is exactly why the production
   gateway gets its files from a **tag**, not from somebody’s desk.
 
-**Part 0 gate:** your `test-<yourname>.yml` and `test-<yourname>` gateway
-merged in, and a dashboard change proven to land on `localhost:8090` on its
+**Part 0 gate:** your `test-<yourname>.yml` merged in, your test gateway and
+runner up, and a dashboard change proven to land on `localhost:8090` on its
 own after a merge to `main`.
 
 ### Part 1 (±20 min) — create your project and bring it live
