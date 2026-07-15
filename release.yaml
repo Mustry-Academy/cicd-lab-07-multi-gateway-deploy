@@ -6,4 +6,4 @@
 # Rollback = git revert of the release PR.
 gateway: oatmakers-site-7
 projects:
-  oatmakers: v2.0.0
+  oatmakers: v2.0.1
