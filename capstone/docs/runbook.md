@@ -66,6 +66,28 @@ rollback is exactly this.
 2. Merge. The deploy recreates the container from the new image; the
    `gateway-data` volume carries everything across.
 
+## 4b. Changing the gateway admin password
+
+`gwcmd.sh -p` only CLEARS the password — the gateway then boots into the
+**commissioning form, served publicly**, and stays there until someone
+completes it (StatusPing still says RUNNING, so health checks won't tell
+you). The container's env/file-based auto-commissioning applies to fresh
+installs only, not to a reset. So, in one sitting:
+
+```bash
+cd /opt/cicd-lab-07/capstone
+printf '%s' 'NewPassword' > secrets/gateway_admin_password.txt   # future rebuilds
+chmod 400 secrets/gateway_admin_password.txt && chown 2003:2003 secrets/gateway_admin_password.txt
+docker exec cicd-capstone-gateway ./gwcmd.sh -p
+docker restart cicd-capstone-gateway
+# NOW: open https://cloud.mustrysolutions.com and complete the commissioning
+# form with the new credentials. Do not walk away before this step.
+```
+
+TODO(infra): automate the post-reset commissioning (entrypoint-style POST to
+the commissioning servlet, or a small script on the server) so a reset can
+never leave the public form up.
+
 ## 5. Emergency access (runner or GitHub down)
 
 SSH in and drive the same clone by hand — never edit files outside git:

@@ -194,6 +194,10 @@ jobs:
             printf '%s' "$value" > "$tmp/$name"
             docker exec "$IGNITION_CONTAINER" mkdir -p /run/secrets
             docker cp "$tmp/$name" "$IGNITION_CONTAINER:/run/secrets/$name"
+            # docker cp writes as root; the gateway (uid 2003) must be able
+            # to read the secret file.
+            docker exec -u root "$IGNITION_CONTAINER" \
+              sh -c "chown 2003:2003 '/run/secrets/$name' && chmod 400 '/run/secrets/$name'"
             echo "  shipped /run/secrets/$name"
             shipped=$((shipped + 1))
           done
@@ -321,7 +325,11 @@ jobs:
         #     overwriting it locks everyone out.
         run: |
           set -euo pipefail
-          docker exec "$IGNITION_CONTAINER" sh -c "
+          # -u root twice over: docker cp writes root-owned files, so only
+          # root can wipe what the previous deploy shipped — and the chown
+          # afterwards hands the fresh files (back) to the gateway user
+          # (uid 2003), or the gateway couldn't manage its own data dir.
+          docker exec -u root "$IGNITION_CONTAINER" sh -c "
             set -eu
             rm -rf '$GATEWAY_DATA_PATH/projects/'*
             find '$GATEWAY_DATA_PATH/config' -mindepth 1 -maxdepth 1 \
@@ -355,6 +363,8 @@ jobs:
           if [ -d payload/services/config ]; then
             docker cp payload/services/config/. "$IGNITION_CONTAINER:$GATEWAY_DATA_PATH/config/"
           fi
+          docker exec -u root "$IGNITION_CONTAINER" \
+            chown -R 2003:2003 "$GATEWAY_DATA_PATH/projects" "$GATEWAY_DATA_PATH/config"
           echo "Shipped project(s):"
           find payload/projects -mindepth 1 -maxdepth 1 -type d -exec basename {} \; | sed 's/^/  /'
 
