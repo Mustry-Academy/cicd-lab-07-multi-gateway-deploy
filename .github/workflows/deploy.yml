@@ -16,7 +16,7 @@
 #      that was never pushed is a release that does not exist, and CI's
 #      validate-release job enforces that before the merge)
 #   2. the gateway-level payload (services/config, services/modules.json,
-#      third-party-modules/, modules/jar/, db-migration/) ships from the
+#      third-party-modules/, jar-files/jar/, db-migration/) ships from the
 #      `oatmakers` pin — the shared project owns the gateway
 #   3. secret FILES are materialized from GitHub secrets and handed to the
 #      gateway's file-type secret provider (lab 06's secrets ladder)
@@ -165,7 +165,7 @@ jobs:
 
           # Gateway-level payload rides the shared project's tag.
           oat_tag="oatmakers@$(grep '^oatmakers=' /tmp/pins.env | cut -d= -f2)"
-          for path in services third-party-modules modules db-migration; do
+          for path in services third-party-modules jar-files db-migration; do
             if [ -n "$(git ls-tree -d "refs/tags/$oat_tag" -- "$path")" ]; then
               git archive "refs/tags/$oat_tag" -- "$path" | tar -x -C payload
               echo "  $path/ ← $oat_tag"
@@ -382,7 +382,7 @@ jobs:
           fi
 
           # --- library JARs → lib/core/gateway (additive) ---
-          if [ -d payload/modules/jar ]; then
+          if [ -d payload/jar-files/jar ]; then
             while IFS= read -r f; do
               name="$(basename "$f")"
               before="$(docker exec "$IGNITION_CONTAINER" md5sum "$GATEWAY_JAR_PATH/$name" 2>/dev/null | cut -d' ' -f1 || true)"
@@ -392,7 +392,7 @@ jobs:
                 echo "  shipped JAR $name"
                 restart=1
               fi
-            done < <(find payload/modules/jar -type f -name '*.jar')
+            done < <(find payload/jar-files/jar -type f -name '*.jar')
           fi
 
           if [ "$restart" -eq 0 ]; then

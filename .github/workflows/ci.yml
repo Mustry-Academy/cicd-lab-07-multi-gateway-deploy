@@ -68,7 +68,7 @@ jobs:
           {
             echo "projects=$projects"
             echo "release=$(flag '^release\.yaml$')"
-            echo "gateway_payload=$(flag '^(services/|modules/|third-party-modules/|db-migration/)')"
+            echo "gateway_payload=$(flag '^(services/|jar-files/|third-party-modules/|db-migration/)')"
             echo "capstone=$(flag '^capstone/')"
           } >> "$GITHUB_OUTPUT"
 
@@ -346,20 +346,20 @@ jobs:
           [ "$fail" -eq 0 ] && echo "All migrations come in pairs."
           exit "$fail"
 
-      - name: modules/jar/ hygiene
+      - name: jar-files/jar/ hygiene
         # Library JARs only (→ lib/core/gateway at deploy time), plus a README
         # recording where each JAR came from.
         run: |
           set -euo pipefail
-          [ -d modules/jar ] || { echo "No modules/jar/ — skipping."; exit 0; }
+          [ -d jar-files/jar ] || { echo "No jar-files/jar/ — skipping."; exit 0; }
           fail=0
           while IFS= read -r f; do
             case "$f" in
               *.jar|*/README.md|*/.gitkeep) ;;
-              *) echo "::error file=$f::Only *.jar (and a README) belong in modules/jar/"; fail=1 ;;
+              *) echo "::error file=$f::Only *.jar (and a README) belong in jar-files/jar/"; fail=1 ;;
             esac
-          done < <(find modules/jar -type f)
-          [ "$fail" -eq 0 ] && echo "modules/jar/ holds only JARs."
+          done < <(find jar-files/jar -type f)
+          [ "$fail" -eq 0 ] && echo "jar-files/jar/ holds only JARs."
           exit "$fail"
 
   capstone:

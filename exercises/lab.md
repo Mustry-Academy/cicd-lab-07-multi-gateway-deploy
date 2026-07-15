@@ -24,19 +24,6 @@ The full teaching content is written out in
 [`docs/multi-gateway-deployments.md`](../docs/multi-gateway-deployments.md);
 use it to re-read anything from the hour.
 
-<!-- TODO(infra): remaining build-out on
-     Mustry-Academy/cicd-lab-07-multi-gateway-deploy:
-     - branch protection on main: PR required, "CI OK" check required,
-       review required (Sam + Jasper), no direct pushes
-     - contributor invites for the participants (Nick, Stephan, Tom,
-       Gregory, Wout)
-     - GitHub Actions secrets: IGNITION_API_KEY, POSTGRES_USERNAME,
-       POSTGRES_PASSWORD (see capstone/secrets/README.md)
-     - file-type secret provider on the gateway pointing at /run/secrets/
-     - decide the student credential story: the slides publish
-       admin / MergeIntoMain! but capstone/docs/security-model.md says
-       students do not get gateway admin -->
-
 ## Goal
 
 You should leave this lab able to:
@@ -72,7 +59,7 @@ projects/
   oatmakers/            the shared team project (Part 2 lands here)
   <yourname>/           your own project (you create this in Part 1)
 third-party-modules/    modules the pipeline installs (lab 06)
-modules/jar/            library JARs → lib/core/gateway (lab 06)
+jar-files/jar/            library JARs → lib/core/gateway (lab 06)
 db-migration/migrate/   golang-migrate pairs (lab 06)
 release.yaml            what runs on production, the desired state
 .github/workflows/      already written; you never touch these
@@ -156,7 +143,7 @@ open http://localhost:8088     # admin / password
   provider reads on production — with the local database's login in it.
 - **Library JARs** load from `lib/core/gateway`, which can't be
   bind-mounted; copy them in once
-  (`docker cp modules/jar/<jar> lab07-gateway:/usr/local/bin/ignition/lib/core/gateway/`)
+  (`docker cp jar-files/jar/<jar> lab07-gateway:/usr/local/bin/ignition/lib/core/gateway/`)
   and restart the container.
 - The loop is always: **build locally → see it in `git diff` → PR → tag →
   release.yaml → live.**
@@ -350,7 +337,7 @@ together.
 **The rules:**
 
 - All work lands in `projects/oatmakers/` plus the lab 06 folders
-  (`third-party-modules/`, `modules/jar/`, `db-migration/`).
+  (`third-party-modules/`, `jar-files/jar/`, `db-migration/`).
 - **Finished means live:** merge your PR, cut the **next free**
   `oatmakers@v2.0.X` tag, bump `release.yaml` by PR.
 - Five people, one version stream: **pull main often**. If someone claimed
@@ -372,7 +359,7 @@ together.
 
 **Stephan — use the Commons Lang3 JAR in a string reversing function**
 
-- The `commons-lang3` JAR is **already in the repo**, in `modules/jar/` —
+- The `commons-lang3` JAR is **already in the repo**, in `jar-files/jar/` —
   we did the lab 06 download-and-pin move for you. Your job is to use it.
 - Add a project script function that reverses a string:
 
