@@ -375,21 +375,35 @@ jobs:
         # heals itself; every later deploy scans hot.
         run: |
           set -euo pipefail
+          # The gateway may still be mid-startup when we get here (a restart
+          # from the boot-payload step, a just-completed commissioning, …) —
+          # StatusPing turns RUNNING before every webapp is up, so tolerate
+          # transient 5xx / connection failures with a bounded retry.
           run_scans() {
-            local what code
+            local what code tries
             for what in projects config; do
-              code="$(curl -sS -o /dev/null -w '%{http_code}' -X POST \
-                --connect-timeout 5 --max-time 30 \
-                -H "X-Ignition-API-Token: $IGNITION_API_KEY" \
-                "$IGNITION_URL/data/api/v1/scan/$what")"
-              echo "scan $what -> HTTP $code"
-              if [ "$code" = "401" ] || [ "$code" = "403" ]; then
-                return 42
-              fi
-              if [ "$code" -lt 200 ] || [ "$code" -ge 300 ]; then
+              tries=0
+              while :; do
+                code="$(curl -sS -o /dev/null -w '%{http_code}' -X POST \
+                  --connect-timeout 5 --max-time 30 \
+                  -H "X-Ignition-API-Token: $IGNITION_API_KEY" \
+                  "$IGNITION_URL/data/api/v1/scan/$what" || echo 000)"
+                echo "scan $what -> HTTP $code"
+                if [ "$code" = "401" ] || [ "$code" = "403" ]; then
+                  return 42
+                fi
+                if [ "$code" -ge 200 ] && [ "$code" -lt 300 ]; then
+                  break
+                fi
+                if { [ "$code" -ge 500 ] || [ "$code" = "000" ]; } && [ "$tries" -lt 12 ]; then
+                  tries=$((tries + 1))
+                  echo "  gateway not ready yet — retry $tries/12 in 10s"
+                  sleep 10
+                  continue
+                fi
                 echo "scan $what failed (HTTP $code)" >&2
                 return 1
-              fi
+              done
             done
           }
           rc=0
