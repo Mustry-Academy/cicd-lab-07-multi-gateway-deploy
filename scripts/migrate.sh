@@ -38,9 +38,23 @@ fi
 NETWORK="$(docker inspect "$DB_CONTAINER" \
   --format '{{range $k, $_ := .NetworkSettings.Networks}}{{$k}}{{end}}')"
 
+# Credentials go INTO a URL, so they must be percent-encoded — same move as
+# the Deploy workflow (a ':' '@' '/' or '%' in the password breaks the URL).
+urlenc() {
+  local s="$1" out='' c i
+  for ((i = 0; i < ${#s}; i++)); do
+    c="${s:i:1}"
+    case "$c" in
+      [a-zA-Z0-9.~_-]) out+="$c" ;;
+      *) printf -v c '%%%02X' "'$c"; out+="$c" ;;
+    esac
+  done
+  printf '%s' "$out"
+}
+
 # create + docker cp + start instead of a bind mount: works identically on
 # the host and inside a containerized runner.
-DB_URL="postgres://${PG_USER}:${PG_PASS}@${DB_CONTAINER}:5432/${DATABASE}?sslmode=disable"
+DB_URL="postgres://$(urlenc "$PG_USER"):$(urlenc "$PG_PASS")@${DB_CONTAINER}:5432/${DATABASE}?sslmode=disable"
 echo "migrate $* -> ${DATABASE} (network: ${NETWORK})"
 
 cid="$(docker create --network "$NETWORK" "$MIGRATE_IMAGE" \

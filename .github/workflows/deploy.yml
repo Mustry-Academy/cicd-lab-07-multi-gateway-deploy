@@ -37,9 +37,20 @@
 # interleaved ships.
 #
 # Required setup on GitHub (Settings → Secrets and variables → Actions):
-#   Secret:   IGNITION_API_KEY    Created in the gateway UI (Config →
-#                                 Security → API Keys); needs a role with
-#                                 Project Scan + Config Scan permission.
+#   Secret:   IGNITION_API_KEY    The FULL header value the scan API expects:
+#                                 "<token-name>:<secret>", e.g.
+#                                 "CICD-APIKEY:abc...". The gateway looks the
+#                                 token up by the name BEFORE the colon, then
+#                                 checks sha256(base64url-decode(secret))
+#                                 against the tokenHash in the api-token
+#                                 resource shipped from services/config —
+#                                 those two must stay in sync. That resource
+#                                 must also carry secureChannelRequired:false:
+#                                 the runner calls the gateway over plain
+#                                 in-network HTTP (and even via caddy the
+#                                 request reaches Jetty unencrypted), so a
+#                                 secure-channel-only token can never
+#                                 authenticate a deploy scan.
 #   Secret:   POSTGRES_USERNAME   The referenced secret Tom's DB connection
 #                                 reads via the file secret provider; also
 #                                 the user migrations run as.
@@ -230,7 +241,23 @@ jobs:
 
           network="$(docker inspect "$POSTGRES_CONTAINER" \
             --format '{{range $k, $_ := .NetworkSettings.Networks}}{{$k}}{{end}}')"
-          db_url="postgres://${POSTGRES_USERNAME}:${POSTGRES_PASSWORD}@${POSTGRES_CONTAINER}:5432/${POSTGRES_DB}?sslmode=disable"
+
+          # Credentials go INTO a URL, so they must be percent-encoded: a
+          # password with ':' '@' '/' or '%' would otherwise break the URL
+          # parse — and the parser's error message echoes password fragments
+          # into a public log (GitHub only masks exact full-string matches).
+          urlenc() {
+            local s="$1" out='' c i
+            for ((i = 0; i < ${#s}; i++)); do
+              c="${s:i:1}"
+              case "$c" in
+                [a-zA-Z0-9.~_-]) out+="$c" ;;
+                *) printf -v c '%%%02X' "'$c"; out+="$c" ;;
+              esac
+            done
+            printf '%s' "$out"
+          }
+          db_url="postgres://$(urlenc "$POSTGRES_USERNAME"):$(urlenc "$POSTGRES_PASSWORD")@${POSTGRES_CONTAINER}:5432/${POSTGRES_DB}?sslmode=disable"
 
           cid="$(docker create --network "$network" "$MIGRATE_IMAGE" \
             -path=/migrations -database "$db_url" up)"

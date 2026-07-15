@@ -1,6 +1,6 @@
 {
   "profile": {
-    "secureChannelRequired": true,
+    "secureChannelRequired": false,
     "securityLevels": [
       {
         "children": [
@@ -17,6 +17,6 @@
     "type": "basic-token"
   },
   "settings": {
-    "tokenHash": "j81p-8VAIperiJQXiCN-jHM-ZeXBUnYvk66zw3flXUk"
+    "tokenHash": "nLBbIKZYgnYcCgkl9oNEAsrnbMUZpD5PllCYG_STjvM"
   }
 }
