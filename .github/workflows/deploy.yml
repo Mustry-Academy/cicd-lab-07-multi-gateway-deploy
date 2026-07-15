@@ -307,7 +307,9 @@ jobs:
         #   config/local/ and config/resources/local/  — per-instance identity
         #     (UUID, OPC-UA keystores, machine-local system props)
         #   config/ignition/keys/ — the gateway's secrets-management keys
-        #     (root key + KEKs)
+        #     (root key + KEKs) — and config/ignition/tags/ — the tag VALUE
+        #     store (retained values live there; the tag definitions ship as
+        #     resources)
         #   config/resources/core/ignition/user-source/{default,opcua-module}/
         #     and identity-provider/default/ — the internal identity;
         #     users.json holds THIS gateway's admin password hash. Wiping or
@@ -321,7 +323,7 @@ jobs:
               ! -name local ! -name resources ! -name ignition -exec rm -rf {} +
             if [ -d '$GATEWAY_DATA_PATH/config/ignition' ]; then
               find '$GATEWAY_DATA_PATH/config/ignition' -mindepth 1 -maxdepth 1 \
-                ! -name keys -exec rm -rf {} +
+                ! -name keys ! -name tags -exec rm -rf {} +
             fi
             if [ -d '$GATEWAY_DATA_PATH/config/resources' ]; then
               find '$GATEWAY_DATA_PATH/config/resources' -mindepth 1 -maxdepth 1 \

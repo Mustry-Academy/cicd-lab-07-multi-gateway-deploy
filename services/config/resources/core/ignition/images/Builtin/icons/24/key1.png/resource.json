@@ -1,0 +1,20 @@
+{
+  "scope": "A",
+  "version": 1,
+  "restricted": false,
+  "overridable": true,
+  "files": [
+    "key1.png"
+  ],
+  "attributes": {
+    "width": 24,
+    "format": "PNG",
+    "lastModification": {
+      "actor": "import",
+      "timestamp": "2026-07-14T10:02:04Z"
+    },
+    "size": 521,
+    "lastModificationSignature": "d658105f141ba9564cf8485b65ae3d4303ca6afb7ee9a3eaa8c5c2fb1ecf4eb6",
+    "height": 24
+  }
+}

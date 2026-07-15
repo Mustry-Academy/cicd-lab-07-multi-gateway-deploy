@@ -22,28 +22,21 @@ The full teaching content is written out in
 [`docs/multi-gateway-deployments.md`](../docs/multi-gateway-deployments.md);
 use it to re-read anything from the hour.
 
-<!-- TODO(infra): the shared lab repo needs its production build-out. Needed
-     on Mustry-Academy/cicd-lab-07-multi-gateway-deploy:
-     - projects/oatmakers/ seeded (plus a copyable skeleton project for Part 1)
-     - lab-06-style folders: third-party-modules/ + services/modules.json,
-       modules/jar/, db-migration/migrate/ + scripts/migrate.sh
-     - CI: path-filtered checks per project on PRs (nothing is compiled;
-       deploys check out a <prefix>@vX.Y.Z tag and copy that project's files)
-     - release.yaml at the repo root (gateway: oatmakers-site-7) + deploy
-       workflow gated on it, runs-on: [self-hosted, oatmakers-site-7]
-     - branch protection on main: PR required, green checks required,
+<!-- TODO(infra): remaining build-out on
+     Mustry-Academy/cicd-lab-07-multi-gateway-deploy:
+     - branch protection on main: PR required, "CI OK" check required,
        review required (Sam + Jasper), no direct pushes
      - contributor invites for the participants (Nick, Stephan, Tom,
        Gregory, Wout)
-     - the site-7 runner registered with label oatmakers-site-7, pointed at
-       the gateway behind https://cloud.mustrysolutions.com
-       (admin / MergeIntoMain!)
-     - POSTGRES_USERNAME as a GitHub secret + file-type secret provider on
-       the gateway; Postgres reachable from the gateway
-     - Embr Charts fingerprint + acceptance hash recorded (students download
-       the .modl themselves from the release link in Nick's assignment)
-     - commons-lang3 JAR pre-staged in modules/jar/ (Stephan's assignment
-       says it is already there) -->
+     - GitHub Actions secrets: IGNITION_API_KEY, POSTGRES_USERNAME,
+       POSTGRES_PASSWORD (see capstone/secrets/README.md)
+     - file-type secret provider on the gateway pointing at /run/secrets/
+     - slides + this file still say the deploy runs on the
+       oatmakers-site-7 runner label; the registered runner label is
+       cicd-capstone (align the wording or add the label)
+     - decide the student credential story: the slides publish
+       admin / MergeIntoMain! but capstone/docs/security-model.md says
+       students do not get gateway admin -->
 
 ## Goal
 
@@ -173,8 +166,9 @@ git switch -c feature/<yourname>-project
 ```
 
 **2. Add your project:** `projects/<yourname>/` with one simple Perspective
-view that shows your name. Copy the skeleton project the instructor points
-at and rename it.
+view that shows your name. Copy the skeleton in
+[`projects/skeleton/`](../projects/skeleton/README.md) and make it yours —
+its README is the three-step recipe.
 
 ```bash
 git add projects/<yourname>/
