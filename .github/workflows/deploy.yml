@@ -255,8 +255,13 @@ jobs:
           fi
 
           # --- third-party module binaries ---
-          if [ -d payload/third-party-modules ]; then
-            docker exec "$IGNITION_CONTAINER" mkdir -p /third-party-modules
+          # Only when there are actual .modl files (the folder ships a README
+          # from day one), and mkdir as root: the gateway process runs as the
+          # unprivileged ignition user (uid 2003), which cannot create
+          # directories at the container root.
+          if find payload/third-party-modules -type f -name '*.modl' 2>/dev/null | grep -q .; then
+            docker exec -u root "$IGNITION_CONTAINER" \
+              sh -c 'mkdir -p /third-party-modules && chown 2003:2003 /third-party-modules'
             while IFS= read -r f; do
               name="$(basename "$f")"
               before="$(docker exec "$IGNITION_CONTAINER" md5sum "/third-party-modules/$name" 2>/dev/null | cut -d' ' -f1 || true)"

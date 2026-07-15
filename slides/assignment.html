@@ -223,7 +223,7 @@ body{
       <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span><b>We locked the repo down, so no funny business.</b> Nothing reaches main without a pull request, green checks and an approval. Yes, we tried pushing to main. It says no, even to us.</span></li>
       <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span><b>Only <span class="inlinecode">release.yaml</span> decides what gets deployed.</b> And it deploys straight to production: no dev, no test, no net. That's why the lock is on the door.</span></li>
       <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span><b>Sam or Jasper approves every PR.</b> Two reviewers, five of you: there will be a queue. Small, tidy PRs jump it.</span></li>
-      <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span><b>You deploy to site 7.</b> The deploy workflow runs on that site's runner: <span class="inlinecode">runs-on: [self-hosted, oatmakers-site-7]</span>. Already set up; you never touch the workflows.</span></li>
+      <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span><b>You deploy to site 7.</b> The deploy workflow runs on that site's runner: <span class="inlinecode">runs-on: [self-hosted, cicd-capstone]</span>. Already set up; you never touch the workflows.</span></li>
       <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span><b>You get admin on our real online gateway:</b> <span class="inlinecode">https://cloud.mustrysolutions.com</span>, login <span class="inlinecode">admin</span> / <span class="inlinecode">MergeIntoMain!</span>. Have a look around before you start, and please be gentle with it: everyone's work lands on this one gateway.</span></li>
     </ul>
     <div class="goal good-g">
@@ -359,7 +359,7 @@ git push -u origin feature/wout-project</pre></div>
    oatmakers:        v2.0.0
 <span class="grn">+  wout:             v1.0.0</span></pre></div>
         <div class="obs"><span class="ob">Observe</span><p><b>The deploy checks out your tag and copies your project's files to the gateway.</b> Nothing gets built. And that is why the tag came first: <code>release.yaml</code> can only point at versions that exist.</p></div>
-        <div class="obs"><span class="ob">Observe</span><p><b>The runner label routes the deploy:</b> <code>runs-on: [self-hosted, oatmakers-site-7]</code>. Same repo, but only site 7's runner picks this job up. More sites would mean more labels, not more pipelines.</p></div>
+        <div class="obs"><span class="ob">Observe</span><p><b>The runner label routes the deploy:</b> <code>runs-on: [self-hosted, cicd-capstone]</code>. Same repo, but only the runner carrying that label picks this job up. More sites would mean more labels, not more pipelines.</p></div>
       </div>
     </div>
     <div class="goal" style="margin-top:16px">

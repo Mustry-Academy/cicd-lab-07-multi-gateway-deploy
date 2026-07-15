@@ -276,6 +276,37 @@ jobs:
           EOF
           echo "Module manifest and third-party-modules/ agree."
 
+      - name: Gateway identity stays production's
+        # A fresh LOCAL dev gateway rewrites these two resources on first
+        # boot (systemName → lab07-local, and its auth commissioning drops
+        # the APIKEY security level that authorizes the deploy's scan API).
+        # That churn is expected in your working tree and must NEVER merge:
+        # shipped to production it would rename the gateway and break every
+        # deploy's scan step. Leave the two files out of your commits.
+        run: |
+          set -euo pipefail
+          sp="services/config/resources/core/ignition/security-properties/config.json"
+          syp="services/config/resources/core/ignition/system-properties/config.json"
+          if [ ! -f "$sp" ] || [ ! -f "$syp" ]; then
+            echo "identity resources absent — skipping"
+            exit 0
+          fi
+          fail=0
+          if ! grep -q '"APIKEY"' "$sp"; then
+            echo "::error file=$sp::The APIKEY security level is gone — this is your LOCAL gateway's rewrite, don't commit it (git checkout the file)"
+            fail=1
+          fi
+          if ! grep -q '"systemAuthProfile": "default"' "$sp"; then
+            echo "::error file=$sp::systemAuthProfile changed — local first-boot churn, don't commit it"
+            fail=1
+          fi
+          if ! grep -q '"systemName": "cicd-capstone"' "$syp"; then
+            echo "::error file=$syp::systemName is not cicd-capstone — local first-boot churn, don't commit it"
+            fail=1
+          fi
+          [ "$fail" -eq 0 ] && echo "Gateway identity resources match production."
+          exit "$fail"
+
       - name: Migration pairs (.up.sql ↔ .down.sql)
         # Always pairs: every up has a down, every down has an up.
         run: |
