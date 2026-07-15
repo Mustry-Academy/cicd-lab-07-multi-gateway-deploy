@@ -1,0 +1,58 @@
+# Local env & scratch
+.env
+NOTES.local.md
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# ---------------------------------------------------------------------------
+# What the LOCAL dev gateway (docker-compose.yaml) writes into the
+# bind-mounted repo dirs. This mirrors the Deploy workflow's exclusion list:
+# gateway-owned state never belongs in git — it is per-instance identity,
+# key material, or rebuildable runtime state.
+# ---------------------------------------------------------------------------
+
+# Per-instance identity & machine-local config
+services/config/local/
+services/config/resources/local/
+
+# The gateway's secrets-management keys and tag VALUE store
+services/config/ignition/
+
+# OPC UA server keystores (regenerated per gateway)
+services/config/com.inductiveautomation.opcua/
+
+# The gateway-owned INTERNAL identity: users.json holds THIS gateway's admin
+# password hash. Committing it ships your local admin credentials to
+# production — and locks everyone out.
+services/config/resources/core/ignition/user-source/default/
+services/config/resources/core/ignition/user-source/opcua-module/
+services/config/resources/core/ignition/identity-provider/default/
+
+# Internal content-addressed blob store + upgrade artifacts (rebuilt on scan)
+**/.resources/
+services/config/resources/migration-log-*.md
+
+# Gateway runtime noise
+**/.container-init.conf
+**/valueStore.idb
+**/db_backup_sqlite.idb
+**/autobackup/
+**/datacache/
+**/jar-cache/
+**/var
+*.log
+**/logs
+**/certificates/
+**/keystore/
+**/conversion-report.txt
+**.digest.json
+**/.alarms_*
+*.tmp
+*.bak

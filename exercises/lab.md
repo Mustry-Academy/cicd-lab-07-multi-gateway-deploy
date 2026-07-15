@@ -31,9 +31,6 @@ use it to re-read anything from the hour.
      - GitHub Actions secrets: IGNITION_API_KEY, POSTGRES_USERNAME,
        POSTGRES_PASSWORD (see capstone/secrets/README.md)
      - file-type secret provider on the gateway pointing at /run/secrets/
-     - slides + this file still say the deploy runs on the
-       oatmakers-site-7 runner label; the registered runner label is
-       cicd-capstone (align the wording or add the label)
      - decide the student credential story: the slides publish
        admin / MergeIntoMain! but capstone/docs/security-model.md says
        students do not get gateway admin -->
@@ -48,7 +45,7 @@ You should leave this lab able to:
   that in this lab a merge goes **straight to production**
 - Cut a **prefixed tag** (`<yourname>@v1.0.0`, `oatmakers@v2.0.X`) and explain
   why the tag must exist **before** `release.yaml` may point at it
-- Read `runs-on: [self-hosted, oatmakers-site-7]` and explain how a runner
+- Read `runs-on: [self-hosted, cicd-capstone]` and explain how a runner
   label routes a deploy to one site's network
 - Ship the lab 06 building blocks through a real pipeline: a **third-party
   module**, a **library JAR**, a **db-migration pair** and a **referenced
@@ -87,7 +84,7 @@ release.yaml            what runs on production, the desired state
   is on the door.
 - **Sam or Jasper approves every PR.** Two reviewers, five of you: there
   will be a queue. Small, tidy PRs jump it.
-- Deploys run on the site 7 runner: `runs-on: [self-hosted, oatmakers-site-7]`.
+- Deploys run on the site 7 runner: `runs-on: [self-hosted, cicd-capstone]`.
   Already configured; you only ever see it in the action logs.
 
 **Production is real, and you get admin on it:**
@@ -122,6 +119,34 @@ One repo keeps this lab small.
 - Open <https://cloud.mustrysolutions.com> and log in with
   `admin` / `MergeIntoMain!`. That gateway is your deploy target all lab.
 
+### Local development — where you actually build
+
+Production is never your dev box. The repo brings its own local stack, the
+same move as every previous lab:
+
+```bash
+docker compose up -d
+open http://localhost:8088     # admin / MergeIntoMain! — same login as the cloud gateway
+```
+
+- **The local gateway bind-mounts the repo.** `./projects`,
+  `./services/config` and `./services/modules.json` ARE the gateway's file
+  tree: a save in the Designer lands in your working tree immediately, so
+  `git status` is your export step. Review the diff; commit only what you
+  meant to change (the `.gitignore` keeps gateway-owned noise out).
+- **Local database:** `ignition` on `localhost:5432`
+  (`ignition` / `lab07-postgres-pw`). Test your migration pairs with
+  `scripts/migrate.sh up` before they ever reach the PR.
+- **Referenced secrets work locally too:** `dev/secrets/` is mounted at
+  `/run/secrets/` in the local gateway — the same path the file secret
+  provider reads on production — with the local database's login in it.
+- **Library JARs** load from `lib/core/gateway`, which can't be
+  bind-mounted; copy them in once
+  (`docker cp modules/jar/<jar> lab07-gateway:/usr/local/bin/ignition/lib/core/gateway/`)
+  and restart the container.
+- The loop is always: **build locally → see it in `git diff` → PR → tag →
+  release.yaml → live.**
+
 ---
 
 ## We-do (instructor demos)
@@ -137,7 +162,7 @@ One repo keeps this lab small.
 1. The lab repo's `release.yaml` on screen: one file, one production gateway.
 2. Bump a pinned version, open the PR, read the diff as a release note.
 3. Merge and watch the deploy action pick the job up on the site 7 runner
-   (`runs-on: [self-hosted, oatmakers-site-7]`), and what a `git revert` of
+   (`runs-on: [self-hosted, cicd-capstone]`), and what a `git revert` of
    the merge would do.
 
 ### Demo 3 — multi-site repo layouts on screen
