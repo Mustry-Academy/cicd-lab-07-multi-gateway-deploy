@@ -14,6 +14,10 @@ services:
       - gateway-data:/usr/local/bin/ignition/data
       - ./projects:/usr/local/bin/ignition/data/projects
       - ./services/config:/usr/local/bin/ignition/data/config
+      # Local stand-ins for the capstone's referenced secrets: the same
+      # file-type secret provider config that reads /run/secrets/ on
+      # production reads these here. Known local-dev defaults, not secrets.
+      - ./dev/secrets:/run/secrets:ro
     environment:
       ACCEPT_IGNITION_EULA: "Y"
       IGNITION_EDITION: standard
