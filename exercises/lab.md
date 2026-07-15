@@ -1,9 +1,11 @@
 # Lab 07 — Deployments in a multi-gateway architecture
 
 **Day 4 · afternoon session.** For once, you will not fork our repo. Everyone
-works as a **contributor** on one shared, locked-down repository, and every
-approved merge deploys **straight to a real production gateway** on the
-internet. You bring a project with your own name live, then land one of five
+works as a **contributor** on one shared, locked-down repository. Every push
+to `main` auto-deploys onto your **own test gateway**, and every change to
+`release.yaml` deploys to **a real production gateway** on the internet. You
+first stand up that personal test gateway, then bring a project with your own
+name live, then land one of five
 team challenges on the shared oatmakers project, then build on each other's
 work. Real reviews, real deploys, real merge conflicts.
 
@@ -41,8 +43,9 @@ You should leave this lab able to:
 
 - Work as a **contributor on a shared, locked-down repo**: protected main,
   validated commits only, PRs with green checks, human review before merge
-- Explain why **only `release.yaml` decides what deploys** — and what it means
-  that in this lab a merge goes **straight to production**
+- Explain the two deploy channels: a push to `main` auto-deploys to **your
+  test gateway**, while **only `release.yaml` decides what reaches
+  production** — and why one is gated and the other is not
 - Cut a **prefixed tag** (`<yourname>@v1.0.0`, `oatmakers@v2.0.X`) and explain
   why the tag must exist **before** `release.yaml` may point at it
 - Read `runs-on: [self-hosted, cicd-capstone]` and explain how a runner
@@ -79,9 +82,10 @@ release.yaml            what runs on production, the desired state
 
 - Main is protected: nothing reaches it without a PR, green checks and an
   approval. There is no pushing to main. We tried. It says no, even to us.
-- **Only `release.yaml` decides what gets deployed.** And it deploys
-  **straight to production**: no dev, no test, no net. That's why the lock
-  is on the door.
+- **Two deploy channels, two triggers.** Every push to `main` lands on
+  **your own test gateway** automatically, through a workflow you set up in
+  Part 0. Only a change to `release.yaml` reaches the **shared production
+  gateway**, and that is the one behind the lock on the door.
 - **Sam or Jasper approves every PR.** Two reviewers, five of you: there
   will be a queue. Small, tidy PRs jump it.
 - Deploys run on the site 7 runner: `runs-on: [self-hosted, cicd-capstone]`.
@@ -177,9 +181,64 @@ open http://localhost:8088     # admin / MergeIntoMain! — same login as the cl
 2. Where the runners live: one per site, `runs-on: [self-hosted, site-4]`,
    inside the site network, no inbound access needed.
 
-## You do (breakout rooms) — three parts
+## You do (breakout rooms) — a setup, then three parts
 
 Follows [`slides/assignment.html`](../slides/assignment.html) 1:1.
+
+### Part 0 (±15 min) — stand up your personal test gateway
+
+Everyone does this once, at the start, then leaves it running all afternoon.
+It gives you a second local gateway that auto-deploys **every merge to
+`main`**, so you can see a change land somewhere safe before it is ever
+tagged for production. It reuses building blocks you already own: a
+self-hosted runner (labs 03-06), a `push: [main]` workflow, and Ignition's
+deployment modes (lab 04).
+
+**1. Add a second gateway to `docker-compose.yaml`:** a `test-<yourname>`
+service on port `8090`, booted in **dev deployment mode**
+(`-Dignition.config.mode=dev`). Bind-mount the same repo folders as the
+local gateway (`./projects`, `./services/config`, `./services/modules.json`)
+so a fresh `main` is all it needs to reconcile.
+
+**2. Register a self-hosted runner on your laptop** with a label carrying
+your name:
+
+```
+[self-hosted, <yourname>-local]
+```
+
+Only jobs asking for that label run on your machine.
+
+**3. Add your own workflow file** named for you,
+`.github/workflows/test-<yourname>.yml`. It triggers on push to `main`, runs
+on your label, fast-forwards your clone to `main`, and lets your test gateway
+scan the change in:
+
+```yaml
+name: test-<yourname>
+on: { push: { branches: [main] } }
+jobs:
+  deploy:
+    runs-on: [self-hosted, <yourname>-local]
+    steps:
+```
+
+**4. PR it in like anything else** — branch, PR, green checks, approval,
+merge. You only ever touched your own service and your own workflow file.
+
+**Verify it works:** open a small PR that changes a dashboard view. Once it
+merges to `main`, watch your `test-<yourname>` workflow run on your runner
+and **the change appear on `localhost:8090` on its own** — no tag, no
+`release.yaml` bump.
+
+- **Observe:** the runner **label** is the whole routing story. Five people
+  can each have a `push: [main]` workflow and each one deploys only to its
+  owner's test gateway. It is the same mechanism as the site-labelled
+  production runner, `runs-on: [self-hosted, cicd-capstone]`.
+
+**Part 0 gate:** your `test-<yourname>.yml` and `test-<yourname>` gateway
+merged in, and a dashboard change proven to land on `localhost:8090` on its
+own after a merge to `main`.
 
 ### Part 1 (±20 min) — create your project and bring it live
 
@@ -356,6 +415,9 @@ script: **work together, build fast, get through the PRs.**
 Everything on this list is visible on GitHub or on the production gateway;
 nothing needs your laptop.
 
+0. **Part 0:** your `test-<yourname>.yml` workflow and `test-<yourname>`
+   gateway merged in, and a dashboard change proven to land on
+   `localhost:8090` on its own after a merge to `main`.
 1. **Part 1:** `projects/<yourname>/` merged through an approved PR, the tag
    `<yourname>@v1.0.0` built, your line in `release.yaml`, and your view
    **live on cloud.mustrysolutions.com**.

@@ -221,7 +221,7 @@ body{
       <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span><b>We're here to get reps in.</b> Everything from the past four days, on repeat: feature branch, commits, PR, tag, deploy.</span></li>
       <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span><b>No fork this time.</b> Accept the <b>contributor</b> invite for <span class="inlinecode">git@github.com:Mustry-Academy/cicd-lab-07-multi-gateway-deploy.git</span>, clone it, and push your branches straight to our repo.</span></li>
       <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span><b>We locked the repo down, so no funny business.</b> Nothing reaches main without a pull request, green checks and an approval. Yes, we tried pushing to main. It says no, even to us.</span></li>
-      <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span><b>Only <span class="inlinecode">release.yaml</span> decides what gets deployed.</b> And it deploys straight to production: no dev, no test, no net. That's why the lock is on the door.</span></li>
+      <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span><b>Two deploy channels, two triggers.</b> Every push to <span class="inlinecode">main</span> lands on <b>your own test gateway</b> automatically (Part 0, below). Only a change to <span class="inlinecode">release.yaml</span> reaches the <b>shared production gateway</b>, and that's the one behind the lock.</span></li>
       <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span><b>Sam or Jasper approves every PR.</b> Two reviewers, five of you: there will be a queue. Small, tidy PRs jump it.</span></li>
       <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span><b>You deploy to site 7.</b> The deploy workflow runs on that site's runner: <span class="inlinecode">runs-on: [self-hosted, cicd-capstone]</span>. Already set up; you never touch the workflows.</span></li>
       <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span><b>You get admin on our real online gateway:</b> <span class="inlinecode">https://cloud.mustrysolutions.com</span>, login <span class="inlinecode">admin</span> / <span class="inlinecode">MergeIntoMain!</span>. Have a look around before you start, and please be gentle with it: everyone's work lands on this one gateway.</span></li>
@@ -277,7 +277,7 @@ body{
     <div class="stage">The assignment · the plan</div>
   </div>
   <div class="body">
-    <div class="sechead"><span class="num">THE PLAN</span><div><div class="title">Three parts: your project live, five team challenges, then build on each other</div><div class="lead">Part 1 is everyone alone. Parts 2 and 3 are five people on one project, one version stream and one production gateway.</div></div></div>
+    <div class="sechead"><span class="num">THE PLAN</span><div><div class="title">First stand up your own test gateway, then three parts of deploying</div><div class="lead">Part 0 wires <span class="inlinecode">main</span> to auto-deploy onto your personal test gateway. Part 1 is everyone alone. Parts 2 and 3 are five people on one project, one version stream and one production gateway.</div></div></div>
     <div class="pmap" style="grid-template-columns:repeat(3,1fr)">
       <div class="pcard p1">
         <div class="pn">PART 1 · ±20 MIN</div>
@@ -300,13 +300,48 @@ body{
     </div>
     <div class="goal" style="margin-top:20px">
       <span class="badge">Why this order</span>
-      <p>Part 1 proves the whole pipeline to you alone: PR, review, tag, release, live. Part 2 puts five people on one project and one version stream, which is where coordination starts to hurt. Part 3 is what real teams do all day: build on work that is still landing.</p>
+      <p>Part 0 gives you a test gateway that always mirrors <span class="inlinecode">main</span>, so you can see any merge land before it ever reaches production. Part 1 proves the whole pipeline to you alone: PR, review, tag, release, live. Part 2 puts five people on one project and one version stream, which is where coordination starts to hurt. Part 3 is what real teams do all day: build on work that is still landing.</p>
     </div>
   </div>
   <div class="foot"><span>Mustry Academy · CI/CD for Ignition</span><span>your project → your challenge → the team's product</span></div>
 </section>
 
-<!-- 5 · PART 1A -->
+<!-- 5 · PART 0 · SET UP YOUR TEST GATEWAY -->
+<section class="slide">
+  <div class="topbar">
+    <div class="brandrow"><img class="logo-img" src="logos/OriginalDark.png" alt="Mustry Solutions"></div>
+    <div class="stage">Part 0 · your personal test gateway</div>
+  </div>
+  <div class="body">
+    <div class="sechead"><span class="num warm">0</span><div><div class="title">Stand up a test gateway that auto-deploys every merge to main</div><div class="lead">Before you deploy anything to production, give yourself somewhere safe to see it first: a second local gateway in <b>dev deployment mode</b> that a workflow of your own updates on every push to <span class="inlinecode">main</span>. Do this once, at the start, then leave it running all afternoon.</div></div></div>
+    <div class="cols2">
+      <div class="steps">
+        <div class="step"><div class="ix t">1</div><div class="tx"><b>Add a second gateway to <span class="inlinecode">docker-compose.yaml</span>:</b> a <span class="inlinecode">test-&lt;yourname&gt;</span> service on port <span class="inlinecode">8090</span>, booted in <b>dev deployment mode</b> (<span class="inlinecode">-Dignition.config.mode=dev</span>). Bind-mount the same repo folders as the local gateway so a fresh <span class="inlinecode">main</span> is all it needs.</div></div>
+        <div class="step"><div class="ix t">2</div><div class="tx"><b>Register a self-hosted runner on your laptop</b> with a label carrying your name: <span class="inlinecode">[self-hosted, &lt;yourname&gt;-local]</span>. Only jobs asking for that label run on your machine.</div></div>
+        <div class="step"><div class="ix t">3</div><div class="tx"><b>Add your own workflow file</b> named for you: <span class="inlinecode">.github/workflows/test-&lt;yourname&gt;.yml</span>. It triggers on <span class="inlinecode">push: [main]</span>, runs on your label, fast-forwards your clone to <span class="inlinecode">main</span> and lets your test gateway scan the change in.</div></div>
+        <div class="step"><div class="ix t">4</div><div class="tx"><b>PR it in like anything else.</b> Your workflow file is a normal change: branch, PR, green checks, approval, merge. No hands on production; you only ever touched your own service and your own workflow.</div></div>
+      </div>
+      <div>
+        <div class="code"><pre><span class="cm"># .github/workflows/test-&lt;yourname&gt;.yml</span>
+name: test-<span class="cmd2">&lt;yourname&gt;</span>
+<span class="cmd2">on</span>: { push: { branches: [main] } }
+jobs:
+  deploy:
+    runs-on: [self-hosted, <span class="cmd2">&lt;yourname&gt;-local</span>]
+    steps:</pre></div>
+        <div class="obs"><span class="ob">Observe</span><p><b>Your workflow only runs on your machine.</b> The runner <b>label</b> is the whole routing story: five people can each have a <code>push: [main]</code> workflow and each one deploys only to its owner's test gateway.</p></div>
+        <div class="obs"><span class="ob">Observe</span><p><b>This channel is not gated by <code>release.yaml</code>.</b> Every merge to <code>main</code> reaches every test gateway. Production stays behind the tag-and-<code>release.yaml</code> gate you use in Part 1.</p></div>
+      </div>
+    </div>
+    <div class="goal good-g" style="margin-top:16px">
+      <span class="badge">✅ Verify it works</span>
+      <p>Open a small PR that changes a dashboard view. Once it merges to <span class="inlinecode">main</span>, watch your <span class="inlinecode">test-&lt;yourname&gt;</span> workflow run on your runner and <b>the change appear on <span class="inlinecode">localhost:8090</span></b> on its own. That is your test gateway tracking <span class="inlinecode">main</span> for you, hands-free, before anything is ever tagged for production.</p>
+    </div>
+  </div>
+  <div class="foot"><span>Mustry Academy · CI/CD for Ignition</span><span>Part 0 · your test gateway tracks main</span></div>
+</section>
+
+<!-- 6 · PART 1A -->
 <section class="slide">
   <div class="topbar">
     <div class="brandrow"><img class="logo-img" src="logos/OriginalDark.png" alt="Mustry Solutions"></div>
@@ -337,7 +372,7 @@ git push -u origin feature/wout-project</pre></div>
   <div class="foot"><span>Mustry Academy · CI/CD for Ignition</span><span>Part 1 · A of B</span></div>
 </section>
 
-<!-- 6 · PART 1B -->
+<!-- 7 · PART 1B -->
 <section class="slide">
   <div class="topbar">
     <div class="brandrow"><img class="logo-img" src="logos/OriginalDark.png" alt="Mustry Solutions"></div>
@@ -370,7 +405,7 @@ git push -u origin feature/wout-project</pre></div>
   <div class="foot"><span>Mustry Academy · CI/CD for Ignition</span><span>Part 1 · B of B</span></div>
 </section>
 
-<!-- 7 · PART 2 INTRO -->
+<!-- 8 · PART 2 INTRO -->
 <section class="slide">
   <div class="topbar">
     <div class="brandrow"><img class="logo-img" src="logos/OriginalDark.png" alt="Mustry Solutions"></div>
@@ -400,7 +435,7 @@ git push -u origin feature/wout-project</pre></div>
   <div class="foot"><span>Mustry Academy · CI/CD for Ignition</span><span>Part 2 · one project, five contributors</span></div>
 </section>
 
-<!-- 8 · PART 2 CHALLENGES: NICK, STEPHAN, WOUT -->
+<!-- 9 · PART 2 CHALLENGES: NICK, STEPHAN, WOUT -->
 <section class="slide">
   <div class="topbar">
     <div class="brandrow"><img class="logo-img" src="logos/OriginalDark.png" alt="Mustry Solutions"></div>
@@ -447,7 +482,7 @@ flipped = StringUtils.reverse(<span class="grn">"Ignition"</span>)</pre></div>
   <div class="foot"><span>Mustry Academy · CI/CD for Ignition</span><span>Part 2 · Nick · Stephan · Wout</span></div>
 </section>
 
-<!-- 9 · PART 2 CHALLENGES: TOM, GREGORY -->
+<!-- 10 · PART 2 CHALLENGES: TOM, GREGORY -->
 <section class="slide">
   <div class="topbar">
     <div class="brandrow"><img class="logo-img" src="logos/OriginalDark.png" alt="Mustry Solutions"></div>
@@ -484,7 +519,7 @@ flipped = StringUtils.reverse(<span class="grn">"Ignition"</span>)</pre></div>
   <div class="foot"><span>Mustry Academy · CI/CD for Ignition</span><span>Part 2 · Tom · Gregory</span></div>
 </section>
 
-<!-- 10 · PART 3 -->
+<!-- 11 · PART 3 -->
 <section class="slide">
   <div class="topbar">
     <div class="brandrow"><img class="logo-img" src="logos/OriginalDark.png" alt="Mustry Solutions"></div>
@@ -516,7 +551,7 @@ git push -u origin feature/chart-on-downtime-data
   <div class="foot"><span>Mustry Academy · CI/CD for Ignition</span><span>Part 3 · the team's product</span></div>
 </section>
 
-<!-- 11 · DONE GATE -->
+<!-- 12 · DONE GATE -->
 <section class="slide">
   <div class="topbar">
     <div class="brandrow"><img class="logo-img" src="logos/OriginalDark.png" alt="Mustry Solutions"></div>
@@ -525,6 +560,7 @@ git push -u origin feature/chart-on-downtime-data
   <div class="body">
     <div class="sechead"><span class="num">GATE</span><div><div class="title">Definition of done for all three parts</div><div class="lead">Walk these before you call it. Everything on this list is visible on GitHub or on the production gateway; nothing needs your laptop.</div></div></div>
     <div class="steps" style="max-width:1020px">
+      <div class="step"><div class="ix t">0</div><div class="tx"><b>Part 0:</b> your <span class="inlinecode">test-&lt;yourname&gt;.yml</span> workflow and your <span class="inlinecode">test-&lt;yourname&gt;</span> gateway merged in, and a dashboard change proven to <b>land on <span class="inlinecode">localhost:8090</span> on its own</b> after a merge to <span class="inlinecode">main</span>.</div></div>
       <div class="step"><div class="ix">1</div><div class="tx"><b>Part 1:</b> <span class="inlinecode">projects/&lt;yourname&gt;/</span> merged through an approved PR, the tag <span class="inlinecode">&lt;yourname&gt;@v1.0.0</span> built, your line in <span class="inlinecode">release.yaml</span>, and your view <b>live on cloud.mustrysolutions.com</b>.</div></div>
       <div class="step"><div class="ix p">2</div><div class="tx"><b>Part 2:</b> your challenge merged and <b>live on production</b> via an <span class="inlinecode">oatmakers@v2.0.X</span> tag you cut yourself and a reviewed <span class="inlinecode">release.yaml</span> bump.</div></div>
       <div class="step"><div class="ix t">3</div><div class="tx"><b>Part 3:</b> at least one merged PR that <b>builds on someone else's work</b>, and at least one review comment or unblock you gave someone else.</div></div>
@@ -537,7 +573,7 @@ git push -u origin feature/chart-on-downtime-data
   <div class="foot"><span>Mustry Academy · CI/CD for Ignition</span><span>The gate → debrief</span></div>
 </section>
 
-<!-- 12 · DONE -->
+<!-- 13 · DONE -->
 <section class="slide dark">
   <div class="topbar">
     <div class="on-dark brandrow"><img class="logo-img" src="logos/OriginalLight.png" alt="Mustry Solutions"></div>
@@ -564,7 +600,7 @@ git push -u origin feature/chart-on-downtime-data
 </div>
 
 <div class="hud"><div class="bar" id="bar"></div></div>
-<div class="pager" id="pager">01 / 12</div>
+<div class="pager" id="pager">01 / 13</div>
 <div class="hint" id="hint">↑ ↓ / scroll to navigate</div>
 
 <script>

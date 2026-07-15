@@ -614,7 +614,7 @@ body{
     <div class="map2" style="grid-template-columns:.85fr 1.5fr">
       <div class="filecard">
         <div class="fh">📦 still one repository</div>
-        <pre><span class="row reveal" data-step="1">oatmakers-repo/</span><span class="row reveal" data-step="2">├─ projects/                  <span class="cm">one folder, all projects</span></span><span class="row reveal" data-step="2">│  ├─ <span class="hl">oatmakers/</span>              <span class="cm">HMI</span></span><span class="row reveal" data-step="2">│  ├─ <span class="hl">oatmakers-packaging/</span>    <span class="cm">HMI</span></span><span class="row reveal" data-step="2">│  └─ <span class="hl">oatmakers-shared/</span>       <span class="cm">shared library · both gateways</span></span><span class="row reveal" data-step="3">├─ gateways/                  <span class="cm">a config folder per gateway</span></span><span class="row reveal" data-step="3">│  ├─ <span class="grn">gw-frontend/</span>            <span class="cm">sessions, auth, gw network</span></span><span class="row reveal" data-step="3">│  └─ <span class="grn">gw-backend/</span>             <span class="cm">devices, tag providers, history</span></span><span class="row reveal" data-step="1">└─ .github/workflows/<span class="hl">deploy.yml</span></span></pre>
+        <pre><span class="row reveal" data-step="1">oatmakers-repo/</span><span class="row reveal" data-step="2">├─ projects/                  <span class="cm">one folder, all projects</span></span><span class="row reveal" data-step="2">│  ├─ <span class="hl">oatmakers/</span>              <span class="cm">HMI</span></span><span class="row reveal" data-step="2">│  ├─ <span class="hl">oatmakers-shared/</span>       <span class="cm">its parent project</span></span><span class="row reveal" data-step="2">│  ├─ <span class="hl">oatmakers-packaging/</span>    <span class="cm">HMI</span></span><span class="row reveal" data-step="2">│  └─ <span class="hl">oatmakers-packaging-shared/</span> <span class="cm">its parent project</span></span><span class="row reveal" data-step="3">├─ gateways/                  <span class="cm">a config folder per gateway</span></span><span class="row reveal" data-step="3">│  ├─ <span class="grn">gw-frontend/</span>            <span class="cm">sessions, auth, gw network</span></span><span class="row reveal" data-step="3">│  └─ <span class="grn">gw-backend/</span>             <span class="cm">devices, tag providers, history</span></span><span class="row reveal" data-step="1">└─ .github/workflows/<span class="hl">deploy.yml</span></span></pre>
       </div>
       <div class="plantwrap">
         <div class="imgstage">
@@ -636,17 +636,11 @@ body{
                 <animate attributeName="r" values="6;34" dur="1.4s" begin=".5s" repeatCount="indefinite"/>
                 <animate attributeName="opacity" values=".65;0" dur="1.4s" begin=".5s" repeatCount="indefinite"/>
               </circle>
-              <g class="ofile o9 f4" opacity="0">
-                <rect x="-62" y="-22" width="124" height="44" rx="10"/>
-                <text x="0" y="8">shared</text>
-                <animateMotion dur="3s" begin="0.4s" repeatCount="indefinite" path="M-340 330 C -80 330, 165 336, 216 346"/>
-                <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.12;0.8;1" dur="3s" begin="0.4s" repeatCount="indefinite"/>
-              </g>
               <g class="ofile o9 f2" opacity="0">
                 <rect x="-62" y="-22" width="124" height="44" rx="10"/>
                 <text x="0" y="8">config</text>
-                <animateMotion dur="3s" begin="1.9s" repeatCount="indefinite" path="M-340 330 C -80 330, 165 336, 216 346"/>
-                <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.12;0.8;1" dur="3s" begin="1.9s" repeatCount="indefinite"/>
+                <animateMotion dur="3s" begin="0.4s" repeatCount="indefinite" path="M-340 330 C -80 330, 165 336, 216 346"/>
+                <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.12;0.8;1" dur="3s" begin="0.4s" repeatCount="indefinite"/>
               </g>
               <!-- frontend route -->
               <text class="olbl o9" x="-334" y="742">deploy.yml → gw-frontend</text>
@@ -670,7 +664,7 @@ body{
               </g>
               <g class="ofile o9 f4" opacity="0">
                 <rect x="-62" y="-22" width="124" height="44" rx="10"/>
-                <text x="0" y="8">shared</text>
+                <text x="0" y="8">parents</text>
                 <animateMotion dur="3.6s" begin="1.8s" repeatCount="indefinite" path="M-340 800 C 40 836, 560 800, 656 596"/>
                 <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.82;1" dur="3.6s" begin="1.8s" repeatCount="indefinite"/>
               </g>
@@ -727,24 +721,18 @@ body{
     <div class="cols2">
       <div class="filecard">
         <div class="fh">📦 oatmakers-releases (a separate repo)</div>
-        <pre><span class="row reveal" data-step="1">releases/</span><span class="row reveal" data-step="1">├─ prod/</span><span class="row reveal" data-step="2">│  ├─ <span class="hl">gw-site1-backend.yaml</span></span><span class="row reveal" data-step="2">│  ├─ <span class="hl">gw-site1-frontend.yaml</span></span><span class="row reveal" data-step="2">│  ├─ <span class="hl">gw-site4-backend.yaml</span></span><span class="row reveal" data-step="2">│  ├─ <span class="hl">gw-site4-frontend.yaml</span></span><span class="row reveal" data-step="2">│  ├─ <span class="cm">… sites 2, 3, 5 … 8 …</span></span><span class="row reveal" data-step="2">│  ├─ <span class="hl">gw-central.yaml</span></span><span class="row reveal" data-step="4">│  └─ <span class="wrn">rollout.yaml</span>          <span class="cm">wave ordering</span></span><span class="row reveal" data-step="1">├─ test/</span><span class="row reveal" data-step="2">│  └─ <span class="hl">gw-test.yaml</span></span><span class="row reveal" data-step="1">└─ dev/</span><span class="row reveal" data-step="5">   └─ <span class="grn">gw-dev.yaml</span>           <span class="cm">tracks main, auto</span></span></pre>
+        <pre><span class="row reveal" data-step="1">releases/</span><span class="row reveal" data-step="1">├─ prod/</span><span class="row reveal" data-step="2">│  ├─ <span class="hl">gw-site1-backend.yaml</span></span><span class="row reveal" data-step="2">│  ├─ <span class="hl">gw-site1-frontend.yaml</span></span><span class="row reveal" data-step="2">│  ├─ <span class="hl">gw-site4-backend.yaml</span></span><span class="row reveal" data-step="2">│  ├─ <span class="hl">gw-site4-frontend.yaml</span></span><span class="row reveal" data-step="2">│  ├─ <span class="cm">… sites 2, 3, 5 … 8 …</span></span><span class="row reveal" data-step="2">│  └─ <span class="hl">gw-central.yaml</span></span><span class="row reveal" data-step="1">├─ test/</span><span class="row reveal" data-step="2">│  └─ <span class="hl">gw-test.yaml</span></span><span class="row reveal" data-step="1">└─ dev/</span><span class="row reveal" data-step="4">   └─ <span class="grn">gw-dev.yaml</span>           <span class="cm">tracks main, auto</span></span></pre>
       </div>
       <div>
         <div class="code reveal" data-step="3"><pre><span class="cm"># releases/prod/gw-site4-frontend.yaml</span>
 gateway: <span class="cmd2">gw-site4-frontend</span>
 projects:
-  oatmakers:           <span class="grn">v2.0.1</span>   <span class="cm"># the hotfix</span>
-  oatmakers-packaging: <span class="cmd2">v1.4.0</span>
-  oatmakers-shared:    <span class="cmd2">v1.9.2</span>   <span class="cm"># shared library</span></pre></div>
-        <div class="code reveal" data-step="4" style="margin-top:12px"><pre><span class="cm"># releases/prod/rollout.yaml</span>
-waves:
-  - name: canary
-    gateways: [<span class="cmd2">gw-site4-backend</span>, <span class="cmd2">gw-site4-frontend</span>]
-    soak: 30m
-  - name: fleet
-    gateways: [<span class="cmd2">sites 1 to 3 and 5 to 8</span>]
-  - name: enterprise
-    gateways: [<span class="cmd2">gw-central</span>]</pre></div>
+  oatmakers:
+    version: <span class="grn">v2.0.1</span>   <span class="cm"># the hotfix</span>
+    shared:  <span class="cmd2">v1.9.2</span>   <span class="cm"># its parent, pinned with it</span>
+  oatmakers-packaging:
+    version: <span class="cmd2">v1.4.0</span>
+    shared:  <span class="cmd2">v1.2.0</span></pre></div>
       </div>
     </div>
   </div>
@@ -768,17 +756,18 @@ waves:
       <span class="num">08</span>
       <div>
         <div class="title">A promotion is a pull request in the releases repo</div>
-        <div class="lead">The Oatmakers hotfix from day one, done fleet-wide: bump the pinned version, let review be the approval gate, and let <span class="mono" style="font-size:14px">rollout.yaml</span> order the waves.</div>
+        <div class="lead">The Oatmakers hotfix from day one, done fleet-wide: bump the pinned version, let review be the approval gate, and roll it out in a safe order: the least critical site first.</div>
       </div>
     </div>
 
     <div class="cols2" style="grid-template-columns:.9fr 1.2fr;gap:26px">
       <div>
-        <div class="code reveal" data-step="1" style="margin-top:0"><pre><span class="cm"># PR: promote oatmakers v2.0.1 (wave 1: site 4)</span>
+        <div class="code reveal" data-step="1" style="margin-top:0"><pre><span class="cm"># PR: promote oatmakers v2.0.1 (site 4 first)</span>
 <span class="cm">releases/prod/gw-site4-frontend.yaml</span>
 <span class="cm">(the HMI runs on the frontend gateway)</span>
--  oatmakers:  <span class="red">v2.0.0</span>
-+  oatmakers:  <span class="grn">v2.0.1</span></pre></div>
+ oatmakers:
+<span class="red">-   version: v2.0.0</span>
+<span class="grn">+   version: v2.0.1</span></pre></div>
         <div class="callout reveal" data-step="2" style="margin-top:12px">
           <div class="lab" style="color:var(--blue)">Review = the approval gate</div>
           <p>The reviewer approves a <b>promotion</b>, not code. <b>Merge is the trigger</b>; nobody logs into a gateway.</p>
@@ -790,15 +779,15 @@ waves:
       </div>
       <div>
         <div class="waves">
-          <span class="wv reveal" data-step="3">wave 1 · canary · soak 30m</span>
-          <span class="wv w2 reveal" data-step="4">wave 2 · the fleet</span>
-          <span class="wv w3 reveal" data-step="5">wave 3 · enterprise</span>
+          <span class="wv reveal" data-step="3">1 · site 4 first · watch 30 min</span>
+          <span class="wv w2 reveal" data-step="4">2 · the other sites</span>
+          <span class="wv w3 reveal" data-step="5">3 · central last</span>
         </div>
         <div class="fleet">
           <div class="tile"><div class="tn">SITE 1</div><div class="tv"><span class="vold">oatmakers v2.0.0</span><span class="vnew reveal" data-step="4">oatmakers v2.0.1</span></div></div>
           <div class="tile"><div class="tn">SITE 2</div><div class="tv"><span class="vold">oatmakers v2.0.0</span><span class="vnew reveal" data-step="4">oatmakers v2.0.1</span></div></div>
           <div class="tile"><div class="tn">SITE 3</div><div class="tv"><span class="vold">oatmakers v2.0.0</span><span class="vnew reveal" data-step="4">oatmakers v2.0.1</span></div></div>
-          <div class="tile"><div class="tn">SITE 4 <span class="cn">canary</span><span class="soak reveal" data-step="3">soak ✓</span></div><div class="tv"><span class="vold">oatmakers v2.0.0</span><span class="vnew reveal" data-step="3">oatmakers v2.0.1</span></div></div>
+          <div class="tile"><div class="tn">SITE 4 <span class="cn">first</span><span class="soak reveal" data-step="3">looks good ✓</span></div><div class="tv"><span class="vold">oatmakers v2.0.0</span><span class="vnew reveal" data-step="3">oatmakers v2.0.1</span></div></div>
           <div class="tile"><div class="tn">SITE 5</div><div class="tv"><span class="vold">oatmakers v2.0.0</span><span class="vnew reveal" data-step="4">oatmakers v2.0.1</span></div></div>
           <div class="tile"><div class="tn">SITE 6</div><div class="tv"><span class="vold">oatmakers v2.0.0</span><span class="vnew reveal" data-step="4">oatmakers v2.0.1</span></div></div>
           <div class="tile"><div class="tn">SITE 7</div><div class="tv"><span class="vold">oatmakers v2.0.0</span><span class="vnew reveal" data-step="4">oatmakers v2.0.1</span></div></div>
@@ -837,14 +826,14 @@ waves:
       <div>
         <div class="filecard reveal" data-step="1">
           <div class="fh">🏷 one projects folder · a tag next to each commit</div>
-          <pre><span class="row">oatmakers-repo/projects/</span><span class="row">├─ <span class="hl">oatmakers/</span>              <span class="cm">HMI</span></span><span class="row">├─ <span class="hl">oatmakers-packaging/</span></span><span class="row">└─ <span class="grn">oatmakers-shared/</span>       <span class="cm">the parent project</span></span><span class="row"> </span><span class="row">commit a41 ─ <span class="hl">oatmakers@v2.0.0</span></span><span class="row">commit b52 ─ <span class="hl">oatmakers-packaging@v1.4.0</span></span><span class="row">commit d74 ─ <span class="grn">oatmakers-shared@v1.9.2</span></span><span class="row">commit e85 ─ <span class="hl">oatmakers@v2.0.1</span>        <span class="cm">← the hotfix</span></span><span class="row"><span class="cm"># CI: the tag prefix decides which folder builds</span></span></pre>
+          <pre><span class="row">oatmakers-repo/projects/</span><span class="row">├─ <span class="hl">oatmakers/</span>              <span class="cm">HMI</span></span><span class="row">├─ <span class="grn">oatmakers-shared/</span>       <span class="cm">its parent project</span></span><span class="row">├─ <span class="hl">oatmakers-packaging/</span>    <span class="cm">HMI</span></span><span class="row">└─ <span class="grn">oatmakers-packaging-shared/</span> <span class="cm">its parent project</span></span><span class="row"> </span><span class="row">commit a41 ─ <span class="hl">oatmakers@v2.0.0</span></span><span class="row">commit b52 ─ <span class="hl">oatmakers-packaging@v1.4.0</span></span><span class="row">commit d74 ─ <span class="grn">oatmakers-shared@v1.9.2</span></span><span class="row">commit e85 ─ <span class="hl">oatmakers@v2.0.1</span>        <span class="cm">← the hotfix</span></span><span class="row"><span class="cm"># CI: the tag prefix decides which folder builds</span></span></pre>
         </div>
         <div class="code reveal" data-step="2" style="margin-top:12px"><pre><span class="cm"># releases/prod/gw-site4-frontend.yaml</span>
 gateway: <span class="cmd2">gw-site4-frontend</span>
 projects:
-  oatmakers:           <span class="cmd2">v2.0.1</span>   <span class="cm"># its own tag</span>
-  oatmakers-shared:    <span class="grn">v1.9.2</span>   <span class="cm"># the parent,</span>
-                                <span class="cm"># alongside</span></pre></div>
+  oatmakers:
+    version: <span class="cmd2">v2.0.1</span>   <span class="cm"># its own tag</span>
+    shared:  <span class="grn">v1.9.2</span>   <span class="cm"># its parent, alongside</span></pre></div>
       </div>
       <div class="plantwrap">
         <div class="imgstage">
@@ -967,7 +956,7 @@ projects:
       <tr><th style="width:26%">Layout</th><th style="width:37%">Strongest when</th><th>Watch out for</th></tr>
       <tr>
         <td><b>One repository for everything</b></td>
-        <td>One team; the shared library is used everywhere; a cross-gateway change should be <b>one reviewable PR</b>.</td>
+        <td>One team owns both infra and development; you want to move fast with little overhead; the shared library is used everywhere; a cross-gateway change is <b>one reviewable PR</b>.</td>
         <td>Everyone with access sees everything; vendors need carve-outs; the repo and its churn grow with the fleet.</td>
       </tr>
       <tr>
@@ -1082,7 +1071,7 @@ projects:
     <div class="title" style="max-width:30ch;color:#fff">Next: contribute to one shared repo and deploy to a real production gateway</div>
     <ul class="checks" style="max-width:940px;margin-top:22px">
       <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span><b>We-do.</b> We map Oatmakers' eight sites onto the reference architectures together on screen, sketch the repo layouts live, and walk one release PR end to end: bump a pin in <span class="mono" style="color:#dbe4f0">release.yaml</span>, review it, merge it, and watch the deploy run on the site 7 runner.</span></li>
-      <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span><b>You-do (breakout rooms), from <span class="mono" style="color:#dbe4f0">exercises/lab.md</span>.</b> No fork this time: everyone is a <b>contributor</b> on one locked-down repo, and every approved merge deploys <b>straight to a real production gateway</b>. You bring a project with your own name live through a tag and a <span class="mono" style="color:#dbe4f0">release.yaml</span> PR, then five challenges land on the shared oatmakers project: a module, a JAR, a database with migrations and a secret, live tags, and a dashboard on top.</span></li>
+      <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span><b>You-do (breakout rooms), from <span class="mono" style="color:#dbe4f0">exercises/lab.md</span>.</b> No fork this time: everyone is a <b>contributor</b> on one locked-down repo. First you wire <span class="mono" style="color:#dbe4f0">main</span> to auto-deploy onto your <b>own test gateway</b>, then you bring a project with your own name <b>live on a real production gateway</b> through a tag and a <span class="mono" style="color:#dbe4f0">release.yaml</span> PR, then five challenges land on the shared oatmakers project: a module, a JAR, a database with migrations and a secret, live tags, and a dashboard on top.</span></li>
       <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span><b>This is the last lab of the course.</b> The debrief afterwards closes out all four days: bring the pipeline you would actually build at your own plant.</span></li>
     </ul>
   </div>
@@ -1181,20 +1170,20 @@ controllers.now=revealCtrl(7,'#now-step',[
 controllers.fb=revealCtrl(8,'#fb-step',[
   'One plant, two kinds of gateways. Step through how one repo maps onto them.',
   'Still <b>one repository</b>, and still one <span class="mono">deploy.yml</span>. Two gateways do not force two repos.',
-  '<b><span class="mono">projects/</span> holds several projects.</b> The two HMI projects, plus <span class="mono">oatmakers-shared</span>: the shared library they inherit from. It will have to live on <b>both</b> gateways.',
+  '<b><span class="mono">projects/</span> holds several projects.</b> The two HMI projects, <b>each with its own parent project</b> it inherits from: <span class="mono">oatmakers-shared</span> and <span class="mono">oatmakers-packaging-shared</span>.',
   '<b>A config folder per gateway.</b> <span class="mono">gateways/gw-frontend/</span> and <span class="mono">gateways/gw-backend/</span>: devices and tag providers live in the backend folder, session and auth config in the frontend one.',
-  '<b>The pipeline routes, right on the drawing.</b> The HMI projects and frontend config fly to the <b>front-end gateway</b>; the backend config to the <b>back-end gateways</b>; and <span class="mono">shared</span> travels on <b>both</b> arrows.',
+  '<b>The pipeline routes, right on the drawing.</b> The HMI projects, their parents and the frontend config fly to the <b>front-end gateway</b>; the backend config goes to the <b>back-end gateways</b>.',
   'And the payoff of one repo: <b>a screen change and its tag change are one PR</b>: reviewed together, deployed together, to two different gateways.'
 ]);
 
 /* ---------- slide 13 (idx 12): option A, a tag per project ---------- */
 controllers.mono=revealCtrl(12,'#mono-step',[
   'One repository, tagged per project, deploying to one specific site. Step through it.',
-  '<b>The repo: one projects folder, a tag next to each commit.</b> A tag names its project: <span class="mono">oatmakers@v2.0.1</span> releases the HMI, <span class="mono">oatmakers-shared@v1.9.2</span> releases the parent project, and CI builds only the folder the prefix names.',
-  '<b>Site 4\'s release file</b> pins what that one gateway runs: the project at its own tag, and the <b>parent project alongside</b>: the HMIs inherit from it, so it must be on every gateway that runs them.',
+  '<b>The repo: one projects folder, a tag next to each commit.</b> A tag names its project: <span class="mono">oatmakers@v2.0.1</span> releases the HMI, <span class="mono">oatmakers-shared@v1.9.2</span> releases its parent project, and CI builds only the folder the prefix names.',
+  '<b>Site 4\'s release file</b> pins what that one gateway runs: the project at its own tag, and <b>its parent project alongside</b>: the HMI inherits from it, so the parent must be on every gateway that runs it.',
   '<b>The deploy reads that one file and ships to that one site.</b> Watch the project and its parent travel together into site 4\'s gateway: two artifacts, one destination.',
   '<b>And nothing else moves.</b> Site 2 and central keep running their pinned versions: promoting them is a separate line in a separate file, through the same PR machinery.',
-  '<b>One discipline:</b> keep <b>one oatmakers-shared version per environment</b>, so the pair you tested together is the pair that ships together. (Stricter: the build records the parent version in the artifact\'s manifest, and the deploy refuses untested pairs.)'
+  '<b>One discipline:</b> keep <b>one version of each parent per environment</b>, so the pair you tested together is the pair that ships together. (Stricter: the build records the parent version in the artifact\'s manifest, and the deploy refuses untested pairs.)'
 ]);
 
 /* ---------- slide 14 (idx 13): multi-repo options ---------- */
@@ -1212,19 +1201,18 @@ controllers.rel=revealCtrl(10,'#rel-step',[
   'The bookkeeping that survives any repository layout. Step through the releases folder.',
   '<b>Its own small repo, one folder per environment:</b> <span class="mono">dev/</span>, <span class="mono">test/</span>, <span class="mono">prod/</span>. Deploy state lives apart from the code that produces it.',
   '<b>One file per gateway.</b> The whole fleet, listed explicitly: every site pair and <span class="mono">gw-central</span>. If a gateway exists, it has a file.',
-  '<b>Inside a file: each project pinned to a version.</b> This file <b>is</b> the record of what runs on <span class="mono">gw-site4-frontend</span>. Change the file, and the pipeline makes it true.',
-  '<b><span class="mono">rollout.yaml</span> orders the waves</b> for prod: the canary site first, a soak period, then the fleet, the enterprise level last.',
+  '<b>Inside a file: each project pinned to a version, its parent pinned underneath it.</b> This file <b>is</b> the record of what runs on <span class="mono">gw-site4-frontend</span>. Change the file, and the pipeline makes it true.',
   '<b>And dev tracks main, automatically.</b> No pins on dev: every merge lands there. Pinning starts where humans need control: test and prod.'
 ]);
 
 /* ---------- slide 12 (idx 11): promotion by PR ---------- */
 controllers.promo=revealCtrl(11,'#promo-step',[
   'One hotfix, from pull request to the whole fleet. Watch the board: every tile is a gateway\'s release file.',
-  '<b>The promotion is a pull request:</b> bump <span class="mono">oatmakers: v2.0.0 → v2.0.1</span> in site 4\'s frontend file (that is where the HMI runs). The diff is the release note.',
+  '<b>The promotion is a pull request:</b> bump <span class="mono">oatmakers v2.0.0 → v2.0.1</span> in site 4\'s frontend file (that is where the HMI runs). The diff is the release note.',
   '<b>Review is the approval gate; merge is the trigger.</b> And look at DEV: it tracks main, so it has been running the fix since the code merged. No releases PR for dev, ever.',
-  '<b>Wave 1, the canary:</b> site 4 flips to <span class="mono">v2.0.1</span>. Its own runner deploys both gateways, then health checks and a 30 minute soak.',
-  '<b>Wave 2, the fleet:</b> sites 1 to 3 and 5 to 8 flip, each via its own runner. A failed verify in any wave <b>stops everything after it</b>.',
-  '<b>Wave 3:</b> <span class="mono">gw-central</span> flips last, once every site it aggregates is healthy. The whole board is green: that is what "released" means here.',
+  '<b>Site 4 goes first:</b> it flips to <span class="mono">v2.0.1</span>, its own runner deploys both gateways and runs the health checks. Then we deliberately wait half an hour and watch: the least critical site proves the release before anything else moves.',
+  '<b>Then the rest of the fleet:</b> the same bump for sites 1 to 3 and 5 to 8, each deployed by its own runner. A failed check at any point <b>stops everything after it</b>.',
+  '<b><span class="mono">gw-central</span> flips last</b>, once every site it aggregates is healthy. The whole board is green: that is what "released" means here.',
   '<b>Rollback is <span class="mono">git revert</span></b> of the release PR: the pins flip back to <span class="mono">v2.0.0</span>, and the pipeline makes them true again.'
 ]);
 
