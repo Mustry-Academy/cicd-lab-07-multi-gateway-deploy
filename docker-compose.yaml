@@ -53,6 +53,52 @@ services:
     networks:
       - default
 
+  gateway-test:
+    image: inductiveautomation/ignition:8.3.6
+    container_name: lab07-gateway-test
+    hostname: lab07-gateway-test
+    user: root
+    restart: unless-stopped
+    ports:
+      - "8090:8088"
+    volumes:
+      - test-gateway-data:/usr/local/bin/ignition/data
+    environment:
+      ACCEPT_IGNITION_EULA: "Y"
+      IGNITION_EDITION: standard
+      GATEWAY_ADMIN_USERNAME: admin
+      GATEWAY_ADMIN_PASSWORD: password
+      TZ: "Europe/Brussels"
+    command: >
+      -n lab07-local-test
+      -m 1024
+      --
+      wrapper.java.initmemory=256
+      -Dignition.allowunsignedmodules=true
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8090/StatusPing"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 90s
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+        reservations:
+          memory: 512M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    depends_on:
+      timescaledb:
+        condition: service_healthy
+    networks:
+      - default
+
+
   timescaledb:
     image: timescale/timescaledb:latest-pg16
     container_name: lab07-postgres
