@@ -46,7 +46,7 @@ permissions:
 jobs:
   deploy:
     name: Deploy to dev gateway
-    runs-on: [self-hosted,test-tom]
+    runs-on: [self-hosted,tom-local]
     environment: test
     env:
       IGNITION_URL: ${{ vars.IGNITION_URL || 'http://local:8090' }}
