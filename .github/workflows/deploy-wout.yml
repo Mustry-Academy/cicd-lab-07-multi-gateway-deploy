@@ -1,0 +1,322 @@
+# Deploy to a lab gateway — dev on every push to main, dev OR prod on manual
+# dispatch (Actions → Deploy → Run workflow → pick the target).
+#
+# GitHub Flow: `main` is the single long-lived branch. Feature branches merge
+# into it via PR (validated by ci.yml), and every push here ships the working
+# tree to the DEV gateway. Prod deploys are the same workflow pointed at the
+# prod gateway via the `target` input.
+#
+# File-based deploy via `docker cp` — the runner is a container without the
+# host's paths, so it ships files INTO the target gateway's container and then
+# asks the gateway to scan. The gateway's projects/ and config/ are
+# bind-mounted from ./gateways/<target> on the host, so you can verify what a
+# deploy shipped with `ls gateways/dev/projects`. Runs on a self-hosted
+# runner with the `lab06` label that has access to the same Docker daemon
+# as the gateway containers.
+#
+# What a deploy carries (and Part 1 of the lab is about what it CAN'T):
+#   - projects/  and  services/config/   → docker cp + scan (hot reload)
+#   - services/modules.json + third-party-modules/  → docker cp + restart,
+#     but only when the manifest actually changed (modules only load at boot)
+#   - secret FILES are never in the payload. The "Materialize secret files"
+#     step you add in Part 1C writes them from GitHub environment secrets;
+#     the pre-wired "Ship secret files" step below hands them to the gateway.
+#
+# Required setup on GitHub (Settings → Environments → "lab-gateway-dev" and
+# "lab-gateway-prod"):
+#   Secret:    IGNITION_API_KEY    Created in the gateway UI (Config →
+#                                  Security → API Keys); needs a role with
+#                                  Project Scan + Config Scan permission.
+#   Secrets:   POSTGRES_PASSWORD / REPORTING_PASSWORD — you add these in
+#                                  Part 1C for the Materialize step.
+#   Variable:  IGNITION_URL        Optional. Defaults to
+#                                  http://gateway-<target>:8088 — the
+#                                  in-compose service name (the lab's bundled
+#                                  runner runs on the same docker network as
+#                                  the gateways). Override to
+#                                  http://localhost:8089 (dev) /
+#                                  http://localhost:8090 (prod) if your
+#                                  runner is on the host instead.
+#   Variable:  IGNITION_CONTAINER  Optional. Defaults to
+#                                  lab06-gateway-<target>.
+
+name: test-wout
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "projects/**"
+      - "services/config/**"
+      - "services/modules.json"
+      - "third-party-modules/**"
+      - "db-migration/**"
+      - ".deployignore"
+      - "scripts/scan.sh"
+      - "scripts/lib.sh"
+      - ".github/workflows/deploy.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Deploy to Wouts test gateway
+    runs-on: [self-hosted, wout-local]
+    # environment: lab-gateway-${{ inputs.target || 'wout' }}
+    # env:
+       DEPLOY_TARGET: ${{ inputs.target || 'wout' }}
+       IGNITION_URL: ${{ vars.IGNITION_URL || format('http://gateway-{0}:8088', inputs.target || 'wout') }}
+       IGNITION_CONTAINER: ${{ vars.IGNITION_CONTAINER || format('lab07-gateway-{0}', inputs.target || 'wout') }}
+       IGNITION_API_KEY: ${{ secrets.IGNITION_API_KEY }}
+       GATEWAY_DATA_PATH: /usr/local/bin/ignition/data
+
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+        with:
+          clean: true
+
+      - name: Verify deploy prerequisites
+        run: |
+          set -euo pipefail
+          command -v docker >/dev/null || { echo "docker CLI not installed on runner"; exit 1; }
+          test -n "$IGNITION_API_KEY" || { echo "IGNITION_API_KEY secret is missing"; exit 1; }
+          if ! docker inspect "$IGNITION_CONTAINER" >/dev/null 2>&1; then
+            echo "Container '$IGNITION_CONTAINER' not found on this runner's Docker daemon" >&2
+            exit 1
+          fi
+          state="$(docker inspect -f '{{.State.Status}}' "$IGNITION_CONTAINER")"
+          if [ "$state" != "running" ]; then
+            echo "Container '$IGNITION_CONTAINER' is in state '$state', expected 'running'" >&2
+            exit 1
+          fi
+          echo "Prerequisites OK (target=$DEPLOY_TARGET container=$IGNITION_CONTAINER state=$state)."
+
+      # Part 1C: add your "Materialize secret files" step HERE — it turns the
+      # GitHub environment secrets into files under secrets/ (umask 177 +
+      # printf '%s'). Without it the step below finds nothing and ships
+      # nothing, which is exactly the warm-up's broken state.
+        #   - name: Materialize secret files
+        #     env:
+        #       POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+        #       REPORTING_PASSWORD: ${{ secrets.REPORTING_PASSWORD }}
+        #     run: |
+        #       umask 177
+        #       mkdir -p secrets
+        #       printf '%s' "$POSTGRES_PASSWORD" \
+        #         > secrets/postgres_password.txt
+        #       printf '%s' "$REPORTING_PASSWORD" \
+        #         > secrets/reporting_password.txt
+
+      - name: Ship secret files into gateway container
+        # Hands whatever the Materialize step wrote under secrets/ to the
+        # gateway at /run/secrets/ — the path the file-type secret provider
+        # reads. The provider reads the files on demand, so no restart is
+        # needed: the faulted connection re-validates on its next test cycle.
+        # No secrets/ files in the workspace → explicit no-op (the warm-up).
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          files=(secrets/*.txt)
+          if [ ${#files[@]} -eq 0 ]; then
+            echo "No secret files materialized — skipping (nothing under secrets/*.txt)."
+            exit 0
+          fi
+          docker exec "$IGNITION_CONTAINER" mkdir -p /run/secrets
+          for f in "${files[@]}"; do
+            name="$(basename "$f" .txt)"
+            docker cp "$f" "$IGNITION_CONTAINER:/run/secrets/$name"
+            echo "  shipped /run/secrets/$name"
+          done
+
+      # Part 2B: add your "Migrate database" step HERE — BEFORE the ship
+      # steps (old screens tolerate a new table; new screens don't tolerate a
+      # missing one) and NOT continue-on-error (a failed migration must stop
+      # the run before anything ships). Derive the database from
+      # $DEPLOY_TARGET (env above): a prod deploy migrates ignition_prd,
+      # not the dev database.
+    #   - name: Migrate database
+    #     run: |
+    #       case "$DEPLOY_TARGET" in
+    #         prod) db=ignition_prd ;;
+    #         *)    db=ignition_dev ;;
+    #       esac
+    #       ./scripts/migrate.sh up --database "$db"
+
+
+    #   - name: Ship module manifest and third-party modules (restart if changed)
+    #     # Part 3 of the lab: the module binary and its manifest entry are
+    #     # deployable state. Unlike projects/config, modules only load at BOOT,
+    #     # so this step restarts the gateway — but only when the manifest
+    #     # actually changed, so ordinary project deploys stay hot.
+    #     # The gateway's manifest is its own copy (bind-mounted from
+    #     # ./gateways/<target>/modules.json, seeded by setup.sh), so its hash
+    #     # is genuinely "what this gateway last booted with", not the repo
+    #     # working tree.
+    #     run: |
+    #       set -euo pipefail
+    #       before="$(docker exec "$IGNITION_CONTAINER" md5sum "$GATEWAY_DATA_PATH/modules.json" 2>/dev/null | cut -d' ' -f1 || true)"
+    #       # modules.json is a SINGLE-FILE bind mount in the container, so
+    #       # `docker cp` cannot replace it (unlink of a mount point → "device
+    #       # or resource busy"). Stream the new content through the mount
+    #       # instead. third-party-modules/ is a directory mount — copying
+    #       # INTO it is fine.
+    #       docker exec -i "$IGNITION_CONTAINER" sh -c "cat > '$GATEWAY_DATA_PATH/modules.json'" < ./services/modules.json
+    #       docker cp ./third-party-modules/. "$IGNITION_CONTAINER:/third-party-modules/"
+    #       after="$(docker exec "$IGNITION_CONTAINER" md5sum "$GATEWAY_DATA_PATH/modules.json" | cut -d' ' -f1)"
+    #       if [ "$before" = "$after" ]; then
+    #         echo "Module manifest unchanged — no restart needed."
+    #         exit 0
+    #       fi
+    #       echo "Module manifest changed — restarting $IGNITION_CONTAINER so the gateway reloads modules..."
+    #       docker restart "$IGNITION_CONTAINER"
+    #       for _ in $(seq 1 60); do
+    #         if curl -fsS --max-time 3 "$IGNITION_URL/StatusPing" 2>/dev/null | grep -q RUNNING; then
+    #           echo "gateway RUNNING again."
+    #           exit 0
+    #         fi
+    #         sleep 5
+    #       done
+    #       echo "gateway did not come back after module restart" >&2
+    #       exit 1
+
+      - name: Prune working tree per .deployignore
+        # Patterns containing a slash → repo-relative path match.
+        # Bare names (.DS_Store, *.swp) → match anywhere in the tree, the
+        # way .gitignore semantically works.
+        run: |
+          set -euo pipefail
+          [ -f .deployignore ] || { echo "No .deployignore — skipping prune"; exit 0; }
+          while IFS= read -r line || [ -n "$line" ]; do
+            [[ -z "$line" || "$line" =~ ^[[:space:]]*# ]] && continue
+            pat="${line%/}"
+            if [[ "$pat" == */* ]]; then
+              if [ -e "$pat" ]; then
+                echo "  pruning (path):  $pat"
+                rm -rf -- "$pat"
+              fi
+            else
+              while IFS= read -r -d '' p; do
+                echo "  pruning (match): $p"
+                rm -rf -- "$p"
+              done < <(find . -name "$pat" -print0 2>/dev/null)
+            fi
+          done < .deployignore
+
+      - name: Ship projects and config into gateway container
+        # Wipe-then-copy so a deleted-in-repo resource also disappears from the
+        # gateway ("deleted in repo → deleted on gateway"). We wipe projects/ AND
+        # config/, but preserve the subtrees the gateway owns and that
+        # .deployignore prunes (so they are NOT copied back):
+        #   config/local/ and config/resources/local/  — per-instance identity
+        #     (UUID, OPC-UA keystores, machine-local system props)
+        #   config/ignition/keys/ — the gateway's secrets-management keys
+        #     (root key + KEKs). They belong to THIS gateway; nothing in the
+        #     payload can replace them.
+        #   config/resources/core/ignition/user-source/{default,opcua-module}/
+        #     and identity-provider/default/ — the gateway-owned INTERNAL
+        #     identity; users.json holds THIS gateway's admin password hash.
+        #     Wiping or overwriting it locks everyone out.
+        # Wiping any of those would strip the gateway's identity, since nothing
+        # restores them. Everything else under config/ IS repo-owned and is
+        # wiped and copied fresh — including the scan API token
+        # (resources/core/ignition/api-token/), security-properties (permission
+        # policy), and any identity resources you added yourself (database/AD
+        # user sources, SAML/OIDC providers — those hold no password data).
+        run: |
+          set -euo pipefail
+          docker exec "$IGNITION_CONTAINER" sh -c "
+            set -eu
+            rm -rf '$GATEWAY_DATA_PATH/projects/'*
+            find '$GATEWAY_DATA_PATH/config' -mindepth 1 -maxdepth 1 \
+              ! -name local ! -name resources ! -name ignition -exec rm -rf {} +
+            if [ -d '$GATEWAY_DATA_PATH/config/ignition' ]; then
+              find '$GATEWAY_DATA_PATH/config/ignition' -mindepth 1 -maxdepth 1 \
+                ! -name keys -exec rm -rf {} +
+            fi
+            if [ -d '$GATEWAY_DATA_PATH/config/resources' ]; then
+              find '$GATEWAY_DATA_PATH/config/resources' -mindepth 1 -maxdepth 1 \
+                ! -name local ! -name core -exec rm -rf {} +
+            fi
+            if [ -d '$GATEWAY_DATA_PATH/config/resources/core' ]; then
+              find '$GATEWAY_DATA_PATH/config/resources/core' -mindepth 1 -maxdepth 1 \
+                ! -name ignition -exec rm -rf {} +
+            fi
+            if [ -d '$GATEWAY_DATA_PATH/config/resources/core/ignition' ]; then
+              find '$GATEWAY_DATA_PATH/config/resources/core/ignition' -mindepth 1 -maxdepth 1 \
+                ! -name user-source ! -name identity-provider -exec rm -rf {} +
+            fi
+            if [ -d '$GATEWAY_DATA_PATH/config/resources/core/ignition/user-source' ]; then
+              find '$GATEWAY_DATA_PATH/config/resources/core/ignition/user-source' -mindepth 1 -maxdepth 1 \
+                ! -name default ! -name opcua-module -exec rm -rf {} +
+            fi
+            if [ -d '$GATEWAY_DATA_PATH/config/resources/core/ignition/identity-provider' ]; then
+              find '$GATEWAY_DATA_PATH/config/resources/core/ignition/identity-provider' -mindepth 1 -maxdepth 1 \
+                ! -name default -exec rm -rf {} +
+            fi
+          "
+          docker cp ./projects/.        "$IGNITION_CONTAINER:$GATEWAY_DATA_PATH/projects/"
+          docker cp ./services/config/. "$IGNITION_CONTAINER:$GATEWAY_DATA_PATH/config/"
+
+      - name: Trigger gateway scan
+        # Call the scan API inline rather than scripts/scan.sh: the prune
+        # step above removes scripts/ (it is in .deployignore), so that script is
+        # not on disk in this job.
+        #
+        # Self-heal on 401/403: on a gateway that has never loaded the API
+        # token (or whose first-boot commissioning reset the permissions in
+        # security-properties), the scan cannot authenticate — but the Ship
+        # step has ALREADY copied the token and the repo's security-properties
+        # onto its disk. The gateway only loads those at boot, so: restart it
+        # once, wait for RUNNING, retry the scans. First deploy to a fresh
+        # gateway heals itself; every later deploy scans hot, no restart.
+        run: |
+          set -euo pipefail
+          run_scans() {
+            local what code
+            for what in projects config; do
+              code="$(curl -sS -o /dev/null -w '%{http_code}' -X POST \
+                --connect-timeout 5 --max-time 30 \
+                -H "X-Ignition-API-Token: $IGNITION_API_KEY" \
+                "$IGNITION_URL/data/api/v1/scan/$what")"
+              echo "scan $what -> HTTP $code"
+              if [ "$code" = "401" ] || [ "$code" = "403" ]; then
+                return 42
+              fi
+              if [ "$code" -lt 200 ] || [ "$code" -ge 300 ]; then
+                echo "scan $what failed (HTTP $code)" >&2
+                return 1
+              fi
+            done
+          }
+          rc=0
+          run_scans || rc=$?
+          if [ "$rc" = "42" ]; then
+            echo "Scan not authorized — the gateway has not loaded the deployed"
+            echo "API token / security-properties yet (first deploy to a fresh"
+            echo "gateway). Restarting it to load them, then retrying."
+            docker restart "$IGNITION_CONTAINER"
+            for _ in $(seq 1 60); do
+              if curl -fsS --max-time 3 "$IGNITION_URL/StatusPing" 2>/dev/null | grep -q RUNNING; then
+                break
+              fi
+              sleep 5
+            done
+            run_scans
+          elif [ "$rc" != "0" ]; then
+            exit "$rc"
+          fi
+
+      - name: Smoke-check gateway health
+        run: |
+          set -euo pipefail
+          for i in $(seq 1 10); do
+            if curl -fsS --max-time 3 "$IGNITION_URL/StatusPing" >/dev/null; then
+              echo "gateway healthy after $((i * 2))s"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "gateway did not respond after deploy" >&2
+          exit 1
