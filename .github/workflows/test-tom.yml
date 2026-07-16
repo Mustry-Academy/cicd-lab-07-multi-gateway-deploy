@@ -52,7 +52,7 @@ jobs:
     environment: test
     env:
       IGNITION_URL: ${{ vars.IGNITION_URL || 'http://gateway-test:8090' }}
-      IGNITION_CONTAINER: ${{ vars.IGNITION_CONTAINER || 'gateway-test' }}
+      IGNITION_CONTAINER: ${{ vars.IGNITION_CONTAINER || 'lab07-gateway-test' }}
       IGNITION_API_KEY: ${{ secrets.IGNITION_API_KEY }}
       GATEWAY_DATA_PATH: /usr/local/bin/ignition/data
 
