@@ -1,3 +1,67 @@
+x-ignition-env: &ignition-env
+  ACCEPT_IGNITION_EULA: "Y"
+  IGNITION_EDITION: standard
+  GATEWAY_MODULES_ENABLED: >-
+    com.inductiveautomation.alarm-notification,
+    com.inductiveautomation.eventstream,
+    com.inductiveautomation.historian,
+    com.inductiveautomation.connectors.kafka,
+    com.inductiveautomation.opcua.drivers.modbus,
+    com.inductiveautomation.opcua,
+    com.inductiveautomation.perspective,
+    com.inductiveautomation.reporting,
+    com.inductiveautomation.historian.sql,
+    com.inductiveautomation.symbol-factory,
+    com.inductiveautomation.opcua.drivers.tcpudp,
+    com.inductiveautomation.webdev,
+    com.inductiveautomation.jdbc.postgresql,
+    com.mussonindustrial.embr.charts,
+    com.mussonindustrial.embr.periscope,
+    com.mustry.historian.timescaledb,
+    com.cirruslink.mqtt.engine.gateway
+  # Embr-Periscope is the spare module Part 3 installs. It is pre-accepted
+  # in the ACCEPT_MODULE_* lists below (license + cert) AND listed in
+  # GATEWAY_MODULES_ENABLED — but it ships WITHOUT a services/modules.json
+  # entry, so the .modl sitting in third-party-modules/ is not loaded on a
+  # fresh boot (no manifest entry => not installed). Part 3 adds the minimal
+  # entry (filename + onStartup); because acceptance is already in these env
+  # vars, the gateway installs it headlessly on the next boot and WRITES the
+  # derived certFingerprint + licenseAgreementHash back into modules.json —
+  # which the student then commits so image-based/fresh gateways accept it
+  # from config alone. That derivation is the whole point of Part 3.
+  ACCEPT_MODULE_LICENSES: >-
+    com.mussonindustrial.embr.charts,
+    com.mussonindustrial.embr.periscope,
+    com.mustry.historian.timescaledb,
+    com.cirruslink.mqtt.engine.gateway
+  ACCEPT_MODULE_CERTS: >-
+    com.mussonindustrial.embr.charts,
+    com.mussonindustrial.embr.periscope,
+    com.mustry.historian.timescaledb,
+    com.cirruslink.mqtt.engine.gateway
+  GATEWAY_RESTORE_DISABLED: "true"
+  GATEWAY_NETWORK_ENABLED: "true"
+  TZ: "Europe/Brussels"
+
+# x-ignition-resources: &ignition-resources
+#   deploy:
+#     resources:
+#       limits:
+#         memory: 1G
+#       reservations:
+#         memory: 512M
+#   logging:
+#     driver: "json-file"
+#     options:
+#       max-size: "10m"
+#       max-file: "3"
+
+# x-ignition-healthcheck: &ignition-healthcheck
+#   test: ["CMD", "curl", "-fsS", "http://localhost:8088/StatusPing"]
+#   interval: 30s
+#   timeout: 10s
+#   retries: 10
+#   start_period: 90s
 
 name: lab07
 
@@ -14,6 +78,8 @@ services:
       - gateway-data:/usr/local/bin/ignition/data
       - ./projects:/usr/local/bin/ignition/data/projects
       - ./services/config:/usr/local/bin/ignition/data/config
+      - ./services/modules.json:/usr/local/bin/ignition/data/modules.json
+      - ./third-party-modules:/third-party-modules:ro
       # Local stand-ins for the capstone's referenced secrets: the same
       # file-type secret provider config that reads /run/secrets/ on
       # production reads these here. Known local-dev defaults, not secrets.
@@ -24,6 +90,38 @@ services:
       GATEWAY_ADMIN_USERNAME: admin
       GATEWAY_ADMIN_PASSWORD: password
       TZ: "Europe/Brussels"
+      GATEWAY_MODULES_ENABLED: >-
+        com.inductiveautomation.alarm-notification,
+        com.inductiveautomation.eventstream,
+        com.inductiveautomation.historian,
+        com.inductiveautomation.connectors.kafka,
+        com.inductiveautomation.opcua.drivers.modbus,
+        com.inductiveautomation.opcua,
+        com.inductiveautomation.perspective,
+        com.inductiveautomation.reporting,
+        com.inductiveautomation.historian.sql,
+        com.inductiveautomation.symbol-factory,
+        com.inductiveautomation.opcua.drivers.tcpudp,
+        com.inductiveautomation.webdev,
+        com.inductiveautomation.jdbc.postgresql,
+        com.mussonindustrial.embr.charts
+      ACCEPT_MODULE_LICENSES: >-
+        com.mussonindustrial.embr.charts
+      ACCEPT_MODULE_CERTS: >-
+        com.inductiveautomation.alarm-notification,
+        com.inductiveautomation.eventstream,
+        com.inductiveautomation.historian,
+        com.inductiveautomation.connectors.kafka,
+        com.inductiveautomation.opcua.drivers.modbus,
+        com.inductiveautomation.opcua,
+        com.inductiveautomation.perspective,
+        com.inductiveautomation.reporting,
+        com.inductiveautomation.historian.sql,
+        com.inductiveautomation.symbol-factory,
+        com.inductiveautomation.opcua.drivers.tcpudp,
+        com.inductiveautomation.webdev,
+        com.inductiveautomation.jdbc.postgresql,
+        com.mussonindustrial.embr.charts
     command: >
       -n lab07-local
       -m 1024
@@ -32,6 +130,52 @@ services:
       -Dignition.allowunsignedmodules=true
     healthcheck:
       test: ["CMD", "curl", "-fsS", "http://localhost:8088/StatusPing"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 90s
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+        reservations:
+          memory: 512M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    depends_on:
+      timescaledb:
+        condition: service_healthy
+    networks:
+      - default
+
+  gateway-test:
+    image: inductiveautomation/ignition:8.3.6
+    container_name: lab07-gateway-test
+    hostname: lab07-gateway-test
+    user: root
+    restart: unless-stopped
+    ports:
+      - "8090:8088"
+    volumes:
+      - test-gateway-data:/usr/local/bin/ignition/data
+    environment:
+      <<: *ignition-env
+      GATEWAY_ADMIN_USERNAME: "${GATEWAY_ADMIN_USERNAME_TEST:-admin}"
+      GATEWAY_ADMIN_PASSWORD: "${GATEWAY_ADMIN_PASSWORD_TEST:-password}"
+      ACCEPT_IGNITION_EULA: "Y"
+      IGNITION_EDITION: standard
+      TZ: "Europe/Brussels"
+    command: >
+      -n lab07-local-test
+      -m 1024
+      --
+      wrapper.java.initmemory=256
+      -Dignition.allowunsignedmodules=true
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8090/StatusPing"]
       interval: 30s
       timeout: 10s
       retries: 10
@@ -76,6 +220,40 @@ services:
       options:
         max-size: "200k"
         max-file: "10"
+    networks:
+      - default
+
+  # --- self-hosted GitHub Actions runner -------------------------------------
+  # Auto-registers against the repo set in RUNNER_REPO_URL using a GitHub
+  # Personal Access Token (RUNNER_GITHUB_PAT, must have `repo` scope). The
+  # image uses that PAT to fetch its own short-lived registration token, so
+  # you never mint one by hand. Reuse the same PAT you created in Lab 04.
+  #
+  # The runner sits on the lab's compose network, so it reaches the gateways by
+  # service name (gateway-loc, gateway-dev, gateway-prod) — see the
+  # IGNITION_URL defaults in .github/workflows/deploy.yml.
+  #
+  # Why /var/run/docker.sock is mounted: deploy.yml uses
+  # `docker cp` and `docker exec` to push project files INTO the dev/prod
+  # gateway containers. That requires the runner to talk to the host's
+  # Docker daemon. Lab convenience, NOT a production pattern.
+  github-runner:
+    image: myoung34/github-runner:latest
+    container_name: lab07-runner
+    hostname: lab07-runner
+    restart: unless-stopped
+    environment:
+      REPO_URL: "${RUNNER_REPO_URL}"
+      ACCESS_TOKEN: "${RUNNER_GITHUB_PAT}"
+      RUNNER_NAME: "${RUNNER_NAME:-lab07-runner}"
+      RUNNER_SCOPE: repo
+      LABELS: "${RUNNER_LABEL}"
+      # No EPHEMERAL here on purpose: the image treats ANY non-empty value
+      # (even "false") as "enable --ephemeral". Leave it unset for a
+      # persistent runner.
+      DISABLE_AUTO_UPDATE: "true"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
     networks:
       - default
 
