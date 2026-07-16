@@ -59,3 +59,4 @@ services/config/resources/migration-log-*.md
 **/.alarms_*
 *.tmp
 *.bak
+**/gateways/
