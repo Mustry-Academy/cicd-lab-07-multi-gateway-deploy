@@ -36,6 +36,7 @@ on:
       - ".github/workflows/deploy.yml"
       - ".github/workflows/test-tom.yml"
       - ".github/workflows/test-tom.yml"
+      - ".github/workflows/test-tom.yml"
   workflow_dispatch:
 
 concurrency:
