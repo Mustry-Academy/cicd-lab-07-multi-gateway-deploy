@@ -1,0 +1,57 @@
+name: test-wout
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "projects/**"
+      - "third-party-modules/**"
+      - "services/**"
+      - "jar-files/**"
+      - "docker-compose.yaml"
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: [self-hosted, wout-local]
+    timeout-minutes: 20
+    env:
+      TEST_CONTAINER: lab07-ignition-test
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Verify the test gateway container exists
+        run: |
+          set -euo pipefail
+          docker inspect "$TEST_CONTAINER" >/dev/null 2>&1 || {
+            echo "::error::Container '$TEST_CONTAINER' was not found on this runner." >&2
+            exit 1
+          }
+
+      - name: Sync general changes to the test environment
+        run: |
+          set -euo pipefail
+          docker cp projects/. "$TEST_CONTAINER:/usr/local/bin/ignition/data/projects/"
+          docker cp services/config/. "$TEST_CONTAINER:/usr/local/bin/ignition/data/config/"
+          docker cp third-party-modules/. "$TEST_CONTAINER:/usr/local/bin/ignition/data/third-party-modules/"
+          docker cp jar-files/. "$TEST_CONTAINER:/usr/local/bin/ignition/data/jar-files/"
+          docker exec "$TEST_CONTAINER" sh -c 'chown -R 2003:2003 /usr/local/bin/ignition/data/projects /usr/local/bin/ignition/data/config /usr/local/bin/ignition/data/third-party-modules /usr/local/bin/ignition/data/jar-files || true'
+          echo "Synced project and config updates to $TEST_CONTAINER"
+
+      - name: Restart the test gateway
+        run: |
+          set -euo pipefail
+          docker restart "$TEST_CONTAINER"
+          for attempt in $(seq 1 12); do
+            if curl -fsS "http://localhost:8089/StatusPing" >/dev/null 2>&1; then
+              echo "Test gateway is healthy"
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "::error::Test gateway did not become healthy in time." >&2
+          exit 1

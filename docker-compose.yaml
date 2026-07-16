@@ -1,6 +1,61 @@
 
 name: lab07
 
+x-ignition-env: &ignition-env
+  ACCEPT_IGNITION_EULA: "Y"
+  IGNITION_EDITION: standard
+  GATEWAY_MODULES_ENABLED: >-
+    com.inductiveautomation.alarm-notification,
+    com.inductiveautomation.eventstream,
+    com.inductiveautomation.historian,
+    com.inductiveautomation.connectors.kafka,
+    com.inductiveautomation.opcua.drivers.modbus,
+    com.inductiveautomation.opcua,
+    com.inductiveautomation.perspective,
+    com.inductiveautomation.reporting,
+    com.inductiveautomation.historian.sql,
+    com.inductiveautomation.symbol-factory,
+    com.inductiveautomation.opcua.drivers.tcpudp,
+    com.inductiveautomation.webdev,
+    com.inductiveautomation.jdbc.postgresql,
+    com.mussonindustrial.embr.charts,
+    com.mussonindustrial.embr.periscope,
+    com.mustry.historian.timescaledb,
+    com.cirruslink.mqtt.engine.gateway
+  ACCEPT_MODULE_LICENSES: >-
+    com.mussonindustrial.embr.charts,
+    com.mussonindustrial.embr.periscope,
+    com.mustry.historian.timescaledb,
+    com.cirruslink.mqtt.engine.gateway
+  ACCEPT_MODULE_CERTS: >-
+    com.mussonindustrial.embr.charts,
+    com.mussonindustrial.embr.periscope,
+    com.mustry.historian.timescaledb,
+    com.cirruslink.mqtt.engine.gateway
+  GATEWAY_RESTORE_DISABLED: "true"
+  GATEWAY_NETWORK_ENABLED: "true"
+  TZ: "Europe/Brussels"
+
+x-ignition-resources: &ignition-resources
+  deploy:
+    resources:
+      limits:
+        memory: 1G
+      reservations:
+        memory: 512M
+  logging:
+    driver: "json-file"
+    options:
+      max-size: "10m"
+      max-file: "3"
+
+x-ignition-healthcheck: &ignition-healthcheck
+  test: ["CMD", "curl", "-fsS", "http://localhost:8088/StatusPing"]
+  interval: 30s
+  timeout: 10s
+  retries: 10
+  start_period: 90s
+
 services:
   gateway:
     image: inductiveautomation/ignition:8.3.6
@@ -53,6 +108,35 @@ services:
     networks:
       - default
 
+  ignition-test:
+    image: "${IGNITION_PROD_IMAGE:-inductiveautomation/ignition:8.3.6}"
+    container_name: lab07-ignition-test
+    hostname: lab07-ignition-test
+    user: root
+    restart: unless-stopped
+    ports:
+      - "8089:8088"
+      - "8061:8060"
+    environment:
+      <<: *ignition-env
+      GATEWAY_ADMIN_USERNAME: "${GATEWAY_ADMIN_USERNAME_TEST:-admin}"
+      GATEWAY_ADMIN_PASSWORD: "${GATEWAY_ADMIN_PASSWORD_TEST:-password}"
+    command: >
+      -n lab07-test
+      -m 1024
+      --
+      wrapper.java.initmemory=256
+      -Dignition.allowunsignedmodules=true
+      -Dignition.gateway.externalModulesFolder=/third-party-modules
+      -Dignition.config.mode=test
+    healthcheck: *ignition-healthcheck
+    <<: *ignition-resources
+    networks:
+      - default
+    depends_on:
+      timescaledb:
+        condition: service_healthy
+
   timescaledb:
     image: timescale/timescaledb:latest-pg16
     container_name: lab07-postgres
@@ -79,6 +163,29 @@ services:
     networks:
       - default
 
+  github-runner:
+    image: myoung34/github-runner:latest
+    container_name: lab07-runner
+    hostname: lab07-runner
+    restart: unless-stopped
+    environment:
+      REPO_URL: "${RUNNER_REPO_URL}"
+      ACCESS_TOKEN: "${RUNNER_GITHUB_PAT}"
+      RUNNER_NAME: "${RUNNER_NAME:-lab07-runner}"
+      RUNNER_SCOPE: repo
+      LABELS: "self-hosted,wout-local"
+      # No EPHEMERAL here on purpose: the image treats ANY non-empty value
+      # (even "false") as "enable --ephemeral". Leave it unset for a
+      # persistent runner.
+      DISABLE_AUTO_UPDATE: "true"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - default
+
+#volumes:
+  #ignition-local-data:
+  #timescaledb-data:
 volumes:
   gateway-data:
   test-gateway-data:
