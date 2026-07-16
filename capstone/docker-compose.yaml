@@ -29,6 +29,14 @@ services:
     image: caddy:2.11.4
     container_name: cicd-capstone-caddy
     restart: unless-stopped
+    # --watch makes Caddy reload itself when the bind-mounted Caddyfile changes.
+    # Without it, a Caddyfile-only edit doesn't apply: `compose up -d` only
+    # recreates a container when its *service definition* changes, not when a
+    # bind-mounted file's contents change, so Caddy would keep its old in-memory
+    # config. (git rewrites the working-tree file in place — same inode — so the
+    # bind mount sees the change and the watcher fires.) Rest of the command is
+    # the caddy image's default CMD.
+    command: ["caddy", "run", "--config", "/etc/caddy/Caddyfile", "--adapter", "caddyfile", "--watch"]
     ports:
       - "80:80"
       - "443:443"

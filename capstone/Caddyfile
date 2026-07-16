@@ -9,5 +9,20 @@
 
 cloud.mustrysolutions.com {
 	encode gzip
-	reverse_proxy ignition:8088
+
+	# Tesla Fleet API third-party public key. Served ahead of the proxy so the
+	# gateway (which would 404 it) never sees this path. handle blocks are
+	# mutually exclusive, so the reverse_proxy below handles everything else.
+	handle /.well-known/appspecific/com.tesla.3p.public-key.pem {
+		header Content-Type application/x-pem-file
+		respond `-----BEGIN PUBLIC KEY-----
+MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE/QgxpvSoHT6MRd/rK9vOcs0p7srf
+9knYKyl1Qfry8X9ap3GHQAUDfDTI3UIu3sZRPBeaju1J2YWiyHinQM3VEA==
+-----END PUBLIC KEY-----
+` 200
+	}
+
+	handle {
+		reverse_proxy ignition:8088
+	}
 }
