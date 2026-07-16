@@ -22,7 +22,7 @@
 #                                  runner is on the host instead.
 #   Variable:  IGNITION_CONTAINER  Optional. Defaults to lab04-ignition-dev.
 
-name: Deploy-tom
+name: test-nick
 
 on:
   push:
@@ -46,7 +46,7 @@ permissions:
 
 jobs:
   deploy:
-    name: Deploy to dev gateway
+    name: Deploy to Nicks test gateway
     runs-on: [self-hosted,nick-local]
     environment: test
     env:
