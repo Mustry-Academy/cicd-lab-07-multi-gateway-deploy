@@ -55,13 +55,14 @@ on:
       - "scripts/scan.sh"
       - "scripts/lib.sh"
       - ".github/workflows/deploy.yml"
+      - ".github/workflows/test-tom.yml"
 
 permissions:
   contents: read
 
 jobs:
   deploy:
-    name: Deploy to Stephans test gateway
+    name: Deploy to tom test gateway
     runs-on: [self-hosted, tom-local]
     # environment: test
     env:
