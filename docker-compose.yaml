@@ -162,7 +162,6 @@ services:
     volumes:
       - test-gateway-data:/usr/local/bin/ignition/data
     environment:
-    environment:
       <<: *ignition-env
       GATEWAY_ADMIN_USERNAME: "${GATEWAY_ADMIN_USERNAME_TEST:-admin}"
       GATEWAY_ADMIN_PASSWORD: "${GATEWAY_ADMIN_PASSWORD_TEST:-password}"
@@ -248,7 +247,7 @@ services:
       ACCESS_TOKEN: "${RUNNER_GITHUB_PAT}"
       RUNNER_NAME: "${RUNNER_NAME:-lab07-runner}"
       RUNNER_SCOPE: repo
-      LABELS: "self-hosted,stephan-local"
+      LABELS: "${RUNNER_LABEL}"
       # No EPHEMERAL here on purpose: the image treats ANY non-empty value
       # (even "false") as "enable --ephemeral". Leave it unset for a
       # persistent runner.
