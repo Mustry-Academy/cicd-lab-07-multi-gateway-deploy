@@ -221,7 +221,9 @@ your machine.
 on your label and fast-forwards the **test clone** to `main` (your runner
 already has it mounted at `/workspace/lab07-test`). That is all it does: the
 test gateway runs in **dev config mode**, which watches the mounted files
-and applies changes as they land — no restart, no scan call. The production
+— and your workflow restarts it after the fast-forward, because a gateway
+only reads externally-changed files at boot or on an authenticated scan
+(dev config mode does NOT watch the filesystem; verified). The production
 gateway runs in prod mode, where nothing applies until the deploy's
 authenticated scan:
 
