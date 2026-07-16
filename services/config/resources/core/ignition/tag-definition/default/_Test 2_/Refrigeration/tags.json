@@ -1,0 +1,66 @@
+[
+  {
+    "valueSource": "opc",
+    "opcItemPath": "ns\u003d1;s\u003d[Test 2]Refrigeration/accumulatorLevel",
+    "dataType": "Float8",
+    "name": "accumulatorLevel",
+    "tagType": "AtomicTag",
+    "opcServer": "Ignition OPC UA Server"
+  },
+  {
+    "valueSource": "opc",
+    "opcItemPath": "ns\u003d1;s\u003d[Test 2]Refrigeration/ambientHum",
+    "dataType": "Float8",
+    "name": "ambientHum",
+    "tagType": "AtomicTag",
+    "opcServer": "Ignition OPC UA Server"
+  },
+  {
+    "valueSource": "opc",
+    "opcItemPath": "ns\u003d1;s\u003d[Test 2]Refrigeration/dischargePressure",
+    "dataType": "Float8",
+    "name": "dischargePressure",
+    "tagType": "AtomicTag",
+    "opcServer": "Ignition OPC UA Server"
+  },
+  {
+    "valueSource": "opc",
+    "opcItemPath": "ns\u003d1;s\u003d[Test 2]Refrigeration/valveDischarge",
+    "dataType": "Float8",
+    "name": "valveDischarge",
+    "tagType": "AtomicTag",
+    "opcServer": "Ignition OPC UA Server"
+  },
+  {
+    "valueSource": "opc",
+    "opcItemPath": "ns\u003d1;s\u003d[Test 2]Refrigeration/valveKing",
+    "dataType": "Float8",
+    "name": "valveKing",
+    "tagType": "AtomicTag",
+    "opcServer": "Ignition OPC UA Server"
+  },
+  {
+    "valueSource": "opc",
+    "opcItemPath": "ns\u003d1;s\u003d[Test 2]Refrigeration/receiverLevel",
+    "dataType": "Float8",
+    "name": "receiverLevel",
+    "tagType": "AtomicTag",
+    "opcServer": "Ignition OPC UA Server"
+  },
+  {
+    "valueSource": "opc",
+    "opcItemPath": "ns\u003d1;s\u003d[Test 2]Refrigeration/ambientTemp",
+    "dataType": "Float8",
+    "name": "ambientTemp",
+    "tagType": "AtomicTag",
+    "opcServer": "Ignition OPC UA Server"
+  },
+  {
+    "valueSource": "opc",
+    "opcItemPath": "ns\u003d1;s\u003d[Test 2]Refrigeration/dischargeTemp",
+    "dataType": "Float8",
+    "name": "dischargeTemp",
+    "tagType": "AtomicTag",
+    "opcServer": "Ignition OPC UA Server"
+  }
+]

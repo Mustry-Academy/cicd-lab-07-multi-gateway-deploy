@@ -1,0 +1,18 @@
+[
+  {
+    "valueSource": "opc",
+    "opcItemPath": "ns\u003d1;s\u003d[Test 2]Overview/Sensor 1/Humidity",
+    "dataType": "Float8",
+    "name": "Humidity",
+    "tagType": "AtomicTag",
+    "opcServer": "Ignition OPC UA Server"
+  },
+  {
+    "valueSource": "opc",
+    "opcItemPath": "ns\u003d1;s\u003d[Test 2]Overview/Sensor 1/Temperature",
+    "dataType": "Float8",
+    "name": "Temperature",
+    "tagType": "AtomicTag",
+    "opcServer": "Ignition OPC UA Server"
+  }
+]

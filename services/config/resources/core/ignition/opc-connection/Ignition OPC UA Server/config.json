@@ -24,11 +24,11 @@
       "authenticationType": "USERNAME",
       "password": {
         "data": {
-          "ciphertext": "QWPo-v4aZpVjHg",
-          "encrypted_key": "rYiI_h0wu4-KUfwMIFvPbh5HxRsyg9QS79HNky53GBbkCaO-UGcD_g",
-          "iv": "eH_-mGqiQ8NVScdI",
-          "protected": "eyJhbGciOiJBMjU2S1ciLCJlbmMiOiJBMjU2R0NNIiwiaWF0IjoxNzg0MDIzMzM0LCJ6aXAiOiJERUYifQ",
-          "tag": "DrCHWCY-Jno1t6Zg22Qrpg"
+          "ciphertext": "LEWZSi7WJvGthvo",
+          "encrypted_key": "s5sn0vtRR_vrm5iYf25DL2d5-GV7iI_wOwiWPVTZyOZ1UBd69bc_Ig",
+          "iv": "E_DKBGmWahNjrrQs",
+          "protected": "eyJhbGciOiJBMjU2S1ciLCJlbmMiOiJBMjU2R0NNIiwiaWF0IjoxNzg0MjA5OTExLCJ6aXAiOiJERUYifQ",
+          "tag": "-dzDB2XMbmzgnKas7joZ0w"
         },
         "type": "Embedded"
       },

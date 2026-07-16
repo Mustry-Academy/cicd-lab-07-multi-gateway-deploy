@@ -1,0 +1,42 @@
+[
+  {
+    "valueSource": "opc",
+    "opcItemPath": "ns\u003d1;s\u003d[Test 2]Refrigeration/Tower1/mmOH",
+    "dataType": "Float8",
+    "name": "mmOH",
+    "tagType": "AtomicTag",
+    "opcServer": "Ignition OPC UA Server"
+  },
+  {
+    "valueSource": "opc",
+    "opcItemPath": "ns\u003d1;s\u003d[Test 2]Refrigeration/Tower1/fanSpeed",
+    "dataType": "Float8",
+    "name": "fanSpeed",
+    "tagType": "AtomicTag",
+    "opcServer": "Ignition OPC UA Server"
+  },
+  {
+    "valueSource": "opc",
+    "opcItemPath": "ns\u003d1;s\u003d[Test 2]Refrigeration/Tower1/pH",
+    "dataType": "Float8",
+    "name": "pH",
+    "tagType": "AtomicTag",
+    "opcServer": "Ignition OPC UA Server"
+  },
+  {
+    "valueSource": "opc",
+    "opcItemPath": "ns\u003d1;s\u003d[Test 2]Refrigeration/Tower1/makeup",
+    "dataType": "Float8",
+    "name": "makeup",
+    "tagType": "AtomicTag",
+    "opcServer": "Ignition OPC UA Server"
+  },
+  {
+    "valueSource": "opc",
+    "opcItemPath": "ns\u003d1;s\u003d[Test 2]Refrigeration/Tower1/temp",
+    "dataType": "Float8",
+    "name": "temp",
+    "tagType": "AtomicTag",
+    "opcServer": "Ignition OPC UA Server"
+  }
+]

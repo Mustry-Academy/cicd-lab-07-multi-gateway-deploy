@@ -1,0 +1,26 @@
+[
+  {
+    "valueSource": "opc",
+    "opcItemPath": "ns\u003d1;s\u003d[Test 2]Refrigeration/Tower2/Pumps/circHOA",
+    "dataType": "Float8",
+    "name": "circHOA",
+    "tagType": "AtomicTag",
+    "opcServer": "Ignition OPC UA Server"
+  },
+  {
+    "valueSource": "opc",
+    "opcItemPath": "ns\u003d1;s\u003d[Test 2]Refrigeration/Tower2/Pumps/chemHOA",
+    "dataType": "Float8",
+    "name": "chemHOA",
+    "tagType": "AtomicTag",
+    "opcServer": "Ignition OPC UA Server"
+  },
+  {
+    "valueSource": "opc",
+    "opcItemPath": "ns\u003d1;s\u003d[Test 2]Refrigeration/Tower2/Pumps/bromineHOA",
+    "dataType": "Float8",
+    "name": "bromineHOA",
+    "tagType": "AtomicTag",
+    "opcServer": "Ignition OPC UA Server"
+  }
+]

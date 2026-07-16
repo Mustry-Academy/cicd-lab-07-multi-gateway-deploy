@@ -1,0 +1,26 @@
+[
+  {
+    "valueSource": "opc",
+    "opcItemPath": "ns\u003d1;s\u003d[Test 2]Overview/Palletizer 2/Pattern",
+    "dataType": "Int4",
+    "name": "Pattern",
+    "tagType": "AtomicTag",
+    "opcServer": "Ignition OPC UA Server"
+  },
+  {
+    "valueSource": "opc",
+    "opcItemPath": "ns\u003d1;s\u003d[Test 2]Overview/Palletizer 2/Type",
+    "dataType": "Int4",
+    "name": "Type",
+    "tagType": "AtomicTag",
+    "opcServer": "Ignition OPC UA Server"
+  },
+  {
+    "valueSource": "opc",
+    "opcItemPath": "ns\u003d1;s\u003d[Test 2]Overview/Palletizer 2/HOA",
+    "dataType": "Int4",
+    "name": "HOA",
+    "tagType": "AtomicTag",
+    "opcServer": "Ignition OPC UA Server"
+  }
+]

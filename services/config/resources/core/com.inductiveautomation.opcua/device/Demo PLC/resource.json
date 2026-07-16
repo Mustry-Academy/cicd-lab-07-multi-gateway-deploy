@@ -1,0 +1,14 @@
+{
+  "scope": "A",
+  "description": "A device where live tags can be used.",
+  "version": 1,
+  "restricted": false,
+  "overridable": true,
+  "files": [
+    "config.json"
+  ],
+  "attributes": {
+    "uuid": "46fa0bab-7902-4866-9064-1130c279db9b",
+    "enabled": true
+  }
+}

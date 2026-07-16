@@ -1,0 +1,18 @@
+[
+  {
+    "valueSource": "opc",
+    "opcItemPath": "ns\u003d1;s\u003d[Test 2]Overview/AU 3/Fan 1 HOA",
+    "dataType": "Int2",
+    "name": "Fan 1 HOA",
+    "tagType": "AtomicTag",
+    "opcServer": "Ignition OPC UA Server"
+  },
+  {
+    "valueSource": "opc",
+    "opcItemPath": "ns\u003d1;s\u003d[Test 2]Overview/AU 3/Fan 2 HOA",
+    "dataType": "Int2",
+    "name": "Fan 2 HOA",
+    "tagType": "AtomicTag",
+    "opcServer": "Ignition OPC UA Server"
+  }
+]

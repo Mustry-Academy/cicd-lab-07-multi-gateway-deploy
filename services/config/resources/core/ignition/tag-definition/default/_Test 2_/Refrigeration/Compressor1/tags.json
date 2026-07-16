@@ -1,0 +1,138 @@
+[
+  {
+    "valueSource": "opc",
+    "opcItemPath": "ns\u003d1;s\u003d[Test 2]Refrigeration/Compressor1/pressureInletOil",
+    "dataType": "Float8",
+    "name": "pressureInletOil",
+    "tagType": "AtomicTag",
+    "opcServer": "Ignition OPC UA Server"
+  },
+  {
+    "valueSource": "opc",
+    "opcItemPath": "ns\u003d1;s\u003d[Test 2]Refrigeration/Compressor1/tonnageIdeal",
+    "dataType": "Float8",
+    "name": "tonnageIdeal",
+    "tagType": "AtomicTag",
+    "opcServer": "Ignition OPC UA Server"
+  },
+  {
+    "valueSource": "opc",
+    "opcItemPath": "ns\u003d1;s\u003d[Test 2]Refrigeration/Compressor1/tonnageCurrent",
+    "dataType": "Float8",
+    "name": "tonnageCurrent",
+    "tagType": "AtomicTag",
+    "opcServer": "Ignition OPC UA Server"
+  },
+  {
+    "valueSource": "opc",
+    "opcItemPath": "ns\u003d1;s\u003d[Test 2]Refrigeration/Compressor1/tempDischarge",
+    "dataType": "Float8",
+    "name": "tempDischarge",
+    "tagType": "AtomicTag",
+    "opcServer": "Ignition OPC UA Server"
+  },
+  {
+    "valueSource": "opc",
+    "opcItemPath": "ns\u003d1;s\u003d[Test 2]Refrigeration/Compressor1/powerDemand",
+    "dataType": "Float8",
+    "name": "powerDemand",
+    "tagType": "AtomicTag",
+    "opcServer": "Ignition OPC UA Server"
+  },
+  {
+    "valueSource": "opc",
+    "opcItemPath": "ns\u003d1;s\u003d[Test 2]Refrigeration/Compressor1/pressureDischarge",
+    "dataType": "Float8",
+    "name": "pressureDischarge",
+    "tagType": "AtomicTag",
+    "opcServer": "Ignition OPC UA Server"
+  },
+  {
+    "valueSource": "opc",
+    "opcItemPath": "ns\u003d1;s\u003d[Test 2]Refrigeration/Compressor1/presSuctionSP",
+    "dataType": "Float8",
+    "name": "presSuctionSP",
+    "tagType": "AtomicTag",
+    "opcServer": "Ignition OPC UA Server"
+  },
+  {
+    "valueSource": "opc",
+    "opcItemPath": "ns\u003d1;s\u003d[Test 2]Refrigeration/Compressor1/lineVoltage",
+    "dataType": "Float8",
+    "name": "lineVoltage",
+    "tagType": "AtomicTag",
+    "opcServer": "Ignition OPC UA Server"
+  },
+  {
+    "valueSource": "opc",
+    "opcItemPath": "ns\u003d1;s\u003d[Test 2]Refrigeration/Compressor1/hoa",
+    "dataType": "Float8",
+    "name": "hoa",
+    "tagType": "AtomicTag",
+    "opcServer": "Ignition OPC UA Server"
+  },
+  {
+    "valueSource": "opc",
+    "opcItemPath": "ns\u003d1;s\u003d[Test 2]Refrigeration/Compressor1/percentLoaded",
+    "dataType": "Float8",
+    "name": "percentLoaded",
+    "tagType": "AtomicTag",
+    "opcServer": "Ignition OPC UA Server"
+  },
+  {
+    "valueSource": "opc",
+    "opcItemPath": "ns\u003d1;s\u003d[Test 2]Refrigeration/Compressor1/powerAvgUsage",
+    "dataType": "Float8",
+    "name": "powerAvgUsage",
+    "tagType": "AtomicTag",
+    "opcServer": "Ignition OPC UA Server"
+  },
+  {
+    "valueSource": "opc",
+    "opcItemPath": "ns\u003d1;s\u003d[Test 2]Refrigeration/Compressor1/tempInletOil",
+    "dataType": "Float8",
+    "name": "tempInletOil",
+    "tagType": "AtomicTag",
+    "opcServer": "Ignition OPC UA Server"
+  },
+  {
+    "valueSource": "opc",
+    "opcItemPath": "ns\u003d1;s\u003d[Test 2]Refrigeration/Compressor1/pressureSuction",
+    "dataType": "Float8",
+    "name": "pressureSuction",
+    "tagType": "AtomicTag",
+    "opcServer": "Ignition OPC UA Server"
+  },
+  {
+    "valueSource": "opc",
+    "opcItemPath": "ns\u003d1;s\u003d[Test 2]Refrigeration/Compressor1/motorAmps",
+    "dataType": "Float8",
+    "name": "motorAmps",
+    "tagType": "AtomicTag",
+    "opcServer": "Ignition OPC UA Server"
+  },
+  {
+    "valueSource": "opc",
+    "opcItemPath": "ns\u003d1;s\u003d[Test 2]Refrigeration/Compressor1/pressureInletOilFilter",
+    "dataType": "Float8",
+    "name": "pressureInletOilFilter",
+    "tagType": "AtomicTag",
+    "opcServer": "Ignition OPC UA Server"
+  },
+  {
+    "valueSource": "opc",
+    "opcItemPath": "ns\u003d1;s\u003d[Test 2]Refrigeration/Compressor1/tempOilSep",
+    "dataType": "Float8",
+    "name": "tempOilSep",
+    "tagType": "AtomicTag",
+    "opcServer": "Ignition OPC UA Server"
+  },
+  {
+    "valueSource": "opc",
+    "opcItemPath": "ns\u003d1;s\u003d[Test 2]Refrigeration/Compressor1/tempSuction",
+    "dataType": "Float8",
+    "name": "tempSuction",
+    "tagType": "AtomicTag",
+    "opcServer": "Ignition OPC UA Server"
+  }
+]

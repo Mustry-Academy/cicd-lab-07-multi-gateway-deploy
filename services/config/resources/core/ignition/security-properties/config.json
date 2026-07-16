@@ -20,15 +20,12 @@
             "children": [
               {
                 "children": [],
-                "description": "System generated security level representing read and write privileges to Gateway configuration",
                 "name": "Administrator"
               }
             ],
-            "description": "Represents the roles that a user has.",
             "name": "Roles"
           }
         ],
-        "description": "Represents a user who has been authenticated by the system.",
         "name": "Authenticated"
       }
     ],
@@ -44,26 +41,19 @@
             "children": [
               {
                 "children": [],
-                "description": "System generated security level representing read and write privileges to Gateway configuration",
                 "name": "Administrator"
               }
             ],
-            "description": "Represents the roles that a user has.",
             "name": "Roles"
-          },
-          {
-            "children": [],
-            "name": "APIKEY"
           }
         ],
-        "description": "Represents a user who has been authenticated by the system.",
         "name": "Authenticated"
       }
     ],
     "type": "AnyOf"
   },
-  "systemAuthProfile": "default",
-  "systemIdentityProvider": "default",
+  "systemAuthProfile": "temp",
+  "systemIdentityProvider": "temp",
   "userInactivityTimeout": 10,
   "writePermissions": {
     "securityLevels": [
@@ -73,19 +63,12 @@
             "children": [
               {
                 "children": [],
-                "description": "System generated security level representing read and write privileges to Gateway configuration",
                 "name": "Administrator"
               }
             ],
-            "description": "Represents the roles that a user has.",
             "name": "Roles"
-          },
-          {
-            "children": [],
-            "name": "APIKEY"
           }
         ],
-        "description": "Represents a user who has been authenticated by the system.",
         "name": "Authenticated"
       }
     ],
