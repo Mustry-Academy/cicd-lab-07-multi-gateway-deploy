@@ -1,0 +1,157 @@
+# Deploy to the dev gateway on push to main.
+#
+# GitHub Flow: `main` is the single long-lived branch. Feature branches merge into
+# it via PR, and every push here ships the working tree to the DEV gateway.
+# Releases to prod happen separately (tag on main → release.yml).
+#
+# File-based deploy via `docker cp` — the dev gateway uses a named volume
+# (not a bind mount), so the runner ships files INTO the container's
+# filesystem and then asks the gateway to scan. Runs on a self-hosted
+# runner with the `lab04` label that has access to the same Docker daemon
+# as the dev gateway container.
+#
+# Required setup on GitHub (Settings → Environments → "lab-gateway-dev"):
+#   Secret:    IGNITION_API_KEY    Created in the dev gateway UI (Config →
+#                                  Security → API Keys); needs a role with
+#                                  Project Scan + Config Scan permission.
+#   Variable:  IGNITION_URL        Optional. Defaults to
+#                                  http://ignition-dev:8088 — the in-compose
+#                                  service name (the lab's bundled runner runs
+#                                  on the same docker network as the gateways).
+#                                  Override to http://localhost:8089 if your
+#                                  runner is on the host instead.
+#   Variable:  IGNITION_CONTAINER  Optional. Defaults to lab04-ignition-dev.
+
+name: Deploy-tom
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "projects/**"
+      - "services/config/**"
+      - ".deployignore"
+      - "scripts/scan.sh"
+      - "scripts/lib.sh"
+      - ".github/workflows/deploy.yml"
+      - ".github/workflows/test-tom.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-lab-gateway-test
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Deploy to dev gateway
+    runs-on: [self-hosted,tom-local]
+    environment: test
+    env:
+      IGNITION_URL: ${{ vars.IGNITION_URL || 'http://localhost:8088' }}
+      IGNITION_CONTAINER: ${{ vars.IGNITION_CONTAINER || 'lab07-gateway-test' }}
+      IGNITION_API_KEY: ${{ secrets.IGNITION_API_KEY }}
+      GATEWAY_DATA_PATH: /usr/local/bin/ignition/data
+
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+        with:
+          clean: true
+
+      - name: Verify deploy prerequisites
+        run: |
+          set -euo pipefail
+          command -v docker >/dev/null || { echo "docker CLI not installed on runner"; exit 1; }
+          test -n "$IGNITION_API_KEY" || { echo "IGNITION_API_KEY secret is missing"; exit 1; }
+          if ! docker inspect "$IGNITION_CONTAINER" >/dev/null 2>&1; then
+            echo "Container '$IGNITION_CONTAINER' not found on this runner's Docker daemon" >&2
+            exit 1
+          fi
+          state="$(docker inspect -f '{{.State.Status}}' "$IGNITION_CONTAINER")"
+          if [ "$state" != "running" ]; then
+            echo "Container '$IGNITION_CONTAINER' is in state '$state', expected 'running'" >&2
+            exit 1
+          fi
+          echo "Prerequisites OK (container=$IGNITION_CONTAINER state=$state)."
+
+      - name: Prune working tree per .deployignore
+        # Patterns containing a slash → repo-relative path match.
+        # Bare names (.DS_Store, *.swp) → match anywhere in the tree, the
+        # way .gitignore semantically works.
+        run: |
+          set -euo pipefail
+          [ -f .deployignore ] || { echo "No .deployignore — skipping prune"; exit 0; }
+          while IFS= read -r line || [ -n "$line" ]; do
+            [[ -z "$line" || "$line" =~ ^[[:space:]]*# ]] && continue
+            pat="${line%/}"
+            if [[ "$pat" == */* ]]; then
+              if [ -e "$pat" ]; then
+                echo "  pruning (path):  $pat"
+                rm -rf -- "$pat"
+              fi
+            else
+              while IFS= read -r -d '' p; do
+                echo "  pruning (match): $p"
+                rm -rf -- "$p"
+              done < <(find . -name "$pat" -print0 2>/dev/null)
+            fi
+          done < .deployignore
+
+      - name: Ship projects and config into gateway container
+        # Wipe-then-copy so a deleted-in-repo resource also disappears from the
+        # gateway ("deleted in repo → deleted on gateway"). We wipe projects/ AND
+        # config/, but preserve the two subtrees the gateway owns and that
+        # .deployignore prunes (so they are NOT copied back): config/local/ and
+        # config/resources/local/ — per-instance identity (UUID, OPC-UA
+        # keystores, machine-local system props). Wiping those would strip the
+        # gateway's identity, since nothing restores them. Everything else under
+        # config/ IS repo-owned (including the scan API token under
+        # resources/core/ignition/api-token/), so it is wiped and copied fresh.
+        run: |
+          set -euo pipefail
+          docker exec "$IGNITION_CONTAINER" sh -c "
+            set -eu
+            rm -rf '$GATEWAY_DATA_PATH/projects/'*
+            find '$GATEWAY_DATA_PATH/config' -mindepth 1 -maxdepth 1 \
+              ! -name local ! -name resources -exec rm -rf {} +
+            if [ -d '$GATEWAY_DATA_PATH/config/resources' ]; then
+              find '$GATEWAY_DATA_PATH/config/resources' -mindepth 1 -maxdepth 1 \
+                ! -name local -exec rm -rf {} +
+            fi
+          "
+          docker cp ./projects/.        "$IGNITION_CONTAINER:$GATEWAY_DATA_PATH/projects/"
+          docker cp ./services/config/. "$IGNITION_CONTAINER:$GATEWAY_DATA_PATH/config/"
+
+      - name: Trigger gateway scan
+        # Call the scan API inline rather than scripts/scan.sh: the prune
+        # step above removes scripts/ (it is in .deployignore), so that script is
+        # not on disk in this job.
+        run: |
+          set -euo pipefail
+          for what in projects config; do
+            code="$(curl -sS -o /dev/null -w '%{http_code}' -X POST \
+              --connect-timeout 5 --max-time 30 \
+              -H "X-Ignition-API-Token: $IGNITION_API_KEY" \
+              "$IGNITION_URL/data/api/v1/scan/$what")"
+            echo "scan $what -> HTTP $code"
+            if [ "$code" -lt 200 ] || [ "$code" -ge 300 ]; then
+              echo "scan $what failed (HTTP $code)" >&2
+              exit 1
+            fi
+          done
+
+      - name: Smoke-check gateway health
+        run: |
+          set -euo pipefail
+          for i in $(seq 1 10); do
+            if curl -fsS --max-time 3 "$IGNITION_URL/StatusPing" >/dev/null; then
+              echo "gateway healthy after $((i * 2))s"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "gateway did not respond after deploy" >&2
+          exit 1
