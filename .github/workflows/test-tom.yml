@@ -75,7 +75,7 @@
 #                                  lab06-gateway-<target>.
 
 name: test-tom
-name: test-tom
+
 
 on:
   push:
