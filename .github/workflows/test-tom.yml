@@ -49,7 +49,7 @@ jobs:
     runs-on: [self-hosted,tom-local]
     environment: test
     env:
-      IGNITION_URL: ${{ vars.IGNITION_URL || 'http://local:8090' }}
+      IGNITION_URL: ${{ vars.IGNITION_URL || 'http://localhost:8090' }}
       IGNITION_CONTAINER: ${{ vars.IGNITION_CONTAINER || 'lab07-gateway-test' }}
       IGNITION_API_KEY: ${{ secrets.IGNITION_API_KEY }}
       GATEWAY_DATA_PATH: /usr/local/bin/ignition/data
