@@ -65,12 +65,19 @@ x-ignition-env: &ignition-env
 
 name: lab07
 
+secrets:
+  postgres_user:
+    file: ./dev/secrets/POSTGRES_USERNAME
+  postgres_password:
+    file: ./dev/secrets/POSTGRES_PASSWORD
+
 services:
   gateway:
     image: inductiveautomation/ignition:8.3.6
     container_name: lab07-gateway
     hostname: lab07-gateway
     user: root
+    # secrets: [postgres_password, postgres_user]
     restart: unless-stopped
     ports:
       - "8088:8088"
@@ -156,6 +163,7 @@ services:
     container_name: lab07-gateway-test
     hostname: lab07-gateway-test
     user: root
+    secrets: [postgres_password, postgres_user]
     restart: unless-stopped
     ports:
       - "8090:8088"
@@ -205,10 +213,11 @@ services:
       - "5432:5432"
     volumes:
       - postgres-data:/var/lib/postgresql/data
+    secrets: [postgres_user, postgres_password]
     environment:
       POSTGRES_DB: ignition
-      POSTGRES_USER: ignition
-      POSTGRES_PASSWORD: lab07-postgres-pw
+      POSTGRES_USER_FILE: /run/secrets/postgres_user
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
       TZ: "Europe/Brussels"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ignition -d ignition"]
