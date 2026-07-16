@@ -224,6 +224,7 @@ jobs:
         # (resources/core/ignition/api-token/), security-properties (permission
         # policy), and any identity resources you added yourself (database/AD
         # user sources, SAML/OIDC providers — those hold no password data).
+        # trigger a commit
         run: |
           set -euo pipefail
           docker exec "$IGNITION_CONTAINER" sh -c "
