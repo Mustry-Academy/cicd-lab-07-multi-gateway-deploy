@@ -1,0 +1,22 @@
+{
+  "profile": {
+    "secureChannelRequired": true,
+    "securityLevels": [
+      {
+        "children": [
+          {
+            "children": [],
+            "name": "APIKEY"
+          }
+        ],
+        "description": "Represents a user who has been authenticated by the system.",
+        "name": "Authenticated"
+      }
+    ],
+    "timestamp": 1784207899400,
+    "type": "basic-token"
+  },
+  "settings": {
+    "tokenHash": "Xbzes84jV06afREIEkCB8xCP5lknapqGSX0HkXe9mug"
+  }
+}

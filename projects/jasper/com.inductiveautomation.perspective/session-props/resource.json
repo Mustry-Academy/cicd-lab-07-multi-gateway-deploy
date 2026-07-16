@@ -4,13 +4,13 @@
   "restricted": false,
   "overridable": true,
   "files": [
-    "config.json"
+    "props.json"
   ],
   "attributes": {
-    "lastModificationSignature": "b30f65d05115ba31df296f1ee6acf279d5cdf0f57e2d08162efcf4a23e7d0740",
+    "lastModificationSignature": "f3de9e0dbf82b84f0bee23e7229477a4563d033dfcb3643895255275672768b2",
     "lastModification": {
       "actor": "admin",
-      "timestamp": "2026-07-16T09:34:57Z"
+      "timestamp": "2026-07-16T13:44:07Z"
     }
   }
 }

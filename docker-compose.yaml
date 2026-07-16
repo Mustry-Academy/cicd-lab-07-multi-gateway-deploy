@@ -78,6 +78,8 @@ services:
       - gateway-data:/usr/local/bin/ignition/data
       - ./projects:/usr/local/bin/ignition/data/projects
       - ./services/config:/usr/local/bin/ignition/data/config
+      - ./services/modules.json:/usr/local/bin/ignition/data/modules.json
+      - ./third-party-modules:/third-party-modules:ro
       # Local stand-ins for the capstone's referenced secrets: the same
       # file-type secret provider config that reads /run/secrets/ on
       # production reads these here. Known local-dev defaults, not secrets.
@@ -88,6 +90,38 @@ services:
       GATEWAY_ADMIN_USERNAME: admin
       GATEWAY_ADMIN_PASSWORD: password
       TZ: "Europe/Brussels"
+      GATEWAY_MODULES_ENABLED: >-
+        com.inductiveautomation.alarm-notification,
+        com.inductiveautomation.eventstream,
+        com.inductiveautomation.historian,
+        com.inductiveautomation.connectors.kafka,
+        com.inductiveautomation.opcua.drivers.modbus,
+        com.inductiveautomation.opcua,
+        com.inductiveautomation.perspective,
+        com.inductiveautomation.reporting,
+        com.inductiveautomation.historian.sql,
+        com.inductiveautomation.symbol-factory,
+        com.inductiveautomation.opcua.drivers.tcpudp,
+        com.inductiveautomation.webdev,
+        com.inductiveautomation.jdbc.postgresql,
+        com.mussonindustrial.embr.charts
+      ACCEPT_MODULE_LICENSES: >-
+        com.mussonindustrial.embr.charts
+      ACCEPT_MODULE_CERTS: >-
+        com.inductiveautomation.alarm-notification,
+        com.inductiveautomation.eventstream,
+        com.inductiveautomation.historian,
+        com.inductiveautomation.connectors.kafka,
+        com.inductiveautomation.opcua.drivers.modbus,
+        com.inductiveautomation.opcua,
+        com.inductiveautomation.perspective,
+        com.inductiveautomation.reporting,
+        com.inductiveautomation.historian.sql,
+        com.inductiveautomation.symbol-factory,
+        com.inductiveautomation.opcua.drivers.tcpudp,
+        com.inductiveautomation.webdev,
+        com.inductiveautomation.jdbc.postgresql,
+        com.mussonindustrial.embr.charts
     command: >
       -n lab07-local
       -m 1024
@@ -213,7 +247,7 @@ services:
       ACCESS_TOKEN: "${RUNNER_GITHUB_PAT}"
       RUNNER_NAME: "${RUNNER_NAME:-lab07-runner}"
       RUNNER_SCOPE: repo
-      LABELS: "self-hosted,${RUNNER_LABELS}"
+      LABELS: "${RUNNER_LABEL}"
       # No EPHEMERAL here on purpose: the image treats ANY non-empty value
       # (even "false") as "enable --ephemeral". Leave it unset for a
       # persistent runner.

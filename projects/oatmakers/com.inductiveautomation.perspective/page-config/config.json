@@ -3,6 +3,28 @@
     "/": {
       "title": "Oatmakers",
       "viewPath": "home"
+    },
+    "/embr-chart": {
+      "title": "",
+      "viewPath": "EmbrChart"
     }
+  },
+  "sharedDocks": {
+    "left": [
+      {
+        "anchor": "fixed",
+        "autoBreakpoint": 480,
+        "content": "auto",
+        "handle": "hide",
+        "iconUrl": "",
+        "id": "",
+        "modal": false,
+        "resizable": false,
+        "show": "visible",
+        "size": 300,
+        "viewParams": {},
+        "viewPath": "Menu"
+      }
+    ]
   }
 }

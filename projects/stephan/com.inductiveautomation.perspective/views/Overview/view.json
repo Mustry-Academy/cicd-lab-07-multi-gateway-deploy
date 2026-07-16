@@ -1,0 +1,36 @@
+{
+  "custom": {},
+  "params": {},
+  "props": {
+    "defaultSize": {
+      "width": 1200
+    }
+  },
+  "root": {
+    "children": [
+      {
+        "meta": {
+          "name": "Label"
+        },
+        "position": {
+          "basis": "32px"
+        },
+        "props": {
+          "style": {
+            "textAlign": "center"
+          },
+          "text": "Stephan bids you welcome to his project"
+        },
+        "type": "ia.display.label"
+      }
+    ],
+    "meta": {
+      "name": "root"
+    },
+    "props": {
+      "direction": "column",
+      "justify": "center"
+    },
+    "type": "ia.container.flex"
+  }
+}

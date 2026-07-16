@@ -40,7 +40,7 @@
 #   Variable:  IGNITION_CONTAINER  Optional. Defaults to
 #                                  lab06-gateway-<target>.
 
-name: test-stephan
+name: test-tom
 
 on:
   push:
@@ -62,7 +62,7 @@ permissions:
 jobs:
   deploy:
     name: Deploy to Stephans test gateway
-    runs-on: [self-hosted, stephan-local]
+    runs-on: [self-hosted, tom-local]
     # environment: test
     env:
       DEPLOY_TARGET: test
