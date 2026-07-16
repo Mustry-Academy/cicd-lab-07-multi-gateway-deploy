@@ -61,15 +61,15 @@ permissions:
 
 jobs:
   deploy:
-    name: Deploy to Wouts test gateway
+    name: Deploy to Wout test gateway
     runs-on: [self-hosted, wout-local]
-    # environment: lab-gateway-${{ inputs.target || 'wout' }}
-    # env:
-       DEPLOY_TARGET: ${{ inputs.target || 'wout' }}
-       IGNITION_URL: ${{ vars.IGNITION_URL || format('http://gateway-{0}:8088', inputs.target || 'wout') }}
-       IGNITION_CONTAINER: ${{ vars.IGNITION_CONTAINER || format('lab07-gateway-{0}', inputs.target || 'wout') }}
-       IGNITION_API_KEY: ${{ secrets.IGNITION_API_KEY }}
-       GATEWAY_DATA_PATH: /usr/local/bin/ignition/data
+    # environment: test
+    env:
+      DEPLOY_TARGET: test
+      IGNITION_URL: ${{ format('http://gateway-{0}:8088', 'test') }}
+      IGNITION_CONTAINER: ${{ format('lab07-gateway-{0}', 'test') }}
+      IGNITION_API_KEY: ${{ secrets.IGNITION_API_KEY }}
+      GATEWAY_DATA_PATH: /usr/local/bin/ignition/data
 
     steps:
       - name: Check out repo
