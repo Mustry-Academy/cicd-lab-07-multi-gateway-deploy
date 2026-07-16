@@ -6,7 +6,13 @@
   "allowDesignerSSO": false,
   "allowUserAdmin": false,
   "createProjectPermissions": {
-    "securityLevels": [],
+    "securityLevels": [
+      {
+        "children": [],
+        "description": "Represents a user who has been authenticated by the system.",
+        "name": "Authenticated"
+      }
+    ],
     "type": "AllOf"
   },
   "designerAuthStrategy": "CLASSIC",
@@ -20,12 +26,15 @@
             "children": [
               {
                 "children": [],
+                "description": "System generated security level representing read and write privileges to Gateway configuration",
                 "name": "Administrator"
               }
             ],
+            "description": "Represents the roles that a user has.",
             "name": "Roles"
           }
         ],
+        "description": "Represents a user who has been authenticated by the system.",
         "name": "Authenticated"
       }
     ],
@@ -41,12 +50,19 @@
             "children": [
               {
                 "children": [],
+                "description": "System generated security level representing read and write privileges to Gateway configuration",
                 "name": "Administrator"
               }
             ],
+            "description": "Represents the roles that a user has.",
             "name": "Roles"
+          },
+          {
+            "children": [],
+            "name": "APIKEY"
           }
         ],
+        "description": "Represents a user who has been authenticated by the system.",
         "name": "Authenticated"
       }
     ],
@@ -63,12 +79,19 @@
             "children": [
               {
                 "children": [],
+                "description": "System generated security level representing read and write privileges to Gateway configuration",
                 "name": "Administrator"
               }
             ],
+            "description": "Represents the roles that a user has.",
             "name": "Roles"
+          },
+          {
+            "children": [],
+            "name": "APIKEY"
           }
         ],
+        "description": "Represents a user who has been authenticated by the system.",
         "name": "Authenticated"
       }
     ],
