@@ -117,7 +117,6 @@ services:
     networks:
       - default
 
-  # --- prod gateway: populated by deploy.yml (dispatch, target=prod) ------------------
   gateway-test:
     image: inductiveautomation/ignition:8.3.6
     container_name: lab07-gateway-test
@@ -126,33 +125,44 @@ services:
     restart: unless-stopped
     ports:
       - "8090:8088"
-      - "8062:8060"
     volumes:
       - test-gateway-data:/usr/local/bin/ignition/data
-      # Same pattern as dev: deployed files are visible on the host under
-      # ./gateways/prod (gitignored, created by setup.sh).
-      - ./gateways/test/projects:/usr/local/bin/ignition/data/projects
-      - ./gateways/test/config:/usr/local/bin/ignition/data/config
-      # Per-gateway manifest copy — same reasoning as dev.
-      - ./gateways/test/modules.json:/usr/local/bin/ignition/data/modules.json
-      - ./third-party-modules:/third-party-modules
+    environment:
     environment:
       <<: *ignition-env
       GATEWAY_ADMIN_USERNAME: "${GATEWAY_ADMIN_USERNAME_TEST:-admin}"
       GATEWAY_ADMIN_PASSWORD: "${GATEWAY_ADMIN_PASSWORD_TEST:-password}"
+      ACCEPT_IGNITION_EULA: "Y"
+      IGNITION_EDITION: standard
+      TZ: "Europe/Brussels"
     command: >
-      -n lab07-test
+      -n lab07-local-test
       -m 1024
       --
       wrapper.java.initmemory=256
       -Dignition.allowunsignedmodules=true
-      -Dignition.gateway.externalModulesFolder=/third-party-modules
-      -Dignition.config.mode=test
-    networks:
-      - default
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8090/StatusPing"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 90s
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+        reservations:
+          memory: 512M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     depends_on:
       timescaledb:
         condition: service_healthy
+    networks:
+      - default
 
   timescaledb:
     image: timescale/timescaledb:latest-pg16
