@@ -118,6 +118,32 @@ check "LAB_GID survives lab_preflight being piped into another command" \
             lab_preflight >/dev/null 2>&1 | cat >/dev/null
             [ "$LAB_GID" = "$(id -g)" ]'
 
+# --- LAB_GID persisted into .env for later manual compose runs ---
+check "pf_persist_lab_gid is a no-op when .env does not exist" \
+  run_case 'cd "$(mktemp -d)"; pf_persist_lab_gid; [ ! -f .env ]'
+
+check "pf_persist_lab_gid appends LAB_GID to an existing .env" \
+  run_case 'cd "$(mktemp -d)"; touch .env; pf_persist_lab_gid
+            grep -q "^LAB_GID=$(id -g)\$" .env'
+
+check "pf_persist_lab_gid is idempotent (one LAB_GID line after two runs)" \
+  run_case 'cd "$(mktemp -d)"; touch .env; pf_persist_lab_gid; pf_persist_lab_gid
+            [ "$(grep -c "^LAB_GID=" .env)" = "1" ]'
+
+check "pf_persist_lab_gid replaces a stale LAB_GID value" \
+  run_case 'cd "$(mktemp -d)"; echo "LAB_GID=99999" > .env; pf_persist_lab_gid
+            grep -q "^LAB_GID=$(id -g)\$" .env && ! grep -q 99999 .env'
+
+check "pf_persist_lab_gid keeps unrelated .env lines intact" \
+  run_case 'cd "$(mktemp -d)"; printf "FOO=bar\nLAB_GID=99999\n" > .env
+            pf_persist_lab_gid; grep -q "^FOO=bar\$" .env'
+
+check "lab_preflight persists LAB_GID when .env already exists" \
+  run_case 'cd "$(mktemp -d)"; touch .env
+            pf_is_wsl() { return 1; }; docker() { return 0; }
+            lab_preflight >/dev/null 2>&1
+            grep -q "^LAB_GID=$(id -g)\$" .env'
+
 # --- docker access ---
 check_fails "aborts when the docker daemon is unreachable" \
   run_case 'docker() { return 1; }; pf_check_docker_access'

@@ -128,6 +128,12 @@ The container now runs as the image's own user (uid 2003) with your group added,
 and `setup.sh` makes the bind-mounted directories group-writable. Files the
 gateway writes stay editable by you.
 
+`setup.sh` also records your group id as `LAB_GID=...` in `.env`. Compose reads
+`.env` on every invocation, so running `docker compose up -d` yourself later —
+from a fresh terminal, without `setup.sh` — keeps the gateway in your group.
+Leave that line alone; if it ever goes missing, re-running `scripts/setup.sh`
+puts it back.
+
 If you have gateway data volumes from an earlier run, they still contain
 root-owned files and the gateway will fail to start with:
 

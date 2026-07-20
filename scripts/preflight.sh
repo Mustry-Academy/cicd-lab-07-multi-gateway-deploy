@@ -21,9 +21,10 @@
 #      write it so a stray /mnt/c checkout of some OTHER repo behaves.
 #
 #   3. The containers run as root and write root-owned files into the bind
-#      mount. Fixed at the source: compose now runs the gateway as the calling
-#      user's uid:gid (see docker-compose.yaml `user: "${LAB_UID}:${LAB_GID}"`
-#      and the UID/GID export below), so nothing root-owned is ever created.
+#      mount. Fixed at the source: compose now runs the gateway as the image's
+#      own user with the student's group added (`user: "2003:0"` +
+#      `group_add: ${LAB_GID}` — see the export below and section 3), so
+#      nothing root-owned is ever created.
 #
 #   4. Damage already done by earlier runs (root-owned files from before this
 #      fix, or from a sudo'd setup.sh) still sits in the tree. We detect it and
@@ -207,7 +208,8 @@ pf_check_wsl_conf() {
 # ---------------------------------------------------------------------------
 # 3. Export the gid the gateway containers should run as.
 # ---------------------------------------------------------------------------
-# docker-compose.yaml uses this as `user: "2003:${LAB_GID}"`.
+# docker-compose.yaml uses this as a supplementary group:
+#   user: "2003:0"  +  group_add: ["${LAB_GID:-0}"]
 #
 # Why 2003 and not the student's uid: the Ignition image already runs as its
 # own non-root user (uid 2003, "ignition") and the image's /usr/local/bin/
@@ -228,6 +230,45 @@ pf_export_container_user() {
   LAB_UID="$(id -u)"
   LAB_GID="$(id -g)"
   export LAB_UID LAB_GID
+}
+
+# Persist LAB_GID into .env so MANUAL compose runs pick it up too.
+#
+# The export above only reaches the shell that ran setup.sh, but the labs
+# legitimately tell students to run `docker compose up -d ...` themselves later
+# (the lab 05 image deploy, recreating the runner, the lab 07 test profile) —
+# usually from a fresh terminal where LAB_GID is unset. Compose then falls back
+# to group_add 0 and, because the config hash changed, RECREATES the gateway
+# without the student's group, and its writes into the bind mounts start
+# failing again. Compose reads .env from the project dir on every invocation,
+# so recording the value once here fixes every later manual run.
+# (A real environment variable still takes precedence over .env, so the export
+# above stays authoritative inside setup.sh itself.)
+#
+# On the first ever run .env does not exist yet when lab_preflight fires;
+# setup.sh calls this again right after it creates .env.
+pf_persist_lab_gid() {
+  [ "${LAB_SKIP_PREFLIGHT:-}" = "1" ] && return 0
+  [ -f .env ] || return 0
+  local gid
+  gid="$(id -g)"
+  if grep -q '^LAB_GID=' .env 2>/dev/null; then
+    grep -q "^LAB_GID=${gid}\$" .env && return 0
+    local tmp
+    tmp="$(mktemp)" || return 0
+    # cat-over instead of mv: keeps .env's inode and permission bits.
+    sed "s/^LAB_GID=.*/LAB_GID=${gid}/" .env > "$tmp" && cat "$tmp" > .env
+    rm -f "$tmp"
+  else
+    {
+      echo ""
+      echo "# Written by scripts/preflight.sh: your group id. docker-compose joins the"
+      echo "# gateway container to this group (group_add) so files it writes into the"
+      echo "# bind mounts stay editable by you — also when you run 'docker compose"
+      echo "# up -d' yourself from a fresh terminal. See docs/wsl-setup.md."
+      echo "LAB_GID=${gid}"
+    } >> .env
+  fi
 }
 
 # Make the bind-mounted trees group-writable and setgid, so files the gateway
@@ -416,6 +457,7 @@ lab_preflight() {
   pf_check_wsl_conf
   pf_check_docker_access
   pf_export_container_user
+  pf_persist_lab_gid         # no-op on the first run (.env not created yet)
   pf_reclaim_root_owned
   pf_repair_gateway_volumes  # upgrade path from the old `user: root` compose
   pf_prepare_bind_mounts     # after the reclaim: needs to own the files first
