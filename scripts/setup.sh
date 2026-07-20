@@ -61,6 +61,23 @@ wait_running() {
 }
 wait_running
 
+wait_running() {
+  echo -n "Waiting for the test gateway to reach RUNNING "
+  for _ in $(seq 1 60); do
+    statetest="$(curl -fsS -m 3 http://localhost:8090/StatusPing 2>/dev/null || true)"
+    if echo "$statetest" | grep -q '"state":"RUNNING"' && ! echo "$state" | grep -q COMMISSIONING; then
+      echo " up."
+      return 0
+    fi
+    echo -n "."
+    sleep 5
+  done
+  echo ""
+  echo -e "${RED}Gateway did not reach RUNNING — check: docker logs lab07-gateway${NC}" >&2
+  exit 1
+}
+wait_running
+
 # ---- one-time first-boot identity fix --------------------------------------
 
 IG=services/config/resources/core/ignition
