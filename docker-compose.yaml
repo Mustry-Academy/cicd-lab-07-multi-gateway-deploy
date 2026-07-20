@@ -6,7 +6,17 @@ services:
     image: inductiveautomation/ignition:8.3.6
     container_name: lab07-gateway
     hostname: lab07-gateway
-    user: root
+    # Keep the image's own identity (uid 2003, gid 0): its data/ tree is
+    # owned 2003:0 mode 775, so any OTHER primary gid loses write access and
+    # the gateway fails to boot ("gateway.xml exists, but isnt readable or
+    # writable"). Instead we ADD the student's group, which -- together with
+    # the group-write + setgid bits scripts/setup.sh applies to the
+    # bind-mounted dirs -- makes everything the gateway writes editable by
+    # the student. No root-owned files, so no sudo.
+    # LAB_GID is exported by scripts/preflight.sh.
+    user: "2003:0"
+    group_add:
+      - "${LAB_GID:-0}"
     restart: unless-stopped
     ports:
       - "8088:8088"
@@ -79,7 +89,121 @@ services:
     networks:
       - default
 
+  # ---- Part 0: your personal test gateway ---------------------------------
+  # A second gateway on 8090 that YOUR OWN workflow deploys to on every merge
+  # to main. Deliberately NOT bind-mounted: like production, it is an opaque
+  # container that receives files by `docker cp` and applies them with an
+  # authenticated scan. Nothing it writes touches your working tree, so
+  # `git status` stays clean while it runs all afternoon -- and a green test
+  # deploy is evidence about production, not just about your laptop.
+  #
+  # Only starts with the profile flag:  docker compose --profile test up -d
+  test-gateway:
+    image: inductiveautomation/ignition:8.3.6
+    container_name: lab07-test-gateway
+    hostname: lab07-test-gateway
+    profiles: [test]
+    # Same identity story as the `gateway` service above -- see that comment.
+    user: "2003:0"
+    group_add:
+      - "${LAB_GID:-0}"
+    restart: unless-stopped
+    ports:
+      - "8090:8088"
+    volumes:
+      # No ./projects and no ./services/config on purpose: deploys ship files
+      # IN. scripts/setup.sh seeds the API token into this volume BEFORE the
+      # first boot, because the scan API only accepts tokens the gateway has
+      # already loaded (a deploy cannot scan its own token in).
+      - test-gateway-data:/usr/local/bin/ignition/data
+      - ./dev/secrets:/run/secrets:ro
+    environment:
+      ACCEPT_IGNITION_EULA: "Y"
+      IGNITION_EDITION: standard
+      GATEWAY_ADMIN_USERNAME: admin
+      GATEWAY_ADMIN_PASSWORD: password
+      TZ: "Europe/Brussels"
+    command: >
+      -n lab07-test
+      -m 1024
+      --
+      wrapper.java.initmemory=256
+      -Dignition.allowunsignedmodules=true
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8088/StatusPing"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 90s
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+        reservations:
+          memory: 512M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - default
+
+  # ---- Part 0: your personal GitHub Actions runner ------------------------
+  # Registers against the shared repo with YOUR label, so only your
+  # test-<yourname>.yml runs here. Everything derives from LAB_USER in .env.
+  #
+  # The label is the whole routing story: five people can each have a
+  # `push: [main]` workflow and each one deploys only to its owner's gateway.
+  # Same mechanism as the site-labelled production runner.
+  test-runner:
+    image: myoung34/github-runner:latest
+    container_name: lab07-test-runner-${LAB_USER:-example}
+    hostname: lab07-test-runner
+    profiles: [test]
+    restart: unless-stopped
+    environment:
+      REPO_URL: "${REPO_URL:-https://github.com/Mustry-Academy/cicd-lab-07-multi-gateway-deploy}"
+      # Registering a runner needs repo-admin rights, which contributors do
+      # not have, so one of these two comes from Sam or Jasper.
+      #   RUNNER_GITHUB_PAT  a repo-scoped fine-grained PAT. Preferred: the
+      #                      runner re-registers itself on every restart.
+      #   RUNNER_TOKEN       a short-lived registration token (1 hour). Fine
+      #                      for today. The image prefers ACCESS_TOKEN when
+      #                      both are set.
+      ACCESS_TOKEN: "${RUNNER_GITHUB_PAT:-}"
+      RUNNER_TOKEN: "${RUNNER_TOKEN:-}"
+      RUNNER_NAME: "${RUNNER_NAME:-lab07-test-${LAB_USER:-example}}"
+      RUNNER_SCOPE: repo
+      # THE routing decision. Your workflow's `runs-on` must match this
+      # exactly, or your job waits forever for a runner that does not exist.
+      LABELS: "self-hosted,${RUNNER_LABEL:-${LAB_USER:-example}-local}"
+      # No EPHEMERAL on purpose: the image treats ANY non-empty value (even
+      # "false") as "enable --ephemeral". Leave it unset.
+      DISABLE_AUTO_UPDATE: "true"
+      # Persist the registration across `docker compose down` / `up`, so a
+      # one-hour RUNNER_TOKEN only has to work once.
+      CONFIGURED_ACTIONS_RUNNER_FILES_DIR: /runner-state
+      # Required with state reuse: without it the entrypoint deregisters on
+      # TERM and poisons the persisted state for the next start.
+      DISABLE_AUTOMATIC_DEREGISTRATION: "true"
+    volumes:
+      # How the deploy gets files INTO the test gateway: `docker cp` and
+      # `docker exec` need the host's Docker daemon. This makes the runner
+      # root-equivalent on your laptop -- fine for your own machine and your
+      # own gateway, and exactly why this runner never goes near production.
+      - /var/run/docker.sock:/var/run/docker.sock
+      - test-runner-state:/runner-state
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - default
+
 volumes:
   gateway-data:
   test-gateway-data:
+  test-runner-state:
   postgres-data:

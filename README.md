@@ -13,6 +13,14 @@ Two deploy channels, one rule: `release.yaml` is the **only** production trigger
 - **≥ 4 GB free RAM for Docker** — one Ignition gateway (1 GB cap) plus TimescaleDB
 - _Background:_ labs 03–06 — the runner, tags, secrets ladder, migrations and module moves all return here, wired into one pipeline
 
+
+> **WSL2 (Windows): keep the clone in your Linux home (`~/…`), never `/mnt/c/…`.**
+> On the Windows filesystem your Windows user, your WSL user and the gateway's
+> container user are three different identities, so file ownership breaks in ways
+> `chown` cannot fix and you end up reaching for `sudo` (which makes it worse).
+> `scripts/setup.sh` refuses to run from there, and never needs `sudo`.
+> See [`docs/wsl-setup.md`](./docs/wsl-setup.md).
+
 ## Quick start
 
 ```bash
