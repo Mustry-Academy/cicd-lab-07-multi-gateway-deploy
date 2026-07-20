@@ -19,10 +19,12 @@
 # literally.
 #
 # What this workflow does is what the production deploy does, minus the
-# release.yaml indirection: check out main, `docker cp` the files into your
-# test gateway's container, ask the gateway to scan. Same transport, same
-# API, same self-heal. If a change lands here, it lands on site 7 the same
-# way.
+# release.yaml indirection: check out main, run the migrations against your
+# local database, `docker cp` projects + config into your test gateway's
+# container, ship modules + JARs (restart only when they changed), ask the
+# gateway to scan. Same transport, same API, same self-heal. If a change
+# lands here — a view, a module, a JAR, a migration — it lands on site 7
+# the same way.
 #
 # Prerequisites (Part 0 steps 1–2):
 #   - your test pair is up:  ./scripts/setup.sh  (with LAB_USER in .env)
@@ -58,6 +60,10 @@ jobs:
       IGNITION_URL: http://lab07-test-gateway:8088
       IGNITION_API_KEY: ${{ secrets.IGNITION_API_KEY }}
       GATEWAY_DATA_PATH: /usr/local/bin/ignition/data
+      GATEWAY_JAR_PATH: /usr/local/bin/ignition/lib/core/gateway
+      POSTGRES_CONTAINER: lab07-postgres
+      POSTGRES_DB: ignition
+      MIGRATE_IMAGE: migrate/migrate:v4.17.1
 
     steps:
       - name: Check out main
@@ -83,6 +89,51 @@ jobs:
             exit 1
           fi
           echo "Prerequisites OK (container=$IGNITION_CONTAINER state=$state)."
+
+      - name: Migrate database
+        # Same step as production, pointed at YOUR local lab07-postgres.
+        # Production reads the credentials from GitHub secrets; here they
+        # are the committed local-dev defaults in dev/secrets/ — the same
+        # files your test gateway's file secret provider reads. BEFORE the
+        # ship steps, never continue-on-error: a failed migration must stop
+        # the run before anything ships.
+        run: |
+          set -euo pipefail
+          dir="db-migration/migrate"
+          if [ -z "$(find "$dir" -name '*.sql' -print -quit 2>/dev/null)" ]; then
+            echo "No migrations in the repo — skipping."
+            exit 0
+          fi
+          if ! docker inspect "$POSTGRES_CONTAINER" > /dev/null 2>&1; then
+            echo "::error::Repo carries migrations but container '$POSTGRES_CONTAINER' does not exist" >&2
+            exit 1
+          fi
+          PG_USER="$(cat dev/secrets/POSTGRES_USERNAME)"
+          PG_PASS="$(cat dev/secrets/POSTGRES_PASSWORD)"
+
+          network="$(docker inspect "$POSTGRES_CONTAINER" \
+            --format '{{range $k, $_ := .NetworkSettings.Networks}}{{$k}}{{end}}')"
+
+          # Credentials go INTO a URL, so they must be percent-encoded.
+          urlenc() {
+            local s="$1" out='' c i
+            for ((i = 0; i < ${#s}; i++)); do
+              c="${s:i:1}"
+              case "$c" in
+                [a-zA-Z0-9.~_-]) out+="$c" ;;
+                *) printf -v c '%%%02X' "'$c"; out+="$c" ;;
+              esac
+            done
+            printf '%s' "$out"
+          }
+          db_url="postgres://$(urlenc "$PG_USER"):$(urlenc "$PG_PASS")@${POSTGRES_CONTAINER}:5432/${POSTGRES_DB}?sslmode=disable"
+
+          cid="$(docker create --network "$network" "$MIGRATE_IMAGE" \
+            -path=/migrations -database "$db_url" up)"
+          trap 'docker rm -f "$cid" > /dev/null 2>&1 || true' EXIT
+          docker cp "$dir/." "$cid:/migrations/" > /dev/null
+          echo "migrate up -> $POSTGRES_DB (network: $network)"
+          docker start -a "$cid"
 
       - name: Ship projects and config into the test gateway
         # Wipe-then-copy, so "deleted in the repo" means "gone from the
@@ -130,6 +181,72 @@ jobs:
             chown -R 2003:2003 "$GATEWAY_DATA_PATH/projects" "$GATEWAY_DATA_PATH/config"
           echo "Shipped project(s):"
           find projects -mindepth 1 -maxdepth 1 -type d -exec basename {} \; | sed 's/^/  /'
+
+      - name: Ship boot-time payload (modules + JARs), restart if changed
+        # Modules and lib JARs only load at BOOT — same step as production.
+        # Runs AFTER the file ship: if this restarts the gateway, nothing
+        # may touch its file tree while it boots, and the scan step below
+        # already rides out the 503s of a starting gateway.
+        run: |
+          set -euo pipefail
+          restart=0
+
+          # --- module manifest ---
+          if [ -f services/modules.json ]; then
+            before="$(docker exec "$IGNITION_CONTAINER" md5sum "$GATEWAY_DATA_PATH/modules.json" 2>/dev/null | cut -d' ' -f1 || true)"
+            docker exec -i "$IGNITION_CONTAINER" sh -c "cat > '$GATEWAY_DATA_PATH/modules.json'" < services/modules.json
+            after="$(docker exec "$IGNITION_CONTAINER" md5sum "$GATEWAY_DATA_PATH/modules.json" | cut -d' ' -f1)"
+            if [ "$before" != "$after" ]; then
+              echo "  modules.json changed"
+              restart=1
+            fi
+          fi
+
+          # --- third-party module binaries ---
+          if find third-party-modules -type f -name '*.modl' 2>/dev/null | grep -q .; then
+            docker exec -u root "$IGNITION_CONTAINER" \
+              sh -c 'mkdir -p /third-party-modules && chown 2003:2003 /third-party-modules'
+            while IFS= read -r f; do
+              name="$(basename "$f")"
+              before="$(docker exec "$IGNITION_CONTAINER" md5sum "/third-party-modules/$name" 2>/dev/null | cut -d' ' -f1 || true)"
+              local_sum="$(md5sum "$f" | cut -d' ' -f1)"
+              if [ "$before" != "$local_sum" ]; then
+                docker cp "$f" "$IGNITION_CONTAINER:/third-party-modules/$name"
+                echo "  shipped module $name"
+                restart=1
+              fi
+            done < <(find third-party-modules -type f -name '*.modl')
+          fi
+
+          # --- library JARs -> lib/core/gateway (additive) ---
+          if [ -d jar-files/jar ]; then
+            while IFS= read -r f; do
+              name="$(basename "$f")"
+              before="$(docker exec "$IGNITION_CONTAINER" md5sum "$GATEWAY_JAR_PATH/$name" 2>/dev/null | cut -d' ' -f1 || true)"
+              local_sum="$(md5sum "$f" | cut -d' ' -f1)"
+              if [ "$before" != "$local_sum" ]; then
+                docker cp "$f" "$IGNITION_CONTAINER:$GATEWAY_JAR_PATH/$name"
+                echo "  shipped JAR $name"
+                restart=1
+              fi
+            done < <(find jar-files/jar -type f -name '*.jar')
+          fi
+
+          if [ "$restart" -eq 0 ]; then
+            echo "Boot-time payload unchanged — no restart needed."
+            exit 0
+          fi
+          echo "Boot-time payload changed — restarting $IGNITION_CONTAINER..."
+          docker restart "$IGNITION_CONTAINER"
+          for _ in $(seq 1 60); do
+            if curl -fsS --max-time 3 "$IGNITION_URL/StatusPing" 2>/dev/null | grep -q RUNNING; then
+              echo "gateway RUNNING again."
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "gateway did not come back after module restart" >&2
+          exit 1
 
       - name: Trigger gateway scan
         # Hot reload of projects and config. Self-heal on 401/403 exactly
