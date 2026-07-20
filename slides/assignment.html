@@ -204,8 +204,8 @@ body{
 .viz text.nm{fill:#d8c9a0;font-family:'IBM Plex Mono';font-size:11px}
 .viz .envchip rect{fill:rgba(126,148,97,.14);stroke:#a9bd8f;stroke-width:1.6}
 .viz .envchip text{fill:#dfe8d4;font-family:'IBM Plex Mono';font-size:13px;font-weight:600;text-anchor:middle;dominant-baseline:central}
-.viz .envchip.prd rect{fill:rgba(200,144,47,.18);stroke:#EBBE58}
-.viz .envchip.prd text{fill:#EBBE58}
+.viz .envchip.production rect{fill:rgba(200,144,47,.18);stroke:#EBBE58}
+.viz .envchip.production text{fill:#EBBE58}
 .viz .link{stroke:#C8902F;stroke-width:2.2;fill:none}
 .viz .fanl{stroke:#4ade80;stroke-width:1.7;fill:none;opacity:.8}
 .viz .wall{fill:none;stroke:rgba(246,241,227,.35);stroke-width:1.5;stroke-dasharray:7 7}
@@ -837,10 +837,10 @@ setTimeout(()=>{hint.style.transition='opacity .6s';hint.style.opacity='0'},4200
   });
 
   /* environment ladder + vault */
-  const ENVY={local:120,dev:265,test:410,prod:555};
+  const ENVY={local:120,test:265,staging:410,production:555};
   Object.keys(ENVY).forEach(k=>{
     const y=ENVY[k];
-    const g=el('g',{class:'envchip'+(k==='prod'?' prd':'')},svg);
+    const g=el('g',{class:'envchip'+(k==='production'?' production':'')},svg);
     el('rect',{x:490,y:y,width:130,height:50,rx:12},g);
     txt({x:555,y:y+26},g,k);
   });
@@ -854,7 +854,7 @@ setTimeout(()=>{hint.style.transition='opacity .6s';hint.style.opacity='0'},4200
   txt({class:'nl',x:524,y:663,'font-size':13.5},va,'secrets');
   txt({class:'ns',x:524,y:681,'font-size':11},va,'per environment');
 
-  /* fan-out from prod to all 8 sites: today's rollout */
+  /* fan-out from production to all 8 sites: today's rollout */
   for(let n=1;n<=8;n++){
     const c=siteCenter(n);
     const ty=n<=4?c.y+123:c.y-83;

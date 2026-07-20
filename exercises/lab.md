@@ -112,7 +112,7 @@ One repo keeps this lab small.
 
 ### Local development — where you actually build
 
-Production is never your dev box. The repo brings its own local stack, the
+Production is never your development machine. The repo brings its own local stack, the
 same move as every previous lab:
 
 ```bash
@@ -138,7 +138,7 @@ open http://localhost:8088     # admin / password
 - **Local database:** `ignition` on `localhost:5432`
   (`ignition` / `lab07-postgres-pw`). Test your migration pairs with
   `scripts/migrate.sh up` before they ever reach the PR.
-- **Referenced secrets work locally too:** `dev/secrets/` is mounted at
+- **Referenced secrets work locally too:** `local-development/secrets/` is mounted at
   `/run/secrets/` in the local gateway — the same path the file secret
   provider reads on production — with the local database's login in it.
 - **Library JARs** load from `lib/core/gateway`, which can't be
@@ -212,7 +212,7 @@ gateway has already loaded):
 ./scripts/setup.sh          # or: docker compose --profile test up -d
 ```
 
-Plain `docker compose up -d` keeps starting only the dev stack; the test
+Plain `docker compose up -d` keeps starting only the local stack; the test
 pair only rides the profile. Your runner registers with the label
 `[self-hosted, <yourname>-local]` — check Settings → Actions → Runners for
 it. Only jobs asking for that label run on your machine.

@@ -93,7 +93,7 @@ jobs:
       - name: Migrate database
         # Same step as production, pointed at YOUR local lab07-postgres.
         # Production reads the credentials from GitHub secrets; here they
-        # are the committed local-dev defaults in dev/secrets/ — the same
+        # are the committed local-development defaults in local-development/secrets/ — the same
         # files your test gateway's file secret provider reads. BEFORE the
         # ship steps, never continue-on-error: a failed migration must stop
         # the run before anything ships.
@@ -108,8 +108,8 @@ jobs:
             echo "::error::Repo carries migrations but container '$POSTGRES_CONTAINER' does not exist" >&2
             exit 1
           fi
-          PG_USER="$(cat dev/secrets/POSTGRES_USERNAME)"
-          PG_PASS="$(cat dev/secrets/POSTGRES_PASSWORD)"
+          PG_USER="$(cat local-development/secrets/POSTGRES_USERNAME)"
+          PG_PASS="$(cat local-development/secrets/POSTGRES_PASSWORD)"
 
           network="$(docker inspect "$POSTGRES_CONTAINER" \
             --format '{{range $k, $_ := .NetworkSettings.Networks}}{{$k}}{{end}}')"
@@ -170,7 +170,7 @@ jobs:
           "
           docker cp projects/. "$IGNITION_CONTAINER:$GATEWAY_DATA_PATH/projects/"
           # system-properties is per-gateway identity: the repo carries the
-          # dev gateway's copy (systemName lab07-local). Your test gateway
+          # local gateway's copy (systemName lab07-local). Your test gateway
           # keeps its own name, so strip it from what ships.
           staging="$(mktemp -d)"
           cp -R services/config/. "$staging/"

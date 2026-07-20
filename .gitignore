@@ -12,7 +12,7 @@ __pycache__/
 venv/
 
 # ---------------------------------------------------------------------------
-# What the LOCAL dev gateway (docker-compose.yaml) writes into the
+# What the LOCAL gateway (docker-compose.yaml) writes into the
 # bind-mounted repo dirs. This mirrors the Deploy workflow's exclusion list:
 # gateway-owned state never belongs in git — it is per-instance identity,
 # key material, or rebuildable runtime state.

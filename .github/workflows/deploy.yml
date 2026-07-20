@@ -173,7 +173,7 @@ jobs:
           done
 
           # system-properties is per-gateway identity: the repo carries the
-          # LOCAL dev gateway's copy (systemName lab07-local), production
+          # LOCAL gateway's copy (systemName lab07-local), production
           # keeps its own (cicd-capstone). Never ship it.
           rm -rf payload/services/config/resources/core/ignition/system-properties
           echo "  (stripped system-properties — per-gateway identity never ships)"
@@ -291,7 +291,7 @@ jobs:
         #     users.json holds THIS gateway's admin password hash. Wiping or
         #     overwriting it locks everyone out.
         #   config/resources/core/ignition/system-properties/ — the gateway's
-        #     NAME. The repo copy is the local dev gateway's (lab07-local);
+        #     NAME. The repo copy is the local gateway's (lab07-local);
         #     the payload never carries it, and the wipe leaves production's
         #     (cicd-capstone) alone.
         run: |

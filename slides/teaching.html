@@ -174,8 +174,8 @@ body{
 .gwrow{display:flex;flex-direction:column;gap:12px}
 .gw{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:13px 16px;box-shadow:var(--shadow)}
 .gw .tag{font-family:'IBM Plex Mono';font-size:12px;font-weight:700;color:#fff;background:var(--teal);padding:5px 10px;border-radius:8px;white-space:nowrap}
-.gw.dev .tag{background:var(--blue)}
-.gw.prod .tag{background:var(--navy)}
+.gw.test .tag{background:var(--blue)}
+.gw.production .tag{background:var(--navy)}
 .gw .v{font-family:'IBM Plex Mono';font-size:12px;color:var(--txt-dim)}
 .gw .v b{color:var(--txt)}
 .bigarr{font-family:'IBM Plex Mono';font-size:30px;color:var(--blue);text-align:center}
@@ -392,7 +392,7 @@ body{
     </ul>
     <div class="callout">
       <div class="lab" style="color:var(--blue)">Where the course left us</div>
-      <p>One repository, one site, one logical gateway in three environments (local, dev, prod). Keep that picture in your head: every slide today is a controlled change to it.</p>
+      <p>One repository, one site, one logical gateway in three environments (local, test, production). Keep that picture in your head: every slide today is a controlled change to it.</p>
     </div>
   </div>
 
@@ -585,7 +585,7 @@ body{
     </div>
     <div class="callout reveal" data-step="5" style="margin-top:14px">
       <div class="lab" style="color:var(--blue)">Times three</div>
-      <p>This whole picture exists <b>three times on your machine</b>: local (every clone works), dev (every merge to main) and prod (a version tag): the same files, promoted in stages.</p>
+      <p>This whole picture exists <b>three times on your machine</b>: local (every clone works), test (every merge to main) and production (a version tag): the same files, promoted in stages.</p>
     </div>
   </div>
 
@@ -722,10 +722,10 @@ body{
     <div class="cols2">
       <div class="filecard">
         <div class="fh">📦 oatmakers-releases (a separate repo)</div>
-        <pre><span class="row reveal" data-step="1">releases/</span><span class="row reveal" data-step="1">├─ prod/</span><span class="row reveal" data-step="2">│  ├─ <span class="hl">gw-site1-backend.yaml</span></span><span class="row reveal" data-step="2">│  ├─ <span class="hl">gw-site1-frontend.yaml</span></span><span class="row reveal" data-step="2">│  ├─ <span class="hl">gw-site4-backend.yaml</span></span><span class="row reveal" data-step="2">│  ├─ <span class="hl">gw-site4-frontend.yaml</span></span><span class="row reveal" data-step="2">│  ├─ <span class="cm">… sites 2, 3, 5 … 8 …</span></span><span class="row reveal" data-step="2">│  └─ <span class="hl">gw-central.yaml</span></span><span class="row reveal" data-step="1">├─ test/</span><span class="row reveal" data-step="2">│  └─ <span class="hl">gw-test.yaml</span></span><span class="row reveal" data-step="1">└─ dev/</span><span class="row reveal" data-step="4">   └─ <span class="grn">gw-dev.yaml</span>           <span class="cm">tracks main, auto</span></span></pre>
+        <pre><span class="row reveal" data-step="1">releases/</span><span class="row reveal" data-step="1">├─ production/</span><span class="row reveal" data-step="2">│  ├─ <span class="hl">gw-site1-backend.yaml</span></span><span class="row reveal" data-step="2">│  ├─ <span class="hl">gw-site1-frontend.yaml</span></span><span class="row reveal" data-step="2">│  ├─ <span class="hl">gw-site4-backend.yaml</span></span><span class="row reveal" data-step="2">│  ├─ <span class="hl">gw-site4-frontend.yaml</span></span><span class="row reveal" data-step="2">│  ├─ <span class="cm">… sites 2, 3, 5 … 8 …</span></span><span class="row reveal" data-step="2">│  └─ <span class="hl">gw-central.yaml</span></span><span class="row reveal" data-step="1">├─ staging/</span><span class="row reveal" data-step="2">│  └─ <span class="hl">gw-staging.yaml</span></span><span class="row reveal" data-step="1">└─ test/</span><span class="row reveal" data-step="4">   └─ <span class="grn">gw-test.yaml</span>           <span class="cm">tracks main, auto</span></span></pre>
       </div>
       <div>
-        <div class="code reveal" data-step="3"><pre><span class="cm"># releases/prod/gw-site4-frontend.yaml</span>
+        <div class="code reveal" data-step="3"><pre><span class="cm"># releases/production/gw-site4-frontend.yaml</span>
 gateway: <span class="cmd2">gw-site4-frontend</span>
 projects:
   oatmakers:
@@ -764,7 +764,7 @@ projects:
     <div class="cols2" style="grid-template-columns:.9fr 1.2fr;gap:26px">
       <div>
         <div class="code reveal" data-step="1" style="margin-top:0"><pre><span class="cm"># PR: promote oatmakers v2.0.1 (site 4 first)</span>
-<span class="cm">releases/prod/gw-site4-frontend.yaml</span>
+<span class="cm">releases/production/gw-site4-frontend.yaml</span>
 <span class="cm">(the HMI runs on the frontend gateway)</span>
  oatmakers:
 <span class="red">-   version: v2.0.0</span>
@@ -794,7 +794,7 @@ projects:
           <div class="tile"><div class="tn">SITE 7</div><div class="tv"><span class="vold">oatmakers v2.0.0</span><span class="vnew reveal" data-step="4">oatmakers v2.0.1</span></div></div>
           <div class="tile"><div class="tn">SITE 8</div><div class="tv"><span class="vold">oatmakers v2.0.0</span><span class="vnew reveal" data-step="4">oatmakers v2.0.1</span></div></div>
           <div class="tile"><div class="tn">CENTRAL</div><div class="tv"><span class="vold">oatmakers v2.0.0</span><span class="vnew reveal" data-step="5">oatmakers v2.0.1</span></div></div>
-          <div class="tile devt"><div class="tn">DEV</div><div class="tv"><span class="vold">tracks main</span><span class="vnew reveal" data-step="2">tracks main · already on the fix</span></div></div>
+          <div class="tile devt"><div class="tn">TEST</div><div class="tv"><span class="vold">tracks main</span><span class="vnew reveal" data-step="2">tracks main · already on the fix</span></div></div>
         </div>
       </div>
     </div>
@@ -829,7 +829,7 @@ projects:
           <div class="fh">🏷 one projects folder · a tag next to each commit</div>
           <pre><span class="row">oatmakers-repo/projects/</span><span class="row">├─ <span class="hl">oatmakers/</span>              <span class="cm">HMI</span></span><span class="row">├─ <span class="grn">oatmakers-shared/</span>       <span class="cm">its parent project</span></span><span class="row">├─ <span class="hl">oatmakers-packaging/</span>    <span class="cm">HMI</span></span><span class="row">└─ <span class="grn">oatmakers-packaging-shared/</span> <span class="cm">its parent project</span></span><span class="row"> </span><span class="row">commit a41 ─ <span class="hl">oatmakers@v2.0.0</span></span><span class="row">commit b52 ─ <span class="hl">oatmakers-packaging@v1.4.0</span></span><span class="row">commit d74 ─ <span class="grn">oatmakers-shared@v1.9.2</span></span><span class="row">commit e85 ─ <span class="hl">oatmakers@v2.0.1</span>        <span class="cm">← the hotfix</span></span><span class="row"><span class="cm"># CI: the tag prefix decides which folder builds</span></span></pre>
         </div>
-        <div class="code reveal" data-step="2" style="margin-top:12px"><pre><span class="cm"># releases/prod/gw-site4-frontend.yaml</span>
+        <div class="code reveal" data-step="2" style="margin-top:12px"><pre><span class="cm"># releases/production/gw-site4-frontend.yaml</span>
 gateway: <span class="cmd2">gw-site4-frontend</span>
 projects:
   oatmakers:
@@ -1022,7 +1022,7 @@ projects:
       </div>
       <div class="scen s2 reveal" data-step="2">
         <div class="sh">Scenario 2 · process engineers create tags on production</div>
-        <p>Forty new tags, born directly on the prod gateway. Dev has never seen them: screens can't be tested against them, and a strict "make it match Git" deploy would even <b>delete them</b>. Tags born on production need a way back into dev and the repo.</p>
+        <p>Forty new tags, born directly on the production gateway. The test gateway has never seen them: screens can't be tested against them, and a strict "make it match Git" deploy would even <b>delete them</b>. Tags born on production need a way back into the test gateway and the repo.</p>
       </div>
     </div>
 
@@ -1031,18 +1031,18 @@ projects:
         <div class="kt">Model 1</div>
         <h4>Development is master</h4>
         <p>Every tag change travels through the repo and the pipeline. Editing tags on production is forbidden (or exported back the same day). The deploy <b>may overwrite</b> the tag provider.</p>
-        <div class="where">Fits when → tags change rarely and <b>the dev team owns the process</b></div>
+        <div class="where">Fits when → tags change rarely and <b>the development team owns the process</b></div>
       </div>
       <div class="kind k2 reveal" data-step="4">
         <div class="kt">Model 2</div>
         <h4>Production is master</h4>
-        <p>Tags are exported <b>from prod into the repo</b> on a schedule; the deploy never touches the tag provider. Dev refreshes itself from those exports, so scenario 2's tags reach dev too.</p>
+        <p>Tags are exported <b>from production into the repo</b> on a schedule; the deploy never touches the tag provider. The test gateway refreshes itself from those exports, so scenario 2's tags reach test too.</p>
         <div class="where">Fits when → engineers and operators <b>live in the tag browser</b></div>
       </div>
       <div class="kind k3 reveal" data-step="5">
         <div class="kt">Model 3</div>
         <h4>Split ownership</h4>
-        <p>Dev owns <b>structure</b> (UDT definitions, folders, new tags); production owns <b>values</b> (setpoints, alarm limits). The deploy ships definitions and <b>never writes values</b>: or you split by provider or folder.</p>
+        <p>Test owns <b>structure</b> (UDT definitions, folders, new tags); production owns <b>values</b> (setpoints, alarm limits). The deploy ships definitions and <b>never writes values</b>: or you split by provider or folder.</p>
         <div class="where">Fits most plants → but only if the split is <b>written down and enforced</b></div>
       </div>
     </div>
@@ -1164,7 +1164,7 @@ controllers.now=revealCtrl(7,'#now-step',[
   '<b>One repository</b> holds everything that gateway runs: the projects, the gateway config, the migrations, and the workflow.',
   '<b>One pipeline.</b> A push to main runs validate, then <span class="mono">deploy.yml</span>.',
   '<b>The self-hosted runner delivers everything in one run.</b> Watch the files travel: projects and config go into the <b>gateway</b>, and the migrations go <b>straight into the database</b>: the pipeline talks to both.',
-  'And this picture exists <b>three times on your machine</b>: local, dev, prod. The rest of the lab is one question: <b>what changes when the plant side grows?</b>'
+  'And this picture exists <b>three times on your machine</b>: local, test, production. The rest of the lab is one question: <b>what changes when the plant side grows?</b>'
 ]);
 
 /* ---------- slide 9 (idx 8): frontend-backend repo ---------- */
@@ -1200,17 +1200,17 @@ controllers.multi=revealCtrl(13,'#multi-step',[
 /* ---------- slide 11 (idx 10): releases folder ---------- */
 controllers.rel=revealCtrl(10,'#rel-step',[
   'The bookkeeping that survives any repository layout. Step through the releases folder.',
-  '<b>Its own small repo, one folder per environment:</b> <span class="mono">dev/</span>, <span class="mono">test/</span>, <span class="mono">prod/</span>. Deploy state lives apart from the code that produces it.',
+  '<b>Its own small repo, one folder per environment:</b> <span class="mono">test/</span>, <span class="mono">staging/</span>, <span class="mono">production/</span>. Deploy state lives apart from the code that produces it.',
   '<b>One file per gateway.</b> The whole fleet, listed explicitly: every site pair and <span class="mono">gw-central</span>. If a gateway exists, it has a file.',
   '<b>Inside a file: each project pinned to a version, its parent pinned underneath it.</b> This file <b>is</b> the record of what runs on <span class="mono">gw-site4-frontend</span>. Change the file, and the pipeline makes it true.',
-  '<b>And dev tracks main, automatically.</b> No pins on dev: every merge lands there. Pinning starts where humans need control: test and prod.'
+  '<b>And test tracks main, automatically.</b> No pins on test: every merge lands there. Pinning starts where humans need control: staging and production.'
 ]);
 
 /* ---------- slide 12 (idx 11): promotion by PR ---------- */
 controllers.promo=revealCtrl(11,'#promo-step',[
   'One hotfix, from pull request to the whole fleet. Watch the board: every tile is a gateway\'s release file.',
   '<b>The promotion is a pull request:</b> bump <span class="mono">oatmakers v2.0.0 → v2.0.1</span> in site 4\'s frontend file (that is where the HMI runs). The diff is the release note.',
-  '<b>Review is the approval gate; merge is the trigger.</b> And look at DEV: it tracks main, so it has been running the fix since the code merged. No releases PR for dev, ever.',
+  '<b>Review is the approval gate; merge is the trigger.</b> And look at TEST: it tracks main, so it has been running the fix since the code merged. No releases PR for test, ever.',
   '<b>Site 4 goes first:</b> it flips to <span class="mono">v2.0.1</span>, its own runner deploys both gateways and runs the health checks. Then we deliberately wait half an hour and watch: the least critical site proves the release before anything else moves.',
   '<b>Then the rest of the fleet:</b> the same bump for sites 1 to 3 and 5 to 8, each deployed by its own runner. A failed check at any point <b>stops everything after it</b>.',
   '<b><span class="mono">gw-central</span> flips last</b>, once every site it aggregates is healthy. The whole board is green: that is what "released" means here.',
@@ -1221,10 +1221,10 @@ controllers.promo=revealCtrl(11,'#promo-step',[
 controllers.tags=revealCtrl(16,'#tags-step',[
   'Two real scenarios, then the three ownership models. Step through them.',
   '<b>Scenario 1: operators change tags on production.</b> An alarm limit trimmed at 03:00; Saturday\'s deploy silently puts it back. If operators may change tags, the deploy must not blindly overwrite them.',
-  '<b>Scenario 2: process engineers create tags on production.</b> Prod has tags dev has never seen: nothing can be tested against them, and a strict sync deploy would delete them.',
-  '<b>Model 1: development is master.</b> All tag changes travel through the repo; prod edits are forbidden; the deploy may overwrite the provider.',
-  '<b>Model 2: production is master.</b> Tags flow prod → repo on a schedule; the deploy never touches the tag provider; dev refreshes from the exports.',
-  '<b>Model 3: split ownership.</b> Dev owns structure (UDTs, folders), production owns values (setpoints, limits). The deploy ships definitions and never writes values.',
+  '<b>Scenario 2: process engineers create tags on production.</b> Production has tags the test gateway has never seen: nothing can be tested against them, and a strict sync deploy would delete them.',
+  '<b>Model 1: development is master.</b> All tag changes travel through the repo; production edits are forbidden; the deploy may overwrite the provider.',
+  '<b>Model 2: production is master.</b> Tags flow production → repo on a schedule; the deploy never touches the tag provider; the test gateway refreshes from the exports.',
+  '<b>Model 3: split ownership.</b> Test owns structure (UDTs, folders), production owns values (setpoints, limits). The deploy ships definitions and never writes values.',
   '<b>The rule:</b> there is no universal answer, but there must be <b>an</b> answer: written down, agreed with operations, and enforced by the pipeline.'
 ]);
 

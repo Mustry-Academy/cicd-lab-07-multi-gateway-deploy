@@ -34,8 +34,8 @@ services:
       - ./third-party-modules:/third-party-modules
       # Local stand-ins for the capstone's referenced secrets: the same
       # file-type secret provider config that reads /run/secrets/ on
-      # production reads these here. Known local-dev defaults, not secrets.
-      - ./dev/secrets:/run/secrets:ro
+      # production reads these here. Known local-development defaults, not secrets.
+      - ./local-development/secrets:/run/secrets:ro
     environment:
       ACCEPT_IGNITION_EULA: "Y"
       IGNITION_EDITION: standard
@@ -142,7 +142,7 @@ services:
       # first boot, because the scan API only accepts tokens the gateway has
       # already loaded (a deploy cannot scan its own token in).
       - test-gateway-data:/usr/local/bin/ignition/data
-      - ./dev/secrets:/run/secrets:ro
+      - ./local-development/secrets:/run/secrets:ro
     environment:
       ACCEPT_IGNITION_EULA: "Y"
       IGNITION_EDITION: standard

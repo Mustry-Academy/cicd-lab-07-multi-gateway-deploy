@@ -52,7 +52,7 @@ echo "================================"
 # ---- Part 0 opt-in: is the personal test gateway configured? ---------------
 # The test profile (test-gateway + test-runner) only rides along when the
 # student has set LAB_USER in .env (see .env.example). Without it, this
-# script manages just the dev stack, exactly as before.
+# script manages just the local stack, exactly as before.
 
 PROFILE_ARGS=()
 if grep -qs '^LAB_USER=..*' .env && ! grep -qs '^LAB_USER=yourname$' .env; then
@@ -77,7 +77,7 @@ fi
 # security-properties ships with the FIRST DEPLOY instead; the workflow's
 # 401/403 self-heal restart loads it.
 seed_test_gateway() {
-  local vol seed
+  local vol
   vol="$(docker compose config --format json 2>/dev/null \
     | python3 -c 'import json,sys; print(json.load(sys.stdin).get("name",""))')_test-gateway-data"
 

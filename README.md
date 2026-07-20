@@ -66,7 +66,7 @@ cicd-lab-07-multi-gateway-deploy/
 ├── third-party-modules/       ← .modl files the pipeline installs
 ├── jar-files/jar/             ← library JARs → lib/core/gateway at deploy time
 ├── db-migration/migrate/      ← golang-migrate up/down pairs, run before anything ships
-├── dev/                       ← local-only stand-ins (secrets) for the dev stack
+├── local-development/         ← local-only stand-ins (secrets) for the local stack
 ├── capstone/                  ← the production server stack (Caddy, gateway, runner) — GitOps'd
 ├── scripts/                   ← setup / teardown / validate / migrate / mint-api-key
 ├── exercises/ · slides/ · docs/ · architectures/
