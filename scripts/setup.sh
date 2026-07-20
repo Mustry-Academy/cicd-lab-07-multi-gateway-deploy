@@ -23,7 +23,7 @@ cd "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/.."
 # (/mnt/c), reclaims root-owned leftovers, and exports LAB_GID so the
 # gateway container writes files this user can still edit. See
 # scripts/preflight.sh and docs/wsl-setup.md.
-# shellcheck source=preflight.sh
+# shellcheck source=preflight.sh disable=SC1091
 . "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/preflight.sh"
 lab_preflight
 

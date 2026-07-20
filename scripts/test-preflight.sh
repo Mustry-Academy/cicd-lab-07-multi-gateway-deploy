@@ -22,6 +22,10 @@
 #   scripts/test-preflight.sh           # unit tests only
 #   scripts/test-preflight.sh --docker  # unit + container tests
 
+# run_case takes shell code as a single-quoted string; expansion is deliberately
+# deferred to the eval inside run_case, not the call site.
+# shellcheck disable=SC2016
+
 set -uo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -52,7 +56,7 @@ echo "----------------------------"
 # Each case runs in a subshell with preflight.sh sourced and specific probes
 # overridden, so we test the DECISION LOGIC without needing to be on WSL.
 run_case() {
-  # shellcheck disable=SC1090
+  # shellcheck disable=SC1090,SC1091
   ( set +u
     . "$SCRIPT_DIR/preflight.sh" >/dev/null 2>&1
     eval "$1" )
@@ -267,7 +271,7 @@ name=cfg.get("name","")
 for k,v in (cfg.get("volumes") or {}).items():
     print((v or {}).get("name") or f"{name}_{k}")' 2>/dev/null)"
     if [ -n "$proj_vols" ]; then
-      stray="$(printf '%s\n' "$proj_vols" | grep -viE "^$(basename "$PWD" | tr 'A-Z' 'a-z')" || true)"
+      stray="$(printf '%s\n' "$proj_vols" | grep -viE "^$(basename "$PWD" | tr '[:upper:]' '[:lower:]')" || true)"
       if [ -z "$stray" ]; then
         ok "volume repair is scoped to this compose project only"
       else
