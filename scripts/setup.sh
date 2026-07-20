@@ -13,8 +13,8 @@
 
 set -euo pipefail
 
-RED='\033[0;31m'; GREEN='\033[0;32m'; NC='\033[0m'
-[ -n "${NO_COLOR:-}" ] && RED='' && GREEN='' && NC=''
+RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[1;33m'; NC='\033[0m'
+[ -n "${NO_COLOR:-}" ] && RED='' && GREEN='' && YELLOW='' && NC=''
 
 cd "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/.."
 
@@ -49,6 +49,17 @@ fi
 echo -e "${GREEN}Mustry Academy — Lab 07 setup${NC}"
 echo "================================"
 
+# ---- This clone's scan-API key ---------------------------------------------
+# Generates IGNITION_API_KEY into .env (creating .env from .env.example when
+# missing) and writes the hash-only CICD-APIKEY token resource into
+# services/config — the local gateway loads it from the bind mount, and the
+# Part 0 seed below copies the same resource into the test gateway's volume
+# before its first boot. Nothing key-related is committed; your
+# test-<yourname>.yml reads the key from your runner's environment (compose
+# passes it from .env). Production's key is separate (scripts/mint-api-key.sh,
+# instructors only).
+scripts/generate-api-key.sh
+
 # ---- Part 0 opt-in: is the personal test gateway configured? ---------------
 # The test profile (test-gateway + test-runner) only rides along when the
 # student has set LAB_USER in .env (see .env.example). Without it, this
@@ -64,6 +75,8 @@ fi
 # cannot scan its own token in (the scan call already needs it). The test
 # gateway has no bind mount, so we write into its named volume with a
 # throwaway container — the same trick preflight.sh uses to repair volumes.
+# The seeded resource is the generated one from services/config (see above),
+# so your test gateway accepts the IGNITION_API_KEY in your .env.
 #
 # The collection manifest MUST come along: on first boot the gateway creates
 # the `core` collection and refuses a non-empty dir that has no manifest

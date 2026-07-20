@@ -201,6 +201,11 @@ services:
       #                      both are set.
       ACCESS_TOKEN: "${RUNNER_GITHUB_PAT:-}"
       RUNNER_TOKEN: "${RUNNER_TOKEN:-}"
+      # Your clone's scan-API key (setup.sh generates it into .env). Your
+      # test-<yourname>.yml reads it from this runner's environment — the
+      # repo's IGNITION_API_KEY Actions secret is production's key, not
+      # yours. Recreate this container after the key changes.
+      IGNITION_API_KEY: "${IGNITION_API_KEY:-}"
       RUNNER_NAME: "${RUNNER_NAME:-lab07-test-${LAB_USER:-example}}"
       RUNNER_SCOPE: repo
       # THE routing decision. Your workflow's `runs-on` must match this

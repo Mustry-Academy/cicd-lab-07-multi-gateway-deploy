@@ -68,7 +68,7 @@ cicd-lab-07-multi-gateway-deploy/
 ├── db-migration/migrate/      ← golang-migrate up/down pairs, run before anything ships
 ├── local-development/         ← local-only stand-ins (secrets) for the local stack
 ├── capstone/                  ← the production server stack (Caddy, gateway, runner) — GitOps'd
-├── scripts/                   ← setup / teardown / validate / migrate / mint-api-key
+├── scripts/                   ← setup / teardown / validate / migrate / generate-api-key / mint-api-key
 ├── exercises/ · slides/ · docs/ · architectures/
 └── .github/workflows/         ← ci.yml (PR checks) · deploy.yml (release.yaml → production)
 ```

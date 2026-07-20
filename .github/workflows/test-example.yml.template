@@ -29,7 +29,11 @@
 # Prerequisites (Part 0 steps 1–2):
 #   - your test pair is up:  ./scripts/setup.sh  (with LAB_USER in .env)
 #   - your runner shows up under Settings -> Actions -> Runners
-#   - the IGNITION_API_KEY repo secret exists (already set up for you)
+#
+# No API-key secret to configure: setup.sh generated YOUR key into .env,
+# docker-compose passes it into YOUR runner container, and this workflow
+# reads it from the runner's environment. Contributors can't set repo
+# secrets on the shared repo — and don't need to.
 
 name: test-example # CHANGEME: test-<yourname>
 
@@ -58,7 +62,11 @@ jobs:
     env:
       IGNITION_CONTAINER: lab07-test-gateway
       IGNITION_URL: http://lab07-test-gateway:8088
-      IGNITION_API_KEY: ${{ secrets.IGNITION_API_KEY }}
+      # IGNITION_API_KEY is deliberately NOT set here: the job inherits it
+      # from your runner container's environment (docker-compose passes it
+      # from your .env, where setup.sh generated it). The repo's
+      # IGNITION_API_KEY Actions secret is PRODUCTION's key — it would not
+      # authenticate against your test gateway.
       GATEWAY_DATA_PATH: /usr/local/bin/ignition/data
       GATEWAY_JAR_PATH: /usr/local/bin/ignition/lib/core/gateway
       POSTGRES_CONTAINER: lab07-postgres
@@ -77,7 +85,13 @@ jobs:
         run: |
           set -euo pipefail
           command -v docker >/dev/null || { echo "docker CLI not available in the runner" >&2; exit 1; }
-          test -n "$IGNITION_API_KEY" || { echo "IGNITION_API_KEY secret is missing" >&2; exit 1; }
+          test -n "${IGNITION_API_KEY:-}" || {
+            echo "IGNITION_API_KEY is not in the runner's environment." >&2
+            echo "  scripts/setup.sh generates it into .env and compose passes it to the" >&2
+            echo "  runner container — re-run setup.sh, then:" >&2
+            echo "  docker compose --profile test up -d --force-recreate test-runner" >&2
+            exit 1
+          }
           if ! docker inspect "$IGNITION_CONTAINER" >/dev/null 2>&1; then
             echo "Container '$IGNITION_CONTAINER' not found — is your test profile up?" >&2
             echo "  docker compose --profile test up -d" >&2
@@ -165,7 +179,7 @@ jobs:
             if [ -d '$GATEWAY_DATA_PATH/config/resources/core/ignition' ]; then
               find '$GATEWAY_DATA_PATH/config/resources/core/ignition' -mindepth 1 -maxdepth 1 \
                 ! -name user-source ! -name identity-provider \
-                ! -name system-properties -exec rm -rf {} +
+                ! -name system-properties ! -name api-token -exec rm -rf {} +
             fi
           "
           docker cp projects/. "$IGNITION_CONTAINER:$GATEWAY_DATA_PATH/projects/"
@@ -255,10 +269,12 @@ jobs:
 
       - name: Trigger gateway scan
         # Hot reload of projects and config. Self-heal on 401/403 exactly
-        # like production: a gateway that has not loaded the deployed API
-        # token / security-properties only reads them at boot — restart
-        # once, wait, retry. First deploy to a fresh test gateway may take
-        # this path; every later deploy scans hot.
+        # like production: the gateway only reads its api-token (seeded into
+        # its volume by setup.sh; the wipe spares it) and the deployed
+        # security-properties at boot — restart once, wait, retry. First
+        # deploy to a fresh test gateway may take this path; every later
+        # deploy scans hot. A 401 that survives the restart means the seeded
+        # token does not match your key — re-run scripts/setup.sh.
         run: |
           set -euo pipefail
           run_scans() {
