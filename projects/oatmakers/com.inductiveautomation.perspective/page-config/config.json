@@ -3,6 +3,10 @@
     "/": {
       "title": "Oatmakers",
       "viewPath": "home"
+    },
+    "/batches": {
+      "title": "Batches",
+      "viewPath": "batches"
     }
   }
 }

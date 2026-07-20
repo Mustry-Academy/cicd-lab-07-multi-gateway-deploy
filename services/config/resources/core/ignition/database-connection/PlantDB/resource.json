@@ -1,0 +1,14 @@
+{
+  "scope": "A",
+  "description": "Plant database on the site network. Credentials are referenced secrets from the 'environment' file provider (/run/secrets).",
+  "version": 1,
+  "restricted": false,
+  "overridable": true,
+  "files": [
+    "config.json"
+  ],
+  "attributes": {
+    "uuid": "5b7a2f0e-3c41-4de2-9f6a-8e2d10c4ba07",
+    "enabled": true
+  }
+}

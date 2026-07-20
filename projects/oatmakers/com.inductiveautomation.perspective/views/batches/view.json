@@ -1,0 +1,60 @@
+{
+  "custom": {},
+  "params": {},
+  "props": {
+    "defaultSize": {
+      "height": 600,
+      "width": 900
+    }
+  },
+  "root": {
+    "children": [
+      {
+        "meta": {
+          "name": "TitleLabel"
+        },
+        "position": {
+          "height": 40,
+          "width": 500,
+          "x": 30,
+          "y": 20
+        },
+        "props": {
+          "style": {
+            "fontSize": "24px",
+            "fontWeight": "bold"
+          },
+          "text": "Production batches (PlantDB)"
+        },
+        "type": "ia.display.label"
+      },
+      {
+        "meta": {
+          "name": "BatchesTable"
+        },
+        "position": {
+          "height": 420,
+          "width": 840,
+          "x": 30,
+          "y": 80
+        },
+        "propConfig": {
+          "props.data": {
+            "binding": {
+              "config": {
+                "expression": "runScript('plant.db.batches()', 10000)"
+              },
+              "type": "expr"
+            }
+          }
+        },
+        "props": {},
+        "type": "ia.display.table"
+      }
+    ],
+    "meta": {
+      "name": "root"
+    },
+    "type": "ia.container.coord"
+  }
+}
