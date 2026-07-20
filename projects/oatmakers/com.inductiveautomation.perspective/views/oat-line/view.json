@@ -1,0 +1,201 @@
+{
+  "custom": {},
+  "params": {},
+  "props": {
+    "defaultSize": {
+      "height": 400,
+      "width": 700
+    }
+  },
+  "root": {
+    "children": [
+      {
+        "meta": {
+          "name": "TitleLabel"
+        },
+        "position": {
+          "height": 40,
+          "width": 600,
+          "x": 30,
+          "y": 20
+        },
+        "props": {
+          "style": {
+            "fontSize": "24px",
+            "fontWeight": "bold"
+          },
+          "text": "Oat line live values (device simulator)"
+        },
+        "type": "ia.display.label"
+      },
+      {
+        "meta": {
+          "name": "MillDrumSpeedCaption"
+        },
+        "position": {
+          "height": 28,
+          "width": 260,
+          "x": 30,
+          "y": 90
+        },
+        "props": {
+          "text": "MillDrumSpeed",
+          "style": {
+            "fontWeight": "bold"
+          }
+        },
+        "type": "ia.display.label"
+      },
+      {
+        "meta": {
+          "name": "MillDrumSpeedValue"
+        },
+        "position": {
+          "height": 28,
+          "width": 220,
+          "x": 300,
+          "y": 90
+        },
+        "propConfig": {
+          "props.text": {
+            "binding": {
+              "config": {
+                "expression": "numberFormat(tag('[default]OatLine/MillDrumSpeed'), '#,##0.0 rpm')"
+              },
+              "type": "expr"
+            }
+          }
+        },
+        "props": {},
+        "type": "ia.display.label"
+      },
+      {
+        "meta": {
+          "name": "MillInfeedRateCaption"
+        },
+        "position": {
+          "height": 28,
+          "width": 260,
+          "x": 30,
+          "y": 134
+        },
+        "props": {
+          "text": "MillInfeedRate",
+          "style": {
+            "fontWeight": "bold"
+          }
+        },
+        "type": "ia.display.label"
+      },
+      {
+        "meta": {
+          "name": "MillInfeedRateValue"
+        },
+        "position": {
+          "height": 28,
+          "width": 220,
+          "x": 300,
+          "y": 134
+        },
+        "propConfig": {
+          "props.text": {
+            "binding": {
+              "config": {
+                "expression": "numberFormat(tag('[default]OatLine/MillInfeedRate'), '#,##0.0 kg/h')"
+              },
+              "type": "expr"
+            }
+          }
+        },
+        "props": {},
+        "type": "ia.display.label"
+      },
+      {
+        "meta": {
+          "name": "KilnTemperatureCaption"
+        },
+        "position": {
+          "height": 28,
+          "width": 260,
+          "x": 30,
+          "y": 178
+        },
+        "props": {
+          "text": "KilnTemperature",
+          "style": {
+            "fontWeight": "bold"
+          }
+        },
+        "type": "ia.display.label"
+      },
+      {
+        "meta": {
+          "name": "KilnTemperatureValue"
+        },
+        "position": {
+          "height": 28,
+          "width": 220,
+          "x": 300,
+          "y": 178
+        },
+        "propConfig": {
+          "props.text": {
+            "binding": {
+              "config": {
+                "expression": "numberFormat(tag('[default]OatLine/KilnTemperature'), '#,##0.0 \u00b0C')"
+              },
+              "type": "expr"
+            }
+          }
+        },
+        "props": {},
+        "type": "ia.display.label"
+      },
+      {
+        "meta": {
+          "name": "PackingLineSpeedCaption"
+        },
+        "position": {
+          "height": 28,
+          "width": 260,
+          "x": 30,
+          "y": 222
+        },
+        "props": {
+          "text": "PackingLineSpeed",
+          "style": {
+            "fontWeight": "bold"
+          }
+        },
+        "type": "ia.display.label"
+      },
+      {
+        "meta": {
+          "name": "PackingLineSpeedValue"
+        },
+        "position": {
+          "height": 28,
+          "width": 220,
+          "x": 300,
+          "y": 222
+        },
+        "propConfig": {
+          "props.text": {
+            "binding": {
+              "config": {
+                "expression": "numberFormat(tag('[default]OatLine/PackingLineSpeed'), '#,##0.0 ppm')"
+              },
+              "type": "expr"
+            }
+          }
+        },
+        "props": {},
+        "type": "ia.display.label"
+      }
+    ],
+    "meta": {
+      "name": "root"
+    },
+    "type": "ia.container.coord"
+  }
+}

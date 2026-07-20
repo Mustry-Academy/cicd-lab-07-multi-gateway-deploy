@@ -1,0 +1,81 @@
+{
+  "custom": {},
+  "params": {},
+  "props": {
+    "defaultSize": {
+      "height": 540,
+      "width": 900
+    }
+  },
+  "root": {
+    "children": [
+      {
+        "meta": {
+          "name": "TitleLabel"
+        },
+        "position": {
+          "height": 40,
+          "width": 600,
+          "x": 30,
+          "y": 20
+        },
+        "props": {
+          "text": "Batch yield (Embr Charts module)",
+          "style": {
+            "fontWeight": "bold",
+            "fontSize": "24px"
+          }
+        },
+        "type": "ia.display.label"
+      },
+      {
+        "meta": {
+          "name": "YieldChart"
+        },
+        "position": {
+          "height": 420,
+          "width": 820,
+          "x": 30,
+          "y": 80
+        },
+        "propConfig": {
+          "props.data.datasets[0].data": {
+            "binding": {
+              "config": {
+                "expression": "runScript('plant.db.yield_series()', 10000)"
+              },
+              "type": "expr"
+            }
+          }
+        },
+        "props": {
+          "type": "bar",
+          "data": {
+            "datasets": [
+              {
+                "label": "Yield % per batch",
+                "backgroundColor": "#1D6F9E"
+              }
+            ]
+          },
+          "options": {
+            "parsing": {
+              "xAxisKey": "batch",
+              "yAxisKey": "yieldPct"
+            },
+            "scales": {
+              "y": {
+                "beginAtZero": true
+              }
+            }
+          }
+        },
+        "type": "embr.chart.chart-js"
+      }
+    ],
+    "meta": {
+      "name": "root"
+    },
+    "type": "ia.container.coord"
+  }
+}

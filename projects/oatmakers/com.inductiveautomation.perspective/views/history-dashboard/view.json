@@ -1,0 +1,98 @@
+{
+  "custom": {},
+  "params": {},
+  "props": {
+    "defaultSize": {
+      "height": 580,
+      "width": 920
+    }
+  },
+  "root": {
+    "children": [
+      {
+        "meta": {
+          "name": "TitleLabel"
+        },
+        "position": {
+          "height": 40,
+          "width": 700,
+          "x": 30,
+          "y": 20
+        },
+        "props": {
+          "text": "Oat line history (PlantHistory into PlantDB)",
+          "style": {
+            "fontWeight": "bold",
+            "fontSize": "24px"
+          }
+        },
+        "type": "ia.display.label"
+      },
+      {
+        "meta": {
+          "name": "CountCaption"
+        },
+        "position": {
+          "height": 28,
+          "width": 220,
+          "x": 30,
+          "y": 90
+        },
+        "props": {
+          "text": "History rows stored:"
+        },
+        "type": "ia.display.label"
+      },
+      {
+        "meta": {
+          "name": "RowCount"
+        },
+        "position": {
+          "height": 28,
+          "width": 160,
+          "x": 260,
+          "y": 90
+        },
+        "propConfig": {
+          "props.text": {
+            "binding": {
+              "config": {
+                "expression": "runScript('plant.db.history_row_count()', 10000)"
+              },
+              "type": "expr"
+            }
+          }
+        },
+        "props": {},
+        "type": "ia.display.label"
+      },
+      {
+        "meta": {
+          "name": "HistoryTable"
+        },
+        "position": {
+          "height": 380,
+          "width": 840,
+          "x": 30,
+          "y": 140
+        },
+        "propConfig": {
+          "props.data": {
+            "binding": {
+              "config": {
+                "expression": "runScript('plant.db.recent_history()', 10000)"
+              },
+              "type": "expr"
+            }
+          }
+        },
+        "props": {},
+        "type": "ia.display.table"
+      }
+    ],
+    "meta": {
+      "name": "root"
+    },
+    "type": "ia.container.coord"
+  }
+}

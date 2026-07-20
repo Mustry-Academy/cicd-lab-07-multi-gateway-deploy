@@ -7,6 +7,22 @@
     "/batches": {
       "title": "Batches",
       "viewPath": "batches"
+    },
+    "/history-dashboard": {
+      "title": "History",
+      "viewPath": "history-dashboard"
+    },
+    "/oat-line": {
+      "title": "Oat line",
+      "viewPath": "oat-line"
+    },
+    "/strings": {
+      "title": "Strings",
+      "viewPath": "strings"
+    },
+    "/yield-chart": {
+      "title": "Yield chart",
+      "viewPath": "yield-chart"
     }
   }
 }

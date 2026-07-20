@@ -1,0 +1,75 @@
+{
+  "custom": {},
+  "params": {},
+  "props": {
+    "defaultSize": {
+      "height": 240,
+      "width": 700
+    }
+  },
+  "root": {
+    "children": [
+      {
+        "meta": {
+          "name": "TitleLabel"
+        },
+        "position": {
+          "height": 40,
+          "width": 600,
+          "x": 30,
+          "y": 20
+        },
+        "props": {
+          "text": "String reversing with the commons-lang3 library JAR",
+          "style": {
+            "fontWeight": "bold",
+            "fontSize": "24px"
+          }
+        },
+        "type": "ia.display.label"
+      },
+      {
+        "meta": {
+          "name": "InputCaption"
+        },
+        "position": {
+          "height": 28,
+          "width": 300,
+          "x": 30,
+          "y": 100
+        },
+        "props": {
+          "text": "StringUtils.reverse('Ignition') ="
+        },
+        "type": "ia.display.label"
+      },
+      {
+        "meta": {
+          "name": "FlippedValue"
+        },
+        "position": {
+          "height": 28,
+          "width": 200,
+          "x": 340,
+          "y": 100
+        },
+        "propConfig": {
+          "props.text": {
+            "binding": {
+              "config": {
+                "expression": "runScript('plant.strings.flip(\"Ignition\")')"
+              },
+              "type": "expr"
+            }
+          }
+        },
+        "props": {},
+        "type": "ia.display.label"
+      }
+    ],
+    "meta": {
+      "name": "root"
+    },
+    "type": "ia.container.coord"
+  }
+}

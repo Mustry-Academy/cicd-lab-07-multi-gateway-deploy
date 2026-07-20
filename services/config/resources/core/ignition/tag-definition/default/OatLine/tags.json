@@ -1,0 +1,42 @@
+[
+  {
+    "valueSource": "opc",
+    "opcItemPath": "ns=1;s=[Simulator]OatLine/Mill/DrumSpeed",
+    "dataType": "Float8",
+    "name": "MillDrumSpeed",
+    "tagType": "AtomicTag",
+    "opcServer": "Ignition OPC UA Server",
+    "historyEnabled": true,
+    "historyProvider": "PlantHistory"
+  },
+  {
+    "valueSource": "opc",
+    "opcItemPath": "ns=1;s=[Simulator]OatLine/Mill/InfeedRate",
+    "dataType": "Float8",
+    "name": "MillInfeedRate",
+    "tagType": "AtomicTag",
+    "opcServer": "Ignition OPC UA Server",
+    "historyEnabled": true,
+    "historyProvider": "PlantHistory"
+  },
+  {
+    "valueSource": "opc",
+    "opcItemPath": "ns=1;s=[Simulator]OatLine/Kiln/Temperature",
+    "dataType": "Float8",
+    "name": "KilnTemperature",
+    "tagType": "AtomicTag",
+    "opcServer": "Ignition OPC UA Server",
+    "historyEnabled": true,
+    "historyProvider": "PlantHistory"
+  },
+  {
+    "valueSource": "opc",
+    "opcItemPath": "ns=1;s=[Simulator]OatLine/Packing/LineSpeed",
+    "dataType": "Float8",
+    "name": "PackingLineSpeed",
+    "tagType": "AtomicTag",
+    "opcServer": "Ignition OPC UA Server",
+    "historyEnabled": true,
+    "historyProvider": "PlantHistory"
+  }
+]

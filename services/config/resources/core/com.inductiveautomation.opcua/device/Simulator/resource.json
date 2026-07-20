@@ -1,0 +1,15 @@
+{
+  "scope": "A",
+  "description": "Programmable device simulator for the oat line (Part 2, tags challenge). The program is instructions.csv.",
+  "version": 1,
+  "restricted": false,
+  "overridable": true,
+  "files": [
+    "config.json",
+    "instructions.csv"
+  ],
+  "attributes": {
+    "uuid": "9c1e6a44-72bd-4e0f-b1a3-5d20c95f7e18",
+    "enabled": true
+  }
+}

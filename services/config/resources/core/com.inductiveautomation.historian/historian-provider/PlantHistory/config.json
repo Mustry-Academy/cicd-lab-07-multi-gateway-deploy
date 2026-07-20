@@ -1,0 +1,21 @@
+{
+  "profile": {
+    "type": "timescaledb-historian"
+  },
+  "settings": {
+    "batchIntervalMs": 5000,
+    "batchSize": 100,
+    "debugLogging": false,
+    "jdbcUrl": "jdbc:postgresql://postgres:5432/ignition?currentSchema=public",
+    "password": {
+      "data": {
+        "providerName": "environment",
+        "secretName": "POSTGRES_PASSWORD"
+      },
+      "type": "Referenced"
+    },
+    "storeAndForwardEngine": "",
+    "timeoutMs": 5000,
+    "username": "ignition"
+  }
+}

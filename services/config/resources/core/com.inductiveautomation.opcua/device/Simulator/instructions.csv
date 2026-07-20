@@ -1,0 +1,5 @@
+Time Interval, Browse Path, Value Source, Data Type
+"0","OatLine/Mill/DrumSpeed","realistic(1200.0, 1.2, 0.06, 0.25, true)","Double"
+"0","OatLine/Mill/InfeedRate","realistic(950.0, 1.2, 0.06, 0.25, true)","Double"
+"0","OatLine/Kiln/Temperature","realistic(104.0, 1.2, 0.06, 0.25, true)","Double"
+"0","OatLine/Packing/LineSpeed","realistic(64.0, 1.2, 0.06, 0.25, true)","Double"

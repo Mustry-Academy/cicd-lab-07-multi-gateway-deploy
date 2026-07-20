@@ -1,0 +1,14 @@
+{
+  "scope": "A",
+  "description": "Tag history into the plant TimescaleDB. Password is the referenced POSTGRES_PASSWORD secret; same resource works on every gateway.",
+  "version": 1,
+  "restricted": false,
+  "overridable": true,
+  "files": [
+    "config.json"
+  ],
+  "attributes": {
+    "uuid": "7f3d9b12-58ce-4a7b-9e04-c6a1f28d3b56",
+    "enabled": true
+  }
+}
