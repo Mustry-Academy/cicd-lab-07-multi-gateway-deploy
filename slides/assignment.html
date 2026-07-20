@@ -361,7 +361,7 @@ body{
         <div class="pn">PART 1 · ±15 MIN</div>
         <h4>Set up your personal test gateway</h4>
         <p>A second local gateway plus a workflow of your own, so every merge to <span class="inlinecode">main</span> lands on it automatically, before anything reaches production.</p>
-        <div class="gate">gate → a merged change appears on localhost:8090 on its own</div>
+        <div class="gate">gate → a merged change is deployed to localhost:8090 by your own runner</div>
       </div>
       <div class="pcard p2">
         <div class="pn">PART 2 · ±20 MIN</div>
@@ -393,28 +393,31 @@ body{
     <div class="stage">Part 1 · your personal test gateway</div>
   </div>
   <div class="body">
-    <div class="sechead"><span class="num warm">1</span><div><div class="title">Set up a test gateway that auto-deploys every merge to main</div><div class="lead">Before you deploy anything to production, give yourself somewhere safe to see it first: a second local gateway in <b>dev deployment mode</b> that a workflow of your own updates on every push to <span class="inlinecode">main</span>. Do this once, at the start, then leave it running all afternoon.</div></div></div>
+    <div class="sechead"><span class="num warm">1</span><div><div class="title">Set up a test gateway that auto-deploys every merge to main</div><div class="lead">Before you deploy anything to production, give yourself somewhere safe to see it first: a second local gateway that a workflow of your own deploys to on every push to <span class="inlinecode">main</span>, the same way production is deployed to. The repo provides the gateway, the runner and the workflow; you fill in your name. Do this once, at the start, then leave it running all afternoon.</div></div></div>
     <div class="cols2">
       <div class="steps">
-        <div class="step"><div class="ix t">1</div><div class="tx"><b>Give the test gateway its own clone:</b> <span class="inlinecode">git clone … ../lab07-test</span>, next to your working clone. The pipeline owns that clone; yours never gets yanked around mid-branch.</div></div>
-        <div class="step"><div class="ix t">2</div><div class="tx"><b>Start the provided test pair:</b> the repo already carries your test gateway (port <span class="inlinecode">8090</span>, dev config mode) and your laptop runner behind one compose profile: <span class="inlinecode">LAB_USER=&lt;yourname&gt; RUNNER_TOKEN=&lt;from Sam or Jasper&gt; docker compose --profile test up -d</span>. The runner registers with the label <span class="inlinecode">[self-hosted, &lt;yourname&gt;-local]</span>; only jobs asking for your label run on your machine.</div></div>
-        <div class="step"><div class="ix t">3</div><div class="tx"><b>Author your workflow:</b> <span class="inlinecode">.github/workflows/test-&lt;yourname&gt;.yml</span> triggers on <span class="inlinecode">push: [main]</span>, runs on your label and <b>fast-forwards the test clone</b> (mounted at <span class="inlinecode">/workspace/lab07-test</span> in your runner). That is all it does: the test gateway runs in <b>dev config mode</b> and picks the fresh files up on its own.</div></div>
+        <div class="step"><div class="ix t">1</div><div class="tx"><b>Tell the stack who you are:</b> <span class="inlinecode">cp .env.example .env</span>, set <span class="inlinecode">LAB_USER=&lt;yourname&gt;</span> and the runner credential you get from Sam or Jasper (registering a runner needs repo-admin rights, so the credential comes from us).</div></div>
+        <div class="step"><div class="ix t">2</div><div class="tx"><b>Start the provided test pair:</b> <span class="inlinecode">./scripts/setup.sh</span> sees <span class="inlinecode">LAB_USER</span> and brings up your test gateway (port <span class="inlinecode">8090</span>) plus your laptop runner behind the <span class="inlinecode">test</span> compose profile. The runner registers with the label <span class="inlinecode">[self-hosted, &lt;yourname&gt;-local]</span>: check Settings → Actions → Runners.</div></div>
+        <div class="step"><div class="ix t">3</div><div class="tx"><b>Make the provided workflow yours:</b> copy <span class="inlinecode">test-example.yml.template</span> to <span class="inlinecode">test-&lt;yourname&gt;.yml</span> and replace <span class="inlinecode">example</span> with your name in the three <span class="inlinecode">CHANGEME</span> spots. You write no YAML: the workflow already checks out <span class="inlinecode">main</span>, runs migrations, ships projects + config + modules + JARs into the gateway container and triggers the authenticated scan: the production deploy, minus <span class="inlinecode">release.yaml</span>.</div></div>
         <div class="step"><div class="ix t">4</div><div class="tx"><b>PR it in like anything else.</b> Branch, PR, green checks, approval, merge. The only file you touched is your own workflow.</div></div>
       </div>
       <div>
-        <div class="code"><pre><span class="cm"># .github/workflows/test-&lt;yourname&gt;.yml</span>
+        <div class="code"><pre>cp .env.example .env
+<span class="cm"># edit: LAB_USER=&lt;yourname&gt;, RUNNER_TOKEN=&lt;from us&gt;</span>
+./scripts/setup.sh
+
+cp .github/workflows/test-example.yml.template \
+   .github/workflows/test-<span class="cmd2">&lt;yourname&gt;</span>.yml
+<span class="cm"># three CHANGEME spots, one word:</span>
 name: test-<span class="cmd2">&lt;yourname&gt;</span>
-<span class="cmd2">on</span>: { push: { branches: [main] } }
-jobs:
-  deploy:
-    runs-on: [self-hosted, <span class="cmd2">&lt;yourname&gt;-local</span>]
-    steps:</pre></div>
-        <div class="obs"><span class="ob">Observe</span><p><b>Your workflow only runs on your machine.</b> The runner <b>label</b> is the whole routing story: five people can each have a <code>push: [main]</code> workflow and each one deploys only to its owner's test gateway.</p></div>
+group: test-deploy-<span class="cmd2">&lt;yourname&gt;</span>
+runs-on: [self-hosted, <span class="cmd2">&lt;yourname&gt;-local</span>]</pre></div>
+        <div class="obs"><span class="ob">Observe</span><p><b>Your workflow only runs on your machine.</b> The runner <b>label</b> is the whole routing story: five people can each have a <code>push: [main]</code> workflow and each one deploys only to its owner's test gateway. The label is written out per file because GitHub resolves <code>runs-on</code> before any per-user context exists; a shared repo variable would route everyone to one laptop.</p></div>
       </div>
     </div>
     <div class="goal good-g" style="margin-top:16px">
       <span class="badge">✅ Verify it works</span>
-      <p>Open a small PR that changes a dashboard view. Once it merges to <span class="inlinecode">main</span>, watch your <span class="inlinecode">test-&lt;yourname&gt;</span> workflow run on your runner and <b>the change appear on <span class="inlinecode">localhost:8090</span></b> on its own. That is your test gateway tracking <span class="inlinecode">main</span> for you, hands-free, before anything is ever tagged for production.</p>
+      <p>Open a small PR that changes a dashboard view. Once it merges to <span class="inlinecode">main</span>, watch your <span class="inlinecode">test-&lt;yourname&gt;</span> workflow pick the job up on <b>your</b> runner and deploy <b>the change to <span class="inlinecode">localhost:8090</span></b>: no tag, no <span class="inlinecode">release.yaml</span> bump. Your test gateway gets its files exactly the way production does: <span class="inlinecode">docker cp</span> plus an authenticated scan, never a bind mount of your working tree.</p>
     </div>
   </div>
   <div class="foot"><span>Mustry Academy · CI/CD for Ignition</span><span>Part 1 · your test gateway tracks main</span></div>
@@ -504,9 +507,9 @@ git push -u origin feature/wout-project</pre></div>
           <tr><th style="width:22%">Who</th><th>Challenge</th></tr>
           <tr><td><b>Nick</b></td><td>The <b>Embr Charts module</b>, auto-installed by the pipeline, plus a Perspective screen with a chart on it.</td></tr>
           <tr><td><b>Stephan</b></td><td>The <b>Commons Lang3 JAR</b> plus a string reversing function proved from a view.</td></tr>
-          <tr><td><b>Tom</b></td><td>The <b>database connection</b> (secret <code>POSTGRES_USERNAME</code>), a migration with tables and a seed, and a view on that data.</td></tr>
+          <tr><td><b>Tom</b></td><td>The <b>database connection</b> (password = referenced secret <code>POSTGRES_PASSWORD</code>), a migration with tables and a seed, and a view on that data.</td></tr>
           <tr><td><b>Wout</b></td><td><b>Tags and an OPC UA simulator device</b> on a screen, deployed so values change live on production.</td></tr>
-          <tr><td><b>Gregory</b></td><td><b>Build on the others:</b> historize Wout's tags into Tom's database and visualise them in a dashboard.</td></tr>
+          <tr><td><b>Gregory</b></td><td><b>Build on the others:</b> historize Wout's tags into the plant database and visualise them in a dashboard.</td></tr>
         </table>
       </div>
     </div>
@@ -574,7 +577,7 @@ flipped = StringUtils.reverse(<span class="grn">"Ignition"</span>)</pre></div>
         <div class="hd">TOM</div>
         <div class="q">Set up the database connection, a migration with a seed, and a view on the data</div>
         <ul>
-          <li><span class="d"></span><span>Create the DB connection using the <b>referenced secret</b> <code>POSTGRES_USERNAME</code>. The secret is already on the environment: you reference it, <b>you never see the value</b>. Lab 06's secrets ladder, for real.</span></li>
+          <li><span class="d"></span><span>Create the DB connection to <code>jdbc:postgresql://postgres:5432/ignition</code> (resolves locally AND on production). Username: the plain string <code>ignition</code>. Password: the <b>referenced secret</b> <code>POSTGRES_PASSWORD</code> from the <code>environment</code> provider: you reference it, <b>you never see the value</b>. Lab 06's secrets ladder, for real.</span></li>
           <li><span class="d"></span><span>Write a migration pair in <code>db-migration/migrate/</code>: <code>.up.sql</code> creates the tables and seeds them, <code>.down.sql</code> undoes it. <b>Always pairs.</b></span></li>
           <li><span class="d"></span><span>Build a Perspective view that queries the seeded data.</span></li>
           <li><span class="d"></span><span>Verify on production: the connection is <b>Valid</b>, the migration ran, your view shows rows.</span></li>
@@ -584,7 +587,7 @@ flipped = StringUtils.reverse(<span class="grn">"Ignition"</span>)</pre></div>
         <div class="hd">GREGORY</div>
         <div class="q">Historize the live tags into the database and build a dashboard</div>
         <ul>
-          <li><span class="d"></span><span>Enable <b>tag history</b> on Wout's tags, storing into Tom's database connection.</span></li>
+          <li><span class="d"></span><span>Create a <b>historian provider</b> (the TimescaleDB Historian module is already registered, you build on it) storing into the same plant database, with the referenced <code>POSTGRES_PASSWORD</code>. Enable <b>tag history</b> on Wout's tags, pointed at it.</span></li>
           <li><span class="d"></span><span>Build a dashboard view visualising that history.</span></li>
           <li><span class="d"></span><span>You will be merging into files the others just changed. <b>Merge conflicts are part of the challenge</b>, not an accident.</span></li>
         </ul>
@@ -649,7 +652,7 @@ flipped = StringUtils.reverse(<span class="grn">"Ignition"</span>)</pre></div>
   <div class="body">
     <div class="sechead"><span class="num">GATE</span><div><div class="title">Definition of done for all four parts</div><div class="lead">Walk these before you call it. Everything on this list is visible on GitHub or on the production gateway; nothing needs your laptop.</div></div></div>
     <div class="steps" style="max-width:1020px">
-      <div class="step"><div class="ix t">1</div><div class="tx"><b>Part 1:</b> your <span class="inlinecode">test-&lt;yourname&gt;.yml</span> workflow merged in, your test gateway and runner up, and a dashboard change proven to <b>land on <span class="inlinecode">localhost:8090</span> on its own</b> after a merge to <span class="inlinecode">main</span>.</div></div>
+      <div class="step"><div class="ix t">1</div><div class="tx"><b>Part 1:</b> your <span class="inlinecode">test-&lt;yourname&gt;.yml</span> workflow merged in, your test gateway and runner up, and a dashboard change proven to <b>land on <span class="inlinecode">localhost:8090</span> through your own workflow</b> after a merge to <span class="inlinecode">main</span>.</div></div>
       <div class="step"><div class="ix">2</div><div class="tx"><b>Part 2:</b> <span class="inlinecode">projects/&lt;yourname&gt;/</span> merged through an approved PR, the tag <span class="inlinecode">&lt;yourname&gt;@v1.0.0</span> built, your line in <span class="inlinecode">release.yaml</span>, and your view <b>live on cloud.mustrysolutions.com</b>.</div></div>
       <div class="step"><div class="ix p">3</div><div class="tx"><b>Part 3:</b> your challenge merged and <b>live on production</b> via an <span class="inlinecode">oatmakers@v2.0.X</span> tag you cut yourself and a reviewed <span class="inlinecode">release.yaml</span> bump.</div></div>
       <div class="step"><div class="ix t">4</div><div class="tx"><b>Part 4:</b> at least one merged PR from the challenge your team gave you, one that <b>builds on someone else's work</b>, and at least one review comment or unblock you gave someone else.</div></div>
