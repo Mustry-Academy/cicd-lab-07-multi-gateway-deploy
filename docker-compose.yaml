@@ -24,6 +24,14 @@ services:
       - gateway-data:/usr/local/bin/ignition/data
       - ./projects:/usr/local/bin/ignition/data/projects
       - ./services/config:/usr/local/bin/ignition/data/config
+      # The module manifest and the .modl files themselves, so the LOCAL
+      # gateway installs the repo's third-party modules on boot — and so the
+      # module challenge's derive-and-commit move works: add a .modl plus a
+      # minimal manifest entry (filename + onStartup), restart, and the
+      # gateway writes the derived certFingerprint + licenseAgreementHash
+      # back into the tracked services/modules.json for you to commit.
+      - ./services/modules.json:/usr/local/bin/ignition/data/modules.json
+      - ./third-party-modules:/third-party-modules
       # Local stand-ins for the capstone's referenced secrets: the same
       # file-type secret provider config that reads /run/secrets/ on
       # production reads these here. Known local-dev defaults, not secrets.
@@ -34,12 +42,22 @@ services:
       GATEWAY_ADMIN_USERNAME: admin
       GATEWAY_ADMIN_PASSWORD: password
       TZ: "Europe/Brussels"
+      # Headless acceptance for the modules this lab installs (lab 06's
+      # move): license + cert acceptance comes from these lists on FIRST
+      # install, after which the derived hashes in modules.json carry it.
+      ACCEPT_MODULE_LICENSES: >-
+        com.mussonindustrial.embr.charts,
+        com.mustry.historian.timescaledb
+      ACCEPT_MODULE_CERTS: >-
+        com.mussonindustrial.embr.charts,
+        com.mustry.historian.timescaledb
     command: >
       -n lab07-local
       -m 1024
       --
       wrapper.java.initmemory=256
       -Dignition.allowunsignedmodules=true
+      -Dignition.gateway.externalModulesFolder=/third-party-modules
     healthcheck:
       test: ["CMD", "curl", "-fsS", "http://localhost:8088/StatusPing"]
       interval: 30s
