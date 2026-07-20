@@ -401,8 +401,13 @@ jobs:
           fi
           echo "Boot-time payload changed — restarting $IGNITION_CONTAINER..."
           docker restart "$IGNITION_CONTAINER"
+          # StatusPing says "RUNNING" even while details say COMMISSIONING —
+          # a boot-time module/trust check runs a commissioning pass first.
+          # Require RUNNING *without* COMMISSIONING or the scan below fires
+          # into the commissioning webapp and gets a 400.
           for _ in $(seq 1 60); do
-            if curl -fsS --max-time 3 "$IGNITION_URL/StatusPing" 2>/dev/null | grep -q RUNNING; then
+            state="$(curl -fsS --max-time 3 "$IGNITION_URL/StatusPing" 2>/dev/null || true)"
+            if echo "$state" | grep -q '"state":"RUNNING"' && ! echo "$state" | grep -q COMMISSIONING; then
               echo "gateway RUNNING again."
               exit 0
             fi
@@ -438,7 +443,9 @@ jobs:
                 if [ "$code" -ge 200 ] && [ "$code" -lt 300 ]; then
                   break
                 fi
-                if { [ "$code" -ge 500 ] || [ "$code" = "000" ]; } && [ "$tries" -lt 12 ]; then
+                # 400 included: the commissioning webapp answers 400 while a
+                # boot-time trust/commissioning pass is still finishing.
+                if { [ "$code" -ge 500 ] || [ "$code" = "400" ] || [ "$code" = "000" ]; } && [ "$tries" -lt 12 ]; then
                   tries=$((tries + 1))
                   echo "  gateway not ready yet — retry $tries/12 in 10s"
                   sleep 10
@@ -457,7 +464,8 @@ jobs:
             echo "gateway). Restarting it to load them, then retrying."
             docker restart "$IGNITION_CONTAINER"
             for _ in $(seq 1 60); do
-              if curl -fsS --max-time 3 "$IGNITION_URL/StatusPing" 2>/dev/null | grep -q RUNNING; then
+              state="$(curl -fsS --max-time 3 "$IGNITION_URL/StatusPing" 2>/dev/null || true)"
+              if echo "$state" | grep -q '"state":"RUNNING"' && ! echo "$state" | grep -q COMMISSIONING; then
                 break
               fi
               sleep 5
