@@ -39,6 +39,8 @@ services:
     environment:
       ACCEPT_IGNITION_EULA: "Y"
       IGNITION_EDITION: standard
+      # Skip the Quick Start prompt on first login — the lab ships its own projects.
+      DISABLE_QUICKSTART: "true"
       GATEWAY_ADMIN_USERNAME: admin
       GATEWAY_ADMIN_PASSWORD: password
       TZ: "Europe/Brussels"
@@ -144,6 +146,8 @@ services:
     environment:
       ACCEPT_IGNITION_EULA: "Y"
       IGNITION_EDITION: standard
+      # Skip the Quick Start prompt on first login — deploys ship the project in.
+      DISABLE_QUICKSTART: "true"
       GATEWAY_ADMIN_USERNAME: admin
       GATEWAY_ADMIN_PASSWORD: password
       TZ: "Europe/Brussels"

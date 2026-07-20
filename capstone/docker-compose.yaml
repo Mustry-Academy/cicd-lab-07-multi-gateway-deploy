@@ -60,6 +60,8 @@ services:
     environment:
       ACCEPT_IGNITION_EULA: "Y"
       IGNITION_EDITION: standard
+      # Skip the Quick Start prompt on first login — deploys ship the project in.
+      DISABLE_QUICKSTART: "true"
       TZ: "Europe/Brussels"
       # First-boot commissioning (ignored once the gateway is commissioned).
       # Password comes in as a FILE, not an env var — `docker inspect` shows
