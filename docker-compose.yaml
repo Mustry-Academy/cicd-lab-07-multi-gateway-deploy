@@ -69,6 +69,14 @@ services:
     restart: unless-stopped
     ports:
       - "5432:5432"
+    networks:
+      default:
+        # Production's database service is called `postgres`, so a DB
+        # connection with connectURL jdbc:postgresql://postgres:5432/...
+        # resolves identically here and there. One committed resource, no
+        # per-environment hostname surgery.
+        aliases:
+          - postgres
     volumes:
       - postgres-data:/var/lib/postgresql/data
     environment:
@@ -86,8 +94,6 @@ services:
       options:
         max-size: "200k"
         max-file: "10"
-    networks:
-      - default
 
   # ---- Part 0: your personal test gateway ---------------------------------
   # A second gateway on 8090 that YOUR OWN workflow deploys to on every merge
