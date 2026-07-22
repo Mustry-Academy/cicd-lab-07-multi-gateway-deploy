@@ -111,7 +111,7 @@ Nightly cron (root):
 
 Drops a `.gwbk` **and** a gzipped `pg_dump` of the course database in
 `/opt/cicd-lab-07/capstone/backups/`, keeps the newest 14 of each
-(`gwcmd.sh -b`, verified working on the 8.3.7 image).
+(`gwcmd.sh -b`, verified working on the 8.3.6 image).
 Off-server copies: pull one down whenever you touch the box —
 `scp root@cloud.mustrysolutions.com:/opt/cicd-lab-07/capstone/backups/<latest>.gwbk ~/backups/`.
 

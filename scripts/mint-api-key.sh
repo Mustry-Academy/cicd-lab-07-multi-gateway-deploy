@@ -7,7 +7,7 @@
 #   1. generates a fresh secret (base64url, gateway-decodable)
 #   2. builds the CICD-APIKEY api-token resource (hash only, scheme:
 #      base64url(sha256(base64url_decode(secret))), verified against
-#      Ignition 8.3.7; secureChannelRequired stays false — the deploy scans
+#      Ignition 8.3.6; secureChannelRequired stays false — the deploy scans
 #      over in-network HTTP) and docker-cp's it INTO the gateway container,
 #      then restarts the gateway so it loads the new token
 #   3. sets the repo's IGNITION_API_KEY Actions secret to the full header

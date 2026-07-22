@@ -3,7 +3,7 @@ name: lab07
 
 services:
   gateway:
-    image: inductiveautomation/ignition:8.3.7
+    image: inductiveautomation/ignition:8.3.6
     container_name: lab07-gateway
     hostname: lab07-gateway
     # Keep the image's own identity (uid 2003, gid 0): its data/ tree is
@@ -125,7 +125,7 @@ services:
   #
   # Only starts with the profile flag:  docker compose --profile test up -d
   test-gateway:
-    image: inductiveautomation/ignition:8.3.7
+    image: inductiveautomation/ignition:8.3.6
     container_name: lab07-test-gateway
     hostname: lab07-test-gateway
     profiles: [test]
