@@ -495,22 +495,23 @@ git push -u origin feature/wout-project</pre></div>
     <div class="stage">Part 3 · the team round · how it works</div>
   </div>
   <div class="body">
-    <div class="sechead"><span class="num phase2">3</span><div><div class="title">Five challenges on the shared oatmakers project: who does what</div><div class="lead">One project, five contributors, one version stream. Everything in these challenges is a move you made in an earlier lab; the new part is doing it together.</div></div></div>
+    <div class="sechead"><span class="num phase2">3</span><div><div class="title">Five challenges on the shared oatmakers project: claim one each</div><div class="lead">One project, five contributors, one version stream. Nothing is pre-assigned: pick your challenge in the breakout room. Everything in these challenges is a move you made in an earlier lab; the new part is doing it together.</div></div></div>
     <div class="cols2" style="grid-template-columns:.85fr 1.15fr">
       <div class="steps">
         <div class="step"><div class="ix p">1</div><div class="tx"><b>All work lands in <span class="inlinecode">projects/oatmakers/</span></b> plus the folders you know from lab 06: <span class="inlinecode">third-party-modules/</span>, <span class="inlinecode">jar-files/jar/</span>, <span class="inlinecode">db-migration/</span>.</div></div>
         <div class="step"><div class="ix p">2</div><div class="tx"><b>Finished means live:</b> merge your PR, cut the <b>next free</b> <span class="inlinecode">oatmakers@v2.0.X</span> tag, bump <span class="inlinecode">release.yaml</span> by PR.</div></div>
         <div class="step"><div class="ix p">3</div><div class="tx"><b>Five people, one version stream:</b> pull main often. If someone claimed your tag number while you were typing, take the next one.</div></div>
         <div class="step"><div class="ix p">4</div><div class="tx"><b>Sam or Jasper still approves everything.</b> Small PRs get through the queue first.</div></div>
+        <div class="step"><div class="ix p">5</div><div class="tx"><b>Claim your challenge in the room</b> — one per person. Challenge 5 builds on 3 and 4, so whoever takes it starts against their work as it lands.</div></div>
       </div>
       <div>
         <table class="tbl">
-          <tr><th style="width:22%">Who</th><th>Challenge</th></tr>
-          <tr><td><b>Nick</b></td><td>The <b>Embr Charts module</b>, auto-installed by the pipeline, plus a Perspective screen with a chart on it.</td></tr>
-          <tr><td><b>Stephan</b></td><td>The <b>Commons CSV JAR</b> plus a recipe-parsing function proved from a view.</td></tr>
-          <tr><td><b>Tom</b></td><td>The <b>database connection</b> (password = referenced secret <code>POSTGRES_PASSWORD</code>), a migration with tables and a seed, and a view on that data.</td></tr>
-          <tr><td><b>Wout</b></td><td><b>Tags and an OPC UA simulator device</b> on a screen, deployed so values change live on production.</td></tr>
-          <tr><td><b>Gregory</b></td><td><b>Build on the others:</b> historize Wout's tags into the plant database and visualise them in a dashboard.</td></tr>
+          <tr><th style="width:22%">Challenge</th><th>What ships</th></tr>
+          <tr><td><b>1 · Module</b></td><td>The <b>Embr Charts module</b>, auto-installed by the pipeline, plus a Perspective screen with a chart on it.</td></tr>
+          <tr><td><b>2 · JAR</b></td><td>The <b>Commons CSV JAR</b> plus a recipe-parsing function proved from a view.</td></tr>
+          <tr><td><b>3 · Database</b></td><td>The <b>database connection</b> (password = referenced secret <code>POSTGRES_PASSWORD</code>), a migration with tables and a seed, and a view on that data.</td></tr>
+          <tr><td><b>4 · Tags</b></td><td><b>Tags and an OPC UA simulator device</b> on a screen, deployed so values change live on production.</td></tr>
+          <tr><td><b>5 · Historian</b></td><td><b>Builds on 3 and 4:</b> historize the simulator tags into the plant database and visualise them in a dashboard.</td></tr>
         </table>
       </div>
     </div>
@@ -518,7 +519,7 @@ git push -u origin feature/wout-project</pre></div>
   <div class="foot"><span>Mustry Academy · CI/CD for Ignition</span><span>Part 3 · one project, five contributors</span></div>
 </section>
 
-<!-- 10 · PART 3 CHALLENGES: NICK, STEPHAN, WOUT -->
+<!-- 10 · PART 3 CHALLENGES: MODULE, JAR, TAGS -->
 <section class="slide">
   <div class="topbar">
     <div class="brandrow"><img class="logo-img" src="logos/OriginalDark.png" alt="Mustry Solutions"></div>
@@ -528,7 +529,7 @@ git push -u origin feature/wout-project</pre></div>
     <div class="sechead"><span class="num phase2">3</span><div><div class="title">The assignments</div><div class="lead">Each one ends the same way: merge, tag the next <span class="inlinecode">oatmakers@v2.0.X</span>, bump <span class="inlinecode">release.yaml</span>, verify on production.</div></div></div>
     <div class="cols2" style="grid-template-columns:repeat(3,1fr);gap:16px">
       <div class="does">
-        <div class="hd">NICK</div>
+        <div class="hd">CHALLENGE 1 · MODULE</div>
         <div class="q">Add the Embr Charts module and build a chart screen</div>
         <ul>
           <li><span class="d"></span><span>Download the module here:<br><a href="https://github.com/mussonindustrial/embr/releases/tag/releases%2F8.3%2F2026.6.17" style="font-family:'IBM Plex Mono';font-size:10.5px;color:var(--blue-d);word-break:break-all">github.com/mussonindustrial/embr/releases/tag/releases%2F8.3%2F2026.6.17</a></span></li>
@@ -538,7 +539,7 @@ git push -u origin feature/wout-project</pre></div>
         </ul>
       </div>
       <div class="does">
-        <div class="hd">STEPHAN</div>
+        <div class="hd">CHALLENGE 2 · JAR</div>
         <div class="q">Use the Commons CSV JAR in a recipe-parsing function</div>
         <ul>
           <li><span class="d"></span><span>The <code>commons-csv</code> JAR is <b>already in the repo</b>, in <code>jar-files/jar/</code>: we did the lab 06 download-and-pin move for you. Your job is to use it. (commons-csv on purpose: the gateway already bundles commons-lang3 and friends, so importing those proves nothing.)</span></li>
@@ -553,7 +554,7 @@ fields = list(records[0])</pre></div>
         </ul>
       </div>
       <div class="does">
-        <div class="hd">WOUT</div>
+        <div class="hd">CHALLENGE 4 · TAGS</div>
         <div class="q">Create tags and a simulator device and show live values</div>
         <ul>
           <li><span class="d"></span><span>Add an <b>OPC UA simulator device</b> (the programmable device simulator) to the gateway config.</span></li>
@@ -564,20 +565,20 @@ fields = list(records[0])</pre></div>
       </div>
     </div>
   </div>
-  <div class="foot"><span>Mustry Academy · CI/CD for Ignition</span><span>Part 3 · Nick · Stephan · Wout</span></div>
+  <div class="foot"><span>Mustry Academy · CI/CD for Ignition</span><span>Part 3 · module · JAR · tags</span></div>
 </section>
 
-<!-- 11 · PART 3 CHALLENGES: TOM, GREGORY -->
+<!-- 11 · PART 3 CHALLENGES: DATABASE, HISTORIAN -->
 <section class="slide">
   <div class="topbar">
     <div class="brandrow"><img class="logo-img" src="logos/OriginalDark.png" alt="Mustry Solutions"></div>
     <div class="stage">Part 3 · challenges · database, dashboard</div>
   </div>
   <div class="body">
-    <div class="sechead"><span class="num phase2">3</span><div><div class="title">The assignments</div><div class="lead">Tom lays the data foundation; Gregory builds the dashboard on top.</div></div></div>
+    <div class="sechead"><span class="num phase2">3</span><div><div class="title">The assignments</div><div class="lead">The database challenge lays the data foundation; the historian challenge builds the dashboard on top.</div></div></div>
     <div class="cols2">
       <div class="does">
-        <div class="hd">TOM</div>
+        <div class="hd">CHALLENGE 3 · DATABASE</div>
         <div class="q">Set up the database connection, a migration with a seed, and a view on the data</div>
         <ul>
           <li><span class="d"></span><span>Create the DB connection to <code>jdbc:postgresql://postgres:5432/ignition</code> (resolves locally AND on production). Username: the plain string <code>ignition</code>. Password: the <b>referenced secret</b> <code>POSTGRES_PASSWORD</code> from the <code>environment</code> provider: you reference it, <b>you never see the value</b>. Lab 06's secrets ladder, for real.</span></li>
@@ -587,10 +588,10 @@ fields = list(records[0])</pre></div>
         </ul>
       </div>
       <div class="does">
-        <div class="hd">GREGORY</div>
+        <div class="hd">CHALLENGE 5 · HISTORIAN</div>
         <div class="q">Historize the live tags into the database and build a dashboard</div>
         <ul>
-          <li><span class="d"></span><span>Create a <b>historian provider</b> (the TimescaleDB Historian module is already registered, you build on it) storing into the same plant database, with the referenced <code>POSTGRES_PASSWORD</code>. Enable <b>tag history</b> on Wout's tags, pointed at it.</span></li>
+          <li><span class="d"></span><span>Create a <b>historian provider</b> (the TimescaleDB Historian module is already registered, you build on it) storing into the same plant database, with the referenced <code>POSTGRES_PASSWORD</code>. Enable <b>tag history</b> on challenge 4's tags, pointed at it.</span></li>
           <li><span class="d"></span><span>Build a dashboard view visualising that history.</span></li>
           <li><span class="d"></span><span>You will be merging into files the others just changed. <b>Merge conflicts are part of the challenge</b>, not an accident.</span></li>
         </ul>
@@ -601,7 +602,7 @@ fields = list(records[0])</pre></div>
       <p><b>Your challenge is live on production</b> through a reviewed PR, an <span class="inlinecode">oatmakers@v2.0.X</span> tag you cut yourself, and a <span class="inlinecode">release.yaml</span> bump that went through review.</p>
     </div>
   </div>
-  <div class="foot"><span>Mustry Academy · CI/CD for Ignition</span><span>Part 3 · Tom · Gregory</span></div>
+  <div class="foot"><span>Mustry Academy · CI/CD for Ignition</span><span>Part 3 · database · historian</span></div>
 </section>
 
 <!-- 12 · PART 4 -->

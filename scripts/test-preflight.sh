@@ -344,7 +344,7 @@ for k,v in (cfg.get("volumes") or {}).items():
     # --- Full end-to-end: a simulated WSL student user in a container ------
     # A non-root user (uid 1000, like a default WSL account) runs preflight
     # against a repo containing root-owned leftovers, and must come out able
-    # to write everything. This is the closest we get to Nick and Stephan's
+    # to write everything. This is the closest we get to a student's WSL
     # machine without Windows.
     echo ""
     echo "  End-to-end: simulated WSL student user"

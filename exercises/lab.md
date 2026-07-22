@@ -354,8 +354,11 @@ together.
   your tag number while you were typing, take the next one.
 - Sam or Jasper still approves everything. Small PRs get through the queue
   first.
+- **Claim your challenge in the breakout room** — one per person, nothing is
+  pre-assigned. Challenge 5 builds on challenges 3 and 4, so whoever takes
+  it starts against their work as it lands.
 
-**Nick — add the Embr Charts module and build a chart screen**
+**Challenge 1 — add the Embr Charts module and build a chart screen**
 
 - Download the module from
   <https://github.com/mussonindustrial/embr/releases/tag/releases%2F8.3%2F2026.6.17>.
@@ -367,7 +370,7 @@ together.
 - Verify on production: Config → Modules shows Embr Charts **Running**, and
   your chart renders.
 
-**Stephan — use the Commons CSV JAR in a recipe-parsing function**
+**Challenge 2 — use the Commons CSV JAR in a recipe-parsing function**
 
 - The `commons-csv` JAR is **already in the repo**, in `jar-files/jar/` —
   we did the lab 06 download-and-pin move for you. Your job is to use it.
@@ -385,7 +388,7 @@ together.
 - Build a Perspective screen that **calls your function** and shows the
   parsed fields: **oats | water | salt**, live on production.
 
-**Tom — the database connection, a migration with a seed, a view on the data**
+**Challenge 3 — the database connection, a migration with a seed, a view on the data**
 
 - Create the DB connection to `jdbc:postgresql://postgres:5432/ignition`
   (that hostname resolves both locally and on production). Username is the
@@ -401,7 +404,7 @@ together.
 - Verify on production: the connection is **Valid**, the migration ran, your
   view shows rows.
 
-**Wout — tags and a simulator device with live values**
+**Challenge 4 — tags and a simulator device with live values**
 
 - Add an **OPC UA simulator device** (the programmable device simulator) to
   the gateway config.
@@ -411,16 +414,16 @@ together.
 - Verify on production: **values changing live**, on a gateway you never
   logged into to configure.
 
-**Gregory — historize the live tags and build a dashboard**
+**Challenge 5 — historize the live tags and build a dashboard**
 
 - Create a **historian provider** (the TimescaleDB Historian module is
   already registered in `services/modules.json` — you build on it, you
-  don't install it) that stores into the **same plant database** Tom's
-  connection reads. Password: the referenced `POSTGRES_PASSWORD`, like
-  Tom's connection.
-- Enable **tag history** on Wout's tags, pointed at your provider.
+  don't install it) that stores into the **same plant database**
+  challenge 3's connection reads. Password: the referenced
+  `POSTGRES_PASSWORD`, like challenge 3's connection.
+- Enable **tag history** on challenge 4's tags, pointed at your provider.
 - Build a dashboard view visualising that history — query the history
-  tables back through Tom's connection.
+  tables back through challenge 3's connection.
 - You will be merging into files the others just changed. **Merge conflicts
   are part of the challenge**, not an accident.
 
@@ -434,7 +437,7 @@ Everything from Part 2 is now shared infrastructure. This part has no
 script: **work together, build fast, get through the PRs.**
 
 - **Cross the challenges:** store more tags in the database, add to the
-  migration scripts, put an Embr chart on Tom's data, call Stephan's
+  migration scripts, put an Embr chart on the seeded data, call the CSV
   function from your view. Anything goes, as long as it ships by PR.
 - **Keep PRs small and fast.** One small change that merges beats a big one
   that sits in review while main moves under it.

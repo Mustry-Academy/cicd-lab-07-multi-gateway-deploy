@@ -55,7 +55,7 @@
 #                                 token can never authenticate a deploy
 #                                 scan). Rotating = re-running that script;
 #                                 no commit or tag involved.
-#   Secret:   POSTGRES_USERNAME   The referenced secret Tom's DB connection
+#   Secret:   POSTGRES_USERNAME   The referenced secret the DB connection
 #                                 reads via the file secret provider; also
 #                                 the user migrations run as.
 #   Secret:   POSTGRES_PASSWORD   Same ladder, password side.

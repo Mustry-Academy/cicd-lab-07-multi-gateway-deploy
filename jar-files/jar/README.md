@@ -19,5 +19,5 @@ Use it from any project script:
 from org.apache.commons.csv import CSVFormat
 from java.io import StringReader
 records = CSVFormat.DEFAULT.parse(StringReader("oats,water,salt")).getRecords()
-fields = list(records[0])   # ['oats', 'water', 'salt'] — Stephan's Part 2 challenge
+fields = list(records[0])   # ['oats', 'water', 'salt'] — the JAR Part 2 challenge
 ```
