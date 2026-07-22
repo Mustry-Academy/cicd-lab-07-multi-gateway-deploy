@@ -42,19 +42,20 @@
 #                                 "CICD-APIKEY:abc...". The gateway looks the
 #                                 token up by the name BEFORE the colon, then
 #                                 checks sha256(base64url-decode(secret))
-#                                 against the tokenHash in the api-token
-#                                 resource shipped from services/config —
-#                                 those two must stay in sync. That resource
-#                                 must also carry secureChannelRequired:false:
-#                                 the runner calls the gateway over plain
-#                                 in-network HTTP (and even via caddy the
-#                                 request reaches Jetty unencrypted), so a
-#                                 secure-channel-only token can never
-#                                 authenticate a deploy scan. Rotate with
-#                                 scripts/mint-api-key.sh (updates the
-#                                 resource AND the secret), then cut + pin
-#                                 the next oatmakers tag.
-#   Secret:   POSTGRES_USERNAME   The referenced secret Tom's DB connection
+#                                 against the tokenHash in its on-disk
+#                                 api-token resource. That resource is NOT in
+#                                 the repo (never commit a token, even
+#                                 hash-only) and the wipe below spares it —
+#                                 scripts/mint-api-key.sh installs it on the
+#                                 production gateway AND sets this secret in
+#                                 one go (instructors only; it also keeps
+#                                 secureChannelRequired:false, since the
+#                                 runner calls the gateway over plain
+#                                 in-network HTTP and a secure-channel-only
+#                                 token can never authenticate a deploy
+#                                 scan). Rotating = re-running that script;
+#                                 no commit or tag involved.
+#   Secret:   POSTGRES_USERNAME   The referenced secret the DB connection
 #                                 reads via the file secret provider; also
 #                                 the user migrations run as.
 #   Secret:   POSTGRES_PASSWORD   Same ladder, password side.
@@ -173,7 +174,7 @@ jobs:
           done
 
           # system-properties is per-gateway identity: the repo carries the
-          # LOCAL dev gateway's copy (systemName lab07-local), production
+          # LOCAL gateway's copy (systemName lab07-local), production
           # keeps its own (cicd-capstone). Never ship it.
           rm -rf payload/services/config/resources/core/ignition/system-properties
           echo "  (stripped system-properties — per-gateway identity never ships)"
@@ -212,7 +213,10 @@ jobs:
             value="${!name:-}"
             [ -n "$value" ] || continue
             printf '%s' "$value" > "$tmp/$name"
-            docker exec "$IGNITION_CONTAINER" mkdir -p /run/secrets
+            # The gateway runs as uid 2003, not root, and /run is root-owned:
+            # the directory must be created as root and handed to the gateway.
+            docker exec -u root "$IGNITION_CONTAINER" \
+              install -d -o 2003 -g 0 -m 750 /run/secrets
             docker cp "$tmp/$name" "$IGNITION_CONTAINER:/run/secrets/$name"
             # docker cp writes as root; the gateway (uid 2003) must be able
             # to read the secret file.
@@ -291,9 +295,13 @@ jobs:
         #     users.json holds THIS gateway's admin password hash. Wiping or
         #     overwriting it locks everyone out.
         #   config/resources/core/ignition/system-properties/ — the gateway's
-        #     NAME. The repo copy is the local dev gateway's (lab07-local);
+        #     NAME. The repo copy is the local gateway's (lab07-local);
         #     the payload never carries it, and the wipe leaves production's
         #     (cicd-capstone) alone.
+        #   config/resources/core/ignition/api-token/ — the scan-API token
+        #     scripts/mint-api-key.sh installed on THIS gateway. It is not in
+        #     git (never commit a token), so the payload cannot restore it —
+        #     wiping it would revoke the very key this workflow scans with.
         run: |
           set -euo pipefail
           # -u root twice over: docker cp writes root-owned files, so only
@@ -320,7 +328,7 @@ jobs:
             if [ -d '$GATEWAY_DATA_PATH/config/resources/core/ignition' ]; then
               find '$GATEWAY_DATA_PATH/config/resources/core/ignition' -mindepth 1 -maxdepth 1 \
                 ! -name user-source ! -name identity-provider \
-                ! -name system-properties -exec rm -rf {} +
+                ! -name system-properties ! -name api-token -exec rm -rf {} +
             fi
             if [ -d '$GATEWAY_DATA_PATH/config/resources/core/ignition/user-source' ]; then
               find '$GATEWAY_DATA_PATH/config/resources/core/ignition/user-source' -mindepth 1 -maxdepth 1 \
@@ -401,8 +409,13 @@ jobs:
           fi
           echo "Boot-time payload changed — restarting $IGNITION_CONTAINER..."
           docker restart "$IGNITION_CONTAINER"
+          # StatusPing says "RUNNING" even while details say COMMISSIONING —
+          # a boot-time module/trust check runs a commissioning pass first.
+          # Require RUNNING *without* COMMISSIONING or the scan below fires
+          # into the commissioning webapp and gets a 400.
           for _ in $(seq 1 60); do
-            if curl -fsS --max-time 3 "$IGNITION_URL/StatusPing" 2>/dev/null | grep -q RUNNING; then
+            state="$(curl -fsS --max-time 3 "$IGNITION_URL/StatusPing" 2>/dev/null || true)"
+            if echo "$state" | grep -q '"state":"RUNNING"' && ! echo "$state" | grep -q COMMISSIONING; then
               echo "gateway RUNNING again."
               exit 0
             fi
@@ -412,10 +425,13 @@ jobs:
           exit 1
 
       - name: Trigger gateway scan
-        # Hot reload of projects and config. Self-heal on 401/403: a gateway
-        # that has never loaded the deployed API token / security-properties
-        # only reads them at boot — restart once, wait, retry. First deploy
-        # heals itself; every later deploy scans hot.
+        # Hot reload of projects and config. Self-heal on 401/403: the
+        # gateway only reads its api-token (installed by mint-api-key.sh;
+        # the wipe spares it) and the deployed security-properties at boot —
+        # restart once, wait, retry. First deploy heals itself; every later
+        # deploy scans hot. A 401 that survives the restart means no token
+        # is installed on this gateway — run scripts/mint-api-key.sh on its
+        # host.
         run: |
           set -euo pipefail
           # The gateway may still be mid-startup when we get here (a restart
@@ -438,7 +454,9 @@ jobs:
                 if [ "$code" -ge 200 ] && [ "$code" -lt 300 ]; then
                   break
                 fi
-                if { [ "$code" -ge 500 ] || [ "$code" = "000" ]; } && [ "$tries" -lt 12 ]; then
+                # 400 included: the commissioning webapp answers 400 while a
+                # boot-time trust/commissioning pass is still finishing.
+                if { [ "$code" -ge 500 ] || [ "$code" = "400" ] || [ "$code" = "000" ]; } && [ "$tries" -lt 12 ]; then
                   tries=$((tries + 1))
                   echo "  gateway not ready yet — retry $tries/12 in 10s"
                   sleep 10
@@ -457,7 +475,8 @@ jobs:
             echo "gateway). Restarting it to load them, then retrying."
             docker restart "$IGNITION_CONTAINER"
             for _ in $(seq 1 60); do
-              if curl -fsS --max-time 3 "$IGNITION_URL/StatusPing" 2>/dev/null | grep -q RUNNING; then
+              state="$(curl -fsS --max-time 3 "$IGNITION_URL/StatusPing" 2>/dev/null || true)"
+              if echo "$state" | grep -q '"state":"RUNNING"' && ! echo "$state" | grep -q COMMISSIONING; then
                 break
               fi
               sleep 5

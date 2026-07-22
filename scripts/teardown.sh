@@ -44,7 +44,9 @@ if [ "$REMOVE_VOLUMES" = "true" ]; then
     fi
   fi
   echo -e "${GREEN}Stopping stack and removing volumes...${NC}"
-  docker compose down -v
+  # --profile test: also remove the Part 0 test gateway + runner (and their
+  # volumes) if this student ever started them; a no-op otherwise.
+  docker compose --profile test down -v
   # Wiping the gateway volume means commissioning runs again on the next
   # boot, and leftover identity files would make it create a temp_N profile
   # instead of temp. Remove them so setup.sh's first-boot flow starts clean.
@@ -53,7 +55,7 @@ if [ "$REMOVE_VOLUMES" = "true" ]; then
          services/config/resources/.resources
 else
   echo -e "${GREEN}Stopping stack (volumes retained)...${NC}"
-  docker compose down
+  docker compose --profile test down
 fi
 
 echo -e "${GREEN}Done.${NC}"

@@ -12,7 +12,7 @@ __pycache__/
 venv/
 
 # ---------------------------------------------------------------------------
-# What the LOCAL dev gateway (docker-compose.yaml) writes into the
+# What the LOCAL gateway (docker-compose.yaml) writes into the
 # bind-mounted repo dirs. This mirrors the Deploy workflow's exclusion list:
 # gateway-owned state never belongs in git — it is per-instance identity,
 # key material, or rebuildable runtime state.
@@ -37,6 +37,13 @@ services/config/resources/core/ignition/user-source/opcua-module/
 services/config/resources/core/ignition/user-source/temp/
 services/config/resources/core/ignition/identity-provider/default/
 services/config/resources/core/ignition/identity-provider/temp/
+
+# The scan-API token: generated per clone by scripts/generate-api-key.sh
+# (key in .env, hash-only resource here). Never commit it — a committed
+# token resource puts every clone's auth surface in the repo's history.
+# Production's token is minted by the instructors (scripts/mint-api-key.sh)
+# and never touches the repo either.
+services/config/resources/core/ignition/api-token/
 
 # Internal content-addressed blob store + upgrade artifacts (rebuilt on scan)
 **/.resources/

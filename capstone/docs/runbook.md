@@ -111,7 +111,7 @@ Nightly cron (root):
 
 Drops a `.gwbk` **and** a gzipped `pg_dump` of the course database in
 `/opt/cicd-lab-07/capstone/backups/`, keeps the newest 14 of each
-(`gwcmd.sh -b`, verified working on the 8.3.7 image).
+(`gwcmd.sh -b`, verified working on the 8.3.6 image).
 Off-server copies: pull one down whenever you touch the box —
 `scp root@cloud.mustrysolutions.com:/opt/cicd-lab-07/capstone/backups/<latest>.gwbk ~/backups/`.
 
@@ -155,9 +155,11 @@ password manager entry "cicd-capstone gateway".
 Students deploy with the Lab 04/06 mechanism (`docker cp` + scan API) from
 their own repo, via their own runner:
 
-1. In the gateway, create an **API token** for the scan endpoints; store it
-   as an environment secret (`IGNITION_API_KEY`, environment
-   `capstone-gateway`) in the cohort repo.
+1. Mint an **API token** for the scan endpoints with
+   `scripts/mint-api-key.sh <gateway-container>` (installs the token on the
+   gateway and prints nothing secret to disk); store the key it sets as an
+   environment secret (`IGNITION_API_KEY`, environment `capstone-gateway`)
+   in the cohort repo.
 2. Register a **separate** runner container against the cohort repo (same
    `myoung34/github-runner` pattern; labels `self-hosted,capstone`). Add it
    as a service in this repo's compose file via PR, so it is reproducible.

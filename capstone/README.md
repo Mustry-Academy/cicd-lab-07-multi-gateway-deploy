@@ -24,7 +24,7 @@ push. Nothing is ever edited by hand on the server except `.env` and
 | Service | Image | Exposure | Job |
 |---|---|---|---|
 | `caddy` | `caddy:2.11.4` | **80 + 443 (the only published ports)** | TLS termination with auto Let's Encrypt, reverse proxy to the gateway |
-| `ignition` | `inductiveautomation/ignition:8.3.7` | none (internal network only) | The gateway. Data in the `gateway-data` named volume |
+| `ignition` | `inductiveautomation/ignition:8.3.6` | none (internal network only) | The gateway. Data in the `gateway-data` named volume |
 | `postgres` | `postgres:17.5` | none | The course database (Lab 07 Part 2: referenced-secret connection, migrations, tag history). Data in the `postgres-data` named volume |
 | `github-runner` | `myoung34/github-runner` | none | Applies this repo to the server; repo-scoped to this repo only |
 

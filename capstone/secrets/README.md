@@ -54,6 +54,8 @@ scripts/sync-github-secrets.sh
 Then re-run the Deploy workflow (workflow_dispatch) so the gateway's
 `/run/secrets/POSTGRES_*` files pick up the new value.
 
-**Ignition API key:** `scripts/mint-api-key.sh` at the repo root — updates the
-api-token resource and the `IGNITION_API_KEY` secret in one go, then walk the
-tag + pin flow it prints.
+**Ignition API key:** `scripts/mint-api-key.sh` at the repo root, run ON THIS
+HOST — installs the fresh api-token resource straight into the gateway
+container (the resource is never in git; the deploy wipe spares it), restarts
+the gateway, and updates the `IGNITION_API_KEY` secret in one go. No tag or
+pin involved.

@@ -13,6 +13,14 @@ Two deploy channels, one rule: `release.yaml` is the **only** production trigger
 - **≥ 4 GB free RAM for Docker** — one Ignition gateway (1 GB cap) plus TimescaleDB
 - _Background:_ labs 03–06 — the runner, tags, secrets ladder, migrations and module moves all return here, wired into one pipeline
 
+
+> **WSL2 (Windows): keep the clone in your Linux home (`~/…`), never `/mnt/c/…`.**
+> On the Windows filesystem your Windows user, your WSL user and the gateway's
+> container user are three different identities, so file ownership breaks in ways
+> `chown` cannot fix and you end up reaching for `sudo` (which makes it worse).
+> `scripts/setup.sh` refuses to run from there, and never needs `sudo`.
+> See [`docs/wsl-setup.md`](./docs/wsl-setup.md).
+
 ## Quick start
 
 ```bash
@@ -58,9 +66,9 @@ cicd-lab-07-multi-gateway-deploy/
 ├── third-party-modules/       ← .modl files the pipeline installs
 ├── jar-files/jar/             ← library JARs → lib/core/gateway at deploy time
 ├── db-migration/migrate/      ← golang-migrate up/down pairs, run before anything ships
-├── dev/                       ← local-only stand-ins (secrets) for the dev stack
+├── local-development/         ← local-only stand-ins (secrets) for the local stack
 ├── capstone/                  ← the production server stack (Caddy, gateway, runner) — GitOps'd
-├── scripts/                   ← setup / teardown / validate / migrate / mint-api-key
+├── scripts/                   ← setup / teardown / validate / migrate / generate-api-key / mint-api-key
 ├── exercises/ · slides/ · docs/ · architectures/
 └── .github/workflows/         ← ci.yml (PR checks) · deploy.yml (release.yaml → production)
 ```

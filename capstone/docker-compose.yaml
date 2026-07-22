@@ -49,7 +49,7 @@ services:
     # deploy workflow pulls and recreates). Latest 8.3 patch on purpose — this
     # box has a public IP, so security patches beat lockstep with the labs
     # (which run 8.3.6; projects are compatible within 8.3).
-    image: inductiveautomation/ignition:8.3.7
+    image: inductiveautomation/ignition:8.3.6
     container_name: cicd-capstone-gateway
     hostname: cicd-capstone-gateway
     restart: unless-stopped
@@ -60,6 +60,8 @@ services:
     environment:
       ACCEPT_IGNITION_EULA: "Y"
       IGNITION_EDITION: standard
+      # Skip the Quick Start prompt on first login — deploys ship the project in.
+      DISABLE_QUICKSTART: "true"
       TZ: "Europe/Brussels"
       # First-boot commissioning (ignored once the gateway is commissioned).
       # Password comes in as a FILE, not an env var — `docker inspect` shows

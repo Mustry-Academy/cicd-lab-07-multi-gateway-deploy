@@ -5,7 +5,7 @@
     "maxSessionCount": 100
   },
   "authentication": {
-    "anonymousAccessAllowed": false,
+    "anonymousAccessAllowed": true,
     "authenticationProfile": "opcua-module"
   },
   "endpoint": {
@@ -14,8 +14,8 @@
     ],
     "bindPort": 62541,
     "endpointAddresses": [
-      "\u003chostname\u003e",
-      "\u003clocalhost\u003e"
+      "<hostname>",
+      "<localhost>"
     ],
     "messageSecurityModes": [
       "SignAndEncrypt"

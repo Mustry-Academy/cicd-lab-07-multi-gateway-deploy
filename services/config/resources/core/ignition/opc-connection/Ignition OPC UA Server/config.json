@@ -21,18 +21,7 @@
       "timestampSource": "OPC_PREFER_SOURCE"
     },
     "authentication": {
-      "authenticationType": "USERNAME",
-      "password": {
-        "data": {
-          "ciphertext": "QWPo-v4aZpVjHg",
-          "encrypted_key": "rYiI_h0wu4-KUfwMIFvPbh5HxRsyg9QS79HNky53GBbkCaO-UGcD_g",
-          "iv": "eH_-mGqiQ8NVScdI",
-          "protected": "eyJhbGciOiJBMjU2S1ciLCJlbmMiOiJBMjU2R0NNIiwiaWF0IjoxNzg0MDIzMzM0LCJ6aXAiOiJERUYifQ",
-          "tag": "DrCHWCY-Jno1t6Zg22Qrpg"
-        },
-        "type": "Embedded"
-      },
-      "username": "opcuauser"
+      "authenticationType": "ANONYMOUS"
     },
     "configVersion": 2,
     "endpoint": {

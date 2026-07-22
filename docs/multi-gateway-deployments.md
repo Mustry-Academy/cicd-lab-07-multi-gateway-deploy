@@ -16,7 +16,7 @@ go to which gateway, triggered by what, in which order, and who is allowed to
 decide.
 
 Where the course left us: **one repository, one site, one logical gateway** in
-three environments (local, dev, prod). Every section below is a controlled
+three environments (local, test, production). Every section below is a controlled
 change to that picture.
 
 ---
@@ -88,7 +88,7 @@ oatmakers-repo/
 ```
 
 One repository holds everything; one pipeline deploys it; one site, one
-logical gateway, three environments (local → dev → prod).
+logical gateway, three environments (local → test → production).
 
 ### Frontend-backend: one repo, several projects, a config folder per gateway
 
@@ -127,24 +127,24 @@ version control. The fleet's state gets a `git log`.
 
 ```
 oatmakers-releases/
-├─ prod/
+├─ production/
 │  ├─ gw-site1-backend.yaml
 │  ├─ gw-site1-frontend.yaml
 │  ├─ gw-site4-backend.yaml
 │  ├─ gw-site4-frontend.yaml
 │  ├─ … sites 2, 3, 5 … 8 …
 │  └─ gw-central.yaml
-├─ test/
-│  └─ gw-test.yaml
-└─ dev/
-   └─ gw-dev.yaml           # tracks main, auto
+├─ staging/
+│  └─ gw-staging.yaml
+└─ test/
+   └─ gw-test.yaml           # tracks main, auto
 ```
 
 One file per gateway; each project pinned to a version, its parent pinned
 underneath it:
 
 ```yaml
-# releases/prod/gw-site4-frontend.yaml
+# releases/production/gw-site4-frontend.yaml
 gateway: gw-site4-frontend
 projects:
   oatmakers:
@@ -158,15 +158,15 @@ projects:
 This file **is** the record of what runs on `gw-site4-frontend`. Change the
 file, and the pipeline makes it true.
 
-And dev is the deliberate exception — no pins:
+And test is the deliberate exception — no pins:
 
 ```yaml
-# releases/dev/gw-dev.yaml
-gateway: gw-dev
+# releases/test/gw-test.yaml
+gateway: gw-test
 track: main            # every merge deploys automatically
 ```
 
-Pinning starts where humans need control: test and prod.
+Pinning starts where humans need control: staging and production.
 
 ### A promotion is a pull request
 
@@ -184,7 +184,7 @@ Pinning starts where humans need control: test and prod.
    pipeline makes the old pins true again. No snowflake knowledge, no 02:00
    archaeology — the file is the state.
 
-Dev never appears in this flow: it tracked main automatically since the merge
+Test never appears in this flow: it tracked main automatically since the merge
 that started it all.
 
 ---
@@ -256,7 +256,7 @@ parent **next to** it — the HMI inherits from it. That is why each parent is
 pinned explicitly in every gateway's release file:
 
 ```yaml
-# releases/prod/gw-site4-frontend.yaml
+# releases/production/gw-site4-frontend.yaml
 projects:
   oatmakers:
     version: v2.0.1   # its own tag
@@ -274,8 +274,8 @@ built and tested against whatever `oatmakers-shared` state commit `e85`
 contained. Pair that artifact on a gateway with a *different* parent version
 and you ship a combination that has never run together. Two mitigations:
 
-1. **One version of each parent per environment.** Everything in test
-   runs the same parent; everything in prod runs the same parent. What you
+1. **One version of each parent per environment.** Everything in staging
+   runs the same parent; everything in production runs the same parent. What you
    tested together is what ships together, by construction. Start here.
 2. **Record the dependency in the artifact.** At build time
    `git describe --tags --match 'oatmakers-shared@*'` names the parent state
@@ -338,18 +338,18 @@ overwritten setpoint.
    from Git: the limit is silently back to the old value. If operators may
    change tags on production, your deploy must not blindly overwrite them.
 2. **Process engineers create tags on production.** Forty new tags, born
-   directly on the prod gateway. Dev has never seen them: screens can't be
+   directly on the production gateway. The test gateway has never seen them: screens can't be
    tested against them, and a strict "make it match Git" deploy would even
-   delete them. Tags born on production need a way back into dev and the
+   delete them. Tags born on production need a way back into test and the
    repo.
 
 ### Three ownership models
 
 | Model | How it works | Fits when |
 |---|---|---|
-| **Development is master** | Every tag change travels through the repo and the pipeline. Editing tags on production is forbidden (or exported back the same day). The deploy may overwrite the tag provider. | Tags change rarely and the dev team owns the process |
-| **Production is master** | Tags are exported from prod into the repo on a schedule; the deploy never touches the tag provider; dev refreshes itself from those exports. | Engineers and operators live in the tag browser |
-| **Split ownership** | Dev owns **structure** (UDT definitions, folders, new tags); production owns **values** (setpoints, alarm limits). The deploy ships definitions and never writes values — or you split by provider or folder. | Most plants — but only if the split is written down and enforced |
+| **Development is master** | Every tag change travels through the repo and the pipeline. Editing tags on production is forbidden (or exported back the same day). The deploy may overwrite the tag provider. | Tags change rarely and the development team owns the process |
+| **Production is master** | Tags are exported from production into the repo on a schedule; the deploy never touches the tag provider; the test gateway refreshes itself from those exports. | Engineers and operators live in the tag browser |
+| **Split ownership** | Test owns **structure** (UDT definitions, folders, new tags); production owns **values** (setpoints, alarm limits). The deploy ships definitions and never writes values — or you split by provider or folder. | Most plants — but only if the split is written down and enforced |
 
 ### The rule
 

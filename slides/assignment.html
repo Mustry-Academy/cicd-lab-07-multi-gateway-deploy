@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Lab 07 Assignment: Contribute to the shared production repo and bring your work live</title>
+<link rel="icon" type="image/png" href="logos/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -203,8 +204,8 @@ body{
 .viz text.nm{fill:#d8c9a0;font-family:'IBM Plex Mono';font-size:11px}
 .viz .envchip rect{fill:rgba(126,148,97,.14);stroke:#a9bd8f;stroke-width:1.6}
 .viz .envchip text{fill:#dfe8d4;font-family:'IBM Plex Mono';font-size:13px;font-weight:600;text-anchor:middle;dominant-baseline:central}
-.viz .envchip.prd rect{fill:rgba(200,144,47,.18);stroke:#EBBE58}
-.viz .envchip.prd text{fill:#EBBE58}
+.viz .envchip.production rect{fill:rgba(200,144,47,.18);stroke:#EBBE58}
+.viz .envchip.production text{fill:#EBBE58}
 .viz .link{stroke:#C8902F;stroke-width:2.2;fill:none}
 .viz .fanl{stroke:#4ade80;stroke-width:1.7;fill:none;opacity:.8}
 .viz .wall{fill:none;stroke:rgba(246,241,227,.35);stroke-width:1.5;stroke-dasharray:7 7}
@@ -361,7 +362,7 @@ body{
         <div class="pn">PART 1 · ±15 MIN</div>
         <h4>Set up your personal test gateway</h4>
         <p>A second local gateway plus a workflow of your own, so every merge to <span class="inlinecode">main</span> lands on it automatically, before anything reaches production.</p>
-        <div class="gate">gate → a merged change appears on localhost:8090 on its own</div>
+        <div class="gate">gate → a merged change is deployed to localhost:8090 by your own runner</div>
       </div>
       <div class="pcard p2">
         <div class="pn">PART 2 · ±20 MIN</div>
@@ -393,28 +394,31 @@ body{
     <div class="stage">Part 1 · your personal test gateway</div>
   </div>
   <div class="body">
-    <div class="sechead"><span class="num warm">1</span><div><div class="title">Set up a test gateway that auto-deploys every merge to main</div><div class="lead">Before you deploy anything to production, give yourself somewhere safe to see it first: a second local gateway in <b>dev deployment mode</b> that a workflow of your own updates on every push to <span class="inlinecode">main</span>. Do this once, at the start, then leave it running all afternoon.</div></div></div>
+    <div class="sechead"><span class="num warm">1</span><div><div class="title">Set up a test gateway that auto-deploys every merge to main</div><div class="lead">Before you deploy anything to production, give yourself somewhere safe to see it first: a second local gateway that a workflow of your own deploys to on every push to <span class="inlinecode">main</span>, the same way production is deployed to. The repo provides the gateway, the runner and the workflow; you fill in your name. Do this once, at the start, then leave it running all afternoon.</div></div></div>
     <div class="cols2">
       <div class="steps">
-        <div class="step"><div class="ix t">1</div><div class="tx"><b>Give the test gateway its own clone:</b> <span class="inlinecode">git clone … ../lab07-test</span>, next to your working clone. The pipeline owns that clone; yours never gets yanked around mid-branch.</div></div>
-        <div class="step"><div class="ix t">2</div><div class="tx"><b>Start the provided test pair:</b> the repo already carries your test gateway (port <span class="inlinecode">8090</span>, dev config mode) and your laptop runner behind one compose profile: <span class="inlinecode">LAB_USER=&lt;yourname&gt; RUNNER_TOKEN=&lt;from Sam or Jasper&gt; docker compose --profile test up -d</span>. The runner registers with the label <span class="inlinecode">[self-hosted, &lt;yourname&gt;-local]</span>; only jobs asking for your label run on your machine.</div></div>
-        <div class="step"><div class="ix t">3</div><div class="tx"><b>Author your workflow:</b> <span class="inlinecode">.github/workflows/test-&lt;yourname&gt;.yml</span> triggers on <span class="inlinecode">push: [main]</span>, runs on your label and <b>fast-forwards the test clone</b> (mounted at <span class="inlinecode">/workspace/lab07-test</span> in your runner). That is all it does: the test gateway runs in <b>dev config mode</b> and picks the fresh files up on its own.</div></div>
+        <div class="step"><div class="ix t">1</div><div class="tx"><b>Tell the stack who you are:</b> <span class="inlinecode">cp .env.example .env</span>, set <span class="inlinecode">LAB_USER=&lt;yourname&gt;</span> and the runner credential you get from Sam or Jasper (registering a runner needs repo-admin rights, so the credential comes from us).</div></div>
+        <div class="step"><div class="ix t">2</div><div class="tx"><b>Start the provided test pair:</b> <span class="inlinecode">./scripts/setup.sh</span> sees <span class="inlinecode">LAB_USER</span> and brings up your test gateway (port <span class="inlinecode">8090</span>) plus your laptop runner behind the <span class="inlinecode">test</span> compose profile. The runner registers with the label <span class="inlinecode">[self-hosted, &lt;yourname&gt;-local]</span>: check Settings → Actions → Runners.</div></div>
+        <div class="step"><div class="ix t">3</div><div class="tx"><b>Make the provided workflow yours:</b> copy <span class="inlinecode">test-example.yml.template</span> to <span class="inlinecode">test-&lt;yourname&gt;.yml</span> and replace <span class="inlinecode">example</span> with your name in the three <span class="inlinecode">CHANGEME</span> spots. You write no YAML: the workflow already checks out <span class="inlinecode">main</span>, runs migrations, ships projects + config + modules + JARs into the gateway container and triggers the authenticated scan: the production deploy, minus <span class="inlinecode">release.yaml</span>.</div></div>
         <div class="step"><div class="ix t">4</div><div class="tx"><b>PR it in like anything else.</b> Branch, PR, green checks, approval, merge. The only file you touched is your own workflow.</div></div>
       </div>
       <div>
-        <div class="code"><pre><span class="cm"># .github/workflows/test-&lt;yourname&gt;.yml</span>
+        <div class="code"><pre>cp .env.example .env
+<span class="cm"># edit: LAB_USER=&lt;yourname&gt;, RUNNER_TOKEN=&lt;from us&gt;</span>
+./scripts/setup.sh
+
+cp .github/workflows/test-example.yml.template \
+   .github/workflows/test-<span class="cmd2">&lt;yourname&gt;</span>.yml
+<span class="cm"># three CHANGEME spots, one word:</span>
 name: test-<span class="cmd2">&lt;yourname&gt;</span>
-<span class="cmd2">on</span>: { push: { branches: [main] } }
-jobs:
-  deploy:
-    runs-on: [self-hosted, <span class="cmd2">&lt;yourname&gt;-local</span>]
-    steps:</pre></div>
-        <div class="obs"><span class="ob">Observe</span><p><b>Your workflow only runs on your machine.</b> The runner <b>label</b> is the whole routing story: five people can each have a <code>push: [main]</code> workflow and each one deploys only to its owner's test gateway.</p></div>
+group: test-deploy-<span class="cmd2">&lt;yourname&gt;</span>
+runs-on: [self-hosted, <span class="cmd2">&lt;yourname&gt;-local</span>]</pre></div>
+        <div class="obs"><span class="ob">Observe</span><p><b>Your workflow only runs on your machine.</b> The runner <b>label</b> is the whole routing story: five people can each have a <code>push: [main]</code> workflow and each one deploys only to its owner's test gateway. The label is written out per file because GitHub resolves <code>runs-on</code> before any per-user context exists; a shared repo variable would route everyone to one laptop.</p></div>
       </div>
     </div>
     <div class="goal good-g" style="margin-top:16px">
       <span class="badge">✅ Verify it works</span>
-      <p>Open a small PR that changes a dashboard view. Once it merges to <span class="inlinecode">main</span>, watch your <span class="inlinecode">test-&lt;yourname&gt;</span> workflow run on your runner and <b>the change appear on <span class="inlinecode">localhost:8090</span></b> on its own. That is your test gateway tracking <span class="inlinecode">main</span> for you, hands-free, before anything is ever tagged for production.</p>
+      <p>Open a small PR that changes a dashboard view. Once it merges to <span class="inlinecode">main</span>, watch your <span class="inlinecode">test-&lt;yourname&gt;</span> workflow pick the job up on <b>your</b> runner and deploy <b>the change to <span class="inlinecode">localhost:8090</span></b>: no tag, no <span class="inlinecode">release.yaml</span> bump. Your test gateway gets its files exactly the way production does: <span class="inlinecode">docker cp</span> plus an authenticated scan, never a bind mount of your working tree.</p>
     </div>
   </div>
   <div class="foot"><span>Mustry Academy · CI/CD for Ignition</span><span>Part 1 · your test gateway tracks main</span></div>
@@ -491,22 +495,23 @@ git push -u origin feature/wout-project</pre></div>
     <div class="stage">Part 3 · the team round · how it works</div>
   </div>
   <div class="body">
-    <div class="sechead"><span class="num phase2">3</span><div><div class="title">Five challenges on the shared oatmakers project: who does what</div><div class="lead">One project, five contributors, one version stream. Everything in these challenges is a move you made in an earlier lab; the new part is doing it together.</div></div></div>
+    <div class="sechead"><span class="num phase2">3</span><div><div class="title">Five challenges on the shared oatmakers project: claim one each</div><div class="lead">One project, five contributors, one version stream. Nothing is pre-assigned: pick your challenge in the breakout room. Everything in these challenges is a move you made in an earlier lab; the new part is doing it together.</div></div></div>
     <div class="cols2" style="grid-template-columns:.85fr 1.15fr">
       <div class="steps">
         <div class="step"><div class="ix p">1</div><div class="tx"><b>All work lands in <span class="inlinecode">projects/oatmakers/</span></b> plus the folders you know from lab 06: <span class="inlinecode">third-party-modules/</span>, <span class="inlinecode">jar-files/jar/</span>, <span class="inlinecode">db-migration/</span>.</div></div>
         <div class="step"><div class="ix p">2</div><div class="tx"><b>Finished means live:</b> merge your PR, cut the <b>next free</b> <span class="inlinecode">oatmakers@v2.0.X</span> tag, bump <span class="inlinecode">release.yaml</span> by PR.</div></div>
         <div class="step"><div class="ix p">3</div><div class="tx"><b>Five people, one version stream:</b> pull main often. If someone claimed your tag number while you were typing, take the next one.</div></div>
         <div class="step"><div class="ix p">4</div><div class="tx"><b>Sam or Jasper still approves everything.</b> Small PRs get through the queue first.</div></div>
+        <div class="step"><div class="ix p">5</div><div class="tx"><b>Claim your challenge in the room</b> — one per person. Challenge 5 builds on 3 and 4, so whoever takes it starts against their work as it lands.</div></div>
       </div>
       <div>
         <table class="tbl">
-          <tr><th style="width:22%">Who</th><th>Challenge</th></tr>
-          <tr><td><b>Nick</b></td><td>The <b>Embr Charts module</b>, auto-installed by the pipeline, plus a Perspective screen with a chart on it.</td></tr>
-          <tr><td><b>Stephan</b></td><td>The <b>Commons Lang3 JAR</b> plus a string reversing function proved from a view.</td></tr>
-          <tr><td><b>Tom</b></td><td>The <b>database connection</b> (secret <code>POSTGRES_USERNAME</code>), a migration with tables and a seed, and a view on that data.</td></tr>
-          <tr><td><b>Wout</b></td><td><b>Tags and an OPC UA simulator device</b> on a screen, deployed so values change live on production.</td></tr>
-          <tr><td><b>Gregory</b></td><td><b>Build on the others:</b> historize Wout's tags into Tom's database and visualise them in a dashboard.</td></tr>
+          <tr><th style="width:22%">Challenge</th><th>What ships</th></tr>
+          <tr><td><b>1 · Module</b></td><td>The <b>Embr Charts module</b>, auto-installed by the pipeline, plus a Perspective screen with a chart on it.</td></tr>
+          <tr><td><b>2 · JAR</b></td><td>The <b>Commons CSV JAR</b> plus a recipe-parsing function proved from a view.</td></tr>
+          <tr><td><b>3 · Database</b></td><td>The <b>database connection</b> (password = referenced secret <code>POSTGRES_PASSWORD</code>), a migration with tables and a seed, and a view on that data.</td></tr>
+          <tr><td><b>4 · Tags</b></td><td><b>Tags and an OPC UA simulator device</b> on a screen, deployed so values change live on production.</td></tr>
+          <tr><td><b>5 · Historian</b></td><td><b>Builds on 3 and 4:</b> historize the simulator tags into the plant database and visualise them in a dashboard.</td></tr>
         </table>
       </div>
     </div>
@@ -514,7 +519,7 @@ git push -u origin feature/wout-project</pre></div>
   <div class="foot"><span>Mustry Academy · CI/CD for Ignition</span><span>Part 3 · one project, five contributors</span></div>
 </section>
 
-<!-- 10 · PART 3 CHALLENGES: NICK, STEPHAN, WOUT -->
+<!-- 10 · PART 3 CHALLENGES: MODULE, JAR, TAGS -->
 <section class="slide">
   <div class="topbar">
     <div class="brandrow"><img class="logo-img" src="logos/OriginalDark.png" alt="Mustry Solutions"></div>
@@ -524,7 +529,7 @@ git push -u origin feature/wout-project</pre></div>
     <div class="sechead"><span class="num phase2">3</span><div><div class="title">The assignments</div><div class="lead">Each one ends the same way: merge, tag the next <span class="inlinecode">oatmakers@v2.0.X</span>, bump <span class="inlinecode">release.yaml</span>, verify on production.</div></div></div>
     <div class="cols2" style="grid-template-columns:repeat(3,1fr);gap:16px">
       <div class="does">
-        <div class="hd">NICK</div>
+        <div class="hd">CHALLENGE 1 · MODULE</div>
         <div class="q">Add the Embr Charts module and build a chart screen</div>
         <ul>
           <li><span class="d"></span><span>Download the module here:<br><a href="https://github.com/mussonindustrial/embr/releases/tag/releases%2F8.3%2F2026.6.17" style="font-family:'IBM Plex Mono';font-size:10.5px;color:var(--blue-d);word-break:break-all">github.com/mussonindustrial/embr/releases/tag/releases%2F8.3%2F2026.6.17</a></span></li>
@@ -534,20 +539,22 @@ git push -u origin feature/wout-project</pre></div>
         </ul>
       </div>
       <div class="does">
-        <div class="hd">STEPHAN</div>
-        <div class="q">Use the Commons Lang3 JAR in a string reversing function</div>
+        <div class="hd">CHALLENGE 2 · JAR</div>
+        <div class="q">Use the Commons CSV JAR in a recipe-parsing function</div>
         <ul>
-          <li><span class="d"></span><span>The <code>commons-lang3</code> JAR is <b>already in the repo</b>, in <code>jar-files/jar/</code>: we did the lab 06 download-and-pin move for you. Your job is to use it.</span></li>
-          <li><span class="d"></span><span>Add a project script function that reverses a string:</span></li>
+          <li><span class="d"></span><span>The <code>commons-csv</code> JAR is <b>already in the repo</b>, in <code>jar-files/jar/</code>: we did the lab 06 download-and-pin move for you. Your job is to use it. (commons-csv on purpose: the gateway already bundles commons-lang3 and friends, so importing those proves nothing.)</span></li>
+          <li><span class="d"></span><span>Add a project script function that parses a CSV line of ingredients:</span></li>
         </ul>
-        <div class="code" style="margin-top:10px"><pre style="font-size:12px">from org.apache.commons.lang3 <span class="cmd2">import</span> StringUtils
-flipped = StringUtils.reverse(<span class="grn">"Ignition"</span>)</pre></div>
+        <div class="code" style="margin-top:10px"><pre style="font-size:11px">from org.apache.commons.csv <span class="cmd2">import</span> CSVFormat
+from java.io <span class="cmd2">import</span> StringReader
+records = CSVFormat.DEFAULT.parse(StringReader(<span class="grn">"oats,water,salt"</span>)).getRecords()
+fields = list(records[0])</pre></div>
         <ul style="margin-top:10px">
-          <li><span class="d"></span><span>Build a Perspective screen that <b>calls your function</b> and shows the result: <b>noitingI</b>, live on production.</span></li>
+          <li><span class="d"></span><span>Build a Perspective screen that <b>calls your function</b> and shows the parsed fields: <b>oats | water | salt</b>, live on production.</span></li>
         </ul>
       </div>
       <div class="does">
-        <div class="hd">WOUT</div>
+        <div class="hd">CHALLENGE 4 · TAGS</div>
         <div class="q">Create tags and a simulator device and show live values</div>
         <ul>
           <li><span class="d"></span><span>Add an <b>OPC UA simulator device</b> (the programmable device simulator) to the gateway config.</span></li>
@@ -558,33 +565,33 @@ flipped = StringUtils.reverse(<span class="grn">"Ignition"</span>)</pre></div>
       </div>
     </div>
   </div>
-  <div class="foot"><span>Mustry Academy · CI/CD for Ignition</span><span>Part 3 · Nick · Stephan · Wout</span></div>
+  <div class="foot"><span>Mustry Academy · CI/CD for Ignition</span><span>Part 3 · module · JAR · tags</span></div>
 </section>
 
-<!-- 11 · PART 3 CHALLENGES: TOM, GREGORY -->
+<!-- 11 · PART 3 CHALLENGES: DATABASE, HISTORIAN -->
 <section class="slide">
   <div class="topbar">
     <div class="brandrow"><img class="logo-img" src="logos/OriginalDark.png" alt="Mustry Solutions"></div>
     <div class="stage">Part 3 · challenges · database, dashboard</div>
   </div>
   <div class="body">
-    <div class="sechead"><span class="num phase2">3</span><div><div class="title">The assignments</div><div class="lead">Tom lays the data foundation; Gregory builds the dashboard on top.</div></div></div>
+    <div class="sechead"><span class="num phase2">3</span><div><div class="title">The assignments</div><div class="lead">The database challenge lays the data foundation; the historian challenge builds the dashboard on top.</div></div></div>
     <div class="cols2">
       <div class="does">
-        <div class="hd">TOM</div>
+        <div class="hd">CHALLENGE 3 · DATABASE</div>
         <div class="q">Set up the database connection, a migration with a seed, and a view on the data</div>
         <ul>
-          <li><span class="d"></span><span>Create the DB connection using the <b>referenced secret</b> <code>POSTGRES_USERNAME</code>. The secret is already on the environment: you reference it, <b>you never see the value</b>. Lab 06's secrets ladder, for real.</span></li>
+          <li><span class="d"></span><span>Create the DB connection to <code>jdbc:postgresql://postgres:5432/ignition</code> (resolves locally AND on production). Username: the plain string <code>ignition</code>. Password: the <b>referenced secret</b> <code>POSTGRES_PASSWORD</code> from the <code>environment</code> provider: you reference it, <b>you never see the value</b>. Lab 06's secrets ladder, for real.</span></li>
           <li><span class="d"></span><span>Write a migration pair in <code>db-migration/migrate/</code>: <code>.up.sql</code> creates the tables and seeds them, <code>.down.sql</code> undoes it. <b>Always pairs.</b></span></li>
           <li><span class="d"></span><span>Build a Perspective view that queries the seeded data.</span></li>
           <li><span class="d"></span><span>Verify on production: the connection is <b>Valid</b>, the migration ran, your view shows rows.</span></li>
         </ul>
       </div>
       <div class="does">
-        <div class="hd">GREGORY</div>
+        <div class="hd">CHALLENGE 5 · HISTORIAN</div>
         <div class="q">Historize the live tags into the database and build a dashboard</div>
         <ul>
-          <li><span class="d"></span><span>Enable <b>tag history</b> on Wout's tags, storing into Tom's database connection.</span></li>
+          <li><span class="d"></span><span>Create a <b>historian provider</b> (the TimescaleDB Historian module is already registered, you build on it) storing into the same plant database, with the referenced <code>POSTGRES_PASSWORD</code>. Enable <b>tag history</b> on challenge 4's tags, pointed at it.</span></li>
           <li><span class="d"></span><span>Build a dashboard view visualising that history.</span></li>
           <li><span class="d"></span><span>You will be merging into files the others just changed. <b>Merge conflicts are part of the challenge</b>, not an accident.</span></li>
         </ul>
@@ -595,7 +602,7 @@ flipped = StringUtils.reverse(<span class="grn">"Ignition"</span>)</pre></div>
       <p><b>Your challenge is live on production</b> through a reviewed PR, an <span class="inlinecode">oatmakers@v2.0.X</span> tag you cut yourself, and a <span class="inlinecode">release.yaml</span> bump that went through review.</p>
     </div>
   </div>
-  <div class="foot"><span>Mustry Academy · CI/CD for Ignition</span><span>Part 3 · Tom · Gregory</span></div>
+  <div class="foot"><span>Mustry Academy · CI/CD for Ignition</span><span>Part 3 · database · historian</span></div>
 </section>
 
 <!-- 12 · PART 4 -->
@@ -649,7 +656,7 @@ flipped = StringUtils.reverse(<span class="grn">"Ignition"</span>)</pre></div>
   <div class="body">
     <div class="sechead"><span class="num">GATE</span><div><div class="title">Definition of done for all four parts</div><div class="lead">Walk these before you call it. Everything on this list is visible on GitHub or on the production gateway; nothing needs your laptop.</div></div></div>
     <div class="steps" style="max-width:1020px">
-      <div class="step"><div class="ix t">1</div><div class="tx"><b>Part 1:</b> your <span class="inlinecode">test-&lt;yourname&gt;.yml</span> workflow merged in, your test gateway and runner up, and a dashboard change proven to <b>land on <span class="inlinecode">localhost:8090</span> on its own</b> after a merge to <span class="inlinecode">main</span>.</div></div>
+      <div class="step"><div class="ix t">1</div><div class="tx"><b>Part 1:</b> your <span class="inlinecode">test-&lt;yourname&gt;.yml</span> workflow merged in, your test gateway and runner up, and a dashboard change proven to <b>land on <span class="inlinecode">localhost:8090</span> through your own workflow</b> after a merge to <span class="inlinecode">main</span>.</div></div>
       <div class="step"><div class="ix">2</div><div class="tx"><b>Part 2:</b> <span class="inlinecode">projects/&lt;yourname&gt;/</span> merged through an approved PR, the tag <span class="inlinecode">&lt;yourname&gt;@v1.0.0</span> built, your line in <span class="inlinecode">release.yaml</span>, and your view <b>live on cloud.mustrysolutions.com</b>.</div></div>
       <div class="step"><div class="ix p">3</div><div class="tx"><b>Part 3:</b> your challenge merged and <b>live on production</b> via an <span class="inlinecode">oatmakers@v2.0.X</span> tag you cut yourself and a reviewed <span class="inlinecode">release.yaml</span> bump.</div></div>
       <div class="step"><div class="ix t">4</div><div class="tx"><b>Part 4:</b> at least one merged PR from the challenge your team gave you, one that <b>builds on someone else's work</b>, and at least one review comment or unblock you gave someone else.</div></div>
@@ -833,10 +840,10 @@ setTimeout(()=>{hint.style.transition='opacity .6s';hint.style.opacity='0'},4200
   });
 
   /* environment ladder + vault */
-  const ENVY={local:120,dev:265,test:410,prod:555};
+  const ENVY={local:120,test:265,staging:410,production:555};
   Object.keys(ENVY).forEach(k=>{
     const y=ENVY[k];
-    const g=el('g',{class:'envchip'+(k==='prod'?' prd':'')},svg);
+    const g=el('g',{class:'envchip'+(k==='production'?' production':'')},svg);
     el('rect',{x:490,y:y,width:130,height:50,rx:12},g);
     txt({x:555,y:y+26},g,k);
   });
@@ -850,7 +857,7 @@ setTimeout(()=>{hint.style.transition='opacity .6s';hint.style.opacity='0'},4200
   txt({class:'nl',x:524,y:663,'font-size':13.5},va,'secrets');
   txt({class:'ns',x:524,y:681,'font-size':11},va,'per environment');
 
-  /* fan-out from prod to all 8 sites: today's rollout */
+  /* fan-out from production to all 8 sites: today's rollout */
   for(let n=1;n<=8;n++){
     const c=siteCenter(n);
     const ty=n<=4?c.y+123:c.y-83;
