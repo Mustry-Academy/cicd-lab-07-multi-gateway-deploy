@@ -138,7 +138,14 @@ wait_running() {
     sleep 5
   done
   echo ""
-  echo -e "${RED}Gateway did not reach RUNNING — check: docker logs $container${NC}" >&2
+  if echo "$state" | grep -q COMMISSIONING; then
+    echo -e "${RED}Gateway on :$port is stuck in COMMISSIONING — it is waiting for a module${NC}" >&2
+    echo -e "${RED}cert/license acceptance. This usually means services/modules.json carries${NC}" >&2
+    echo -e "${RED}trust values from a different Ignition version than the compose image.${NC}" >&2
+    echo -e "${RED}Open http://localhost:$port to see what it asks for, and tell the instructor.${NC}" >&2
+  else
+    echo -e "${RED}Gateway did not reach RUNNING — check: docker logs $container${NC}" >&2
+  fi
   exit 1
 }
 wait_running 8088 lab07-gateway
