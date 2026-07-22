@@ -507,7 +507,7 @@ git push -u origin feature/wout-project</pre></div>
         <table class="tbl">
           <tr><th style="width:22%">Who</th><th>Challenge</th></tr>
           <tr><td><b>Nick</b></td><td>The <b>Embr Charts module</b>, auto-installed by the pipeline, plus a Perspective screen with a chart on it.</td></tr>
-          <tr><td><b>Stephan</b></td><td>The <b>Commons Lang3 JAR</b> plus a string reversing function proved from a view.</td></tr>
+          <tr><td><b>Stephan</b></td><td>The <b>Commons CSV JAR</b> plus a recipe-parsing function proved from a view.</td></tr>
           <tr><td><b>Tom</b></td><td>The <b>database connection</b> (password = referenced secret <code>POSTGRES_PASSWORD</code>), a migration with tables and a seed, and a view on that data.</td></tr>
           <tr><td><b>Wout</b></td><td><b>Tags and an OPC UA simulator device</b> on a screen, deployed so values change live on production.</td></tr>
           <tr><td><b>Gregory</b></td><td><b>Build on the others:</b> historize Wout's tags into the plant database and visualise them in a dashboard.</td></tr>
@@ -539,15 +539,17 @@ git push -u origin feature/wout-project</pre></div>
       </div>
       <div class="does">
         <div class="hd">STEPHAN</div>
-        <div class="q">Use the Commons Lang3 JAR in a string reversing function</div>
+        <div class="q">Use the Commons CSV JAR in a recipe-parsing function</div>
         <ul>
-          <li><span class="d"></span><span>The <code>commons-lang3</code> JAR is <b>already in the repo</b>, in <code>jar-files/jar/</code>: we did the lab 06 download-and-pin move for you. Your job is to use it.</span></li>
-          <li><span class="d"></span><span>Add a project script function that reverses a string:</span></li>
+          <li><span class="d"></span><span>The <code>commons-csv</code> JAR is <b>already in the repo</b>, in <code>jar-files/jar/</code>: we did the lab 06 download-and-pin move for you. Your job is to use it. (commons-csv on purpose: the gateway already bundles commons-lang3 and friends, so importing those proves nothing.)</span></li>
+          <li><span class="d"></span><span>Add a project script function that parses a CSV line of ingredients:</span></li>
         </ul>
-        <div class="code" style="margin-top:10px"><pre style="font-size:12px">from org.apache.commons.lang3 <span class="cmd2">import</span> StringUtils
-flipped = StringUtils.reverse(<span class="grn">"Ignition"</span>)</pre></div>
+        <div class="code" style="margin-top:10px"><pre style="font-size:11px">from org.apache.commons.csv <span class="cmd2">import</span> CSVFormat
+from java.io <span class="cmd2">import</span> StringReader
+records = CSVFormat.DEFAULT.parse(StringReader(<span class="grn">"oats,water,salt"</span>)).getRecords()
+fields = list(records[0])</pre></div>
         <ul style="margin-top:10px">
-          <li><span class="d"></span><span>Build a Perspective screen that <b>calls your function</b> and shows the result: <b>noitingI</b>, live on production.</span></li>
+          <li><span class="d"></span><span>Build a Perspective screen that <b>calls your function</b> and shows the parsed fields: <b>oats | water | salt</b>, live on production.</span></li>
         </ul>
       </div>
       <div class="does">

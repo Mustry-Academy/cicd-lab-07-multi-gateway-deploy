@@ -365,19 +365,23 @@ together.
 - Verify on production: Config → Modules shows Embr Charts **Running**, and
   your chart renders.
 
-**Stephan — use the Commons Lang3 JAR in a string reversing function**
+**Stephan — use the Commons CSV JAR in a recipe-parsing function**
 
-- The `commons-lang3` JAR is **already in the repo**, in `jar-files/jar/` —
+- The `commons-csv` JAR is **already in the repo**, in `jar-files/jar/` —
   we did the lab 06 download-and-pin move for you. Your job is to use it.
-- Add a project script function that reverses a string:
+  (commons-csv on purpose: the gateway already bundles commons-lang3 and
+  friends, so importing those proves nothing — see `jar-files/jar/README.md`.)
+- Add a project script function that parses a CSV line of ingredients:
 
   ```python
-  from org.apache.commons.lang3 import StringUtils
-  flipped = StringUtils.reverse("Ignition")
+  from org.apache.commons.csv import CSVFormat
+  from java.io import StringReader
+  records = CSVFormat.DEFAULT.parse(StringReader("oats,water,salt")).getRecords()
+  fields = list(records[0])
   ```
 
 - Build a Perspective screen that **calls your function** and shows the
-  result: **noitingI**, live on production.
+  parsed fields: **oats | water | salt**, live on production.
 
 **Tom — the database connection, a migration with a seed, a view on the data**
 
