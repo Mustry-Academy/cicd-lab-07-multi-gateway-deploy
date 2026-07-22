@@ -209,7 +209,9 @@ gateway **before** its first boot — the scan API only accepts tokens the
 gateway has already loaded):
 
 ```bash
-./scripts/setup.sh          # or: docker compose --profile test up -d
+./scripts/setup.sh          # always setup.sh on the FIRST run — it seeds the
+                            # token; later, docker compose --profile test up -d
+                            # is fine for restarts
 ```
 
 Plain `docker compose up -d` keeps starting only the local stack; the test
