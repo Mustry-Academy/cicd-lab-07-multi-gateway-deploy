@@ -213,7 +213,10 @@ jobs:
             value="${!name:-}"
             [ -n "$value" ] || continue
             printf '%s' "$value" > "$tmp/$name"
-            docker exec "$IGNITION_CONTAINER" mkdir -p /run/secrets
+            # The gateway runs as uid 2003, not root, and /run is root-owned:
+            # the directory must be created as root and handed to the gateway.
+            docker exec -u root "$IGNITION_CONTAINER" \
+              install -d -o 2003 -g 0 -m 750 /run/secrets
             docker cp "$tmp/$name" "$IGNITION_CONTAINER:/run/secrets/$name"
             # docker cp writes as root; the gateway (uid 2003) must be able
             # to read the secret file.
