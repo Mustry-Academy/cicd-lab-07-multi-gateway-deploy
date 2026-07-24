@@ -298,9 +298,9 @@ for k,v in (cfg.get("volumes") or {}).items():
     # 2003 OR gid 0. These assert the exact identity compose ships --
     # `user: "2003:0"` plus `group_add: [<student gid>]` -- and the two ways
     # of getting it wrong that actually broke the gateway during development.
-    if docker image inspect inductiveautomation/ignition:8.3.6 >/dev/null 2>&1; then
+    if docker image inspect inductiveautomation/ignition:8.3.8 >/dev/null 2>&1; then
       img_out="$(docker run --rm --user "2003:0" --group-add "$(id -g)" \
-        --entrypoint sh inductiveautomation/ignition:8.3.6 \
+        --entrypoint sh inductiveautomation/ignition:8.3.8 \
         -c 'touch /usr/local/bin/ignition/data/probe && echo DATADIR_WRITABLE' 2>&1)"
       if echo "$img_out" | grep -q DATADIR_WRITABLE; then
         ok "real Ignition image: data/ writable as 2003:0 + supplementary group"
@@ -319,7 +319,7 @@ for k,v in (cfg.get("volumes") or {}).items():
         sh -c 'echo x > /d/gateway.xml; chown 0:0 /d/gateway.xml; chmod 644 /d/gateway.xml' >/dev/null
 
       before="$(docker run --rm --user 2003:0 -v lab-preflight-voltest:/d \
-        --entrypoint sh inductiveautomation/ignition:8.3.6 \
+        --entrypoint sh inductiveautomation/ignition:8.3.8 \
         -c 'touch /d/gateway.xml 2>/dev/null && echo WRITABLE || echo BLOCKED' 2>&1)"
       if echo "$before" | grep -q BLOCKED; then
         ok "reproduced the restart-loop cause: root-owned gateway.xml in the volume"
@@ -329,7 +329,7 @@ for k,v in (cfg.get("volumes") or {}).items():
 
       docker run --rm -v lab-preflight-voltest:/d alpine:3 chown -R 2003:0 /d >/dev/null
       after="$(docker run --rm --user 2003:0 -v lab-preflight-voltest:/d \
-        --entrypoint sh inductiveautomation/ignition:8.3.6 \
+        --entrypoint sh inductiveautomation/ignition:8.3.8 \
         -c 'touch /d/gateway.xml 2>/dev/null && echo WRITABLE || echo BLOCKED' 2>&1)"
       if echo "$after" | grep -q WRITABLE; then
         ok "volume repair fixes it: the gateway can write gateway.xml again"
@@ -338,7 +338,7 @@ for k,v in (cfg.get("volumes") or {}).items():
       fi
       docker volume rm lab-preflight-voltest >/dev/null 2>&1 || true
     else
-      echo "  SKIP  inductiveautomation/ignition:8.3.6 not pulled locally"
+      echo "  SKIP  inductiveautomation/ignition:8.3.8 not pulled locally"
     fi
 
     # --- Full end-to-end: a simulated WSL student user in a container ------
