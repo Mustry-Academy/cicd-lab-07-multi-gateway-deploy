@@ -343,8 +343,19 @@ jobs:
           if [ -d payload/services/config ]; then
             docker cp payload/services/config/. "$IGNITION_CONTAINER:$GATEWAY_DATA_PATH/config/"
           fi
-          docker exec -u root "$IGNITION_CONTAINER" \
-            chown -R 2003:2003 "$GATEWAY_DATA_PATH/projects" "$GATEWAY_DATA_PATH/config"
+          # docker cp writes as root (same caveat as the secrets step above),
+          # but the gateway runs as uid 2003: left root-owned, it cannot
+          # create config/resources/.resources on its next boot and FAULTs.
+          # Hand the shipped trees to the gateway, keeping the host-side
+          # group (the student's, via the setgid bind mounts) group-writable
+          # so the files stay editable on the host too.
+          docker exec -u root "$IGNITION_CONTAINER" sh -c "
+            set -eu
+            gid=\$(stat -c %g '$GATEWAY_DATA_PATH/config')
+            chown -R 2003:\"\$gid\" '$GATEWAY_DATA_PATH/projects' '$GATEWAY_DATA_PATH/config'
+            chmod -R g+w '$GATEWAY_DATA_PATH/projects' '$GATEWAY_DATA_PATH/config'
+            find '$GATEWAY_DATA_PATH/projects' '$GATEWAY_DATA_PATH/config' -type d -exec chmod g+s {} +
+          "
           echo "Shipped project(s):"
           find payload/projects -mindepth 1 -maxdepth 1 -type d -exec basename {} \; | sed 's/^/  /'
 

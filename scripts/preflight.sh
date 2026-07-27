@@ -299,14 +299,20 @@ pf_reclaim_root_owned() {
   local me count
   me="$(id -u)"
   # -xdev: never wander into a different mount (e.g. a nested volume).
-  count="$(find . -xdev ! -user "$me" -print -quit 2>/dev/null | wc -l | tr -d ' ')"
+  # Files owned by uid 2003 are NOT damage: that is the gateway's own account
+  # (`user: "2003:0"` in compose), and everything it writes is editable or at
+  # least deletable by the student via the setgid dirs + umask-0002
+  # entrypoint. Counting them made this prompt fire on every re-run once a
+  # gateway had written anything into the bind mounts. Root (or any other
+  # foreign uid) still counts — that is the sudo damage this repairs.
+  count="$(find . -xdev ! -user "$me" ! -user 2003 -print -quit 2>/dev/null | wc -l | tr -d ' ')"
   [ "$count" = "0" ] && return 0
 
   echo ""
   echo "${YELLOW}Some files in this repo are not owned by you.${NC}"
   echo "They are left over from an earlier run as root (a sudo'd setup.sh, or a"
   echo "container writing as root before this fix). Examples:"
-  find . -xdev ! -user "$me" -printf '  %u  %p\n' 2>/dev/null | head -5
+  find . -xdev ! -user "$me" ! -user 2003 -printf '  %u  %p\n' 2>/dev/null | head -5
   echo ""
 
   if ! command -v sudo >/dev/null 2>&1; then

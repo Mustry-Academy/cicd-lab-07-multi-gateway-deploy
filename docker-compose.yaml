@@ -1,6 +1,14 @@
 
 name: lab07
 
+# Run the gateway under umask 0002. The image's default umask (022) makes
+# everything the gateway writes into the bind mounts 644/755 — group
+# read-only — so despite group_add + setgid the student cannot edit or
+# delete those files (and teardown.sh --volumes fails on them). With 0002
+# they land 664/775, group-owned by the student via the setgid dirs.
+x-ignition-entrypoint: &ignition-entrypoint
+  ["/bin/sh", "-c", 'umask 0002 && exec docker-entrypoint.sh "$@"', "--"]
+
 services:
   gateway:
     image: inductiveautomation/ignition:8.3.8
@@ -17,6 +25,7 @@ services:
     user: "2003:0"
     group_add:
       - "${LAB_GID:-0}"
+    entrypoint: *ignition-entrypoint
     restart: unless-stopped
     ports:
       - "8088:8088"
@@ -132,6 +141,7 @@ services:
     user: "2003:0"
     group_add:
       - "${LAB_GID:-0}"
+    entrypoint: *ignition-entrypoint
     restart: unless-stopped
     ports:
       - "8090:8088"
