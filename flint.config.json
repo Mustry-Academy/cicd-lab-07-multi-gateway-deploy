@@ -1,0 +1,47 @@
+{
+  "schemaVersion": "0.2",
+  "project-paths": [
+    "projects"
+  ],
+  "gateways": {
+    "local": {
+      "id": "local",
+      "enabled": true,
+      "projects": [
+        "oatmakers"
+      ],
+      "host": "http://localhost",
+      "port": 8088,
+      "ssl": false,
+      "ignoreSSLErrors": true,
+      "ignitionVersion": "8.3.6",
+      "modules": {
+        "project-scan-endpoint": {
+          "enabled": true
+        }
+      },
+      "defaultEnvironment": "local",
+      "environments": {
+        "local": {
+          "host": "http://localhost",
+          "port": 8088,
+          "ssl": false,
+          "ignoreSSLErrors": true,
+          "ignitionVersion": "8.3.6",
+          "modules": {
+            "project-scan-endpoint": {
+              "enabled": true,
+              "apiTokenFilePath": ".flint/tokens/local-api.json"
+            }
+          }
+        }
+      }
+    }
+  },
+  "settings": {
+    "showInheritedResources": true,
+    "groupResourcesByType": true,
+    "autoRefreshProjects": true,
+    "searchHistoryLimit": 50
+  }
+}
