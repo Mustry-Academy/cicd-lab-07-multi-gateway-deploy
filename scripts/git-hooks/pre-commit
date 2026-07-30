@@ -1,0 +1,10 @@
+#!/bin/bash
+# Revert junk-only resource.json rewrites before they can enter a commit.
+#
+# Ignition restamps a manifest's lastModification/lastModificationSignature
+# whenever it touches the resource, even when nothing real changed. The
+# textconv driver only HIDES that from `git diff`, so without this hook the
+# churn is invisible on screen and still committed.
+#
+# Files with real edits are never touched. See docs/resource-json-hygiene.html.
+exec "$(git rev-parse --show-toplevel)/scripts/clean-ignition-resource-churn.sh" --apply

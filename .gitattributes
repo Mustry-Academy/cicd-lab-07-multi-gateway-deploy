@@ -1,0 +1,26 @@
+# Normalize text files to LF line endings.
+# Without this, Windows clones can introduce CRLF in Ignition's JSON files,
+# producing noisy git diffs and (worse) confusing the gateway's project-scan
+# heuristics on some platforms.
+* text=auto eol=lf
+
+# Ignition's JSON resources are text — be explicit.
+*.json     text eol=lf
+*.py       text eol=lf
+*.md       text eol=lf
+*.sh       text eol=lf
+*.yml      text eol=lf
+*.yaml     text eol=lf
+
+# Known binary types that Ignition produces. Don't try to diff or normalize.
+*.modl     binary
+*.gwbk     binary
+*.zip      binary
+*.idb      binary
+*.png      binary
+*.jpg      binary
+*.svg      text eol=lf
+
+# Ignition resource manifests are Designer-generated. Commit them, but diff
+# through a normalizer that strips volatile metadata (setup.sh wires the driver).
+**/resource.json diff=ignition-resource linguist-generated=true

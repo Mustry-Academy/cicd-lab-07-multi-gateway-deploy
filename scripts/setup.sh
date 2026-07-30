@@ -40,6 +40,37 @@ fi
 echo -e "${GREEN}Mustry Academy — Lab 07 setup${NC}"
 echo "================================"
 
+# ---- Ignition resource hygiene --------------------------------------------
+# The local gateway bind-mounts ./projects and ./services/config, so every UI
+# interaction rewrites resource.json manifests inside your working tree, usually
+# changing nothing but a timestamp and a signature.
+#
+#   .gitattributes routes those manifests through the textconv normalizer below,
+#   which strips that metadata so `git diff` only shows real changes.
+#   The pre-commit hook then reverts junk-only rewrites so they cannot be
+#   committed. Hiding alone is not enough: an empty diff does not mean the file
+#   on disk is unchanged.
+#
+# Background: docs/resource-json-hygiene.html
+REPO_ROOT="$(pwd)"
+
+configure_git_diff_drivers() {
+    git config diff.ignition-resource.textconv \
+        "$REPO_ROOT/scripts/git-diff/normalize-ignition-resource-json.py"
+}
+
+install_git_hooks() {
+    local repo_hooks_dir
+    repo_hooks_dir="$(git rev-parse --git-path hooks 2>/dev/null)" || return 0
+    local source_dir="$REPO_ROOT/scripts/git-hooks"
+    [ -d "$source_dir" ] || return 0
+    mkdir -p "$repo_hooks_dir"
+    ln -sf "$source_dir/pre-commit" "$repo_hooks_dir/pre-commit"
+}
+
+configure_git_diff_drivers
+install_git_hooks
+
 # ---- bring up the stack ---------------------------------------------------
 
 docker compose up -d
