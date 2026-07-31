@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>How we keep junk out of resource.json</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#0e1b2e; --navy2:#15233a;
+  --blue:#2563eb; --blue-d:#1d4ed8;
+  --peri:#93a9f0; --peri2:#a8bef7; --peri-soft:#e8eefc;
+  --bg:#eef1f6; --panel:#ffffff; --panel2:#f5f8fc;
+  --line:#e3e9f1; --line2:#d3dcea;
+  --txt:#15233a; --txt-dim:#5a6a7e; --txt-faint:#94a2b4;
+  --good:#16a34a; --good-soft:#e3f6ea;
+  --warn:#d97706; --warn-soft:#fbf0db;
+  --bad:#dc2626;  --bad-soft:#fbe6e6;
+  --shadow:0 1px 2px rgba(14,27,46,.05),0 10px 30px -16px rgba(14,27,46,.28);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--txt);font-family:'Libre Franklin',system-ui,sans-serif;
+  font-size:16px;line-height:1.62;-webkit-font-smoothing:antialiased}
+.mono,code,pre{font-family:'IBM Plex Mono',ui-monospace,monospace}
+
+.wrap{max-width:960px;margin:0 auto;padding:0 26px 90px}
+
+.hero{background:var(--navy);color:#fff;padding:46px 26px 42px}
+.hero .inner{max-width:960px;margin:0 auto}
+.hero .kicker{font-family:'IBM Plex Mono';font-size:11.5px;letter-spacing:1.6px;text-transform:uppercase;color:var(--peri)}
+.hero h1{margin:10px 0 10px;font-size:33px;line-height:1.16;letter-spacing:-.6px;font-weight:800;max-width:780px}
+.hero p{margin:0;max-width:700px;color:#c3d0e4;font-size:17px}
+
+section{margin:52px 0;scroll-margin-top:20px}
+h2{font-size:24px;letter-spacing:-.4px;margin:0 0 4px;font-weight:800}
+h2 .num{font-family:'IBM Plex Mono';font-size:12px;font-weight:600;color:#fff;background:var(--blue);
+  padding:4px 9px;border-radius:7px;margin-right:11px;vertical-align:4px}
+.lead{color:var(--txt-dim);margin:0 0 22px;max-width:760px;font-size:16.5px}
+.big{font-size:19px;font-weight:700;letter-spacing:-.2px;margin:0 0 14px}
+
+pre{background:var(--navy);color:#dbe6f7;border-radius:11px;padding:15px 17px;overflow-x:auto;
+  font-size:13px;line-height:1.7;margin:0;box-shadow:var(--shadow)}
+pre .cm{color:#7d90ad}
+pre .ok{color:#7fe0a8} pre .no{color:#ff9d9d} pre .hl{color:var(--peri2)} pre .key{color:#ffd79a}
+pre .keep{background:rgba(22,163,74,.18);display:inline-block;width:100%}
+pre .junk{background:rgba(220,38,38,.22);display:inline-block;width:100%}
+code.i{font-family:'IBM Plex Mono';font-size:13.4px;background:var(--panel);border:1px solid var(--line);
+  border-radius:5px;padding:1px 6px;color:var(--blue-d);white-space:nowrap}
+
+.legend{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+.lg{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:13px 15px;box-shadow:var(--shadow);
+  border-left:5px solid var(--good)}
+.lg.j{border-left-color:var(--bad)}
+.lg b{display:block;font-size:14px;margin-bottom:3px}
+.lg span{font-size:14px;color:var(--txt-dim)}
+
+.vs{display:grid;grid-template-columns:1fr 60px 1fr;gap:0;align-items:stretch;margin-top:6px}
+.tool{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px 22px;box-shadow:var(--shadow)}
+.tool .tag{display:inline-block;font-size:11px;font-weight:800;letter-spacing:1px;text-transform:uppercase;
+  padding:4px 10px;border-radius:99px;margin-bottom:10px}
+.tool.hide .tag{background:var(--peri-soft);color:var(--blue-d)}
+.tool.rev .tag{background:var(--warn-soft);color:var(--warn)}
+.tool h3{margin:0 0 8px;font-size:20px;font-weight:800;letter-spacing:-.3px}
+.tool p{margin:0 0 12px;font-size:15px;color:var(--txt-dim)}
+.tool .file{font-family:'IBM Plex Mono';font-size:11.8px;color:var(--blue-d);word-break:break-word;
+  background:var(--panel2);border:1px solid var(--line);border-radius:7px;padding:7px 9px;margin-bottom:12px}
+.tool ul{margin:0;padding:0;list-style:none;font-size:14.5px}
+.tool li{padding:5px 0 5px 24px;position:relative;color:var(--txt-dim)}
+.tool li::before{position:absolute;left:0;top:5px;font-weight:800}
+.tool li.y::before{content:"✓";color:var(--good)}
+.tool li.n::before{content:"✗";color:var(--bad)}
+.vsmid{display:flex;align-items:center;justify-content:center}
+.vsmid span{background:var(--navy);color:#fff;width:42px;height:42px;border-radius:99px;display:flex;
+  align-items:center;justify-content:center;font-size:19px;font-weight:800;box-shadow:var(--shadow)}
+
+.flow{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:8px 22px 18px;box-shadow:var(--shadow)}
+.flow .hd{font-size:12px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--txt-faint);
+  padding:14px 0 6px}
+.step{position:relative;padding:11px 0 11px 44px;border-left:2px solid var(--line2);margin-left:11px}
+.step:last-child{border-left-color:transparent}
+.step::before{content:"";position:absolute;left:-9px;top:16px;width:16px;height:16px;border-radius:99px;
+  background:var(--panel);border:3px solid var(--line2)}
+.step.g::before{border-color:var(--good);background:var(--good-soft)}
+.step.r::before{border-color:var(--bad);background:var(--bad-soft)}
+.step.w::before{border-color:var(--warn);background:var(--warn-soft)}
+.step .t{font-size:15.5px;font-weight:700}
+.step .d{font-size:14.5px;color:var(--txt-dim)}
+.step .d code{font-size:13px}
+.verdict{margin:14px 0 4px;padding:14px 18px;border-radius:11px;font-size:16px;font-weight:700}
+.verdict.bad{background:var(--bad-soft);color:#9c1c1c;border:1px solid #f2cfcf}
+.verdict.good{background:var(--good-soft);color:#136c34;border:1px solid #c9e9d4}
+
+.callout{background:var(--panel);border:1px solid var(--line);border-left:5px solid var(--blue);
+  border-radius:0 13px 13px 0;padding:17px 20px;box-shadow:var(--shadow);margin-top:16px}
+.callout.bad{border-left-color:var(--bad)}
+.callout.warn{border-left-color:var(--warn)}
+.callout .lbl{font-size:11px;font-weight:800;letter-spacing:1.1px;text-transform:uppercase;color:var(--blue-d);margin-bottom:7px}
+.callout.bad .lbl{color:var(--bad)} .callout.warn .lbl{color:var(--warn)}
+.callout p{margin:0 0 9px;font-size:15.5px} .callout p:last-child{margin-bottom:0}
+
+.parts{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:6px}
+.part{background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:16px 18px;box-shadow:var(--shadow)}
+.part .f{font-family:'IBM Plex Mono';font-size:12.5px;color:var(--blue-d);word-break:break-word;font-weight:600;
+  margin-bottom:6px}
+.part p{margin:0;font-size:14.5px;color:var(--txt-dim)}
+
+footer{border-top:1px solid var(--line2);padding-top:18px;color:var(--txt-faint);font-size:12.5px}
+
+@media (max-width:820px){
+  .vs{grid-template-columns:1fr} .vsmid{padding:12px 0}
+  .legend,.parts{grid-template-columns:1fr}
+  .hero h1{font-size:26px}
+}
+</style>
+</head>
+<body>
+
+<div class="hero"><div class="inner">
+  <div class="kicker">cicd-lab-07 &middot; resource.json</div>
+  <h1>How we keep Ignition's junk out of our resource files</h1>
+  <p>Ignition stamps every resource manifest with metadata that has nothing to do with your project.
+  We hide that junk from diffs, and we revert it automatically before it can enter a commit.</p>
+</div></div>
+
+<div class="wrap">
+
+  <!-- 1 -->
+  <section>
+    <h2><span class="num">01</span>The junk</h2>
+    <p class="lead">Every resource folder has a <code class="i">resource.json</code> next to it. Most of it is real
+    config we want in git. Two fields are bookkeeping that Ignition rewrites on its own.</p>
+
+<pre>{
+<span class="keep">  "scope": "G",</span>
+<span class="keep">  "version": 1,</span>
+<span class="keep">  "restricted": false,</span>
+<span class="keep">  "overridable": true,</span>
+<span class="keep">  "files": ["view.json", "thumbnail.png"],</span>
+  "attributes": {
+<span class="junk">    "lastModificationSignature": "0b8bec8b...36369a",   &lt;-- junk</span>
+<span class="junk">    "lastModification": {                               &lt;-- junk</span>
+<span class="junk">      "actor": "admin",</span>
+<span class="junk">      "timestamp": "2026-05-21T13:34:18Z"</span>
+<span class="junk">    }</span>
+  }
+}</pre>
+
+    <div class="legend">
+      <div class="lg"><b>Green: keep</b><span>Describes the resource itself. Only changes when a person changes
+      something. This is what we want to see in a pull request.</span></div>
+      <div class="lg j"><b>Red: junk</b><span>Who saved it and when, plus a hash. Ignition rewrites these every time
+      it touches the resource, even when nothing about your project changed.</span></div>
+    </div>
+
+    <div class="callout">
+      <div class="lbl">Scale</div>
+      <p>This repo tracks <b>417</b> resource.json files. <b>384</b> of them carry those junk fields. Open the Designer,
+      save a few views, and you get a pile of modified files where nothing real changed.</p>
+    </div>
+  </section>
+
+  <!-- 2 -->
+  <section>
+    <h2><span class="num">02</span>Two tools, and they are not the same thing</h2>
+    <p class="lead">This is the part that trips people up. One tool makes the junk invisible. The other one removes it.
+    They solve different halves of the problem and you need both.</p>
+
+    <div class="vs">
+      <div class="tool hide">
+        <span class="tag">Tool 1</span>
+        <h3>Hide it</h3>
+        <div class="file">scripts/git-diff/normalize-ignition-resource-json.py<br>wired by .gitattributes + setup.sh</div>
+        <p>Before git prints a diff, it runs the file through a filter that deletes the two junk fields. Both sides come
+        out identical, so <code class="i">git diff</code> shows nothing.</p>
+        <ul>
+          <li class="y">Runs automatically, always</li>
+          <li class="y">Pull requests stay readable</li>
+          <li class="n">Does not touch the file on disk</li>
+          <li class="n">The file stays modified, and <code class="i">git status</code> still lists it</li>
+        </ul>
+      </div>
+
+      <div class="vsmid"><span>≠</span></div>
+
+      <div class="tool rev">
+        <span class="tag">Tool 2</span>
+        <h3>Revert it</h3>
+        <div class="file">scripts/clean-ignition-resource-churn.sh<br>run by the pre-commit hook</div>
+        <p>Compares the file against the committed version with the junk fields stripped. If nothing real changed, it
+        runs <code class="i">git restore</code> and the file goes back to how it was.</p>
+        <ul>
+          <li class="y">Removes the junk from disk</li>
+          <li class="y">Runs on every commit</li>
+          <li class="y">Catches junk you already staged with <code class="i">git add .</code></li>
+          <li class="y">Never touches files with real edits</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="callout warn">
+      <div class="lbl">The rule to remember</div>
+      <p>An empty <code class="i">git diff</code> does not mean the file is clean. It means the junk is hidden. Tool 1
+      alone would leave that junk on disk, ready to be committed. Tool 2 is what actually keeps it out.</p>
+    </div>
+  </section>
+
+  <!-- 3 -->
+  <section>
+    <h2><span class="num">03</span>What happens when you save a view</h2>
+    <p class="lead">Follow one Designer save through to a commit.</p>
+
+    <div class="flow">
+      <div class="hd">Designer save to commit</div>
+      <div class="step w"><div class="t">You save a view in the Designer</div>
+        <div class="d">Ignition rewrites that view's resource.json with a fresh timestamp and signature. Nothing real changed.</div></div>
+      <div class="step w"><div class="t">git status lists the file</div>
+        <div class="d">The modification is real on disk, so git sees it.</div></div>
+      <div class="step g"><div class="t">git diff shows nothing</div>
+        <div class="d"><b>Tool 1.</b> The junk is stripped from both sides before the diff renders.</div></div>
+      <div class="step g"><div class="t">You commit</div>
+        <div class="d"><b>Tool 2.</b> The pre-commit hook runs the revert script. Junk-only files are restored and drop
+        out of the commit. Files with real edits are left alone.</div></div>
+      <div class="verdict good">The commit contains only real changes.</div>
+    </div>
+  </section>
+
+  <!-- 4 -->
+  <section>
+    <h2><span class="num">04</span>The moving parts</h2>
+    <p class="lead">Four files, plus one command that wires them up.</p>
+
+    <div class="parts">
+      <div class="part">
+        <div class="f">.gitattributes</div>
+        <p>Marks every <code class="i">resource.json</code> as <code class="i">diff=ignition-resource</code>, which
+        points git at the normalizer, and as <code class="i">linguist-generated</code>, which collapses these files by
+        default in pull requests.</p>
+      </div>
+      <div class="part">
+        <div class="f">scripts/git-diff/normalize-ignition-resource-json.py</div>
+        <p>Tool 1. Parses the JSON, drops the two junk fields, re-emits it sorted. Anything it cannot parse passes
+        through untouched, so a broken file never breaks your diff.</p>
+      </div>
+      <div class="part">
+        <div class="f">scripts/clean-ignition-resource-churn.sh</div>
+        <p>Tool 2. Normalizes the working copy and the committed copy, compares them, and restores the file when only
+        junk differs. Looks at both unstaged and staged changes.</p>
+      </div>
+      <div class="part">
+        <div class="f">scripts/git-hooks/pre-commit</div>
+        <p>Runs Tool 2 on every commit. Installed by <code class="i">setup.sh</code> as a symlink into
+        <code class="i">.git/hooks/</code>.</p>
+      </div>
+    </div>
+
+    <p class="big" style="margin-top:26px">One command wires all of it</p>
+<pre>scripts/setup.sh
+<span class="cm">#   → git config diff.ignition-resource.textconv ...   (Tool 1)</span>
+<span class="cm">#   → .git/hooks/pre-commit → scripts/git-hooks/pre-commit  (Tool 2)</span></pre>
+    <p class="lead" style="margin-top:14px">You can also run Tool 2 by hand at any time:</p>
+<pre>scripts/clean-ignition-resource-churn.sh              <span class="cm"># show what is junk-only</span>
+scripts/clean-ignition-resource-churn.sh <span class="hl">--apply</span>      <span class="cm"># revert it</span></pre>
+  </section>
+
+  <!-- 5 -->
+  <section>
+    <h2><span class="num">05</span>How the revert decides what is safe to throw away</h2>
+    <p class="lead">It never guesses. It strips the junk fields from both the current file and the committed one, then
+    compares what is left. Three outcomes.</p>
+
+    <div class="flow">
+      <div class="hd">Outcomes</div>
+      <div class="step g"><div class="t">Junk only, not staged</div>
+        <div class="d"><code>restored:</code> the file drops out of git status entirely.</div></div>
+      <div class="step g"><div class="t">Junk only, already staged</div>
+        <div class="d"><code>restored (was staged):</code> unstaged and reverted, so <code class="i">git add .</code>
+        cannot slip it into a commit.</div></div>
+      <div class="step g"><div class="t">A real edit is present</div>
+        <div class="d"><code>skip staged, has real changes:</code> the file is left completely alone. Human edits always
+        win.</div></div>
+    </div>
+
+    <div class="callout warn">
+      <div class="lbl">Why the script uses --no-textconv internally</div>
+      <p>The script has to ask git whether a file is staged. That check must pass
+      <code class="i">--no-textconv</code>, otherwise git runs Tool 1 first, the junk fields are stripped, both sides
+      compare equal, and git reports the file as <b>not staged at all</b>.</p>
+      <p>Tool 1 will happily hide the junk from the code written to catch it. Same rule as before, one level deeper: an
+      empty diff never means an unchanged file.</p>
+    </div>
+  </section>
+
+
+  <footer>
+    Mustry Academy &middot; CI/CD for Ignition &middot; cicd-lab-07-multi-gateway-deploy
+  </footer>
+
+</div>
+</body>
+</html>

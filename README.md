@@ -6,6 +6,9 @@ Day 4 (afternoon) of the [CI/CD for Ignition Masterclass](https://github.com/mus
 
 Two deploy channels, one rule: `release.yaml` is the **only** production trigger. Each pin is a git tag `<project>@vX.Y.Z` that must exist before the file may point at it — CI enforces that on the PR. Rollback is `git revert` of the release PR.
 
+
+> **How resource.json stays clean:** Ignition restamps these manifests constantly. [`docs/resource-json-hygiene.html`](./docs/resource-json-hygiene.html) explains what the junk is, the two tools that deal with it, and why an empty `git diff` does not mean a clean file.
+
 ## Prerequisites
 
 - Accept the **contributor invite** (check your GitHub notifications) — no fork

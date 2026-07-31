@@ -66,3 +66,11 @@ services/config/resources/migration-log-*.md
 **/.alarms_*
 *.tmp
 *.bak
+# Flint gateway API tokens. The path is relative to the workspace root so the
+# same flint.config.json works in every clone, but the token itself is a live
+# gateway credential and is per-gateway AND per-clone — never commit it. Each
+# student generates their own in Config > Security > API Tokens and writes it
+# as `ignition_token=<keyId>:<secret>` (dotenv format, not JSON, despite the
+# .json extension the Flint docs use).
+/.flint/tokens/*
+!/.flint/tokens/*.example
