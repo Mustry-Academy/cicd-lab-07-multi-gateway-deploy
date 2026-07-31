@@ -12,4 +12,4 @@ Rules (lab 06):
   release tags.
 - The applied position lives in the database's `schema_migrations` table.
 
-Tom's Part 2 challenge writes the first pair here (tables + seed).
+The database Part 2 challenge writes the first pair here (tables + seed).

@@ -1,7 +1,0 @@
-{
-  "title": "dev",
-  "description": "Part 0 test-gateway mode: local-only resource overrides live under this scope; production never boots with it.",
-  "enabled": true,
-  "inheritable": true,
-  "parent": "core"
-}

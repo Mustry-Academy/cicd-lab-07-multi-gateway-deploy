@@ -1,5 +1,5 @@
 #!/bin/bash
-# migrate.sh — run golang-migrate in Docker against the LOCAL dev database
+# migrate.sh — run golang-migrate in Docker against the local development database
 # (the lab07-postgres container from the repo-root docker-compose.yaml), the
 # same way the Deploy workflow migrates the capstone's database. No local
 # install needed; the tool runs from the migrate/migrate image on the stack's

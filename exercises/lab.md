@@ -112,7 +112,7 @@ One repo keeps this lab small.
 
 ### Local development — where you actually build
 
-Production is never your dev box. The repo brings its own local stack, the
+Production is never your development machine. The repo brings its own local stack, the
 same move as every previous lab:
 
 ```bash
@@ -138,13 +138,14 @@ open http://localhost:8088     # admin / password
 - **Local database:** `ignition` on `localhost:5432`
   (`ignition` / `lab07-postgres-pw`). Test your migration pairs with
   `scripts/migrate.sh up` before they ever reach the PR.
-- **Referenced secrets work locally too:** `dev/secrets/` is mounted at
+- **Referenced secrets work locally too:** `local-development/secrets/` is mounted at
   `/run/secrets/` in the local gateway — the same path the file secret
   provider reads on production — with the local database's login in it.
 - **Library JARs** load from `lib/core/gateway`, which can't be
   bind-mounted; copy them in once
   (`docker cp jar-files/jar/<jar> lab07-gateway:/usr/local/bin/ignition/lib/core/gateway/`)
-  and restart the container.
+  and restart the container. (Your Part 0 **test gateway** gets them from
+  your workflow instead — the same ship-and-restart step production uses.)
 - The loop is always: **build locally → see it in `git diff` → PR → tag →
   release.yaml → live.**
 
@@ -184,75 +185,84 @@ Everyone does this once, at the start, then leaves it running all afternoon.
 It gives you a second local gateway that auto-deploys **every merge to
 `main`**, so you can see a change land somewhere safe before it is ever
 tagged for production. It reuses building blocks you already own: a
-self-hosted runner (labs 03-06), a `push: [main]` workflow, and Ignition's
-config modes (lab 04).
+self-hosted runner (labs 03-06) and a `push: [main]` deploy workflow that
+ships files by `docker cp` and an authenticated scan (labs 04-06).
 
-**1. Give the test gateway its own clone.** Your working clone is yours: you
-will be mid-branch all afternoon, and a deploy must never yank it around.
-The test gateway tracks `main` from a second, dedicated clone **next to**
-your working one:
+**1. Tell the stack who you are.** Copy `.env.example` to `.env` and fill
+in two values: `LAB_USER` (your name, lowercase, no spaces) and the runner
+credential you get from Sam or Jasper. Registering a runner needs
+repo-admin rights, which contributors don't have — that's why the
+credential comes from us. The registration persists in a volume, so a
+one-hour token only has to work once.
 
 ```bash
-git clone git@github.com:Mustry-Academy/cicd-lab-07-multi-gateway-deploy.git ../lab07-test
+cp .env.example .env
+# edit .env: LAB_USER=<yourname>, RUNNER_TOKEN=<from Sam or Jasper>
 ```
 
 **2. Start the provided test pair.** This is not a docker course, so the
 repo already carries both halves behind a compose **profile**: a
-`test-gateway` on port `8090` (booted in **dev config mode**,
-`-Dignition.config.mode=dev` — the mode ships in the config export,
-`services/config/resources/dev/`) and a `test-runner` for your laptop,
-labelled with your name. One command:
+`test-gateway` on port `8090` and a `test-runner` for your laptop,
+labelled with your name. `scripts/setup.sh` sees `LAB_USER` in your `.env`
+and brings the pair up (it also seeds the deploy API token into the test
+gateway **before** its first boot — the scan API only accepts tokens the
+gateway has already loaded):
 
 ```bash
-LAB_USER=<yourname> RUNNER_TOKEN=<ask Sam or Jasper> \
-  docker compose --profile test up -d
+./scripts/setup.sh          # always setup.sh on the FIRST run — it seeds the
+                            # token; later, docker compose --profile test up -d
+                            # is fine for restarts
 ```
 
-Registering a runner needs repo-admin rights, which contributors don't
-have — that's why the registration token comes from us. It's only needed on
-the FIRST start; the registration persists afterwards. Plain
-`docker compose up -d` keeps starting only the dev stack; the test pair only
-rides the `--profile test` flag. Your runner's label is
-`[self-hosted, <yourname>-local]` — only jobs asking for that label run on
-your machine.
+Plain `docker compose up -d` keeps starting only the local stack; the test
+pair only rides the profile. Your runner registers with the label
+`[self-hosted, <yourname>-local]` — check Settings → Actions → Runners for
+it. Only jobs asking for that label run on your machine.
 
-**3. Add your own workflow file** named for you,
-`.github/workflows/test-<yourname>.yml`. It triggers on push to `main`, runs
-on your label and fast-forwards the **test clone** to `main` (your runner
-already has it mounted at `/workspace/lab07-test`). That is all it does: the
-test gateway runs in **dev config mode**, which watches the mounted files
-and applies changes as they land — no restart, no scan call. The production
-gateway runs in prod mode, where nothing applies until the deploy's
-authenticated scan:
+**3. Make the provided workflow yours.** The deploy workflow is already
+written: `.github/workflows/test-example.yml.template`. Copy it under your
+name and replace `example` with your name in the three places marked
+`CHANGEME` (the workflow name, the runner label, the concurrency group):
 
-```yaml
-name: test-<yourname>
-on: { push: { branches: [main] } }
-jobs:
-  deploy:
-    runs-on: [self-hosted, <yourname>-local]
-    steps:
+```bash
+cp .github/workflows/test-example.yml.template \
+   .github/workflows/test-<yourname>.yml
+# edit the three CHANGEME spots: example -> <yourname>
 ```
+
+Why a file per person, with the label written out? GitHub resolves
+`runs-on` before any per-user context exists, and a repo variable has ONE
+value for all five of us — it would route everyone's deploy to one laptop.
+One file per person, each naming its own label, IS the routing mechanism.
+
+What the workflow does is what the production deploy does, minus the
+`release.yaml` indirection: check out `main`, run the migrations against
+your local database, `docker cp` projects + config into the test gateway's
+container, ship modules + JARs (restart only when they changed), then ask
+the gateway for an authenticated scan. Same transport, same API, same
+self-heal.
 
 **4. PR it in like anything else** — branch, PR, green checks, approval,
 merge. The only file you touched is your own workflow.
 
 **Verify it works:** open a small PR that changes a dashboard view. Once it
-merges to `main`, watch your `test-<yourname>` workflow run on your runner
-and **the change appear on `localhost:8090` on its own** — no tag, no
+merges to `main`, watch your `test-<yourname>` workflow pick the job up on
+**your** runner and deploy the change to `localhost:8090` — no tag, no
 `release.yaml` bump.
 
 - **Observe:** the runner **label** is the whole routing story. Five people
   can each have a `push: [main]` workflow and each one deploys only to its
-  owner’s test gateway. It is the same mechanism as the site-labelled
+  owner's test gateway. It is the same mechanism as the site-labelled
   production runner, `runs-on: [self-hosted, cicd-capstone]`.
-- **Observe:** your working clone never moved. The pipeline owns the test
-  clone; you own yours. That separation is exactly why the production
-  gateway gets its files from a **tag**, not from somebody’s desk.
+- **Observe:** your test gateway gets its files the same way production
+  does — `docker cp` into a container it does not share with your editor,
+  then an authenticated scan. Nothing bind-mounts your working tree into
+  it, which is exactly why a green test deploy is evidence about
+  production and not just about your laptop.
 
-**Part 0 gate:** your `test-<yourname>.yml` merged in, your test gateway and
-runner up, and a dashboard change proven to land on `localhost:8090` on its
-own after a merge to `main`.
+**Part 0 gate:** your `test-<yourname>.yml` merged in, your test gateway
+and runner up, and a dashboard change proven to land on `localhost:8090`
+through your own workflow after a merge to `main`.
 
 ### Part 1 (±20 min) — create your project and bring it live
 
@@ -344,8 +354,11 @@ together.
   your tag number while you were typing, take the next one.
 - Sam or Jasper still approves everything. Small PRs get through the queue
   first.
+- **Claim your challenge in the breakout room** — one per person, nothing is
+  pre-assigned. Challenge 5 builds on challenges 3 and 4, so whoever takes
+  it starts against their work as it lands.
 
-**Nick — add the Embr Charts module and build a chart screen**
+**Challenge 1 — add the Embr Charts module and build a chart screen**
 
 - Download the module from
   <https://github.com/mussonindustrial/embr/releases/tag/releases%2F8.3%2F2026.6.17>.
@@ -357,32 +370,41 @@ together.
 - Verify on production: Config → Modules shows Embr Charts **Running**, and
   your chart renders.
 
-**Stephan — use the Commons Lang3 JAR in a string reversing function**
+**Challenge 2 — use the Commons CSV JAR in a recipe-parsing function**
 
-- The `commons-lang3` JAR is **already in the repo**, in `jar-files/jar/` —
+- The `commons-csv` JAR is **already in the repo**, in `jar-files/jar/` —
   we did the lab 06 download-and-pin move for you. Your job is to use it.
-- Add a project script function that reverses a string:
+  (commons-csv on purpose: the gateway already bundles commons-lang3 and
+  friends, so importing those proves nothing — see `jar-files/jar/README.md`.)
+- Add a project script function that parses a CSV line of ingredients:
 
   ```python
-  from org.apache.commons.lang3 import StringUtils
-  flipped = StringUtils.reverse("Ignition")
+  from org.apache.commons.csv import CSVFormat
+  from java.io import StringReader
+  records = CSVFormat.DEFAULT.parse(StringReader("oats,water,salt")).getRecords()
+  fields = list(records[0])
   ```
 
 - Build a Perspective screen that **calls your function** and shows the
-  result: **noitingI**, live on production.
+  parsed fields: **oats | water | salt**, live on production.
 
-**Tom — the database connection, a migration with a seed, a view on the data**
+**Challenge 3 — the database connection, a migration with a seed, a view on the data**
 
-- Create the DB connection using the **referenced secret**
-  `POSTGRES_USERNAME`. The secret is already on the environment: you
-  reference it, you never see the value. Lab 06's secrets ladder, for real.
+- Create the DB connection to `jdbc:postgresql://postgres:5432/ignition`
+  (that hostname resolves both locally and on production). Username is the
+  plain string `ignition`; the **password is the referenced secret**
+  `POSTGRES_PASSWORD` from the `environment` provider — it is already on
+  the environment, you reference it, you never see the value. Lab 06's
+  secrets ladder, for real. (Ignition can only reference a secret for the
+  password field; the username stays a plain setting.)
 - Write a migration pair in `db-migration/migrate/` — `.up.sql` creates the
-  tables and seeds them, `.down.sql` undoes it. **Always pairs.**
+  tables and seeds them, `.down.sql` undoes it. **Always pairs.** Test with
+  `scripts/migrate.sh up` before the PR.
 - Build a Perspective view that queries the seeded data.
 - Verify on production: the connection is **Valid**, the migration ran, your
   view shows rows.
 
-**Wout — tags and a simulator device with live values**
+**Challenge 4 — tags and a simulator device with live values**
 
 - Add an **OPC UA simulator device** (the programmable device simulator) to
   the gateway config.
@@ -392,11 +414,16 @@ together.
 - Verify on production: **values changing live**, on a gateway you never
   logged into to configure.
 
-**Gregory — historize the live tags and build a dashboard**
+**Challenge 5 — historize the live tags and build a dashboard**
 
-- Enable **tag history** on Wout's tags, storing into Tom's database
-  connection.
-- Build a dashboard view visualising that history.
+- Create a **historian provider** (the TimescaleDB Historian module is
+  already registered in `services/modules.json` — you build on it, you
+  don't install it) that stores into the **same plant database**
+  challenge 3's connection reads. Password: the referenced
+  `POSTGRES_PASSWORD`, like challenge 3's connection.
+- Enable **tag history** on challenge 4's tags, pointed at your provider.
+- Build a dashboard view visualising that history — query the history
+  tables back through challenge 3's connection.
 - You will be merging into files the others just changed. **Merge conflicts
   are part of the challenge**, not an accident.
 
@@ -410,7 +437,7 @@ Everything from Part 2 is now shared infrastructure. This part has no
 script: **work together, build fast, get through the PRs.**
 
 - **Cross the challenges:** store more tags in the database, add to the
-  migration scripts, put an Embr chart on Tom's data, call Stephan's
+  migration scripts, put an Embr chart on the seeded data, call the CSV
   function from your view. Anything goes, as long as it ships by PR.
 - **Keep PRs small and fast.** One small change that merges beats a big one
   that sits in review while main moves under it.
@@ -427,9 +454,9 @@ script: **work together, build fast, get through the PRs.**
 Everything on this list is visible on GitHub or on the production gateway;
 nothing needs your laptop.
 
-0. **Part 0:** your `test-<yourname>.yml` workflow and `test-<yourname>`
-   gateway merged in, and a dashboard change proven to land on
-   `localhost:8090` on its own after a merge to `main`.
+0. **Part 0:** your `test-<yourname>.yml` workflow merged in, your test
+   gateway and runner up, and a dashboard change proven to land on
+   `localhost:8090` through your own workflow after a merge to `main`.
 1. **Part 1:** `projects/<yourname>/` merged through an approved PR, the tag
    `<yourname>@v1.0.0` built, your line in `release.yaml`, and your view
    **live on cloud.mustrysolutions.com**.

@@ -1,0 +1,328 @@
+# Deploy main to YOUR personal test gateway — Part 0.
+#
+# THIS FILE IS A TEMPLATE. GitHub ignores it while it ends in .template.
+# Make it yours by copying it and filling in your name (lowercase, no
+# spaces — the same value as LAB_USER in your .env):
+#
+#     cp .github/workflows/test-example.yml.template \
+#        .github/workflows/test-<yourname>.yml
+#
+# then replace `example` with your name in the THREE places marked
+# CHANGEME below: the workflow name, the runner label, and the
+# concurrency group. PR the new file in like any other change.
+#
+# Why the label is written out and not a variable: GitHub resolves
+# `runs-on` from repo-level context, and a repo variable has ONE value for
+# all five of us — it would route everyone's deploy to one laptop. One file
+# per person, each naming its own label, IS the routing mechanism. It is
+# the same reason production says `runs-on: [self-hosted, cicd-capstone]`
+# literally.
+#
+# What this workflow does is what the production deploy does, minus the
+# release.yaml indirection: check out main, run the migrations against your
+# local database, `docker cp` projects + config into your test gateway's
+# container, ship modules + JARs (restart only when they changed), ask the
+# gateway to scan. Same transport, same API, same self-heal. If a change
+# lands here — a view, a module, a JAR, a migration — it lands on site 7
+# the same way.
+#
+# Prerequisites (Part 0 steps 1–2):
+#   - your test pair is up:  ./scripts/setup.sh  (with LAB_USER in .env)
+#   - your runner shows up under Settings -> Actions -> Runners
+#
+# No API-key secret to configure: setup.sh generated YOUR key into .env,
+# docker-compose passes it into YOUR runner container, and this workflow
+# reads it from the runner's environment. Contributors can't set repo
+# secrets on the shared repo — and don't need to.
+
+name: test-example # CHANGEME: test-<yourname>
+
+"on":
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Never cancel a deploy mid-ship; queue the next one. Per-person group, so
+# five people's test deploys never block each other.
+concurrency:
+  group: test-deploy-example # CHANGEME: test-deploy-<yourname>
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Deploy main to my test gateway
+    # CHANGEME: <yourname>-local — must match the LABELS your runner
+    # registered with (docker compose --profile test), or this job waits
+    # forever for a runner that does not exist.
+    runs-on: [self-hosted, example-local]
+    timeout-minutes: 15
+    env:
+      IGNITION_CONTAINER: lab07-test-gateway
+      IGNITION_URL: http://lab07-test-gateway:8088
+      # IGNITION_API_KEY is deliberately NOT set here: the job inherits it
+      # from your runner container's environment (docker-compose passes it
+      # from your .env, where setup.sh generated it). The repo's
+      # IGNITION_API_KEY Actions secret is PRODUCTION's key — it would not
+      # authenticate against your test gateway.
+      GATEWAY_DATA_PATH: /usr/local/bin/ignition/data
+      GATEWAY_JAR_PATH: /usr/local/bin/ignition/lib/core/gateway
+      POSTGRES_CONTAINER: lab07-postgres
+      POSTGRES_DB: ignition
+      MIGRATE_IMAGE: migrate/migrate:v4.17.1
+
+    steps:
+      - name: Check out main
+        uses: actions/checkout@v4
+        with:
+          clean: true
+
+      - name: Verify deploy prerequisites
+        # Same gate as production: no docker CLI, no key, or no running
+        # container means fail LOUDLY here rather than half-ship below.
+        run: |
+          set -euo pipefail
+          command -v docker >/dev/null || { echo "docker CLI not available in the runner" >&2; exit 1; }
+          test -n "${IGNITION_API_KEY:-}" || {
+            echo "IGNITION_API_KEY is not in the runner's environment." >&2
+            echo "  scripts/setup.sh generates it into .env and compose passes it to the" >&2
+            echo "  runner container — re-run setup.sh, then:" >&2
+            echo "  docker compose --profile test up -d --force-recreate test-runner" >&2
+            exit 1
+          }
+          if ! docker inspect "$IGNITION_CONTAINER" >/dev/null 2>&1; then
+            echo "Container '$IGNITION_CONTAINER' not found — is your test profile up?" >&2
+            echo "  docker compose --profile test up -d" >&2
+            exit 1
+          fi
+          state="$(docker inspect -f '{{.State.Status}}' "$IGNITION_CONTAINER")"
+          if [ "$state" != "running" ]; then
+            echo "Container '$IGNITION_CONTAINER' is '$state', expected 'running'" >&2
+            exit 1
+          fi
+          echo "Prerequisites OK (container=$IGNITION_CONTAINER state=$state)."
+
+      - name: Migrate database
+        # Same step as production, pointed at YOUR local lab07-postgres.
+        # Production reads the credentials from GitHub secrets; here they
+        # are the committed local-development defaults in local-development/secrets/ — the same
+        # files your test gateway's file secret provider reads. BEFORE the
+        # ship steps, never continue-on-error: a failed migration must stop
+        # the run before anything ships.
+        run: |
+          set -euo pipefail
+          dir="db-migration/migrate"
+          if [ -z "$(find "$dir" -name '*.sql' -print -quit 2>/dev/null)" ]; then
+            echo "No migrations in the repo — skipping."
+            exit 0
+          fi
+          if ! docker inspect "$POSTGRES_CONTAINER" > /dev/null 2>&1; then
+            echo "::error::Repo carries migrations but container '$POSTGRES_CONTAINER' does not exist" >&2
+            exit 1
+          fi
+          PG_USER="$(cat local-development/secrets/POSTGRES_USERNAME)"
+          PG_PASS="$(cat local-development/secrets/POSTGRES_PASSWORD)"
+
+          network="$(docker inspect "$POSTGRES_CONTAINER" \
+            --format '{{range $k, $_ := .NetworkSettings.Networks}}{{$k}}{{end}}')"
+
+          # Credentials go INTO a URL, so they must be percent-encoded.
+          urlenc() {
+            local s="$1" out='' c i
+            for ((i = 0; i < ${#s}; i++)); do
+              c="${s:i:1}"
+              case "$c" in
+                [a-zA-Z0-9.~_-]) out+="$c" ;;
+                *) printf -v c '%%%02X' "'$c"; out+="$c" ;;
+              esac
+            done
+            printf '%s' "$out"
+          }
+          db_url="postgres://$(urlenc "$PG_USER"):$(urlenc "$PG_PASS")@${POSTGRES_CONTAINER}:5432/${POSTGRES_DB}?sslmode=disable"
+
+          cid="$(docker create --network "$network" "$MIGRATE_IMAGE" \
+            -path=/migrations -database "$db_url" up)"
+          trap 'docker rm -f "$cid" > /dev/null 2>&1 || true' EXIT
+          docker cp "$dir/." "$cid:/migrations/" > /dev/null
+          echo "migrate up -> $POSTGRES_DB (network: $network)"
+          docker start -a "$cid"
+
+      - name: Ship projects and config into the test gateway
+        # Wipe-then-copy, so "deleted in the repo" means "gone from the
+        # gateway" here too. The preserved subtrees are the ones the GATEWAY
+        # owns and no payload can restore: per-instance identity (local/),
+        # its secrets keys and tag value store (ignition/keys, ignition/
+        # tags), its internal users (user-source, identity-provider) and its
+        # NAME (system-properties). This is the production ship step with
+        # the release.yaml payload assembly removed — compare deploy.yml.
+        run: |
+          set -euo pipefail
+          docker exec -u root "$IGNITION_CONTAINER" sh -c "
+            set -eu
+            rm -rf '$GATEWAY_DATA_PATH/projects/'*
+            find '$GATEWAY_DATA_PATH/config' -mindepth 1 -maxdepth 1 \
+              ! -name local ! -name resources ! -name ignition -exec rm -rf {} +
+            if [ -d '$GATEWAY_DATA_PATH/config/ignition' ]; then
+              find '$GATEWAY_DATA_PATH/config/ignition' -mindepth 1 -maxdepth 1 \
+                ! -name keys ! -name tags -exec rm -rf {} +
+            fi
+            if [ -d '$GATEWAY_DATA_PATH/config/resources' ]; then
+              find '$GATEWAY_DATA_PATH/config/resources' -mindepth 1 -maxdepth 1 \
+                ! -name local ! -name core -exec rm -rf {} +
+            fi
+            if [ -d '$GATEWAY_DATA_PATH/config/resources/core' ]; then
+              find '$GATEWAY_DATA_PATH/config/resources/core' -mindepth 1 -maxdepth 1 \
+                ! -name ignition -exec rm -rf {} +
+            fi
+            if [ -d '$GATEWAY_DATA_PATH/config/resources/core/ignition' ]; then
+              find '$GATEWAY_DATA_PATH/config/resources/core/ignition' -mindepth 1 -maxdepth 1 \
+                ! -name user-source ! -name identity-provider \
+                ! -name system-properties ! -name api-token -exec rm -rf {} +
+            fi
+          "
+          docker cp projects/. "$IGNITION_CONTAINER:$GATEWAY_DATA_PATH/projects/"
+          # system-properties is per-gateway identity: the repo carries the
+          # local gateway's copy (systemName lab07-local). Your test gateway
+          # keeps its own name, so strip it from what ships.
+          staging="$(mktemp -d)"
+          cp -R services/config/. "$staging/"
+          rm -rf "$staging/resources/core/ignition/system-properties"
+          docker cp "$staging/." "$IGNITION_CONTAINER:$GATEWAY_DATA_PATH/config/"
+          rm -rf "$staging"
+          docker exec -u root "$IGNITION_CONTAINER" \
+            chown -R 2003:2003 "$GATEWAY_DATA_PATH/projects" "$GATEWAY_DATA_PATH/config"
+          echo "Shipped project(s):"
+          find projects -mindepth 1 -maxdepth 1 -type d -exec basename {} \; | sed 's/^/  /'
+
+      - name: Ship boot-time payload (modules + JARs), restart if changed
+        # Modules and lib JARs only load at BOOT — same step as production.
+        # Runs AFTER the file ship: if this restarts the gateway, nothing
+        # may touch its file tree while it boots, and the scan step below
+        # already rides out the 503s of a starting gateway.
+        run: |
+          set -euo pipefail
+          restart=0
+
+          # --- module manifest ---
+          if [ -f services/modules.json ]; then
+            before="$(docker exec "$IGNITION_CONTAINER" md5sum "$GATEWAY_DATA_PATH/modules.json" 2>/dev/null | cut -d' ' -f1 || true)"
+            docker exec -i "$IGNITION_CONTAINER" sh -c "cat > '$GATEWAY_DATA_PATH/modules.json'" < services/modules.json
+            after="$(docker exec "$IGNITION_CONTAINER" md5sum "$GATEWAY_DATA_PATH/modules.json" | cut -d' ' -f1)"
+            if [ "$before" != "$after" ]; then
+              echo "  modules.json changed"
+              restart=1
+            fi
+          fi
+
+          # --- third-party module binaries ---
+          if find third-party-modules -type f -name '*.modl' 2>/dev/null | grep -q .; then
+            docker exec -u root "$IGNITION_CONTAINER" \
+              sh -c 'mkdir -p /third-party-modules && chown 2003:2003 /third-party-modules'
+            while IFS= read -r f; do
+              name="$(basename "$f")"
+              before="$(docker exec "$IGNITION_CONTAINER" md5sum "/third-party-modules/$name" 2>/dev/null | cut -d' ' -f1 || true)"
+              local_sum="$(md5sum "$f" | cut -d' ' -f1)"
+              if [ "$before" != "$local_sum" ]; then
+                docker cp "$f" "$IGNITION_CONTAINER:/third-party-modules/$name"
+                echo "  shipped module $name"
+                restart=1
+              fi
+            done < <(find third-party-modules -type f -name '*.modl')
+          fi
+
+          # --- library JARs -> lib/core/gateway (additive) ---
+          if [ -d jar-files/jar ]; then
+            while IFS= read -r f; do
+              name="$(basename "$f")"
+              before="$(docker exec "$IGNITION_CONTAINER" md5sum "$GATEWAY_JAR_PATH/$name" 2>/dev/null | cut -d' ' -f1 || true)"
+              local_sum="$(md5sum "$f" | cut -d' ' -f1)"
+              if [ "$before" != "$local_sum" ]; then
+                docker cp "$f" "$IGNITION_CONTAINER:$GATEWAY_JAR_PATH/$name"
+                echo "  shipped JAR $name"
+                restart=1
+              fi
+            done < <(find jar-files/jar -type f -name '*.jar')
+          fi
+
+          if [ "$restart" -eq 0 ]; then
+            echo "Boot-time payload unchanged — no restart needed."
+            exit 0
+          fi
+          echo "Boot-time payload changed — restarting $IGNITION_CONTAINER..."
+          docker restart "$IGNITION_CONTAINER"
+          # StatusPing says "RUNNING" even while details say COMMISSIONING —
+          # a boot-time module/trust check runs a commissioning pass first.
+          # Require RUNNING *without* COMMISSIONING or the scan below fires
+          # into the commissioning webapp and gets a 400.
+          for _ in $(seq 1 60); do
+            state="$(curl -fsS --max-time 3 "$IGNITION_URL/StatusPing" 2>/dev/null || true)"
+            if echo "$state" | grep -q '"state":"RUNNING"' && ! echo "$state" | grep -q COMMISSIONING; then
+              echo "gateway RUNNING again."
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "gateway did not come back after module restart" >&2
+          exit 1
+
+      - name: Trigger gateway scan
+        # Hot reload of projects and config. Self-heal on 401/403 exactly
+        # like production: the gateway only reads its api-token (seeded into
+        # its volume by setup.sh; the wipe spares it) and the deployed
+        # security-properties at boot — restart once, wait, retry. First
+        # deploy to a fresh test gateway may take this path; every later
+        # deploy scans hot. A 401 that survives the restart means the seeded
+        # token does not match your key — re-run scripts/setup.sh.
+        run: |
+          set -euo pipefail
+          run_scans() {
+            local what code tries
+            for what in projects config; do
+              tries=0
+              while :; do
+                code="$(curl -sS -o /dev/null -w '%{http_code}' -X POST \
+                  --connect-timeout 5 --max-time 30 \
+                  -H "X-Ignition-API-Token: $IGNITION_API_KEY" \
+                  "$IGNITION_URL/data/api/v1/scan/$what" || echo 000)"
+                echo "scan $what -> HTTP $code"
+                if [ "$code" = "401" ] || [ "$code" = "403" ]; then
+                  return 42
+                fi
+                if [ "$code" -ge 200 ] && [ "$code" -lt 300 ]; then
+                  break
+                fi
+                # 400 included: the commissioning webapp answers 400 while a
+                # boot-time trust/commissioning pass is still finishing.
+                if { [ "$code" -ge 500 ] || [ "$code" = "400" ] || [ "$code" = "000" ]; } && [ "$tries" -lt 12 ]; then
+                  tries=$((tries + 1))
+                  echo "  gateway not ready yet — retry $tries/12 in 10s"
+                  sleep 10
+                  continue
+                fi
+                echo "scan $what failed (HTTP $code)" >&2
+                return 1
+              done
+            done
+          }
+          rc=0
+          run_scans || rc=$?
+          if [ "$rc" = "42" ]; then
+            echo "Not authorized — the gateway has not loaded the API token /"
+            echo "security-properties yet. Restarting it once to load them."
+            docker restart "$IGNITION_CONTAINER"
+            for _ in $(seq 1 60); do
+              state="$(curl -fsS --max-time 3 "$IGNITION_URL/StatusPing" 2>/dev/null || true)"
+              if echo "$state" | grep -q '"state":"RUNNING"' && ! echo "$state" | grep -q COMMISSIONING; then
+                break
+              fi
+              sleep 5
+            done
+            run_scans
+          elif [ "$rc" != "0" ]; then
+            exit "$rc"
+          fi
+
+      - name: Where to look
+        run: echo "Deployed. Open http://localhost:8090 on your machine (admin / password)."

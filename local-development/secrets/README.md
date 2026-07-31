@@ -1,6 +1,6 @@
-# dev/secrets — local stand-ins for the referenced secrets
+# local-development/secrets — local stand-ins for the referenced secrets
 
-These are NOT secrets. They are the documented local-dev defaults for the
+These are NOT secrets. They are the documented local-development defaults for the
 compose stack in the repo root, committed on purpose so the same
 referenced-secret configuration works in both places:
 
