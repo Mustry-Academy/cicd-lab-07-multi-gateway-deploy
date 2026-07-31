@@ -11,10 +11,6 @@
     "/oee": {
       "title": "OEE Overview",
       "viewPath": "Showcase/OEE Overview"
-    },
-    "/welcome": {
-      "title": "Welcome",
-      "viewPath": "Showcase/Welcome"
     }
   },
   "sharedDocks": {

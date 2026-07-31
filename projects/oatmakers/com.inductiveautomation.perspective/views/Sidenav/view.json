@@ -158,27 +158,6 @@
               "showHeader": true,
               "target": "/observatory",
               "visible": true
-            },
-            {
-              "enabled": true,
-              "items": [],
-              "label": {
-                "icon": {
-                  "color": "#7aa2f7",
-                  "path": "material/person"
-                },
-                "text": "Welcome · Rudy"
-              },
-              "navIcon": {
-                "color": "#7aa2f7",
-                "library": "",
-                "name": "",
-                "path": ""
-              },
-              "resetOnClick": false,
-              "showHeader": true,
-              "target": "/welcome",
-              "visible": true
             }
           ],
           "itemStyle": {
