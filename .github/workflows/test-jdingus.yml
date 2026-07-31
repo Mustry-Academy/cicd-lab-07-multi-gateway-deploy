@@ -57,7 +57,7 @@ jobs:
     # CHANGEME: <yourname>-local — must match the LABELS your runner
     # registered with (docker compose --profile test), or this job waits
     # forever for a runner that does not exist.
-    runs-on: [self-hosted, example-jdingus]
+    runs-on: [self-hosted, jdingus-local]
     timeout-minutes: 15
     env:
       IGNITION_CONTAINER: lab07-test-gateway
