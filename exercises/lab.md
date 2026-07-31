@@ -141,6 +141,14 @@ open http://localhost:8088     # admin / password
 - **Referenced secrets work locally too:** `local-development/secrets/` is mounted at
   `/run/secrets/` in the local gateway — the same path the file secret
   provider reads on production — with the local database's login in it.
+- **The 2-hour trial will lapse on you.** When it does, licensed
+  functionality stops serving: Perspective pages go blank, the Designer drops
+  its connection, a deploy that worked an hour ago fails. It looks like a bug
+  in your work and it is not. Run `scripts/reset-trial.sh` (both gateways,
+  safe to re-run) — it is the same reset as *Config → Licensing → Reset
+  Trial*, over the gateway API. Do **not** wipe volumes for this: the clock
+  survives a restart and lives in the volume, so a `--volumes` teardown throws
+  away your gateway state to fix what one API call fixes.
 - **Library JARs** load from `lib/core/gateway`, which can't be
   bind-mounted; copy them in once
   (`docker cp jar-files/jar/<jar> lab07-gateway:/usr/local/bin/ignition/lib/core/gateway/`)
