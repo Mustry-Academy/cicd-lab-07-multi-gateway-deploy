@@ -1,9 +1,0 @@
-{
-  "pages": {
-    "/": {
-      "title": "OEE Overview",
-      "viewPath": "OEE Overview"
-    }
-  },
-  "sharedDocks": {}
-}

@@ -1,0 +1,207 @@
+{
+  "custom": {},
+  "params": {},
+  "props": {
+    "defaultSize": {
+      "height": 900,
+      "width": 240
+    }
+  },
+  "root": {
+    "children": [
+      {
+        "children": [
+          {
+            "meta": {
+              "name": "Eyebrow"
+            },
+            "position": {
+              "basis": "auto",
+              "shrink": 0
+            },
+            "props": {
+              "style": {
+                "color": "#7aa2f7",
+                "fontSize": "11px",
+                "fontWeight": 700,
+                "letterSpacing": "2px",
+                "textTransform": "uppercase"
+              },
+              "text": "OATMAKERS · SITE 7"
+            },
+            "type": "ia.display.label"
+          },
+          {
+            "meta": {
+              "name": "Title"
+            },
+            "position": {
+              "basis": "auto",
+              "shrink": 0
+            },
+            "props": {
+              "style": {
+                "color": "#F9FAFB",
+                "fontSize": "18px",
+                "fontWeight": 800,
+                "marginTop": "6px"
+              },
+              "text": "Course showcase"
+            },
+            "type": "ia.display.label"
+          },
+          {
+            "meta": {
+              "name": "Caption"
+            },
+            "position": {
+              "basis": "auto",
+              "shrink": 0
+            },
+            "props": {
+              "style": {
+                "color": "#9aa8bd",
+                "fontSize": "12px",
+                "lineHeight": "1.45",
+                "marginTop": "8px"
+              },
+              "text": "Views built by participants during the CI/CD for Ignition course and deployed to this shared gateway."
+            },
+            "type": "ia.display.label"
+          }
+        ],
+        "meta": {
+          "name": "Header"
+        },
+        "position": {
+          "basis": "auto",
+          "shrink": 0
+        },
+        "props": {
+          "direction": "column",
+          "style": {
+            "borderBottom": "1px solid #2a3a55",
+            "padding": "18px 16px 16px 16px"
+          }
+        },
+        "type": "ia.container.flex"
+      },
+      {
+        "meta": {
+          "name": "Menu"
+        },
+        "position": {
+          "basis": "0px",
+          "grow": 1
+        },
+        "props": {
+          "items": [
+            {
+              "enabled": true,
+              "items": [],
+              "label": {
+                "icon": {
+                  "color": "#7aa2f7",
+                  "path": "material/home"
+                },
+                "text": "Home"
+              },
+              "navIcon": {
+                "color": "#7aa2f7",
+                "library": "",
+                "name": "",
+                "path": ""
+              },
+              "resetOnClick": false,
+              "showHeader": true,
+              "target": "/",
+              "visible": true
+            },
+            {
+              "enabled": true,
+              "items": [],
+              "label": {
+                "icon": {
+                  "color": "#7aa2f7",
+                  "path": "material/show_chart"
+                },
+                "text": "OEE Overview · Jasper"
+              },
+              "navIcon": {
+                "color": "#7aa2f7",
+                "library": "",
+                "name": "",
+                "path": ""
+              },
+              "resetOnClick": false,
+              "showHeader": true,
+              "target": "/oee",
+              "visible": true
+            },
+            {
+              "enabled": true,
+              "items": [],
+              "label": {
+                "icon": {
+                  "color": "#7aa2f7",
+                  "path": "material/dashboard"
+                },
+                "text": "Gateway Observatory · Rudy"
+              },
+              "navIcon": {
+                "color": "#7aa2f7",
+                "library": "",
+                "name": "",
+                "path": ""
+              },
+              "resetOnClick": false,
+              "showHeader": true,
+              "target": "/observatory",
+              "visible": true
+            },
+            {
+              "enabled": true,
+              "items": [],
+              "label": {
+                "icon": {
+                  "color": "#7aa2f7",
+                  "path": "material/person"
+                },
+                "text": "Welcome · Rudy"
+              },
+              "navIcon": {
+                "color": "#7aa2f7",
+                "library": "",
+                "name": "",
+                "path": ""
+              },
+              "resetOnClick": false,
+              "showHeader": true,
+              "target": "/welcome",
+              "visible": true
+            }
+          ],
+          "itemStyle": {
+            "color": "#E6EDF7",
+            "fontSize": "14px"
+          },
+          "style": {
+            "backgroundColor": "#15233a",
+            "color": "#E6EDF7"
+          }
+        },
+        "type": "ia.navigation.menutree"
+      }
+    ],
+    "meta": {
+      "name": "root"
+    },
+    "props": {
+      "direction": "column",
+      "style": {
+        "backgroundColor": "#15233a"
+      }
+    },
+    "type": "ia.container.flex"
+  }
+}

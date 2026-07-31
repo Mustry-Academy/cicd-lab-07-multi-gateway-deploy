@@ -7,7 +7,33 @@
     "/observatory": {
       "title": "Gateway Observatory",
       "viewPath": "Showcase/Gateway Observatory"
+    },
+    "/oee": {
+      "title": "OEE Overview",
+      "viewPath": "Showcase/OEE Overview"
+    },
+    "/welcome": {
+      "title": "Welcome",
+      "viewPath": "Showcase/Welcome"
     }
   },
-  "sharedDocks": {}
+  "sharedDocks": {
+    "cornerPriority": "top-bottom",
+    "left": [
+      {
+        "anchor": "fixed",
+        "autoBreakpoint": 480,
+        "content": "push",
+        "handle": "show",
+        "iconUrl": "",
+        "id": "sidenav",
+        "modal": false,
+        "resizable": false,
+        "show": "visible",
+        "size": 265,
+        "viewParams": {},
+        "viewPath": "Sidenav"
+      }
+    ]
+  }
 }
