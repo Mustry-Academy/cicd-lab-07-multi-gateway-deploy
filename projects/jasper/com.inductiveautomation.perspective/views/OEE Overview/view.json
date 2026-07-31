@@ -1,0 +1,3769 @@
+{
+  "custom": {},
+  "params": {},
+  "props": {
+    "defaultSize": {
+      "height": 900,
+      "width": 1440
+    }
+  },
+  "root": {
+    "children": [
+      {
+        "children": [
+          {
+            "children": [
+              {
+                "children": [
+                  {
+                    "meta": {
+                      "name": "PageTitle"
+                    },
+                    "props": {
+                      "style": {
+                        "color": "#F9FAFB",
+                        "font-size": "22px",
+                        "font-weight": "800",
+                        "letter-spacing": "0.01em"
+                      },
+                      "text": "OEE Overview"
+                    },
+                    "type": "ia.display.label"
+                  },
+                  {
+                    "meta": {
+                      "name": "PageSubtitle"
+                    },
+                    "props": {
+                      "style": {
+                        "color": "#8A96A8",
+                        "font-size": "12px",
+                        "font-weight": "600",
+                        "letter-spacing": "0.03em"
+                      },
+                      "text": "Packaging Line 1  \u00b7  Shift A  \u00b7  06:00 - 18:00"
+                    },
+                    "type": "ia.display.label"
+                  }
+                ],
+                "meta": {
+                  "name": "HeaderIdentity"
+                },
+                "props": {
+                  "direction": "column",
+                  "justify": "center",
+                  "style": {
+                    "gap": "2px"
+                  }
+                },
+                "type": "ia.container.flex"
+              },
+              {
+                "meta": {
+                  "name": "DemoChip"
+                },
+                "position": {
+                  "shrink": 0
+                },
+                "props": {
+                  "style": {
+                    "background-color": "rgba(83,133,249,0.14)",
+                    "border": "1px solid #2B2F3B",
+                    "border-radius": "999px",
+                    "color": "#C6D4FD",
+                    "font-size": "11px",
+                    "font-weight": "700",
+                    "letter-spacing": "0.06em",
+                    "padding": "7px 14px",
+                    "white-space": "nowrap"
+                  },
+                  "text": "STATIC DEMO DATA \u00b7 NO BINDINGS"
+                },
+                "type": "ia.display.label"
+              }
+            ],
+            "meta": {
+              "name": "HeaderBand"
+            },
+            "position": {
+              "basis": "52px",
+              "shrink": 0
+            },
+            "props": {
+              "alignItems": "center",
+              "direction": "row",
+              "justify": "space-between",
+              "style": {
+                "margin-bottom": "16px"
+              }
+            },
+            "type": "ia.container.flex"
+          },
+          {
+            "children": [
+              {
+                "children": [
+                  {
+                    "meta": {
+                      "name": "MachineStatusTitleLabel"
+                    },
+                    "props": {
+                      "style": {
+                        "color": "#F9FAFB",
+                        "font-size": "18px",
+                        "font-weight": "700",
+                        "letter-spacing": "0.01em"
+                      },
+                      "text": "Machine Status"
+                    },
+                    "type": "ia.display.label"
+                  },
+                  {
+                    "meta": {
+                      "name": "MachineStatusCaption"
+                    },
+                    "props": {
+                      "style": {
+                        "color": "#6B7688",
+                        "font-size": "11px",
+                        "font-weight": "600",
+                        "white-space": "nowrap"
+                      },
+                      "text": "9.5 h in cycle  \u00b7  0.9 h idle  \u00b7  0.4 h faulted  \u00b7  0.7 h setup"
+                    },
+                    "type": "ia.display.label"
+                  }
+                ],
+                "meta": {
+                  "name": "MachineStatusHeader"
+                },
+                "position": {
+                  "basis": "30px",
+                  "shrink": 0
+                },
+                "props": {
+                  "alignItems": "baseline",
+                  "direction": "row",
+                  "justify": "space-between"
+                },
+                "type": "ia.container.flex"
+              },
+              {
+                "children": [
+                  {
+                    "meta": {
+                      "name": "Segment00"
+                    },
+                    "position": {
+                      "basis": "0px",
+                      "grow": 600,
+                      "shrink": 1
+                    },
+                    "props": {
+                      "direction": "column",
+                      "style": {
+                        "background-color": "#795548",
+                        "border-right": "1px solid rgba(255,255,255,0.18)"
+                      }
+                    },
+                    "type": "ia.container.flex"
+                  },
+                  {
+                    "meta": {
+                      "name": "Segment01"
+                    },
+                    "position": {
+                      "basis": "0px",
+                      "grow": 158,
+                      "shrink": 1
+                    },
+                    "props": {
+                      "direction": "column",
+                      "style": {
+                        "background-color": "#2E7D32",
+                        "border-right": "1px solid rgba(255,255,255,0.18)"
+                      }
+                    },
+                    "type": "ia.container.flex"
+                  },
+                  {
+                    "meta": {
+                      "name": "Segment02"
+                    },
+                    "position": {
+                      "basis": "0px",
+                      "grow": 42,
+                      "shrink": 1
+                    },
+                    "props": {
+                      "direction": "column",
+                      "style": {
+                        "background-color": "#C62828",
+                        "border-right": "1px solid rgba(255,255,255,0.18)"
+                      }
+                    },
+                    "type": "ia.container.flex"
+                  },
+                  {
+                    "meta": {
+                      "name": "Segment03"
+                    },
+                    "position": {
+                      "basis": "0px",
+                      "grow": 50,
+                      "shrink": 1
+                    },
+                    "props": {
+                      "direction": "column",
+                      "style": {
+                        "background-color": "#EF6C00",
+                        "border-right": "1px solid rgba(255,255,255,0.18)"
+                      }
+                    },
+                    "type": "ia.container.flex"
+                  },
+                  {
+                    "meta": {
+                      "name": "Segment04"
+                    },
+                    "position": {
+                      "basis": "0px",
+                      "grow": 233,
+                      "shrink": 1
+                    },
+                    "props": {
+                      "direction": "column",
+                      "style": {
+                        "background-color": "#2E7D32",
+                        "border-right": "1px solid rgba(255,255,255,0.18)"
+                      }
+                    },
+                    "type": "ia.container.flex"
+                  },
+                  {
+                    "meta": {
+                      "name": "Segment05"
+                    },
+                    "position": {
+                      "basis": "0px",
+                      "grow": 50,
+                      "shrink": 1
+                    },
+                    "props": {
+                      "direction": "column",
+                      "style": {
+                        "background-color": "#795548",
+                        "border-right": "1px solid rgba(255,255,255,0.18)"
+                      }
+                    },
+                    "type": "ia.container.flex"
+                  },
+                  {
+                    "meta": {
+                      "name": "Segment06"
+                    },
+                    "position": {
+                      "basis": "0px",
+                      "grow": 83,
+                      "shrink": 1
+                    },
+                    "props": {
+                      "direction": "column",
+                      "style": {
+                        "background-color": "#2E7D32",
+                        "border-right": "1px solid rgba(255,255,255,0.18)"
+                      }
+                    },
+                    "type": "ia.container.flex"
+                  },
+                  {
+                    "meta": {
+                      "name": "Segment07"
+                    },
+                    "position": {
+                      "basis": "0px",
+                      "grow": 67,
+                      "shrink": 1
+                    },
+                    "props": {
+                      "direction": "column",
+                      "style": {
+                        "background-color": "#D84315",
+                        "border-right": "1px solid rgba(255,255,255,0.18)"
+                      }
+                    },
+                    "type": "ia.container.flex"
+                  },
+                  {
+                    "meta": {
+                      "name": "Segment08"
+                    },
+                    "position": {
+                      "basis": "0px",
+                      "grow": 183,
+                      "shrink": 1
+                    },
+                    "props": {
+                      "direction": "column",
+                      "style": {
+                        "background-color": "#2E7D32",
+                        "border-right": "1px solid rgba(255,255,255,0.18)"
+                      }
+                    },
+                    "type": "ia.container.flex"
+                  },
+                  {
+                    "meta": {
+                      "name": "Segment09"
+                    },
+                    "position": {
+                      "basis": "0px",
+                      "grow": 42,
+                      "shrink": 1
+                    },
+                    "props": {
+                      "direction": "column",
+                      "style": {
+                        "background-color": "#EF6C00",
+                        "border-right": "1px solid rgba(255,255,255,0.18)"
+                      }
+                    },
+                    "type": "ia.container.flex"
+                  },
+                  {
+                    "meta": {
+                      "name": "Segment10"
+                    },
+                    "position": {
+                      "basis": "0px",
+                      "grow": 292,
+                      "shrink": 1
+                    },
+                    "props": {
+                      "direction": "column",
+                      "style": {
+                        "background-color": "#2E7D32",
+                        "border-right": "1px solid rgba(255,255,255,0.18)"
+                      }
+                    },
+                    "type": "ia.container.flex"
+                  },
+                  {
+                    "meta": {
+                      "name": "Segment11"
+                    },
+                    "position": {
+                      "basis": "0px",
+                      "grow": 600,
+                      "shrink": 1
+                    },
+                    "props": {
+                      "direction": "column",
+                      "style": {
+                        "background-color": "#795548",
+                        "border-right": "1px solid rgba(255,255,255,0.18)"
+                      }
+                    },
+                    "type": "ia.container.flex"
+                  }
+                ],
+                "meta": {
+                  "name": "StatusTimeline"
+                },
+                "position": {
+                  "basis": "46px",
+                  "shrink": 0
+                },
+                "props": {
+                  "direction": "row",
+                  "style": {
+                    "border": "1px solid #2B2F3B",
+                    "border-radius": "8px",
+                    "overflow": "hidden"
+                  }
+                },
+                "type": "ia.container.flex"
+              },
+              {
+                "children": [
+                  {
+                    "meta": {
+                      "name": "Tick0"
+                    },
+                    "props": {
+                      "style": {
+                        "color": "#6B7688",
+                        "font-size": "11px",
+                        "font-weight": "600"
+                      },
+                      "text": "00:00"
+                    },
+                    "type": "ia.display.label"
+                  },
+                  {
+                    "meta": {
+                      "name": "Tick1"
+                    },
+                    "props": {
+                      "style": {
+                        "color": "#6B7688",
+                        "font-size": "11px",
+                        "font-weight": "600"
+                      },
+                      "text": "06:00"
+                    },
+                    "type": "ia.display.label"
+                  },
+                  {
+                    "meta": {
+                      "name": "Tick2"
+                    },
+                    "props": {
+                      "style": {
+                        "color": "#6B7688",
+                        "font-size": "11px",
+                        "font-weight": "600"
+                      },
+                      "text": "12:00"
+                    },
+                    "type": "ia.display.label"
+                  },
+                  {
+                    "meta": {
+                      "name": "Tick3"
+                    },
+                    "props": {
+                      "style": {
+                        "color": "#6B7688",
+                        "font-size": "11px",
+                        "font-weight": "600"
+                      },
+                      "text": "18:00"
+                    },
+                    "type": "ia.display.label"
+                  },
+                  {
+                    "meta": {
+                      "name": "Tick4"
+                    },
+                    "props": {
+                      "style": {
+                        "color": "#6B7688",
+                        "font-size": "11px",
+                        "font-weight": "600"
+                      },
+                      "text": "24:00"
+                    },
+                    "type": "ia.display.label"
+                  }
+                ],
+                "meta": {
+                  "name": "TimelineRuler"
+                },
+                "position": {
+                  "basis": "24px",
+                  "shrink": 0
+                },
+                "props": {
+                  "direction": "row",
+                  "justify": "space-between",
+                  "style": {
+                    "padding": "6px 2px 0"
+                  }
+                },
+                "type": "ia.container.flex"
+              },
+              {
+                "children": [
+                  {
+                    "children": [
+                      {
+                        "meta": {
+                          "name": "LegendDotInCycle"
+                        },
+                        "position": {
+                          "basis": "10px",
+                          "shrink": 0
+                        },
+                        "props": {
+                          "direction": "column",
+                          "style": {
+                            "background-color": "#2E7D32",
+                            "border-radius": "3px",
+                            "height": "10px",
+                            "width": "10px"
+                          }
+                        },
+                        "type": "ia.container.flex"
+                      },
+                      {
+                        "meta": {
+                          "name": "LegendTextInCycle"
+                        },
+                        "props": {
+                          "style": {
+                            "color": "#8A96A8",
+                            "font-size": "11px",
+                            "font-weight": "600",
+                            "white-space": "nowrap"
+                          },
+                          "text": "In Cycle"
+                        },
+                        "type": "ia.display.label"
+                      }
+                    ],
+                    "meta": {
+                      "name": "LegendInCycle"
+                    },
+                    "position": {
+                      "shrink": 0
+                    },
+                    "props": {
+                      "alignItems": "center",
+                      "direction": "row",
+                      "style": {
+                        "gap": "6px"
+                      }
+                    },
+                    "type": "ia.container.flex"
+                  },
+                  {
+                    "children": [
+                      {
+                        "meta": {
+                          "name": "LegendDotIdle"
+                        },
+                        "position": {
+                          "basis": "10px",
+                          "shrink": 0
+                        },
+                        "props": {
+                          "direction": "column",
+                          "style": {
+                            "background-color": "#EF6C00",
+                            "border-radius": "3px",
+                            "height": "10px",
+                            "width": "10px"
+                          }
+                        },
+                        "type": "ia.container.flex"
+                      },
+                      {
+                        "meta": {
+                          "name": "LegendTextIdle"
+                        },
+                        "props": {
+                          "style": {
+                            "color": "#8A96A8",
+                            "font-size": "11px",
+                            "font-weight": "600",
+                            "white-space": "nowrap"
+                          },
+                          "text": "Idle"
+                        },
+                        "type": "ia.display.label"
+                      }
+                    ],
+                    "meta": {
+                      "name": "LegendIdle"
+                    },
+                    "position": {
+                      "shrink": 0
+                    },
+                    "props": {
+                      "alignItems": "center",
+                      "direction": "row",
+                      "style": {
+                        "gap": "6px"
+                      }
+                    },
+                    "type": "ia.container.flex"
+                  },
+                  {
+                    "children": [
+                      {
+                        "meta": {
+                          "name": "LegendDotFaulted"
+                        },
+                        "position": {
+                          "basis": "10px",
+                          "shrink": 0
+                        },
+                        "props": {
+                          "direction": "column",
+                          "style": {
+                            "background-color": "#C62828",
+                            "border-radius": "3px",
+                            "height": "10px",
+                            "width": "10px"
+                          }
+                        },
+                        "type": "ia.container.flex"
+                      },
+                      {
+                        "meta": {
+                          "name": "LegendTextFaulted"
+                        },
+                        "props": {
+                          "style": {
+                            "color": "#8A96A8",
+                            "font-size": "11px",
+                            "font-weight": "600",
+                            "white-space": "nowrap"
+                          },
+                          "text": "Faulted"
+                        },
+                        "type": "ia.display.label"
+                      }
+                    ],
+                    "meta": {
+                      "name": "LegendFaulted"
+                    },
+                    "position": {
+                      "shrink": 0
+                    },
+                    "props": {
+                      "alignItems": "center",
+                      "direction": "row",
+                      "style": {
+                        "gap": "6px"
+                      }
+                    },
+                    "type": "ia.container.flex"
+                  },
+                  {
+                    "children": [
+                      {
+                        "meta": {
+                          "name": "LegendDotSetup"
+                        },
+                        "position": {
+                          "basis": "10px",
+                          "shrink": 0
+                        },
+                        "props": {
+                          "direction": "column",
+                          "style": {
+                            "background-color": "#D84315",
+                            "border-radius": "3px",
+                            "height": "10px",
+                            "width": "10px"
+                          }
+                        },
+                        "type": "ia.container.flex"
+                      },
+                      {
+                        "meta": {
+                          "name": "LegendTextSetup"
+                        },
+                        "props": {
+                          "style": {
+                            "color": "#8A96A8",
+                            "font-size": "11px",
+                            "font-weight": "600",
+                            "white-space": "nowrap"
+                          },
+                          "text": "Setup"
+                        },
+                        "type": "ia.display.label"
+                      }
+                    ],
+                    "meta": {
+                      "name": "LegendSetup"
+                    },
+                    "position": {
+                      "shrink": 0
+                    },
+                    "props": {
+                      "alignItems": "center",
+                      "direction": "row",
+                      "style": {
+                        "gap": "6px"
+                      }
+                    },
+                    "type": "ia.container.flex"
+                  },
+                  {
+                    "children": [
+                      {
+                        "meta": {
+                          "name": "LegendDotOffline"
+                        },
+                        "position": {
+                          "basis": "10px",
+                          "shrink": 0
+                        },
+                        "props": {
+                          "direction": "column",
+                          "style": {
+                            "background-color": "#795548",
+                            "border-radius": "3px",
+                            "height": "10px",
+                            "width": "10px"
+                          }
+                        },
+                        "type": "ia.container.flex"
+                      },
+                      {
+                        "meta": {
+                          "name": "LegendTextOffline"
+                        },
+                        "props": {
+                          "style": {
+                            "color": "#8A96A8",
+                            "font-size": "11px",
+                            "font-weight": "600",
+                            "white-space": "nowrap"
+                          },
+                          "text": "Offline"
+                        },
+                        "type": "ia.display.label"
+                      }
+                    ],
+                    "meta": {
+                      "name": "LegendOffline"
+                    },
+                    "position": {
+                      "shrink": 0
+                    },
+                    "props": {
+                      "alignItems": "center",
+                      "direction": "row",
+                      "style": {
+                        "gap": "6px"
+                      }
+                    },
+                    "type": "ia.container.flex"
+                  }
+                ],
+                "meta": {
+                  "name": "StatusLegend"
+                },
+                "position": {
+                  "basis": "26px",
+                  "shrink": 0
+                },
+                "props": {
+                  "alignItems": "center",
+                  "direction": "row",
+                  "style": {
+                    "gap": "18px",
+                    "padding-top": "4px"
+                  }
+                },
+                "type": "ia.container.flex"
+              }
+            ],
+            "meta": {
+              "name": "MachineStatusSection"
+            },
+            "position": {
+              "basis": "172px",
+              "shrink": 0
+            },
+            "props": {
+              "direction": "column",
+              "style": {
+                "background-color": "#1C1F26",
+                "border": "1px solid #2B2F3B",
+                "border-radius": "12px",
+                "box-shadow": "0 8px 24px rgba(0,0,0,0.32)",
+                "margin-bottom": "16px",
+                "padding": "16px"
+              }
+            },
+            "type": "ia.container.flex"
+          },
+          {
+            "children": [
+              {
+                "children": [
+                  {
+                    "meta": {
+                      "name": "OEETrendSectionTitleLabel"
+                    },
+                    "props": {
+                      "style": {
+                        "color": "#F9FAFB",
+                        "font-size": "18px",
+                        "font-weight": "700",
+                        "letter-spacing": "0.01em"
+                      },
+                      "text": "OEE Trend"
+                    },
+                    "type": "ia.display.label"
+                  },
+                  {
+                    "children": [
+                      {
+                        "children": [
+                          {
+                            "meta": {
+                              "name": "ChipDotOEETrendSectionTarget"
+                            },
+                            "position": {
+                              "basis": "8px",
+                              "shrink": 0
+                            },
+                            "props": {
+                              "direction": "column",
+                              "style": {
+                                "background-color": "#36C9B8",
+                                "border-radius": "3px",
+                                "height": "8px",
+                                "width": "8px"
+                              }
+                            },
+                            "type": "ia.container.flex"
+                          },
+                          {
+                            "meta": {
+                              "name": "ChipTextOEETrendSectionTarget"
+                            },
+                            "props": {
+                              "style": {
+                                "color": "#8A96A8",
+                                "font-size": "11px",
+                                "font-weight": "600",
+                                "white-space": "nowrap"
+                              },
+                              "text": "target 85%"
+                            },
+                            "type": "ia.display.label"
+                          }
+                        ],
+                        "meta": {
+                          "name": "ChipOEETrendSectionTarget"
+                        },
+                        "position": {
+                          "shrink": 0
+                        },
+                        "props": {
+                          "alignItems": "center",
+                          "direction": "row",
+                          "style": {
+                            "gap": "6px"
+                          }
+                        },
+                        "type": "ia.container.flex"
+                      },
+                      {
+                        "children": [
+                          {
+                            "meta": {
+                              "name": "ChipDotOEETrendSectionMinimum"
+                            },
+                            "position": {
+                              "basis": "8px",
+                              "shrink": 0
+                            },
+                            "props": {
+                              "direction": "column",
+                              "style": {
+                                "background-color": "#EA7D62",
+                                "border-radius": "3px",
+                                "height": "8px",
+                                "width": "8px"
+                              }
+                            },
+                            "type": "ia.container.flex"
+                          },
+                          {
+                            "meta": {
+                              "name": "ChipTextOEETrendSectionMinimum"
+                            },
+                            "props": {
+                              "style": {
+                                "color": "#8A96A8",
+                                "font-size": "11px",
+                                "font-weight": "600",
+                                "white-space": "nowrap"
+                              },
+                              "text": "minimum 65%"
+                            },
+                            "type": "ia.display.label"
+                          }
+                        ],
+                        "meta": {
+                          "name": "ChipOEETrendSectionMinimum"
+                        },
+                        "position": {
+                          "shrink": 0
+                        },
+                        "props": {
+                          "alignItems": "center",
+                          "direction": "row",
+                          "style": {
+                            "gap": "6px"
+                          }
+                        },
+                        "type": "ia.container.flex"
+                      },
+                      {
+                        "meta": {
+                          "name": "OEETrendSectionCaption"
+                        },
+                        "props": {
+                          "style": {
+                            "color": "#6B7688",
+                            "font-size": "11px",
+                            "font-weight": "600",
+                            "white-space": "nowrap"
+                          },
+                          "text": "shift average 72%"
+                        },
+                        "type": "ia.display.label"
+                      }
+                    ],
+                    "meta": {
+                      "name": "OEETrendSectionCaptions"
+                    },
+                    "position": {
+                      "shrink": 0
+                    },
+                    "props": {
+                      "alignItems": "center",
+                      "direction": "row",
+                      "style": {
+                        "gap": "14px"
+                      }
+                    },
+                    "type": "ia.container.flex"
+                  }
+                ],
+                "meta": {
+                  "name": "OEETrendSectionHeader"
+                },
+                "position": {
+                  "basis": "30px",
+                  "shrink": 0
+                },
+                "props": {
+                  "alignItems": "baseline",
+                  "direction": "row",
+                  "justify": "space-between"
+                },
+                "type": "ia.container.flex"
+              },
+              {
+                "children": [
+                  {
+                    "meta": {
+                      "name": "OEETrendSectionTargetLine"
+                    },
+                    "props": {
+                      "direction": "column",
+                      "style": {
+                        "border-top": "1px dashed #36C9B8",
+                        "bottom": "85.0%",
+                        "height": "0px",
+                        "left": "0px",
+                        "position": "absolute",
+                        "right": "0px"
+                      }
+                    },
+                    "type": "ia.container.flex"
+                  },
+                  {
+                    "meta": {
+                      "name": "OEETrendSectionMinimumLine"
+                    },
+                    "props": {
+                      "direction": "column",
+                      "style": {
+                        "border-top": "1px dashed #EA7D62",
+                        "bottom": "65.0%",
+                        "height": "0px",
+                        "left": "0px",
+                        "position": "absolute",
+                        "right": "0px"
+                      }
+                    },
+                    "type": "ia.container.flex"
+                  },
+                  {
+                    "children": [
+                      {
+                        "meta": {
+                          "name": "HeadOEETrendSection00"
+                        },
+                        "position": {
+                          "basis": "0px",
+                          "grow": 370,
+                          "shrink": 1
+                        },
+                        "props": {
+                          "direction": "column"
+                        },
+                        "type": "ia.container.flex"
+                      },
+                      {
+                        "meta": {
+                          "name": "BarOEETrendSection00"
+                        },
+                        "position": {
+                          "basis": "0px",
+                          "grow": 630,
+                          "shrink": 0
+                        },
+                        "props": {
+                          "direction": "column",
+                          "style": {
+                            "background-color": "#EA7D62",
+                            "border-radius": "4px 4px 0 0",
+                            "min-height": "2px"
+                          }
+                        },
+                        "type": "ia.container.flex"
+                      }
+                    ],
+                    "meta": {
+                      "name": "ColOEETrendSection00"
+                    },
+                    "position": {
+                      "basis": "0px",
+                      "grow": 1,
+                      "shrink": 1
+                    },
+                    "props": {
+                      "direction": "column",
+                      "justify": "flex-end"
+                    },
+                    "type": "ia.container.flex"
+                  },
+                  {
+                    "children": [
+                      {
+                        "meta": {
+                          "name": "HeadOEETrendSection01"
+                        },
+                        "position": {
+                          "basis": "0px",
+                          "grow": 350,
+                          "shrink": 1
+                        },
+                        "props": {
+                          "direction": "column"
+                        },
+                        "type": "ia.container.flex"
+                      },
+                      {
+                        "meta": {
+                          "name": "BarOEETrendSection01"
+                        },
+                        "position": {
+                          "basis": "0px",
+                          "grow": 650,
+                          "shrink": 0
+                        },
+                        "props": {
+                          "direction": "column",
+                          "style": {
+                            "background-color": "#5385F9",
+                            "border-radius": "4px 4px 0 0",
+                            "min-height": "2px"
+                          }
+                        },
+                        "type": "ia.container.flex"
+                      }
+                    ],
+                    "meta": {
+                      "name": "ColOEETrendSection01"
+                    },
+                    "position": {
+                      "basis": "0px",
+                      "grow": 1,
+                      "shrink": 1
+                    },
+                    "props": {
+                      "direction": "column",
+                      "justify": "flex-end"
+                    },
+                    "type": "ia.container.flex"
+                  },
+                  {
+                    "children": [
+                      {
+                        "meta": {
+                          "name": "HeadOEETrendSection02"
+                        },
+                        "position": {
+                          "basis": "0px",
+                          "grow": 390,
+                          "shrink": 1
+                        },
+                        "props": {
+                          "direction": "column"
+                        },
+                        "type": "ia.container.flex"
+                      },
+                      {
+                        "meta": {
+                          "name": "BarOEETrendSection02"
+                        },
+                        "position": {
+                          "basis": "0px",
+                          "grow": 610,
+                          "shrink": 0
+                        },
+                        "props": {
+                          "direction": "column",
+                          "style": {
+                            "background-color": "#EA7D62",
+                            "border-radius": "4px 4px 0 0",
+                            "min-height": "2px"
+                          }
+                        },
+                        "type": "ia.container.flex"
+                      }
+                    ],
+                    "meta": {
+                      "name": "ColOEETrendSection02"
+                    },
+                    "position": {
+                      "basis": "0px",
+                      "grow": 1,
+                      "shrink": 1
+                    },
+                    "props": {
+                      "direction": "column",
+                      "justify": "flex-end"
+                    },
+                    "type": "ia.container.flex"
+                  },
+                  {
+                    "children": [
+                      {
+                        "meta": {
+                          "name": "HeadOEETrendSection03"
+                        },
+                        "position": {
+                          "basis": "0px",
+                          "grow": 320,
+                          "shrink": 1
+                        },
+                        "props": {
+                          "direction": "column"
+                        },
+                        "type": "ia.container.flex"
+                      },
+                      {
+                        "meta": {
+                          "name": "BarOEETrendSection03"
+                        },
+                        "position": {
+                          "basis": "0px",
+                          "grow": 680,
+                          "shrink": 0
+                        },
+                        "props": {
+                          "direction": "column",
+                          "style": {
+                            "background-color": "#5385F9",
+                            "border-radius": "4px 4px 0 0",
+                            "min-height": "2px"
+                          }
+                        },
+                        "type": "ia.container.flex"
+                      }
+                    ],
+                    "meta": {
+                      "name": "ColOEETrendSection03"
+                    },
+                    "position": {
+                      "basis": "0px",
+                      "grow": 1,
+                      "shrink": 1
+                    },
+                    "props": {
+                      "direction": "column",
+                      "justify": "flex-end"
+                    },
+                    "type": "ia.container.flex"
+                  },
+                  {
+                    "children": [
+                      {
+                        "meta": {
+                          "name": "HeadOEETrendSection04"
+                        },
+                        "position": {
+                          "basis": "0px",
+                          "grow": 280,
+                          "shrink": 1
+                        },
+                        "props": {
+                          "direction": "column"
+                        },
+                        "type": "ia.container.flex"
+                      },
+                      {
+                        "meta": {
+                          "name": "BarOEETrendSection04"
+                        },
+                        "position": {
+                          "basis": "0px",
+                          "grow": 720,
+                          "shrink": 0
+                        },
+                        "props": {
+                          "direction": "column",
+                          "style": {
+                            "background-color": "#5385F9",
+                            "border-radius": "4px 4px 0 0",
+                            "min-height": "2px"
+                          }
+                        },
+                        "type": "ia.container.flex"
+                      }
+                    ],
+                    "meta": {
+                      "name": "ColOEETrendSection04"
+                    },
+                    "position": {
+                      "basis": "0px",
+                      "grow": 1,
+                      "shrink": 1
+                    },
+                    "props": {
+                      "direction": "column",
+                      "justify": "flex-end"
+                    },
+                    "type": "ia.container.flex"
+                  },
+                  {
+                    "children": [
+                      {
+                        "meta": {
+                          "name": "HeadOEETrendSection05"
+                        },
+                        "position": {
+                          "basis": "0px",
+                          "grow": 300,
+                          "shrink": 1
+                        },
+                        "props": {
+                          "direction": "column"
+                        },
+                        "type": "ia.container.flex"
+                      },
+                      {
+                        "meta": {
+                          "name": "BarOEETrendSection05"
+                        },
+                        "position": {
+                          "basis": "0px",
+                          "grow": 700,
+                          "shrink": 0
+                        },
+                        "props": {
+                          "direction": "column",
+                          "style": {
+                            "background-color": "#5385F9",
+                            "border-radius": "4px 4px 0 0",
+                            "min-height": "2px"
+                          }
+                        },
+                        "type": "ia.container.flex"
+                      }
+                    ],
+                    "meta": {
+                      "name": "ColOEETrendSection05"
+                    },
+                    "position": {
+                      "basis": "0px",
+                      "grow": 1,
+                      "shrink": 1
+                    },
+                    "props": {
+                      "direction": "column",
+                      "justify": "flex-end"
+                    },
+                    "type": "ia.container.flex"
+                  },
+                  {
+                    "children": [
+                      {
+                        "meta": {
+                          "name": "HeadOEETrendSection06"
+                        },
+                        "position": {
+                          "basis": "0px",
+                          "grow": 310,
+                          "shrink": 1
+                        },
+                        "props": {
+                          "direction": "column"
+                        },
+                        "type": "ia.container.flex"
+                      },
+                      {
+                        "meta": {
+                          "name": "BarOEETrendSection06"
+                        },
+                        "position": {
+                          "basis": "0px",
+                          "grow": 690,
+                          "shrink": 0
+                        },
+                        "props": {
+                          "direction": "column",
+                          "style": {
+                            "background-color": "#5385F9",
+                            "border-radius": "4px 4px 0 0",
+                            "min-height": "2px"
+                          }
+                        },
+                        "type": "ia.container.flex"
+                      }
+                    ],
+                    "meta": {
+                      "name": "ColOEETrendSection06"
+                    },
+                    "position": {
+                      "basis": "0px",
+                      "grow": 1,
+                      "shrink": 1
+                    },
+                    "props": {
+                      "direction": "column",
+                      "justify": "flex-end"
+                    },
+                    "type": "ia.container.flex"
+                  },
+                  {
+                    "children": [
+                      {
+                        "meta": {
+                          "name": "HeadOEETrendSection07"
+                        },
+                        "position": {
+                          "basis": "0px",
+                          "grow": 270,
+                          "shrink": 1
+                        },
+                        "props": {
+                          "direction": "column"
+                        },
+                        "type": "ia.container.flex"
+                      },
+                      {
+                        "meta": {
+                          "name": "BarOEETrendSection07"
+                        },
+                        "position": {
+                          "basis": "0px",
+                          "grow": 730,
+                          "shrink": 0
+                        },
+                        "props": {
+                          "direction": "column",
+                          "style": {
+                            "background-color": "#5385F9",
+                            "border-radius": "4px 4px 0 0",
+                            "min-height": "2px"
+                          }
+                        },
+                        "type": "ia.container.flex"
+                      }
+                    ],
+                    "meta": {
+                      "name": "ColOEETrendSection07"
+                    },
+                    "position": {
+                      "basis": "0px",
+                      "grow": 1,
+                      "shrink": 1
+                    },
+                    "props": {
+                      "direction": "column",
+                      "justify": "flex-end"
+                    },
+                    "type": "ia.container.flex"
+                  },
+                  {
+                    "children": [
+                      {
+                        "meta": {
+                          "name": "HeadOEETrendSection08"
+                        },
+                        "position": {
+                          "basis": "0px",
+                          "grow": 230,
+                          "shrink": 1
+                        },
+                        "props": {
+                          "direction": "column"
+                        },
+                        "type": "ia.container.flex"
+                      },
+                      {
+                        "meta": {
+                          "name": "BarOEETrendSection08"
+                        },
+                        "position": {
+                          "basis": "0px",
+                          "grow": 770,
+                          "shrink": 0
+                        },
+                        "props": {
+                          "direction": "column",
+                          "style": {
+                            "background-color": "#5385F9",
+                            "border-radius": "4px 4px 0 0",
+                            "min-height": "2px"
+                          }
+                        },
+                        "type": "ia.container.flex"
+                      }
+                    ],
+                    "meta": {
+                      "name": "ColOEETrendSection08"
+                    },
+                    "position": {
+                      "basis": "0px",
+                      "grow": 1,
+                      "shrink": 1
+                    },
+                    "props": {
+                      "direction": "column",
+                      "justify": "flex-end"
+                    },
+                    "type": "ia.container.flex"
+                  },
+                  {
+                    "children": [
+                      {
+                        "meta": {
+                          "name": "HeadOEETrendSection09"
+                        },
+                        "position": {
+                          "basis": "0px",
+                          "grow": 260,
+                          "shrink": 1
+                        },
+                        "props": {
+                          "direction": "column"
+                        },
+                        "type": "ia.container.flex"
+                      },
+                      {
+                        "meta": {
+                          "name": "BarOEETrendSection09"
+                        },
+                        "position": {
+                          "basis": "0px",
+                          "grow": 740,
+                          "shrink": 0
+                        },
+                        "props": {
+                          "direction": "column",
+                          "style": {
+                            "background-color": "#5385F9",
+                            "border-radius": "4px 4px 0 0",
+                            "min-height": "2px"
+                          }
+                        },
+                        "type": "ia.container.flex"
+                      }
+                    ],
+                    "meta": {
+                      "name": "ColOEETrendSection09"
+                    },
+                    "position": {
+                      "basis": "0px",
+                      "grow": 1,
+                      "shrink": 1
+                    },
+                    "props": {
+                      "direction": "column",
+                      "justify": "flex-end"
+                    },
+                    "type": "ia.container.flex"
+                  },
+                  {
+                    "children": [
+                      {
+                        "meta": {
+                          "name": "HeadOEETrendSection10"
+                        },
+                        "position": {
+                          "basis": "0px",
+                          "grow": 240,
+                          "shrink": 1
+                        },
+                        "props": {
+                          "direction": "column"
+                        },
+                        "type": "ia.container.flex"
+                      },
+                      {
+                        "meta": {
+                          "name": "BarOEETrendSection10"
+                        },
+                        "position": {
+                          "basis": "0px",
+                          "grow": 760,
+                          "shrink": 0
+                        },
+                        "props": {
+                          "direction": "column",
+                          "style": {
+                            "background-color": "#5385F9",
+                            "border-radius": "4px 4px 0 0",
+                            "min-height": "2px"
+                          }
+                        },
+                        "type": "ia.container.flex"
+                      }
+                    ],
+                    "meta": {
+                      "name": "ColOEETrendSection10"
+                    },
+                    "position": {
+                      "basis": "0px",
+                      "grow": 1,
+                      "shrink": 1
+                    },
+                    "props": {
+                      "direction": "column",
+                      "justify": "flex-end"
+                    },
+                    "type": "ia.container.flex"
+                  },
+                  {
+                    "children": [
+                      {
+                        "meta": {
+                          "name": "HeadOEETrendSection11"
+                        },
+                        "position": {
+                          "basis": "0px",
+                          "grow": 210,
+                          "shrink": 1
+                        },
+                        "props": {
+                          "direction": "column"
+                        },
+                        "type": "ia.container.flex"
+                      },
+                      {
+                        "meta": {
+                          "name": "BarOEETrendSection11"
+                        },
+                        "position": {
+                          "basis": "0px",
+                          "grow": 790,
+                          "shrink": 0
+                        },
+                        "props": {
+                          "direction": "column",
+                          "style": {
+                            "background-color": "#5385F9",
+                            "border-radius": "4px 4px 0 0",
+                            "min-height": "2px"
+                          }
+                        },
+                        "type": "ia.container.flex"
+                      }
+                    ],
+                    "meta": {
+                      "name": "ColOEETrendSection11"
+                    },
+                    "position": {
+                      "basis": "0px",
+                      "grow": 1,
+                      "shrink": 1
+                    },
+                    "props": {
+                      "direction": "column",
+                      "justify": "flex-end"
+                    },
+                    "type": "ia.container.flex"
+                  },
+                  {
+                    "children": [
+                      {
+                        "meta": {
+                          "name": "HeadOEETrendSection12"
+                        },
+                        "position": {
+                          "basis": "0px",
+                          "grow": 220,
+                          "shrink": 1
+                        },
+                        "props": {
+                          "direction": "column"
+                        },
+                        "type": "ia.container.flex"
+                      },
+                      {
+                        "meta": {
+                          "name": "BarOEETrendSection12"
+                        },
+                        "position": {
+                          "basis": "0px",
+                          "grow": 780,
+                          "shrink": 0
+                        },
+                        "props": {
+                          "direction": "column",
+                          "style": {
+                            "background-color": "#5385F9",
+                            "border-radius": "4px 4px 0 0",
+                            "min-height": "2px"
+                          }
+                        },
+                        "type": "ia.container.flex"
+                      }
+                    ],
+                    "meta": {
+                      "name": "ColOEETrendSection12"
+                    },
+                    "position": {
+                      "basis": "0px",
+                      "grow": 1,
+                      "shrink": 1
+                    },
+                    "props": {
+                      "direction": "column",
+                      "justify": "flex-end"
+                    },
+                    "type": "ia.container.flex"
+                  }
+                ],
+                "meta": {
+                  "name": "OEETrendSectionPlot"
+                },
+                "position": {
+                  "basis": "0px",
+                  "grow": 1,
+                  "shrink": 1
+                },
+                "props": {
+                  "alignItems": "stretch",
+                  "direction": "row",
+                  "style": {
+                    "gap": "8px",
+                    "margin-top": "10px",
+                    "position": "relative"
+                  }
+                },
+                "type": "ia.container.flex"
+              },
+              {
+                "children": [
+                  {
+                    "meta": {
+                      "name": "OEETrendSectionTick00"
+                    },
+                    "position": {
+                      "basis": "0px",
+                      "grow": 1,
+                      "shrink": 1
+                    },
+                    "props": {
+                      "style": {
+                        "color": "#6B7688",
+                        "font-size": "10px",
+                        "font-weight": "600",
+                        "text-align": "center"
+                      },
+                      "text": "06"
+                    },
+                    "type": "ia.display.label"
+                  },
+                  {
+                    "meta": {
+                      "name": "OEETrendSectionTick01"
+                    },
+                    "position": {
+                      "basis": "0px",
+                      "grow": 1,
+                      "shrink": 1
+                    },
+                    "props": {
+                      "style": {
+                        "color": "#6B7688",
+                        "font-size": "10px",
+                        "font-weight": "600",
+                        "text-align": "center"
+                      },
+                      "text": "07"
+                    },
+                    "type": "ia.display.label"
+                  },
+                  {
+                    "meta": {
+                      "name": "OEETrendSectionTick02"
+                    },
+                    "position": {
+                      "basis": "0px",
+                      "grow": 1,
+                      "shrink": 1
+                    },
+                    "props": {
+                      "style": {
+                        "color": "#6B7688",
+                        "font-size": "10px",
+                        "font-weight": "600",
+                        "text-align": "center"
+                      },
+                      "text": "08"
+                    },
+                    "type": "ia.display.label"
+                  },
+                  {
+                    "meta": {
+                      "name": "OEETrendSectionTick03"
+                    },
+                    "position": {
+                      "basis": "0px",
+                      "grow": 1,
+                      "shrink": 1
+                    },
+                    "props": {
+                      "style": {
+                        "color": "#6B7688",
+                        "font-size": "10px",
+                        "font-weight": "600",
+                        "text-align": "center"
+                      },
+                      "text": "09"
+                    },
+                    "type": "ia.display.label"
+                  },
+                  {
+                    "meta": {
+                      "name": "OEETrendSectionTick04"
+                    },
+                    "position": {
+                      "basis": "0px",
+                      "grow": 1,
+                      "shrink": 1
+                    },
+                    "props": {
+                      "style": {
+                        "color": "#6B7688",
+                        "font-size": "10px",
+                        "font-weight": "600",
+                        "text-align": "center"
+                      },
+                      "text": "10"
+                    },
+                    "type": "ia.display.label"
+                  },
+                  {
+                    "meta": {
+                      "name": "OEETrendSectionTick05"
+                    },
+                    "position": {
+                      "basis": "0px",
+                      "grow": 1,
+                      "shrink": 1
+                    },
+                    "props": {
+                      "style": {
+                        "color": "#6B7688",
+                        "font-size": "10px",
+                        "font-weight": "600",
+                        "text-align": "center"
+                      },
+                      "text": "11"
+                    },
+                    "type": "ia.display.label"
+                  },
+                  {
+                    "meta": {
+                      "name": "OEETrendSectionTick06"
+                    },
+                    "position": {
+                      "basis": "0px",
+                      "grow": 1,
+                      "shrink": 1
+                    },
+                    "props": {
+                      "style": {
+                        "color": "#6B7688",
+                        "font-size": "10px",
+                        "font-weight": "600",
+                        "text-align": "center"
+                      },
+                      "text": "12"
+                    },
+                    "type": "ia.display.label"
+                  },
+                  {
+                    "meta": {
+                      "name": "OEETrendSectionTick07"
+                    },
+                    "position": {
+                      "basis": "0px",
+                      "grow": 1,
+                      "shrink": 1
+                    },
+                    "props": {
+                      "style": {
+                        "color": "#6B7688",
+                        "font-size": "10px",
+                        "font-weight": "600",
+                        "text-align": "center"
+                      },
+                      "text": "13"
+                    },
+                    "type": "ia.display.label"
+                  },
+                  {
+                    "meta": {
+                      "name": "OEETrendSectionTick08"
+                    },
+                    "position": {
+                      "basis": "0px",
+                      "grow": 1,
+                      "shrink": 1
+                    },
+                    "props": {
+                      "style": {
+                        "color": "#6B7688",
+                        "font-size": "10px",
+                        "font-weight": "600",
+                        "text-align": "center"
+                      },
+                      "text": "14"
+                    },
+                    "type": "ia.display.label"
+                  },
+                  {
+                    "meta": {
+                      "name": "OEETrendSectionTick09"
+                    },
+                    "position": {
+                      "basis": "0px",
+                      "grow": 1,
+                      "shrink": 1
+                    },
+                    "props": {
+                      "style": {
+                        "color": "#6B7688",
+                        "font-size": "10px",
+                        "font-weight": "600",
+                        "text-align": "center"
+                      },
+                      "text": "15"
+                    },
+                    "type": "ia.display.label"
+                  },
+                  {
+                    "meta": {
+                      "name": "OEETrendSectionTick10"
+                    },
+                    "position": {
+                      "basis": "0px",
+                      "grow": 1,
+                      "shrink": 1
+                    },
+                    "props": {
+                      "style": {
+                        "color": "#6B7688",
+                        "font-size": "10px",
+                        "font-weight": "600",
+                        "text-align": "center"
+                      },
+                      "text": "16"
+                    },
+                    "type": "ia.display.label"
+                  },
+                  {
+                    "meta": {
+                      "name": "OEETrendSectionTick11"
+                    },
+                    "position": {
+                      "basis": "0px",
+                      "grow": 1,
+                      "shrink": 1
+                    },
+                    "props": {
+                      "style": {
+                        "color": "#6B7688",
+                        "font-size": "10px",
+                        "font-weight": "600",
+                        "text-align": "center"
+                      },
+                      "text": "17"
+                    },
+                    "type": "ia.display.label"
+                  },
+                  {
+                    "meta": {
+                      "name": "OEETrendSectionTick12"
+                    },
+                    "position": {
+                      "basis": "0px",
+                      "grow": 1,
+                      "shrink": 1
+                    },
+                    "props": {
+                      "style": {
+                        "color": "#6B7688",
+                        "font-size": "10px",
+                        "font-weight": "600",
+                        "text-align": "center"
+                      },
+                      "text": "18"
+                    },
+                    "type": "ia.display.label"
+                  }
+                ],
+                "meta": {
+                  "name": "OEETrendSectionTicks"
+                },
+                "position": {
+                  "basis": "16px",
+                  "shrink": 0
+                },
+                "props": {
+                  "direction": "row",
+                  "style": {
+                    "gap": "8px",
+                    "padding-top": "4px"
+                  }
+                },
+                "type": "ia.container.flex"
+              }
+            ],
+            "meta": {
+              "name": "OEETrendSection"
+            },
+            "position": {
+              "basis": "0px",
+              "grow": 1,
+              "shrink": 1
+            },
+            "props": {
+              "direction": "column",
+              "style": {
+                "background-color": "#1C1F26",
+                "border": "1px solid #2B2F3B",
+                "border-radius": "12px",
+                "box-shadow": "0 8px 24px rgba(0,0,0,0.32)",
+                "margin-bottom": "16px",
+                "padding": "16px"
+              }
+            },
+            "type": "ia.container.flex"
+          },
+          {
+            "children": [
+              {
+                "children": [
+                  {
+                    "meta": {
+                      "name": "ProductionTrendSectionTitleLabel"
+                    },
+                    "props": {
+                      "style": {
+                        "color": "#F9FAFB",
+                        "font-size": "18px",
+                        "font-weight": "700",
+                        "letter-spacing": "0.01em"
+                      },
+                      "text": "Production Trend"
+                    },
+                    "type": "ia.display.label"
+                  },
+                  {
+                    "children": [
+                      {
+                        "children": [
+                          {
+                            "meta": {
+                              "name": "ChipDotProductionTrendSectionTarget"
+                            },
+                            "position": {
+                              "basis": "8px",
+                              "shrink": 0
+                            },
+                            "props": {
+                              "direction": "column",
+                              "style": {
+                                "background-color": "#36C9B8",
+                                "border-radius": "3px",
+                                "height": "8px",
+                                "width": "8px"
+                              }
+                            },
+                            "type": "ia.container.flex"
+                          },
+                          {
+                            "meta": {
+                              "name": "ChipTextProductionTrendSectionTarget"
+                            },
+                            "props": {
+                              "style": {
+                                "color": "#8A96A8",
+                                "font-size": "11px",
+                                "font-weight": "600",
+                                "white-space": "nowrap"
+                              },
+                              "text": "target 67 / h"
+                            },
+                            "type": "ia.display.label"
+                          }
+                        ],
+                        "meta": {
+                          "name": "ChipProductionTrendSectionTarget"
+                        },
+                        "position": {
+                          "shrink": 0
+                        },
+                        "props": {
+                          "alignItems": "center",
+                          "direction": "row",
+                          "style": {
+                            "gap": "6px"
+                          }
+                        },
+                        "type": "ia.container.flex"
+                      },
+                      {
+                        "meta": {
+                          "name": "ProductionTrendSectionCaption"
+                        },
+                        "props": {
+                          "style": {
+                            "color": "#6B7688",
+                            "font-size": "11px",
+                            "font-weight": "600",
+                            "white-space": "nowrap"
+                          },
+                          "text": "pcs / hour  \u00b7  shift 700 of 800"
+                        },
+                        "type": "ia.display.label"
+                      }
+                    ],
+                    "meta": {
+                      "name": "ProductionTrendSectionCaptions"
+                    },
+                    "position": {
+                      "shrink": 0
+                    },
+                    "props": {
+                      "alignItems": "center",
+                      "direction": "row",
+                      "style": {
+                        "gap": "14px"
+                      }
+                    },
+                    "type": "ia.container.flex"
+                  }
+                ],
+                "meta": {
+                  "name": "ProductionTrendSectionHeader"
+                },
+                "position": {
+                  "basis": "30px",
+                  "shrink": 0
+                },
+                "props": {
+                  "alignItems": "baseline",
+                  "direction": "row",
+                  "justify": "space-between"
+                },
+                "type": "ia.container.flex"
+              },
+              {
+                "children": [
+                  {
+                    "meta": {
+                      "name": "ProductionTrendSectionTargetLine"
+                    },
+                    "props": {
+                      "direction": "column",
+                      "style": {
+                        "border-top": "1px dashed #36C9B8",
+                        "bottom": "74.4%",
+                        "height": "0px",
+                        "left": "0px",
+                        "position": "absolute",
+                        "right": "0px"
+                      }
+                    },
+                    "type": "ia.container.flex"
+                  },
+                  {
+                    "children": [
+                      {
+                        "meta": {
+                          "name": "HeadProductionTrendSection00"
+                        },
+                        "position": {
+                          "basis": "0px",
+                          "grow": 467,
+                          "shrink": 1
+                        },
+                        "props": {
+                          "direction": "column"
+                        },
+                        "type": "ia.container.flex"
+                      },
+                      {
+                        "meta": {
+                          "name": "BarProductionTrendSection00"
+                        },
+                        "position": {
+                          "basis": "0px",
+                          "grow": 533,
+                          "shrink": 0
+                        },
+                        "props": {
+                          "direction": "column",
+                          "style": {
+                            "background-color": "#5385F9",
+                            "border-radius": "4px 4px 0 0",
+                            "min-height": "2px"
+                          }
+                        },
+                        "type": "ia.container.flex"
+                      }
+                    ],
+                    "meta": {
+                      "name": "ColProductionTrendSection00"
+                    },
+                    "position": {
+                      "basis": "0px",
+                      "grow": 1,
+                      "shrink": 1
+                    },
+                    "props": {
+                      "direction": "column",
+                      "justify": "flex-end"
+                    },
+                    "type": "ia.container.flex"
+                  },
+                  {
+                    "children": [
+                      {
+                        "meta": {
+                          "name": "HeadProductionTrendSection01"
+                        },
+                        "position": {
+                          "basis": "0px",
+                          "grow": 667,
+                          "shrink": 1
+                        },
+                        "props": {
+                          "direction": "column"
+                        },
+                        "type": "ia.container.flex"
+                      },
+                      {
+                        "meta": {
+                          "name": "BarProductionTrendSection01"
+                        },
+                        "position": {
+                          "basis": "0px",
+                          "grow": 333,
+                          "shrink": 0
+                        },
+                        "props": {
+                          "direction": "column",
+                          "style": {
+                            "background-color": "#5385F9",
+                            "border-radius": "4px 4px 0 0",
+                            "min-height": "2px"
+                          }
+                        },
+                        "type": "ia.container.flex"
+                      }
+                    ],
+                    "meta": {
+                      "name": "ColProductionTrendSection01"
+                    },
+                    "position": {
+                      "basis": "0px",
+                      "grow": 1,
+                      "shrink": 1
+                    },
+                    "props": {
+                      "direction": "column",
+                      "justify": "flex-end"
+                    },
+                    "type": "ia.container.flex"
+                  },
+                  {
+                    "children": [
+                      {
+                        "meta": {
+                          "name": "HeadProductionTrendSection02"
+                        },
+                        "position": {
+                          "basis": "0px",
+                          "grow": 256,
+                          "shrink": 1
+                        },
+                        "props": {
+                          "direction": "column"
+                        },
+                        "type": "ia.container.flex"
+                      },
+                      {
+                        "meta": {
+                          "name": "BarProductionTrendSection02"
+                        },
+                        "position": {
+                          "basis": "0px",
+                          "grow": 744,
+                          "shrink": 0
+                        },
+                        "props": {
+                          "direction": "column",
+                          "style": {
+                            "background-color": "#36C9B8",
+                            "border-radius": "4px 4px 0 0",
+                            "min-height": "2px"
+                          }
+                        },
+                        "type": "ia.container.flex"
+                      }
+                    ],
+                    "meta": {
+                      "name": "ColProductionTrendSection02"
+                    },
+                    "position": {
+                      "basis": "0px",
+                      "grow": 1,
+                      "shrink": 1
+                    },
+                    "props": {
+                      "direction": "column",
+                      "justify": "flex-end"
+                    },
+                    "type": "ia.container.flex"
+                  },
+                  {
+                    "children": [
+                      {
+                        "meta": {
+                          "name": "HeadProductionTrendSection03"
+                        },
+                        "position": {
+                          "basis": "0px",
+                          "grow": 333,
+                          "shrink": 1
+                        },
+                        "props": {
+                          "direction": "column"
+                        },
+                        "type": "ia.container.flex"
+                      },
+                      {
+                        "meta": {
+                          "name": "BarProductionTrendSection03"
+                        },
+                        "position": {
+                          "basis": "0px",
+                          "grow": 667,
+                          "shrink": 0
+                        },
+                        "props": {
+                          "direction": "column",
+                          "style": {
+                            "background-color": "#5385F9",
+                            "border-radius": "4px 4px 0 0",
+                            "min-height": "2px"
+                          }
+                        },
+                        "type": "ia.container.flex"
+                      }
+                    ],
+                    "meta": {
+                      "name": "ColProductionTrendSection03"
+                    },
+                    "position": {
+                      "basis": "0px",
+                      "grow": 1,
+                      "shrink": 1
+                    },
+                    "props": {
+                      "direction": "column",
+                      "justify": "flex-end"
+                    },
+                    "type": "ia.container.flex"
+                  },
+                  {
+                    "children": [
+                      {
+                        "meta": {
+                          "name": "HeadProductionTrendSection04"
+                        },
+                        "position": {
+                          "basis": "0px",
+                          "grow": 500,
+                          "shrink": 1
+                        },
+                        "props": {
+                          "direction": "column"
+                        },
+                        "type": "ia.container.flex"
+                      },
+                      {
+                        "meta": {
+                          "name": "BarProductionTrendSection04"
+                        },
+                        "position": {
+                          "basis": "0px",
+                          "grow": 500,
+                          "shrink": 0
+                        },
+                        "props": {
+                          "direction": "column",
+                          "style": {
+                            "background-color": "#5385F9",
+                            "border-radius": "4px 4px 0 0",
+                            "min-height": "2px"
+                          }
+                        },
+                        "type": "ia.container.flex"
+                      }
+                    ],
+                    "meta": {
+                      "name": "ColProductionTrendSection04"
+                    },
+                    "position": {
+                      "basis": "0px",
+                      "grow": 1,
+                      "shrink": 1
+                    },
+                    "props": {
+                      "direction": "column",
+                      "justify": "flex-end"
+                    },
+                    "type": "ia.container.flex"
+                  },
+                  {
+                    "children": [
+                      {
+                        "meta": {
+                          "name": "HeadProductionTrendSection05"
+                        },
+                        "position": {
+                          "basis": "0px",
+                          "grow": 444,
+                          "shrink": 1
+                        },
+                        "props": {
+                          "direction": "column"
+                        },
+                        "type": "ia.container.flex"
+                      },
+                      {
+                        "meta": {
+                          "name": "BarProductionTrendSection05"
+                        },
+                        "position": {
+                          "basis": "0px",
+                          "grow": 556,
+                          "shrink": 0
+                        },
+                        "props": {
+                          "direction": "column",
+                          "style": {
+                            "background-color": "#5385F9",
+                            "border-radius": "4px 4px 0 0",
+                            "min-height": "2px"
+                          }
+                        },
+                        "type": "ia.container.flex"
+                      }
+                    ],
+                    "meta": {
+                      "name": "ColProductionTrendSection05"
+                    },
+                    "position": {
+                      "basis": "0px",
+                      "grow": 1,
+                      "shrink": 1
+                    },
+                    "props": {
+                      "direction": "column",
+                      "justify": "flex-end"
+                    },
+                    "type": "ia.container.flex"
+                  },
+                  {
+                    "children": [
+                      {
+                        "meta": {
+                          "name": "HeadProductionTrendSection06"
+                        },
+                        "position": {
+                          "basis": "0px",
+                          "grow": 389,
+                          "shrink": 1
+                        },
+                        "props": {
+                          "direction": "column"
+                        },
+                        "type": "ia.container.flex"
+                      },
+                      {
+                        "meta": {
+                          "name": "BarProductionTrendSection06"
+                        },
+                        "position": {
+                          "basis": "0px",
+                          "grow": 611,
+                          "shrink": 0
+                        },
+                        "props": {
+                          "direction": "column",
+                          "style": {
+                            "background-color": "#5385F9",
+                            "border-radius": "4px 4px 0 0",
+                            "min-height": "2px"
+                          }
+                        },
+                        "type": "ia.container.flex"
+                      }
+                    ],
+                    "meta": {
+                      "name": "ColProductionTrendSection06"
+                    },
+                    "position": {
+                      "basis": "0px",
+                      "grow": 1,
+                      "shrink": 1
+                    },
+                    "props": {
+                      "direction": "column",
+                      "justify": "flex-end"
+                    },
+                    "type": "ia.container.flex"
+                  },
+                  {
+                    "children": [
+                      {
+                        "meta": {
+                          "name": "HeadProductionTrendSection07"
+                        },
+                        "position": {
+                          "basis": "0px",
+                          "grow": 167,
+                          "shrink": 1
+                        },
+                        "props": {
+                          "direction": "column"
+                        },
+                        "type": "ia.container.flex"
+                      },
+                      {
+                        "meta": {
+                          "name": "BarProductionTrendSection07"
+                        },
+                        "position": {
+                          "basis": "0px",
+                          "grow": 833,
+                          "shrink": 0
+                        },
+                        "props": {
+                          "direction": "column",
+                          "style": {
+                            "background-color": "#36C9B8",
+                            "border-radius": "4px 4px 0 0",
+                            "min-height": "2px"
+                          }
+                        },
+                        "type": "ia.container.flex"
+                      }
+                    ],
+                    "meta": {
+                      "name": "ColProductionTrendSection07"
+                    },
+                    "position": {
+                      "basis": "0px",
+                      "grow": 1,
+                      "shrink": 1
+                    },
+                    "props": {
+                      "direction": "column",
+                      "justify": "flex-end"
+                    },
+                    "type": "ia.container.flex"
+                  },
+                  {
+                    "children": [
+                      {
+                        "meta": {
+                          "name": "HeadProductionTrendSection08"
+                        },
+                        "position": {
+                          "basis": "0px",
+                          "grow": 556,
+                          "shrink": 1
+                        },
+                        "props": {
+                          "direction": "column"
+                        },
+                        "type": "ia.container.flex"
+                      },
+                      {
+                        "meta": {
+                          "name": "BarProductionTrendSection08"
+                        },
+                        "position": {
+                          "basis": "0px",
+                          "grow": 444,
+                          "shrink": 0
+                        },
+                        "props": {
+                          "direction": "column",
+                          "style": {
+                            "background-color": "#5385F9",
+                            "border-radius": "4px 4px 0 0",
+                            "min-height": "2px"
+                          }
+                        },
+                        "type": "ia.container.flex"
+                      }
+                    ],
+                    "meta": {
+                      "name": "ColProductionTrendSection08"
+                    },
+                    "position": {
+                      "basis": "0px",
+                      "grow": 1,
+                      "shrink": 1
+                    },
+                    "props": {
+                      "direction": "column",
+                      "justify": "flex-end"
+                    },
+                    "type": "ia.container.flex"
+                  },
+                  {
+                    "children": [
+                      {
+                        "meta": {
+                          "name": "HeadProductionTrendSection09"
+                        },
+                        "position": {
+                          "basis": "0px",
+                          "grow": 167,
+                          "shrink": 1
+                        },
+                        "props": {
+                          "direction": "column"
+                        },
+                        "type": "ia.container.flex"
+                      },
+                      {
+                        "meta": {
+                          "name": "BarProductionTrendSection09"
+                        },
+                        "position": {
+                          "basis": "0px",
+                          "grow": 833,
+                          "shrink": 0
+                        },
+                        "props": {
+                          "direction": "column",
+                          "style": {
+                            "background-color": "#36C9B8",
+                            "border-radius": "4px 4px 0 0",
+                            "min-height": "2px"
+                          }
+                        },
+                        "type": "ia.container.flex"
+                      }
+                    ],
+                    "meta": {
+                      "name": "ColProductionTrendSection09"
+                    },
+                    "position": {
+                      "basis": "0px",
+                      "grow": 1,
+                      "shrink": 1
+                    },
+                    "props": {
+                      "direction": "column",
+                      "justify": "flex-end"
+                    },
+                    "type": "ia.container.flex"
+                  },
+                  {
+                    "children": [
+                      {
+                        "meta": {
+                          "name": "HeadProductionTrendSection10"
+                        },
+                        "position": {
+                          "basis": "0px",
+                          "grow": 167,
+                          "shrink": 1
+                        },
+                        "props": {
+                          "direction": "column"
+                        },
+                        "type": "ia.container.flex"
+                      },
+                      {
+                        "meta": {
+                          "name": "BarProductionTrendSection10"
+                        },
+                        "position": {
+                          "basis": "0px",
+                          "grow": 833,
+                          "shrink": 0
+                        },
+                        "props": {
+                          "direction": "column",
+                          "style": {
+                            "background-color": "#36C9B8",
+                            "border-radius": "4px 4px 0 0",
+                            "min-height": "2px"
+                          }
+                        },
+                        "type": "ia.container.flex"
+                      }
+                    ],
+                    "meta": {
+                      "name": "ColProductionTrendSection10"
+                    },
+                    "position": {
+                      "basis": "0px",
+                      "grow": 1,
+                      "shrink": 1
+                    },
+                    "props": {
+                      "direction": "column",
+                      "justify": "flex-end"
+                    },
+                    "type": "ia.container.flex"
+                  },
+                  {
+                    "children": [
+                      {
+                        "meta": {
+                          "name": "HeadProductionTrendSection11"
+                        },
+                        "position": {
+                          "basis": "0px",
+                          "grow": 111,
+                          "shrink": 1
+                        },
+                        "props": {
+                          "direction": "column"
+                        },
+                        "type": "ia.container.flex"
+                      },
+                      {
+                        "meta": {
+                          "name": "BarProductionTrendSection11"
+                        },
+                        "position": {
+                          "basis": "0px",
+                          "grow": 889,
+                          "shrink": 0
+                        },
+                        "props": {
+                          "direction": "column",
+                          "style": {
+                            "background-color": "#36C9B8",
+                            "border-radius": "4px 4px 0 0",
+                            "min-height": "2px"
+                          }
+                        },
+                        "type": "ia.container.flex"
+                      }
+                    ],
+                    "meta": {
+                      "name": "ColProductionTrendSection11"
+                    },
+                    "position": {
+                      "basis": "0px",
+                      "grow": 1,
+                      "shrink": 1
+                    },
+                    "props": {
+                      "direction": "column",
+                      "justify": "flex-end"
+                    },
+                    "type": "ia.container.flex"
+                  }
+                ],
+                "meta": {
+                  "name": "ProductionTrendSectionPlot"
+                },
+                "position": {
+                  "basis": "0px",
+                  "grow": 1,
+                  "shrink": 1
+                },
+                "props": {
+                  "alignItems": "stretch",
+                  "direction": "row",
+                  "style": {
+                    "gap": "8px",
+                    "margin-top": "10px",
+                    "position": "relative"
+                  }
+                },
+                "type": "ia.container.flex"
+              },
+              {
+                "children": [
+                  {
+                    "meta": {
+                      "name": "ProductionTrendSectionTick00"
+                    },
+                    "position": {
+                      "basis": "0px",
+                      "grow": 1,
+                      "shrink": 1
+                    },
+                    "props": {
+                      "style": {
+                        "color": "#6B7688",
+                        "font-size": "10px",
+                        "font-weight": "600",
+                        "text-align": "center"
+                      },
+                      "text": "07"
+                    },
+                    "type": "ia.display.label"
+                  },
+                  {
+                    "meta": {
+                      "name": "ProductionTrendSectionTick01"
+                    },
+                    "position": {
+                      "basis": "0px",
+                      "grow": 1,
+                      "shrink": 1
+                    },
+                    "props": {
+                      "style": {
+                        "color": "#6B7688",
+                        "font-size": "10px",
+                        "font-weight": "600",
+                        "text-align": "center"
+                      },
+                      "text": "08"
+                    },
+                    "type": "ia.display.label"
+                  },
+                  {
+                    "meta": {
+                      "name": "ProductionTrendSectionTick02"
+                    },
+                    "position": {
+                      "basis": "0px",
+                      "grow": 1,
+                      "shrink": 1
+                    },
+                    "props": {
+                      "style": {
+                        "color": "#6B7688",
+                        "font-size": "10px",
+                        "font-weight": "600",
+                        "text-align": "center"
+                      },
+                      "text": "09"
+                    },
+                    "type": "ia.display.label"
+                  },
+                  {
+                    "meta": {
+                      "name": "ProductionTrendSectionTick03"
+                    },
+                    "position": {
+                      "basis": "0px",
+                      "grow": 1,
+                      "shrink": 1
+                    },
+                    "props": {
+                      "style": {
+                        "color": "#6B7688",
+                        "font-size": "10px",
+                        "font-weight": "600",
+                        "text-align": "center"
+                      },
+                      "text": "10"
+                    },
+                    "type": "ia.display.label"
+                  },
+                  {
+                    "meta": {
+                      "name": "ProductionTrendSectionTick04"
+                    },
+                    "position": {
+                      "basis": "0px",
+                      "grow": 1,
+                      "shrink": 1
+                    },
+                    "props": {
+                      "style": {
+                        "color": "#6B7688",
+                        "font-size": "10px",
+                        "font-weight": "600",
+                        "text-align": "center"
+                      },
+                      "text": "11"
+                    },
+                    "type": "ia.display.label"
+                  },
+                  {
+                    "meta": {
+                      "name": "ProductionTrendSectionTick05"
+                    },
+                    "position": {
+                      "basis": "0px",
+                      "grow": 1,
+                      "shrink": 1
+                    },
+                    "props": {
+                      "style": {
+                        "color": "#6B7688",
+                        "font-size": "10px",
+                        "font-weight": "600",
+                        "text-align": "center"
+                      },
+                      "text": "12"
+                    },
+                    "type": "ia.display.label"
+                  },
+                  {
+                    "meta": {
+                      "name": "ProductionTrendSectionTick06"
+                    },
+                    "position": {
+                      "basis": "0px",
+                      "grow": 1,
+                      "shrink": 1
+                    },
+                    "props": {
+                      "style": {
+                        "color": "#6B7688",
+                        "font-size": "10px",
+                        "font-weight": "600",
+                        "text-align": "center"
+                      },
+                      "text": "13"
+                    },
+                    "type": "ia.display.label"
+                  },
+                  {
+                    "meta": {
+                      "name": "ProductionTrendSectionTick07"
+                    },
+                    "position": {
+                      "basis": "0px",
+                      "grow": 1,
+                      "shrink": 1
+                    },
+                    "props": {
+                      "style": {
+                        "color": "#6B7688",
+                        "font-size": "10px",
+                        "font-weight": "600",
+                        "text-align": "center"
+                      },
+                      "text": "14"
+                    },
+                    "type": "ia.display.label"
+                  },
+                  {
+                    "meta": {
+                      "name": "ProductionTrendSectionTick08"
+                    },
+                    "position": {
+                      "basis": "0px",
+                      "grow": 1,
+                      "shrink": 1
+                    },
+                    "props": {
+                      "style": {
+                        "color": "#6B7688",
+                        "font-size": "10px",
+                        "font-weight": "600",
+                        "text-align": "center"
+                      },
+                      "text": "15"
+                    },
+                    "type": "ia.display.label"
+                  },
+                  {
+                    "meta": {
+                      "name": "ProductionTrendSectionTick09"
+                    },
+                    "position": {
+                      "basis": "0px",
+                      "grow": 1,
+                      "shrink": 1
+                    },
+                    "props": {
+                      "style": {
+                        "color": "#6B7688",
+                        "font-size": "10px",
+                        "font-weight": "600",
+                        "text-align": "center"
+                      },
+                      "text": "16"
+                    },
+                    "type": "ia.display.label"
+                  },
+                  {
+                    "meta": {
+                      "name": "ProductionTrendSectionTick10"
+                    },
+                    "position": {
+                      "basis": "0px",
+                      "grow": 1,
+                      "shrink": 1
+                    },
+                    "props": {
+                      "style": {
+                        "color": "#6B7688",
+                        "font-size": "10px",
+                        "font-weight": "600",
+                        "text-align": "center"
+                      },
+                      "text": "17"
+                    },
+                    "type": "ia.display.label"
+                  },
+                  {
+                    "meta": {
+                      "name": "ProductionTrendSectionTick11"
+                    },
+                    "position": {
+                      "basis": "0px",
+                      "grow": 1,
+                      "shrink": 1
+                    },
+                    "props": {
+                      "style": {
+                        "color": "#6B7688",
+                        "font-size": "10px",
+                        "font-weight": "600",
+                        "text-align": "center"
+                      },
+                      "text": "18"
+                    },
+                    "type": "ia.display.label"
+                  }
+                ],
+                "meta": {
+                  "name": "ProductionTrendSectionTicks"
+                },
+                "position": {
+                  "basis": "16px",
+                  "shrink": 0
+                },
+                "props": {
+                  "direction": "row",
+                  "style": {
+                    "gap": "8px",
+                    "padding-top": "4px"
+                  }
+                },
+                "type": "ia.container.flex"
+              }
+            ],
+            "meta": {
+              "name": "ProductionTrendSection"
+            },
+            "position": {
+              "basis": "0px",
+              "grow": 1,
+              "shrink": 1
+            },
+            "props": {
+              "direction": "column",
+              "style": {
+                "background-color": "#1C1F26",
+                "border": "1px solid #2B2F3B",
+                "border-radius": "12px",
+                "box-shadow": "0 8px 24px rgba(0,0,0,0.32)",
+                "margin-bottom": "16px",
+                "padding": "16px"
+              }
+            },
+            "type": "ia.container.flex"
+          }
+        ],
+        "meta": {
+          "name": "MainColumn"
+        },
+        "position": {
+          "basis": "0px",
+          "grow": 1,
+          "shrink": 1
+        },
+        "props": {
+          "direction": "column"
+        },
+        "type": "ia.container.flex"
+      },
+      {
+        "children": [
+          {
+            "children": [
+              {
+                "meta": {
+                  "name": "OEEHeroLabel"
+                },
+                "position": {
+                  "basis": "18px",
+                  "shrink": 0
+                },
+                "props": {
+                  "style": {
+                    "color": "#8A96A8",
+                    "font-size": "11px",
+                    "font-weight": "600",
+                    "letter-spacing": "0.03em"
+                  },
+                  "text": "Overall OEE"
+                },
+                "type": "ia.display.label"
+              },
+              {
+                "meta": {
+                  "name": "OEEHeroGauge"
+                },
+                "position": {
+                  "basis": "0px",
+                  "grow": 1,
+                  "shrink": 1
+                },
+                "props": {
+                  "arc": {
+                    "color": "#507BF8",
+                    "width": 12
+                  },
+                  "arcBackground": {
+                    "color": "#507BF833"
+                  },
+                  "endAngle": 390,
+                  "label": {
+                    "maxDecimal": 0,
+                    "units": "%"
+                  },
+                  "max": 100,
+                  "min": 0,
+                  "startAngle": 150,
+                  "value": 78
+                },
+                "type": "ia.chart.simple-gauge"
+              },
+              {
+                "meta": {
+                  "name": "OEEHeroCaption"
+                },
+                "position": {
+                  "basis": "16px",
+                  "shrink": 0
+                },
+                "props": {
+                  "style": {
+                    "color": "#6B7688",
+                    "font-size": "10px",
+                    "font-weight": "600",
+                    "text-align": "center"
+                  },
+                  "text": "Availability \u00d7 Performance \u00d7 Quality"
+                },
+                "type": "ia.display.label"
+              }
+            ],
+            "meta": {
+              "name": "OEEHeroCard"
+            },
+            "position": {
+              "basis": "236px",
+              "shrink": 0
+            },
+            "props": {
+              "direction": "column",
+              "style": {
+                "background-color": "#1C1F26",
+                "border": "1px solid #2B2F3B",
+                "border-left": "3px solid #507BF8",
+                "border-radius": "12px",
+                "box-shadow": "0 8px 24px rgba(0,0,0,0.32)",
+                "gap": "4px",
+                "margin-bottom": "16px",
+                "padding": "16px"
+              }
+            },
+            "type": "ia.container.flex"
+          },
+          {
+            "children": [
+              {
+                "meta": {
+                  "name": "AvailabilityLabel"
+                },
+                "position": {
+                  "basis": "16px",
+                  "shrink": 0
+                },
+                "props": {
+                  "style": {
+                    "color": "#8A96A8",
+                    "font-size": "11px",
+                    "font-weight": "600",
+                    "letter-spacing": "0.03em",
+                    "white-space": "nowrap"
+                  },
+                  "text": "Availability"
+                },
+                "type": "ia.display.label"
+              },
+              {
+                "meta": {
+                  "name": "AvailabilityValue"
+                },
+                "position": {
+                  "basis": "36px",
+                  "shrink": 0
+                },
+                "props": {
+                  "style": {
+                    "color": "#F9FAFB",
+                    "font-size": "32px",
+                    "font-weight": "800",
+                    "line-height": "1.05",
+                    "white-space": "nowrap"
+                  },
+                  "text": "90%"
+                },
+                "type": "ia.display.label"
+              },
+              {
+                "children": [
+                  {
+                    "meta": {
+                      "name": "AvailabilityMeterFill"
+                    },
+                    "position": {
+                      "basis": "0px",
+                      "grow": 90,
+                      "shrink": 0
+                    },
+                    "props": {
+                      "direction": "column",
+                      "style": {
+                        "background-color": "#7799F9"
+                      }
+                    },
+                    "type": "ia.container.flex"
+                  },
+                  {
+                    "meta": {
+                      "name": "AvailabilityMeterRest"
+                    },
+                    "position": {
+                      "basis": "0px",
+                      "grow": 10,
+                      "shrink": 1
+                    },
+                    "props": {
+                      "direction": "column"
+                    },
+                    "type": "ia.container.flex"
+                  }
+                ],
+                "meta": {
+                  "name": "AvailabilityMeter"
+                },
+                "position": {
+                  "basis": "6px",
+                  "shrink": 0
+                },
+                "props": {
+                  "direction": "row",
+                  "style": {
+                    "background-color": "#0F1116",
+                    "border-radius": "999px",
+                    "overflow": "hidden"
+                  }
+                },
+                "type": "ia.container.flex"
+              }
+            ],
+            "meta": {
+              "name": "AvailabilityCard"
+            },
+            "position": {
+              "basis": "116px",
+              "shrink": 0
+            },
+            "props": {
+              "direction": "column",
+              "justify": "center",
+              "style": {
+                "background-color": "#1C1F26",
+                "border": "1px solid #2B2F3B",
+                "border-left": "3px solid #7799F9",
+                "border-radius": "12px",
+                "box-shadow": "0 8px 24px rgba(0,0,0,0.32)",
+                "gap": "6px",
+                "margin-bottom": "16px",
+                "padding": "16px"
+              }
+            },
+            "type": "ia.container.flex"
+          },
+          {
+            "children": [
+              {
+                "meta": {
+                  "name": "PerformanceLabel"
+                },
+                "position": {
+                  "basis": "16px",
+                  "shrink": 0
+                },
+                "props": {
+                  "style": {
+                    "color": "#8A96A8",
+                    "font-size": "11px",
+                    "font-weight": "600",
+                    "letter-spacing": "0.03em",
+                    "white-space": "nowrap"
+                  },
+                  "text": "Performance"
+                },
+                "type": "ia.display.label"
+              },
+              {
+                "meta": {
+                  "name": "PerformanceValue"
+                },
+                "position": {
+                  "basis": "36px",
+                  "shrink": 0
+                },
+                "props": {
+                  "style": {
+                    "color": "#F9FAFB",
+                    "font-size": "32px",
+                    "font-weight": "800",
+                    "line-height": "1.05",
+                    "white-space": "nowrap"
+                  },
+                  "text": "88%"
+                },
+                "type": "ia.display.label"
+              },
+              {
+                "children": [
+                  {
+                    "meta": {
+                      "name": "PerformanceMeterFill"
+                    },
+                    "position": {
+                      "basis": "0px",
+                      "grow": 88,
+                      "shrink": 0
+                    },
+                    "props": {
+                      "direction": "column",
+                      "style": {
+                        "background-color": "#36C9B8"
+                      }
+                    },
+                    "type": "ia.container.flex"
+                  },
+                  {
+                    "meta": {
+                      "name": "PerformanceMeterRest"
+                    },
+                    "position": {
+                      "basis": "0px",
+                      "grow": 12,
+                      "shrink": 1
+                    },
+                    "props": {
+                      "direction": "column"
+                    },
+                    "type": "ia.container.flex"
+                  }
+                ],
+                "meta": {
+                  "name": "PerformanceMeter"
+                },
+                "position": {
+                  "basis": "6px",
+                  "shrink": 0
+                },
+                "props": {
+                  "direction": "row",
+                  "style": {
+                    "background-color": "#0F1116",
+                    "border-radius": "999px",
+                    "overflow": "hidden"
+                  }
+                },
+                "type": "ia.container.flex"
+              }
+            ],
+            "meta": {
+              "name": "PerformanceCard"
+            },
+            "position": {
+              "basis": "116px",
+              "shrink": 0
+            },
+            "props": {
+              "direction": "column",
+              "justify": "center",
+              "style": {
+                "background-color": "#1C1F26",
+                "border": "1px solid #2B2F3B",
+                "border-left": "3px solid #36C9B8",
+                "border-radius": "12px",
+                "box-shadow": "0 8px 24px rgba(0,0,0,0.32)",
+                "gap": "6px",
+                "margin-bottom": "16px",
+                "padding": "16px"
+              }
+            },
+            "type": "ia.container.flex"
+          },
+          {
+            "children": [
+              {
+                "meta": {
+                  "name": "QualityLabel"
+                },
+                "position": {
+                  "basis": "16px",
+                  "shrink": 0
+                },
+                "props": {
+                  "style": {
+                    "color": "#8A96A8",
+                    "font-size": "11px",
+                    "font-weight": "600",
+                    "letter-spacing": "0.03em",
+                    "white-space": "nowrap"
+                  },
+                  "text": "Quality"
+                },
+                "type": "ia.display.label"
+              },
+              {
+                "meta": {
+                  "name": "QualityValue"
+                },
+                "position": {
+                  "basis": "36px",
+                  "shrink": 0
+                },
+                "props": {
+                  "style": {
+                    "color": "#F9FAFB",
+                    "font-size": "32px",
+                    "font-weight": "800",
+                    "line-height": "1.05",
+                    "white-space": "nowrap"
+                  },
+                  "text": "98%"
+                },
+                "type": "ia.display.label"
+              },
+              {
+                "children": [
+                  {
+                    "meta": {
+                      "name": "QualityMeterFill"
+                    },
+                    "position": {
+                      "basis": "0px",
+                      "grow": 98,
+                      "shrink": 0
+                    },
+                    "props": {
+                      "direction": "column",
+                      "style": {
+                        "background-color": "#EA7D62"
+                      }
+                    },
+                    "type": "ia.container.flex"
+                  },
+                  {
+                    "meta": {
+                      "name": "QualityMeterRest"
+                    },
+                    "position": {
+                      "basis": "0px",
+                      "grow": 2,
+                      "shrink": 1
+                    },
+                    "props": {
+                      "direction": "column"
+                    },
+                    "type": "ia.container.flex"
+                  }
+                ],
+                "meta": {
+                  "name": "QualityMeter"
+                },
+                "position": {
+                  "basis": "6px",
+                  "shrink": 0
+                },
+                "props": {
+                  "direction": "row",
+                  "style": {
+                    "background-color": "#0F1116",
+                    "border-radius": "999px",
+                    "overflow": "hidden"
+                  }
+                },
+                "type": "ia.container.flex"
+              }
+            ],
+            "meta": {
+              "name": "QualityCard"
+            },
+            "position": {
+              "basis": "116px",
+              "shrink": 0
+            },
+            "props": {
+              "direction": "column",
+              "justify": "center",
+              "style": {
+                "background-color": "#1C1F26",
+                "border": "1px solid #2B2F3B",
+                "border-left": "3px solid #EA7D62",
+                "border-radius": "12px",
+                "box-shadow": "0 8px 24px rgba(0,0,0,0.32)",
+                "gap": "6px",
+                "margin-bottom": "16px",
+                "padding": "16px"
+              }
+            },
+            "type": "ia.container.flex"
+          },
+          {
+            "children": [
+              {
+                "meta": {
+                  "name": "ShiftSummaryLabel"
+                },
+                "position": {
+                  "basis": "18px",
+                  "shrink": 0
+                },
+                "props": {
+                  "style": {
+                    "color": "#8A96A8",
+                    "font-size": "11px",
+                    "font-weight": "600",
+                    "letter-spacing": "0.03em"
+                  },
+                  "text": "Shift Summary"
+                },
+                "type": "ia.display.label"
+              },
+              {
+                "children": [
+                  {
+                    "meta": {
+                      "name": "SummaryKey0"
+                    },
+                    "props": {
+                      "style": {
+                        "color": "#6B7688",
+                        "font-size": "12px",
+                        "font-weight": "600",
+                        "white-space": "nowrap"
+                      },
+                      "text": "Planned time"
+                    },
+                    "type": "ia.display.label"
+                  },
+                  {
+                    "meta": {
+                      "name": "SummaryValue0"
+                    },
+                    "props": {
+                      "style": {
+                        "color": "#F9FAFB",
+                        "font-size": "13px",
+                        "font-weight": "700",
+                        "white-space": "nowrap"
+                      },
+                      "text": "12.0 h"
+                    },
+                    "type": "ia.display.label"
+                  }
+                ],
+                "meta": {
+                  "name": "SummaryRow0"
+                },
+                "position": {
+                  "basis": "22px",
+                  "shrink": 0
+                },
+                "props": {
+                  "alignItems": "baseline",
+                  "direction": "row",
+                  "justify": "space-between"
+                },
+                "type": "ia.container.flex"
+              },
+              {
+                "children": [
+                  {
+                    "meta": {
+                      "name": "SummaryKey1"
+                    },
+                    "props": {
+                      "style": {
+                        "color": "#6B7688",
+                        "font-size": "12px",
+                        "font-weight": "600",
+                        "white-space": "nowrap"
+                      },
+                      "text": "Runtime"
+                    },
+                    "type": "ia.display.label"
+                  },
+                  {
+                    "meta": {
+                      "name": "SummaryValue1"
+                    },
+                    "props": {
+                      "style": {
+                        "color": "#F9FAFB",
+                        "font-size": "13px",
+                        "font-weight": "700",
+                        "white-space": "nowrap"
+                      },
+                      "text": "10.8 h"
+                    },
+                    "type": "ia.display.label"
+                  }
+                ],
+                "meta": {
+                  "name": "SummaryRow1"
+                },
+                "position": {
+                  "basis": "22px",
+                  "shrink": 0
+                },
+                "props": {
+                  "alignItems": "baseline",
+                  "direction": "row",
+                  "justify": "space-between"
+                },
+                "type": "ia.container.flex"
+              },
+              {
+                "children": [
+                  {
+                    "meta": {
+                      "name": "SummaryKey2"
+                    },
+                    "props": {
+                      "style": {
+                        "color": "#6B7688",
+                        "font-size": "12px",
+                        "font-weight": "600",
+                        "white-space": "nowrap"
+                      },
+                      "text": "Downtime"
+                    },
+                    "type": "ia.display.label"
+                  },
+                  {
+                    "meta": {
+                      "name": "SummaryValue2"
+                    },
+                    "props": {
+                      "style": {
+                        "color": "#F9FAFB",
+                        "font-size": "13px",
+                        "font-weight": "700",
+                        "white-space": "nowrap"
+                      },
+                      "text": "1.2 h"
+                    },
+                    "type": "ia.display.label"
+                  }
+                ],
+                "meta": {
+                  "name": "SummaryRow2"
+                },
+                "position": {
+                  "basis": "22px",
+                  "shrink": 0
+                },
+                "props": {
+                  "alignItems": "baseline",
+                  "direction": "row",
+                  "justify": "space-between"
+                },
+                "type": "ia.container.flex"
+              },
+              {
+                "children": [
+                  {
+                    "meta": {
+                      "name": "SummaryKey3"
+                    },
+                    "props": {
+                      "style": {
+                        "color": "#6B7688",
+                        "font-size": "12px",
+                        "font-weight": "600",
+                        "white-space": "nowrap"
+                      },
+                      "text": "Good parts"
+                    },
+                    "type": "ia.display.label"
+                  },
+                  {
+                    "meta": {
+                      "name": "SummaryValue3"
+                    },
+                    "props": {
+                      "style": {
+                        "color": "#F9FAFB",
+                        "font-size": "13px",
+                        "font-weight": "700",
+                        "white-space": "nowrap"
+                      },
+                      "text": "686"
+                    },
+                    "type": "ia.display.label"
+                  }
+                ],
+                "meta": {
+                  "name": "SummaryRow3"
+                },
+                "position": {
+                  "basis": "22px",
+                  "shrink": 0
+                },
+                "props": {
+                  "alignItems": "baseline",
+                  "direction": "row",
+                  "justify": "space-between"
+                },
+                "type": "ia.container.flex"
+              },
+              {
+                "children": [
+                  {
+                    "meta": {
+                      "name": "SummaryKey4"
+                    },
+                    "props": {
+                      "style": {
+                        "color": "#6B7688",
+                        "font-size": "12px",
+                        "font-weight": "600",
+                        "white-space": "nowrap"
+                      },
+                      "text": "Scrap"
+                    },
+                    "type": "ia.display.label"
+                  },
+                  {
+                    "meta": {
+                      "name": "SummaryValue4"
+                    },
+                    "props": {
+                      "style": {
+                        "color": "#F9FAFB",
+                        "font-size": "13px",
+                        "font-weight": "700",
+                        "white-space": "nowrap"
+                      },
+                      "text": "14"
+                    },
+                    "type": "ia.display.label"
+                  }
+                ],
+                "meta": {
+                  "name": "SummaryRow4"
+                },
+                "position": {
+                  "basis": "22px",
+                  "shrink": 0
+                },
+                "props": {
+                  "alignItems": "baseline",
+                  "direction": "row",
+                  "justify": "space-between"
+                },
+                "type": "ia.container.flex"
+              }
+            ],
+            "meta": {
+              "name": "ShiftSummaryCard"
+            },
+            "position": {
+              "basis": "0px",
+              "grow": 1,
+              "shrink": 1
+            },
+            "props": {
+              "direction": "column",
+              "style": {
+                "background-color": "#1C1F26",
+                "border": "1px solid #2B2F3B",
+                "border-radius": "12px",
+                "box-shadow": "0 8px 24px rgba(0,0,0,0.32)",
+                "gap": "8px",
+                "margin-bottom": "0px",
+                "padding": "16px"
+              }
+            },
+            "type": "ia.container.flex"
+          }
+        ],
+        "meta": {
+          "name": "RightSidebarPanel"
+        },
+        "position": {
+          "basis": "300px",
+          "shrink": 0
+        },
+        "props": {
+          "direction": "column",
+          "style": {
+            "background-color": "#16181D",
+            "border": "1px solid #2B2F3B",
+            "border-radius": "12px",
+            "padding": "12px"
+          }
+        },
+        "type": "ia.container.flex"
+      }
+    ],
+    "meta": {
+      "name": "root"
+    },
+    "props": {
+      "direction": "row",
+      "style": {
+        "background": "linear-gradient(180deg, #16181D 0%, #1C1F26 100%)",
+        "box-sizing": "border-box",
+        "gap": "16px",
+        "height": "100%",
+        "min-height": "760px",
+        "padding": "24px",
+        "width": "100%"
+      }
+    },
+    "type": "ia.container.flex"
+  }
+}
