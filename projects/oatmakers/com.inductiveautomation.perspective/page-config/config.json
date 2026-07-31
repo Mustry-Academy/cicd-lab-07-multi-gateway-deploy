@@ -3,6 +3,11 @@
     "/": {
       "title": "Oatmakers",
       "viewPath": "home"
+    },
+    "/observatory": {
+      "title": "Gateway Observatory",
+      "viewPath": "Showcase/Gateway Observatory"
     }
-  }
+  },
+  "sharedDocks": {}
 }

@@ -1,0 +1,29 @@
+{
+  "base": {
+    "style": {
+      "backgroundColor": "#D7FF64",
+      "borderColor": "#D7FF64",
+      "borderRadius": "0px",
+      "borderStyle": "solid",
+      "borderWidth": "2px",
+      "boxShadow": "4px 4px 0 #6EE7F2",
+      "color": "#0B0C0F",
+      "fontFamily": "Consolas, monospace",
+      "fontSize": "15px",
+      "fontWeight": "800",
+      "letterSpacing": "1.5px",
+      "transition": "all 180ms ease"
+    }
+  },
+  "variants": [
+    {
+      "pseudo": "hover",
+      "style": {
+        "backgroundColor": "#FF6B5E",
+        "borderColor": "#FF6B5E",
+        "boxShadow": "8px 8px 0 #D7FF64",
+        "transform": "translate(-2px,-2px)"
+      }
+    }
+  ]
+}

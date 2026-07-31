@@ -4,3 +4,5 @@ gateway: oatmakers-site-7
 projects:
   oatmakers: v2.0.3
   jdingus: v1.0.0
+  jasper: v1.0.1
+

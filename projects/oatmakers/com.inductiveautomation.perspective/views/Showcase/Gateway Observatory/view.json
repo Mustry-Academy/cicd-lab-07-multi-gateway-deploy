@@ -1,0 +1,1654 @@
+{
+  "custom": {
+    "interactions": 0,
+    "scene": 0
+  },
+  "params": {},
+  "props": {
+    "defaultSize": {
+      "height": 900,
+      "width": 1440
+    }
+  },
+  "root": {
+    "children": [
+      {
+        "children": [
+          {
+            "children": [
+              {
+                "meta": {
+                  "name": "FieldNote"
+                },
+                "position": {
+                  "basis": "30px",
+                  "shrink": 0
+                },
+                "props": {
+                  "style": {
+                    "color": "#0B0C0F",
+                    "fontFamily": "Consolas, monospace",
+                    "fontSize": "12px",
+                    "fontWeight": "700",
+                    "letterSpacing": "2px"
+                  },
+                  "text": "FIELD NOTE / 07 / RUDY 774"
+                },
+                "type": "ia.display.label"
+              },
+              {
+                "meta": {
+                  "name": "PageTitle"
+                },
+                "position": {
+                  "basis": "64px",
+                  "shrink": 0
+                },
+                "props": {
+                  "style": {
+                    "color": "#0B0C0F",
+                    "fontFamily": "Arial, Helvetica, sans-serif",
+                    "fontSize": "48px",
+                    "fontWeight": "900",
+                    "letterSpacing": "-2px",
+                    "lineHeight": "0.95"
+                  },
+                  "text": "GATEWAY OBSERVATORY"
+                },
+                "type": "ia.display.label"
+              },
+              {
+                "meta": {
+                  "name": "PageSubtitle"
+                },
+                "position": {
+                  "basis": "28px",
+                  "shrink": 0
+                },
+                "props": {
+                  "style": {
+                    "color": "#363A43",
+                    "fontFamily": "Consolas, monospace",
+                    "fontSize": "13px",
+                    "letterSpacing": "0.8px"
+                  },
+                  "text": "A live instrument for the local Ignition 8.3 test node"
+                },
+                "type": "ia.display.label"
+              }
+            ],
+            "meta": {
+              "name": "HeaderIdentity"
+            },
+            "position": {
+              "basis": "760px",
+              "grow": 1
+            },
+            "props": {
+              "direction": "column",
+              "justify": "center"
+            },
+            "type": "ia.container.flex"
+          },
+          {
+            "children": [
+              {
+                "meta": {
+                  "name": "LiveClock"
+                },
+                "position": {
+                  "basis": "58px",
+                  "shrink": 0
+                },
+                "propConfig": {
+                  "props.text": {
+                    "binding": {
+                      "config": {
+                        "expression": "dateFormat(now(1000), \"HH:mm:ss\")"
+                      },
+                      "type": "expr"
+                    }
+                  }
+                },
+                "props": {
+                  "style": {
+                    "color": "#0B0C0F",
+                    "fontFamily": "Consolas, monospace",
+                    "fontSize": "42px",
+                    "fontWeight": "700",
+                    "textAlign": "right"
+                  }
+                },
+                "type": "ia.display.label"
+              },
+              {
+                "meta": {
+                  "name": "GatewayName"
+                },
+                "position": {
+                  "basis": "28px",
+                  "shrink": 0
+                },
+                "propConfig": {
+                  "props.text": {
+                    "binding": {
+                      "config": {
+                        "fallbackDelay": 2.5,
+                        "mode": "direct",
+                        "tagPath": "[System]Gateway/SystemName"
+                      },
+                      "transforms": [
+                        {
+                          "code": "\tif value is None:\n\t\treturn u\"NODE / UNAVAILABLE\"\n\treturn u\"NODE / \" + unicode(value).upper()",
+                          "type": "script"
+                        }
+                      ],
+                      "type": "tag"
+                    }
+                  }
+                },
+                "props": {
+                  "style": {
+                    "color": "#0B0C0F",
+                    "fontFamily": "Consolas, monospace",
+                    "fontSize": "13px",
+                    "fontWeight": "700",
+                    "letterSpacing": "1.5px",
+                    "textAlign": "right"
+                  }
+                },
+                "type": "ia.display.label"
+              },
+              {
+                "meta": {
+                  "name": "LicenseState"
+                },
+                "position": {
+                  "basis": "24px",
+                  "shrink": 0
+                },
+                "propConfig": {
+                  "props.text": {
+                    "binding": {
+                      "config": {
+                        "fallbackDelay": 2.5,
+                        "mode": "direct",
+                        "tagPath": "[System]Gateway/LicenseState"
+                      },
+                      "transforms": [
+                        {
+                          "code": "\tif value is None:\n\t\treturn u\"LICENSE / UNAVAILABLE\"\n\treturn u\"LICENSE / \" + unicode(value).upper()",
+                          "type": "script"
+                        }
+                      ],
+                      "type": "tag"
+                    }
+                  }
+                },
+                "props": {
+                  "style": {
+                    "color": "#A84036",
+                    "fontFamily": "Consolas, monospace",
+                    "fontSize": "11px",
+                    "fontWeight": "700",
+                    "letterSpacing": "1px",
+                    "textAlign": "right"
+                  }
+                },
+                "type": "ia.display.label"
+              }
+            ],
+            "meta": {
+              "name": "HeaderTelemetry"
+            },
+            "position": {
+              "basis": "310px",
+              "shrink": 0
+            },
+            "props": {
+              "direction": "column",
+              "justify": "center"
+            },
+            "type": "ia.container.flex"
+          }
+        ],
+        "meta": {
+          "name": "HeaderBand"
+        },
+        "position": {
+          "basis": "150px",
+          "shrink": 0
+        },
+        "props": {
+          "alignItems": "center",
+          "justify": "space-between",
+          "style": {
+            "backgroundColor": "#F4F0E6",
+            "borderBottomColor": "#D7FF64",
+            "borderBottomStyle": "solid",
+            "borderBottomWidth": "8px",
+            "boxSizing": "border-box",
+            "overflow": "hidden",
+            "padding": "10px 24px"
+          }
+        },
+        "type": "ia.container.flex"
+      },
+      {
+        "children": [
+          {
+            "children": [
+              {
+                "children": [
+                  {
+                    "meta": {
+                      "name": "SignalIndex"
+                    },
+                    "position": {
+                      "basis": "220px",
+                      "grow": 1
+                    },
+                    "props": {
+                      "style": {
+                        "color": "#D7FF64",
+                        "fontFamily": "Consolas, monospace",
+                        "fontSize": "13px",
+                        "fontWeight": "700",
+                        "letterSpacing": "1.5px"
+                      },
+                      "text": "01 / SIGNAL CORE"
+                    },
+                    "type": "ia.display.label"
+                  },
+                  {
+                    "meta": {
+                      "name": "SignalRuntime"
+                    },
+                    "position": {
+                      "basis": "230px",
+                      "grow": 1
+                    },
+                    "props": {
+                      "style": {
+                        "color": "#9299A6",
+                        "fontFamily": "Consolas, monospace",
+                        "fontSize": "11px",
+                        "letterSpacing": "1px",
+                        "textAlign": "right"
+                      },
+                      "text": "PERSPECTIVE TIMER → JYTHON TRANSFORM"
+                    },
+                    "type": "ia.display.label"
+                  }
+                ],
+                "meta": {
+                  "name": "SignalHeader"
+                },
+                "position": {
+                  "basis": "54px",
+                  "shrink": 0
+                },
+                "props": {
+                  "alignItems": "center",
+                  "justify": "space-between",
+                  "style": {
+                    "overflow": "hidden"
+                  }
+                },
+                "type": "ia.container.flex"
+              },
+              {
+                "children": [
+                  {
+                    "children": [
+                      {
+                        "meta": {
+                          "name": "SweepGlyph"
+                        },
+                        "position": {
+                          "basis": "88px",
+                          "shrink": 0
+                        },
+                        "propConfig": {
+                          "props.style.transform": {
+                            "binding": {
+                              "config": {
+                                "expression": "now(1000)"
+                              },
+                              "transforms": [
+                                {
+                                  "code": "\tmillis \u003d value.getTime()\n\tscene \u003d int(self.view.custom.scene) % 3\n\tperiods \u003d (12000, 6500, 9000)\n\tdirections \u003d (1, -1, 1)\n\tperiod \u003d periods[scene]\n\tangle \u003d int((millis % period) * 360.0 / period)\n\tangle \u003d (angle * directions[scene]) + (scene * 45)\n\treturn \"rotate(%ddeg)\" % angle",
+                                  "type": "script"
+                                }
+                              ],
+                              "type": "expr"
+                            }
+                          }
+                        },
+                        "props": {
+                          "style": {
+                            "alignItems": "center",
+                            "color": "#6EE7F2",
+                            "display": "flex",
+                            "fontFamily": "Arial, Helvetica, sans-serif",
+                            "fontSize": "80px",
+                            "fontWeight": "100",
+                            "height": "88px",
+                            "justifyContent": "center",
+                            "lineHeight": "1",
+                            "textAlign": "center",
+                            "transformOrigin": "center center",
+                            "width": "88px"
+                          },
+                          "text": "+"
+                        },
+                        "type": "ia.display.label"
+                      },
+                      {
+                        "meta": {
+                          "name": "SweepCaption"
+                        },
+                        "position": {
+                          "basis": "30px",
+                          "shrink": 0
+                        },
+                        "props": {
+                          "style": {
+                            "color": "#9299A6",
+                            "fontFamily": "Consolas, monospace",
+                            "fontSize": "10px",
+                            "letterSpacing": "1.5px",
+                            "marginTop": "20px",
+                            "textAlign": "center"
+                          },
+                          "text": "ROTATION / 12 SEC"
+                        },
+                        "type": "ia.display.label"
+                      }
+                    ],
+                    "meta": {
+                      "name": "SweepPod"
+                    },
+                    "position": {
+                      "basis": "160px",
+                      "grow": 1
+                    },
+                    "props": {
+                      "alignItems": "center",
+                      "direction": "column",
+                      "justify": "center",
+                      "style": {
+                        "overflow": "hidden"
+                      }
+                    },
+                    "type": "ia.container.flex"
+                  },
+                  {
+                    "children": [
+                      {
+                        "meta": {
+                          "name": "PulseGlyph"
+                        },
+                        "position": {
+                          "basis": "88px",
+                          "shrink": 0
+                        },
+                        "propConfig": {
+                          "props.style.opacity": {
+                            "binding": {
+                              "config": {
+                                "expression": "now(1000)"
+                              },
+                              "transforms": [
+                                {
+                                  "code": "\tmillis \u003d value.getTime()\n\tscene \u003d int(self.view.custom.scene) % 3\n\tperiod \u003d (2000, 900, 3200)[scene]\n\tphase \u003d (millis % period) / (period / 2.0)\n\tif phase \u003e 1.0:\n\t\tphase \u003d 2.0 - phase\n\tlow \u003d (0.25, 0.15, 0.45)[scene]\n\treturn low + (phase * (1.0 - low))",
+                                  "type": "script"
+                                }
+                              ],
+                              "type": "expr"
+                            }
+                          }
+                        },
+                        "props": {
+                          "style": {
+                            "alignItems": "center",
+                            "color": "#FF6B5E",
+                            "display": "flex",
+                            "fontFamily": "Arial, Helvetica, sans-serif",
+                            "fontSize": "80px",
+                            "height": "88px",
+                            "justifyContent": "center",
+                            "lineHeight": "1",
+                            "textAlign": "center",
+                            "width": "88px"
+                          },
+                          "text": "●"
+                        },
+                        "type": "ia.display.label"
+                      },
+                      {
+                        "meta": {
+                          "name": "PulseCaption"
+                        },
+                        "position": {
+                          "basis": "30px",
+                          "shrink": 0
+                        },
+                        "props": {
+                          "style": {
+                            "color": "#9299A6",
+                            "fontFamily": "Consolas, monospace",
+                            "fontSize": "10px",
+                            "letterSpacing": "1.5px",
+                            "marginTop": "20px",
+                            "textAlign": "center"
+                          },
+                          "text": "OPACITY / 2 SEC"
+                        },
+                        "type": "ia.display.label"
+                      }
+                    ],
+                    "meta": {
+                      "name": "PulsePod"
+                    },
+                    "position": {
+                      "basis": "160px",
+                      "grow": 1
+                    },
+                    "props": {
+                      "alignItems": "center",
+                      "direction": "column",
+                      "justify": "center",
+                      "style": {
+                        "overflow": "hidden"
+                      }
+                    },
+                    "type": "ia.container.flex"
+                  },
+                  {
+                    "children": [
+                      {
+                        "meta": {
+                          "name": "DriftGlyph"
+                        },
+                        "position": {
+                          "basis": "88px",
+                          "shrink": 0
+                        },
+                        "propConfig": {
+                          "props.style.transform": {
+                            "binding": {
+                              "config": {
+                                "expression": "now(1000)"
+                              },
+                              "transforms": [
+                                {
+                                  "code": "\tmillis \u003d value.getTime()\n\tscene \u003d int(self.view.custom.scene) % 3\n\tperiod \u003d (5000, 2600, 7000)[scene]\n\tamplitude \u003d (32, 48, 18)[scene]\n\tphase \u003d (millis % period) / (period / 2.0)\n\tif phase \u003e 1.0:\n\t\tphase \u003d 2.0 - phase\n\toffset \u003d int(-amplitude + (phase * amplitude * 2))\n\tskew \u003d (0, 6, -6)[scene]\n\treturn \"translateX(%dpx) skewX(%ddeg)\" % (offset, skew)",
+                                  "type": "script"
+                                }
+                              ],
+                              "type": "expr"
+                            }
+                          }
+                        },
+                        "props": {
+                          "style": {
+                            "alignItems": "center",
+                            "color": "#D7FF64",
+                            "display": "flex",
+                            "fontFamily": "Consolas, monospace",
+                            "fontSize": "36px",
+                            "fontWeight": "900",
+                            "height": "88px",
+                            "justifyContent": "center",
+                            "letterSpacing": "-2px",
+                            "lineHeight": "1",
+                            "textAlign": "center",
+                            "width": "88px"
+                          },
+                          "text": "774"
+                        },
+                        "type": "ia.display.label"
+                      },
+                      {
+                        "meta": {
+                          "name": "DriftCaption"
+                        },
+                        "position": {
+                          "basis": "30px",
+                          "shrink": 0
+                        },
+                        "props": {
+                          "style": {
+                            "color": "#9299A6",
+                            "fontFamily": "Consolas, monospace",
+                            "fontSize": "10px",
+                            "letterSpacing": "1.5px",
+                            "marginTop": "20px",
+                            "textAlign": "center"
+                          },
+                          "text": "DRIFT / 5 SEC"
+                        },
+                        "type": "ia.display.label"
+                      }
+                    ],
+                    "meta": {
+                      "name": "DriftPod"
+                    },
+                    "position": {
+                      "basis": "160px",
+                      "grow": 1
+                    },
+                    "props": {
+                      "alignItems": "center",
+                      "direction": "column",
+                      "justify": "center",
+                      "style": {
+                        "overflow": "hidden"
+                      }
+                    },
+                    "type": "ia.container.flex"
+                  }
+                ],
+                "meta": {
+                  "name": "MotionRow"
+                },
+                "position": {
+                  "basis": "240px",
+                  "grow": 1,
+                  "shrink": 0
+                },
+                "props": {
+                  "justify": "space-evenly",
+                  "style": {
+                    "backgroundColor": "#0B0C0F",
+                    "borderColor": "#2B3039",
+                    "borderStyle": "solid",
+                    "borderWidth": "1px",
+                    "boxSizing": "border-box",
+                    "overflow": "hidden",
+                    "padding": "12px"
+                  },
+                  "wrap": "wrap"
+                },
+                "type": "ia.container.flex"
+              },
+              {
+                "meta": {
+                  "name": "SignalStatement"
+                },
+                "position": {
+                  "basis": "58px",
+                  "shrink": 0
+                },
+                "props": {
+                  "style": {
+                    "color": "#F4F0E6",
+                    "fontFamily": "Consolas, monospace",
+                    "fontSize": "12px",
+                    "letterSpacing": "0.8px",
+                    "lineHeight": "1.5",
+                    "paddingTop": "12px"
+                  },
+                  "text": "Three independent client bindings. No GIFs. No video. Every frame is computed inside the Perspective session."
+                },
+                "type": "ia.display.label"
+              }
+            ],
+            "meta": {
+              "name": "SignalPanel"
+            },
+            "position": {
+              "basis": "500px",
+              "grow": 1
+            },
+            "props": {
+              "direction": "column",
+              "style": {
+                "backgroundColor": "#111318",
+                "borderColor": "#D7FF64",
+                "borderStyle": "solid",
+                "borderWidth": "2px",
+                "boxShadow": "7px 7px 0 #D7FF64",
+                "boxSizing": "border-box",
+                "margin": "10px",
+                "minHeight": "390px",
+                "overflow": "hidden",
+                "padding": "18px"
+              }
+            },
+            "type": "ia.container.flex"
+          },
+          {
+            "children": [
+              {
+                "children": [
+                  {
+                    "meta": {
+                      "name": "MetricsIndex"
+                    },
+                    "position": {
+                      "basis": "220px",
+                      "grow": 1
+                    },
+                    "props": {
+                      "style": {
+                        "color": "#0B0C0F",
+                        "fontFamily": "Consolas, monospace",
+                        "fontSize": "13px",
+                        "fontWeight": "700",
+                        "letterSpacing": "1.5px"
+                      },
+                      "text": "02 / LIVE LOAD"
+                    },
+                    "type": "ia.display.label"
+                  },
+                  {
+                    "meta": {
+                      "name": "MetricsSource"
+                    },
+                    "position": {
+                      "basis": "220px",
+                      "grow": 1
+                    },
+                    "props": {
+                      "style": {
+                        "color": "#535965",
+                        "fontFamily": "Consolas, monospace",
+                        "fontSize": "11px",
+                        "letterSpacing": "1px",
+                        "textAlign": "right"
+                      },
+                      "text": "[SYSTEM] / PERFORMANCE"
+                    },
+                    "type": "ia.display.label"
+                  }
+                ],
+                "meta": {
+                  "name": "MetricsHeader"
+                },
+                "position": {
+                  "basis": "54px",
+                  "shrink": 0
+                },
+                "props": {
+                  "alignItems": "center",
+                  "justify": "space-between",
+                  "style": {
+                    "overflow": "hidden"
+                  }
+                },
+                "type": "ia.container.flex"
+              },
+              {
+                "children": [
+                  {
+                    "children": [
+                      {
+                        "meta": {
+                          "name": "CpuTitle"
+                        },
+                        "position": {
+                          "basis": "38px",
+                          "shrink": 0
+                        },
+                        "props": {
+                          "style": {
+                            "color": "#0B0C0F",
+                            "fontFamily": "Consolas, monospace",
+                            "fontSize": "12px",
+                            "fontWeight": "700",
+                            "letterSpacing": "1.5px",
+                            "paddingLeft": "12px"
+                          },
+                          "text": "PROCESSOR / LIVE"
+                        },
+                        "type": "ia.display.label"
+                      },
+                      {
+                        "meta": {
+                          "name": "CpuGauge"
+                        },
+                        "position": {
+                          "basis": "220px",
+                          "grow": 1
+                        },
+                        "propConfig": {
+                          "props.value": {
+                            "binding": {
+                              "config": {
+                                "fallbackDelay": 2.5,
+                                "mode": "direct",
+                                "tagPath": "[System]Gateway/Performance/CPU Usage"
+                              },
+                              "type": "tag"
+                            }
+                          }
+                        },
+                        "props": {
+                          "arc": {
+                            "color": "#00A6B8CC",
+                            "width": 2
+                          },
+                          "arcBackground": {
+                            "color": "#00A6B833"
+                          },
+                          "endAngle": 390,
+                          "label": {
+                            "maxDecimal": 1,
+                            "units": "% CPU"
+                          },
+                          "startAngle": 150,
+                          "style": {
+                            "classes": []
+                          }
+                        },
+                        "type": "ia.chart.simple-gauge"
+                      }
+                    ],
+                    "meta": {
+                      "name": "CpuCard"
+                    },
+                    "position": {
+                      "basis": "245px",
+                      "grow": 1
+                    },
+                    "props": {
+                      "direction": "column",
+                      "style": {
+                        "backgroundColor": "#F4F0E6",
+                        "borderColor": "#0B0C0F",
+                        "borderStyle": "solid",
+                        "borderWidth": "1px",
+                        "boxSizing": "border-box",
+                        "margin": "5px",
+                        "minWidth": "160px",
+                        "overflow": "hidden"
+                      }
+                    },
+                    "type": "ia.container.flex"
+                  },
+                  {
+                    "children": [
+                      {
+                        "meta": {
+                          "name": "MemoryTitle"
+                        },
+                        "position": {
+                          "basis": "38px",
+                          "shrink": 0
+                        },
+                        "props": {
+                          "style": {
+                            "color": "#0B0C0F",
+                            "fontFamily": "Consolas, monospace",
+                            "fontSize": "12px",
+                            "fontWeight": "700",
+                            "letterSpacing": "1.5px",
+                            "paddingLeft": "12px"
+                          },
+                          "text": "MEMORY / LIVE"
+                        },
+                        "type": "ia.display.label"
+                      },
+                      {
+                        "meta": {
+                          "name": "MemoryGauge"
+                        },
+                        "position": {
+                          "basis": "220px",
+                          "grow": 1
+                        },
+                        "propConfig": {
+                          "props.value": {
+                            "binding": {
+                              "config": {
+                                "fallbackDelay": 2.5,
+                                "mode": "direct",
+                                "tagPath": "[System]Gateway/Performance/Memory Utilization"
+                              },
+                              "type": "tag"
+                            }
+                          }
+                        },
+                        "props": {
+                          "arc": {
+                            "color": "#F35649CC",
+                            "cornerRadius": 10
+                          },
+                          "arcBackground": {
+                            "color": "#F3564933"
+                          },
+                          "endAngle": 450,
+                          "label": {
+                            "maxDecimal": 1,
+                            "units": "% MEM"
+                          },
+                          "startAngle": 90,
+                          "style": {
+                            "classes": []
+                          }
+                        },
+                        "type": "ia.chart.simple-gauge"
+                      }
+                    ],
+                    "meta": {
+                      "name": "MemoryCard"
+                    },
+                    "position": {
+                      "basis": "245px",
+                      "grow": 1
+                    },
+                    "props": {
+                      "direction": "column",
+                      "style": {
+                        "backgroundColor": "#F4F0E6",
+                        "borderColor": "#0B0C0F",
+                        "borderStyle": "solid",
+                        "borderWidth": "1px",
+                        "boxSizing": "border-box",
+                        "margin": "5px",
+                        "minWidth": "160px",
+                        "overflow": "hidden"
+                      }
+                    },
+                    "type": "ia.container.flex"
+                  }
+                ],
+                "meta": {
+                  "name": "GaugeRow"
+                },
+                "position": {
+                  "basis": "278px",
+                  "grow": 1,
+                  "shrink": 0
+                },
+                "props": {
+                  "justify": "space-between",
+                  "style": {
+                    "overflow": "hidden"
+                  }
+                },
+                "type": "ia.container.flex"
+              },
+              {
+                "children": [
+                  {
+                    "meta": {
+                      "name": "DiskUtilization"
+                    },
+                    "position": {
+                      "basis": "220px",
+                      "grow": 1
+                    },
+                    "propConfig": {
+                      "props.text": {
+                        "binding": {
+                          "config": {
+                            "fallbackDelay": 2.5,
+                            "mode": "direct",
+                            "tagPath": "[System]Gateway/Performance/Disk Utilization"
+                          },
+                          "transforms": [
+                            {
+                              "code": "\tif value is None:\n\t\treturn u\"DISK / --\"\n\treturn u\"DISK / %.1f%%\" % float(value)",
+                              "type": "script"
+                            }
+                          ],
+                          "type": "tag"
+                        }
+                      }
+                    },
+                    "props": {
+                      "style": {
+                        "color": "#0B0C0F",
+                        "fontFamily": "Consolas, monospace",
+                        "fontSize": "13px",
+                        "fontWeight": "700",
+                        "paddingLeft": "12px"
+                      }
+                    },
+                    "type": "ia.display.label"
+                  },
+                  {
+                    "meta": {
+                      "name": "MemoryUsage"
+                    },
+                    "position": {
+                      "basis": "220px",
+                      "grow": 1
+                    },
+                    "propConfig": {
+                      "props.text": {
+                        "binding": {
+                          "config": {
+                            "fallbackDelay": 2.5,
+                            "mode": "direct",
+                            "tagPath": "[System]Gateway/Performance/Memory Usage"
+                          },
+                          "transforms": [
+                            {
+                              "code": "\tif value is None:\n\t\treturn u\"HEAP / --\"\n\treturn u\"HEAP / %.0f MB\" % (float(value) / 1048576.0)",
+                              "type": "script"
+                            }
+                          ],
+                          "type": "tag"
+                        }
+                      }
+                    },
+                    "props": {
+                      "style": {
+                        "color": "#0B0C0F",
+                        "fontFamily": "Consolas, monospace",
+                        "fontSize": "13px",
+                        "fontWeight": "700",
+                        "paddingLeft": "12px",
+                        "textAlign": "right"
+                      }
+                    },
+                    "type": "ia.display.label"
+                  }
+                ],
+                "meta": {
+                  "name": "MetricFooter"
+                },
+                "position": {
+                  "basis": "44px",
+                  "shrink": 0
+                },
+                "props": {
+                  "alignItems": "center",
+                  "justify": "space-between",
+                  "style": {
+                    "overflow": "hidden"
+                  }
+                },
+                "type": "ia.container.flex"
+              }
+            ],
+            "meta": {
+              "name": "MetricsPanel"
+            },
+            "position": {
+              "basis": "560px",
+              "grow": 1
+            },
+            "props": {
+              "direction": "column",
+              "style": {
+                "backgroundColor": "#D9D5CC",
+                "borderColor": "#F4F0E6",
+                "borderStyle": "solid",
+                "borderWidth": "2px",
+                "boxShadow": "7px 7px 0 #6EE7F2",
+                "boxSizing": "border-box",
+                "margin": "10px",
+                "minHeight": "390px",
+                "overflow": "hidden",
+                "padding": "18px"
+              }
+            },
+            "type": "ia.container.flex"
+          }
+        ],
+        "meta": {
+          "name": "MainContent"
+        },
+        "position": {
+          "basis": "430px",
+          "grow": 1,
+          "shrink": 0
+        },
+        "props": {
+          "justify": "space-between",
+          "style": {
+            "overflow": "hidden",
+            "padding": "10px 14px 14px 14px"
+          }
+        },
+        "type": "ia.container.flex"
+      },
+      {
+        "children": [
+          {
+            "children": [
+              {
+                "meta": {
+                  "name": "UptimeLabel"
+                },
+                "position": {
+                  "basis": "24px",
+                  "shrink": 0
+                },
+                "props": {
+                  "style": {
+                    "color": "#676D78",
+                    "fontFamily": "Consolas, monospace",
+                    "fontSize": "10px",
+                    "fontWeight": "700",
+                    "letterSpacing": "1.5px"
+                  },
+                  "text": "UPTIME"
+                },
+                "type": "ia.display.label"
+              },
+              {
+                "meta": {
+                  "name": "UptimeValue"
+                },
+                "position": {
+                  "basis": "48px",
+                  "grow": 1
+                },
+                "propConfig": {
+                  "props.text": {
+                    "binding": {
+                      "config": {
+                        "fallbackDelay": 2.5,
+                        "mode": "direct",
+                        "tagPath": "[System]Gateway/UptimeSeconds"
+                      },
+                      "transforms": [
+                        {
+                          "code": "\tif value is None:\n\t\treturn u\"--d --h --m\"\n\tseconds \u003d max(0, int(value))\n\tdays \u003d seconds // 86400\n\thours \u003d (seconds % 86400) // 3600\n\tminutes \u003d (seconds % 3600) // 60\n\treturn u\"%02dd %02dh %02dm\" % (days, hours, minutes)",
+                          "type": "script"
+                        }
+                      ],
+                      "type": "tag"
+                    }
+                  }
+                },
+                "props": {
+                  "style": {
+                    "color": "#0B0C0F",
+                    "fontFamily": "Consolas, monospace",
+                    "fontSize": "19px",
+                    "fontWeight": "700"
+                  }
+                },
+                "type": "ia.display.label"
+              }
+            ],
+            "meta": {
+              "name": "UptimeCell"
+            },
+            "position": {
+              "basis": "220px",
+              "grow": 1
+            },
+            "props": {
+              "direction": "column",
+              "style": {
+                "borderRightColor": "#B8B3A8",
+                "borderRightStyle": "solid",
+                "borderRightWidth": "1px",
+                "padding": "12px 18px"
+              }
+            },
+            "type": "ia.container.flex"
+          },
+          {
+            "children": [
+              {
+                "meta": {
+                  "name": "SessionsLabel"
+                },
+                "position": {
+                  "basis": "24px",
+                  "shrink": 0
+                },
+                "props": {
+                  "style": {
+                    "color": "#676D78",
+                    "fontFamily": "Consolas, monospace",
+                    "fontSize": "10px",
+                    "fontWeight": "700",
+                    "letterSpacing": "1.5px"
+                  },
+                  "text": "SESSIONS"
+                },
+                "type": "ia.display.label"
+              },
+              {
+                "meta": {
+                  "name": "SessionsValue"
+                },
+                "position": {
+                  "basis": "48px",
+                  "grow": 1
+                },
+                "propConfig": {
+                  "props.text": {
+                    "binding": {
+                      "config": {
+                        "fallbackDelay": 2.5,
+                        "mode": "direct",
+                        "tagPath": "[System]Gateway/Sessions/SessionCount"
+                      },
+                      "transforms": [
+                        {
+                          "code": "\tif value is None:\n\t\treturn u\"-- ACTIVE\"\n\treturn u\"%02d ACTIVE\" % int(value)",
+                          "type": "script"
+                        }
+                      ],
+                      "type": "tag"
+                    }
+                  }
+                },
+                "props": {
+                  "style": {
+                    "color": "#0B0C0F",
+                    "fontFamily": "Consolas, monospace",
+                    "fontSize": "19px",
+                    "fontWeight": "700"
+                  }
+                },
+                "type": "ia.display.label"
+              }
+            ],
+            "meta": {
+              "name": "SessionsCell"
+            },
+            "position": {
+              "basis": "190px",
+              "grow": 1
+            },
+            "props": {
+              "direction": "column",
+              "style": {
+                "borderRightColor": "#B8B3A8",
+                "borderRightStyle": "solid",
+                "borderRightWidth": "1px",
+                "padding": "12px 18px"
+              }
+            },
+            "type": "ia.container.flex"
+          },
+          {
+            "children": [
+              {
+                "meta": {
+                  "name": "OpcLabel"
+                },
+                "position": {
+                  "basis": "24px",
+                  "shrink": 0
+                },
+                "props": {
+                  "style": {
+                    "color": "#676D78",
+                    "fontFamily": "Consolas, monospace",
+                    "fontSize": "10px",
+                    "fontWeight": "700",
+                    "letterSpacing": "1.5px"
+                  },
+                  "text": "OPC LINK"
+                },
+                "type": "ia.display.label"
+              },
+              {
+                "meta": {
+                  "name": "OpcValue"
+                },
+                "position": {
+                  "basis": "48px",
+                  "grow": 1
+                },
+                "propConfig": {
+                  "props.text": {
+                    "binding": {
+                      "config": {
+                        "fallbackDelay": 2.5,
+                        "mode": "direct",
+                        "tagPath": "[System]Gateway/OPC/Connections/Ignition OPC UA Server/Connected"
+                      },
+                      "transforms": [
+                        {
+                          "fallback": "DISCONNECTED",
+                          "inputType": "scalar",
+                          "mappings": [
+                            {
+                              "input": true,
+                              "output": "CONNECTED"
+                            }
+                          ],
+                          "outputType": "scalar",
+                          "type": "map"
+                        }
+                      ],
+                      "type": "tag"
+                    }
+                  }
+                },
+                "props": {
+                  "style": {
+                    "color": "#0B0C0F",
+                    "fontFamily": "Consolas, monospace",
+                    "fontSize": "19px",
+                    "fontWeight": "700"
+                  }
+                },
+                "type": "ia.display.label"
+              }
+            ],
+            "meta": {
+              "name": "OpcCell"
+            },
+            "position": {
+              "basis": "190px",
+              "grow": 1
+            },
+            "props": {
+              "direction": "column",
+              "style": {
+                "borderRightColor": "#B8B3A8",
+                "borderRightStyle": "solid",
+                "borderRightWidth": "1px",
+                "padding": "12px 18px"
+              }
+            },
+            "type": "ia.container.flex"
+          },
+          {
+            "children": [
+              {
+                "meta": {
+                  "name": "AlarmsLabel"
+                },
+                "position": {
+                  "basis": "24px",
+                  "shrink": 0
+                },
+                "props": {
+                  "style": {
+                    "color": "#676D78",
+                    "fontFamily": "Consolas, monospace",
+                    "fontSize": "10px",
+                    "fontWeight": "700",
+                    "letterSpacing": "1.5px"
+                  },
+                  "text": "ACTIVE / UNACK"
+                },
+                "type": "ia.display.label"
+              },
+              {
+                "meta": {
+                  "name": "AlarmsValue"
+                },
+                "position": {
+                  "basis": "48px",
+                  "grow": 1
+                },
+                "propConfig": {
+                  "props.text": {
+                    "binding": {
+                      "config": {
+                        "fallbackDelay": 2.5,
+                        "mode": "direct",
+                        "tagPath": "[System]Gateway/Alarming/Active and Unacked"
+                      },
+                      "transforms": [
+                        {
+                          "code": "\tif value is None:\n\t\treturn u\"-- EVENTS\"\n\treturn u\"%02d EVENTS\" % int(value)",
+                          "type": "script"
+                        }
+                      ],
+                      "type": "tag"
+                    }
+                  }
+                },
+                "props": {
+                  "style": {
+                    "color": "#A84036",
+                    "fontFamily": "Consolas, monospace",
+                    "fontSize": "19px",
+                    "fontWeight": "700"
+                  }
+                },
+                "type": "ia.display.label"
+              }
+            ],
+            "meta": {
+              "name": "AlarmsCell"
+            },
+            "position": {
+              "basis": "190px",
+              "grow": 1
+            },
+            "props": {
+              "direction": "column",
+              "style": {
+                "borderRightColor": "#B8B3A8",
+                "borderRightStyle": "solid",
+                "borderRightWidth": "1px",
+                "padding": "12px 18px"
+              }
+            },
+            "type": "ia.container.flex"
+          },
+          {
+            "children": [
+              {
+                "meta": {
+                  "name": "DiskFreeLabel"
+                },
+                "position": {
+                  "basis": "24px",
+                  "shrink": 0
+                },
+                "props": {
+                  "style": {
+                    "color": "#676D78",
+                    "fontFamily": "Consolas, monospace",
+                    "fontSize": "10px",
+                    "fontWeight": "700",
+                    "letterSpacing": "1.5px"
+                  },
+                  "text": "DISK FREE"
+                },
+                "type": "ia.display.label"
+              },
+              {
+                "meta": {
+                  "name": "DiskFreeValue"
+                },
+                "position": {
+                  "basis": "48px",
+                  "grow": 1
+                },
+                "propConfig": {
+                  "props.text": {
+                    "binding": {
+                      "config": {
+                        "fallbackDelay": 2.5,
+                        "mode": "direct",
+                        "tagPath": "[System]Gateway/Performance/Available Disk Space (MB)"
+                      },
+                      "transforms": [
+                        {
+                          "code": "\tif value is None:\n\t\treturn u\"-- GB\"\n\treturn u\"%.1f GB\" % (float(value) / 1024.0)",
+                          "type": "script"
+                        }
+                      ],
+                      "type": "tag"
+                    }
+                  }
+                },
+                "props": {
+                  "style": {
+                    "color": "#0B0C0F",
+                    "fontFamily": "Consolas, monospace",
+                    "fontSize": "19px",
+                    "fontWeight": "700"
+                  }
+                },
+                "type": "ia.display.label"
+              }
+            ],
+            "meta": {
+              "name": "DiskFreeCell"
+            },
+            "position": {
+              "basis": "190px",
+              "grow": 1
+            },
+            "props": {
+              "direction": "column",
+              "style": {
+                "padding": "12px 18px"
+              }
+            },
+            "type": "ia.container.flex"
+          }
+        ],
+        "meta": {
+          "name": "TelemetryStrip"
+        },
+        "position": {
+          "basis": "108px",
+          "shrink": 0
+        },
+        "props": {
+          "style": {
+            "backgroundColor": "#F4F0E6",
+            "borderTopColor": "#0B0C0F",
+            "borderTopStyle": "solid",
+            "borderTopWidth": "2px",
+            "boxSizing": "border-box",
+            "overflow": "hidden"
+          },
+          "wrap": "wrap"
+        },
+        "type": "ia.container.flex"
+      },
+      {
+        "children": [
+          {
+            "children": [
+              {
+                "events": {
+                  "component": {
+                    "onActionPerformed": {
+                      "config": {
+                        "script": "# pylint: disable=undefined-variable\n\tself.view.custom.scene \u003d ObservatoryLogic.next_scene(self.view.custom.scene)\n\tself.view.custom.interactions \u003d int(self.view.custom.interactions) + 1"
+                      },
+                      "scope": "G",
+                      "type": "script"
+                    }
+                  }
+                },
+                "meta": {
+                  "name": "ShiftOrbitButton"
+                },
+                "position": {
+                  "basis": "270px",
+                  "shrink": 0
+                },
+                "props": {
+                  "style": {
+                    "classes": "Showcase/SignalButton"
+                  },
+                  "text": "SHIFT THE SIGNAL  →"
+                },
+                "type": "ia.input.button"
+              },
+              {
+                "meta": {
+                  "name": "SceneLabel"
+                },
+                "position": {
+                  "basis": "210px",
+                  "grow": 1
+                },
+                "propConfig": {
+                  "props.text": {
+                    "binding": {
+                      "config": {
+                        "path": "view.custom.scene"
+                      },
+                      "transforms": [
+                        {
+                          "code": "# pylint: disable=undefined-variable\n\treturn ObservatoryLogic.scene_label(value)",
+                          "type": "script"
+                        }
+                      ],
+                      "type": "property"
+                    }
+                  }
+                },
+                "props": {
+                  "style": {
+                    "color": "#F4F0E6",
+                    "fontFamily": "Consolas, monospace",
+                    "fontSize": "14px",
+                    "fontWeight": "700",
+                    "letterSpacing": "1px",
+                    "paddingLeft": "18px"
+                  }
+                },
+                "type": "ia.display.label"
+              },
+              {
+                "meta": {
+                  "name": "InteractionCount"
+                },
+                "position": {
+                  "basis": "150px",
+                  "shrink": 0
+                },
+                "propConfig": {
+                  "props.text": {
+                    "binding": {
+                      "config": {
+                        "expression": "toStr({view.custom.interactions}) + \" INPUTS\""
+                      },
+                      "type": "expr"
+                    }
+                  }
+                },
+                "props": {
+                  "style": {
+                    "color": "#9299A6",
+                    "fontFamily": "Consolas, monospace",
+                    "fontSize": "12px",
+                    "letterSpacing": "1px",
+                    "textAlign": "right"
+                  }
+                },
+                "type": "ia.display.label"
+              }
+            ],
+            "meta": {
+              "name": "ActionGroup"
+            },
+            "position": {
+              "basis": "650px",
+              "grow": 1
+            },
+            "props": {
+              "alignItems": "center",
+              "wrap": "wrap"
+            },
+            "type": "ia.container.flex"
+          },
+          {
+            "children": [
+              {
+                "meta": {
+                  "name": "ProofPerspective"
+                },
+                "position": {
+                  "basis": "160px",
+                  "shrink": 0
+                },
+                "props": {
+                  "style": {
+                    "color": "#6EE7F2",
+                    "fontFamily": "Consolas, monospace",
+                    "fontSize": "10px",
+                    "fontWeight": "700",
+                    "letterSpacing": "1.3px",
+                    "textAlign": "right"
+                  },
+                  "text": "PERSPECTIVE 3.3.8"
+                },
+                "type": "ia.display.label"
+              },
+              {
+                "meta": {
+                  "name": "ProofJython"
+                },
+                "position": {
+                  "basis": "150px",
+                  "shrink": 0
+                },
+                "props": {
+                  "style": {
+                    "color": "#D7FF64",
+                    "fontFamily": "Consolas, monospace",
+                    "fontSize": "10px",
+                    "fontWeight": "700",
+                    "letterSpacing": "1.3px",
+                    "textAlign": "right"
+                  },
+                  "text": "JYTHON 2.7.4"
+                },
+                "type": "ia.display.label"
+              },
+              {
+                "meta": {
+                  "name": "ProofApi"
+                },
+                "position": {
+                  "basis": "160px",
+                  "shrink": 0
+                },
+                "props": {
+                  "style": {
+                    "color": "#FF6B5E",
+                    "fontFamily": "Consolas, monospace",
+                    "fontSize": "10px",
+                    "fontWeight": "700",
+                    "letterSpacing": "1.3px",
+                    "textAlign": "right"
+                  },
+                  "text": "OPENAPI AUTHORED"
+                },
+                "type": "ia.display.label"
+              }
+            ],
+            "meta": {
+              "name": "ProofGroup"
+            },
+            "position": {
+              "basis": "480px",
+              "grow": 1
+            },
+            "props": {
+              "alignItems": "center",
+              "justify": "flex-end",
+              "wrap": "wrap"
+            },
+            "type": "ia.container.flex"
+          }
+        ],
+        "meta": {
+          "name": "FooterBand"
+        },
+        "position": {
+          "basis": "82px",
+          "shrink": 0
+        },
+        "props": {
+          "alignItems": "center",
+          "justify": "space-between",
+          "style": {
+            "backgroundColor": "#111318",
+            "borderTopColor": "#2B3039",
+            "borderTopStyle": "solid",
+            "borderTopWidth": "1px",
+            "boxSizing": "border-box",
+            "overflow": "hidden",
+            "padding": "12px 88px 12px 24px"
+          },
+          "wrap": "wrap"
+        },
+        "type": "ia.container.flex"
+      }
+    ],
+    "meta": {
+      "name": "root"
+    },
+    "props": {
+      "direction": "column",
+      "style": {
+        "backgroundColor": "#0B0C0F",
+        "boxSizing": "border-box",
+        "height": "100%",
+        "minHeight": "900px",
+        "width": "100%"
+      }
+    },
+    "type": "ia.container.flex"
+  }
+}
