@@ -44,7 +44,13 @@ working tree, so `git status` is your export step. Tear down with
 `scripts/teardown.sh` (add `--volumes` for a factory reset, then re-run
 `scripts/setup.sh`).
 
-> **Trial mode:** the local gateway runs in 2-hour trial mode. Reset via *Gateway → Config → Licensing → Reset Trial* — unlimited and entirely legal for development.
+> **Trial mode:** the gateways run in 2-hour trial mode. When it lapses, licensed
+> functionality stops serving and the failures look like application bugs. Reset it
+> with `scripts/reset-trial.sh` (both gateways; safe to re-run) or via
+> *Gateway → Config → Licensing → Reset Trial* — unlimited and entirely legal for
+> development. Never `teardown.sh --volumes` for this: the trial clock lives in the
+> gateway volume, so wiping it costs you your gateway state to solve what one API
+> call solves.
 
 ## Lab structure
 
@@ -71,7 +77,7 @@ cicd-lab-07-multi-gateway-deploy/
 ├── db-migration/migrate/      ← golang-migrate up/down pairs, run before anything ships
 ├── local-development/         ← local-only stand-ins (secrets) for the local stack
 ├── capstone/                  ← the production server stack (Caddy, gateway, runner) — GitOps'd
-├── scripts/                   ← setup / teardown / validate / migrate / generate-api-key / mint-api-key
+├── scripts/                   ← setup / teardown / validate / migrate / reset-trial / generate-api-key / mint-api-key
 ├── exercises/ · slides/ · docs/ · architectures/
 └── .github/workflows/         ← ci.yml (PR checks) · deploy.yml (release.yaml → production)
 ```
