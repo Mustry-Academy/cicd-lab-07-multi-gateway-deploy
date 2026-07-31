@@ -189,15 +189,29 @@ self-hosted runner (labs 03-06) and a `push: [main]` deploy workflow that
 ships files by `docker cp` and an authenticated scan (labs 04-06).
 
 **1. Tell the stack who you are.** Copy `.env.example` to `.env` and fill
-in two values: `LAB_USER` (your name, lowercase, no spaces) and the runner
-credential you get from Sam or Jasper. Registering a runner needs
-repo-admin rights, which contributors don't have — that's why the
-credential comes from us. The registration persists in a volume, so a
-one-hour token only has to work once.
+in two values: `LAB_USER` (your name, lowercase, no spaces) and
+`RUNNER_TOKEN`. Here is how the token part goes:
+
+- At the start of Part 0 we post **one registration token** in the Zoom
+  chat. Everyone uses that same token — it can enroll any number of
+  runners while it lives.
+- It is not a login and not a PAT. The only thing GitHub accepts it for
+  is enrolling a runner on this one repo, which is why sharing it in
+  chat is fine. Registering a runner is a repo-admin act and
+  contributors are not admins — that's why the token comes from us
+  instead of from your own settings page, like it did in your fork in
+  the earlier labs.
+- It expires **one hour** after we generate it, but that only limits
+  registration, not the runner. During enrollment your runner trades
+  the token for its own permanent credentials, stored in a volume: the
+  runner stays online all afternoon and survives restarts without ever
+  needing the token again.
+- Missed the window, or wiped your volumes? Say so — generating a
+  fresh token takes us five seconds.
 
 ```bash
 cp .env.example .env
-# edit .env: LAB_USER=<yourname>, RUNNER_TOKEN=<from Sam or Jasper>
+# edit .env: LAB_USER=<yourname>, RUNNER_TOKEN=<the token from the Zoom chat>
 ```
 
 **2. Start the provided test pair.** This is not a docker course, so the
