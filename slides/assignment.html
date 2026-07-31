@@ -403,7 +403,13 @@ body{
         <div class="step"><div class="ix t">4</div><div class="tx"><b>PR it in like anything else.</b> Branch, PR, green checks, approval, merge. The only file you touched is your own workflow.</div></div>
       </div>
       <div>
-        <div class="code"><pre>cp .env.example .env
+        <div class="code"><pre><span class="cm"># Sam or Jasper first: generate today's token, paste it in the chat</span>
+gh api -X POST repos/Mustry-Academy/\
+cicd-lab-07-multi-gateway-deploy/\
+actions/runners/registration-token -q .token
+
+<span class="cm"># then everyone:</span>
+cp .env.example .env
 <span class="cm"># edit: LAB_USER=&lt;yourname&gt;, RUNNER_TOKEN=&lt;from the Zoom chat&gt;</span>
 ./scripts/setup.sh
 
