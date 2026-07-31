@@ -206,11 +206,19 @@ jobs:
           restart=0
 
           # --- module manifest ---
+          # Compare against the last SHIPPED copy, not the live file: the
+          # gateway rewrites data/modules.json after boot with the real cert
+          # fingerprints of its installed modules (and those differ per image
+          # architecture), so the live file never matches the repo copy
+          # verbatim and comparing against it would restart on EVERY deploy.
+          # Only a change to the repo's manifest warrants a restart.
           if [ -f services/modules.json ]; then
-            before="$(docker exec "$IGNITION_CONTAINER" md5sum "$GATEWAY_DATA_PATH/modules.json" 2>/dev/null | cut -d' ' -f1 || true)"
-            docker exec -i "$IGNITION_CONTAINER" sh -c "cat > '$GATEWAY_DATA_PATH/modules.json'" < services/modules.json
-            after="$(docker exec "$IGNITION_CONTAINER" md5sum "$GATEWAY_DATA_PATH/modules.json" | cut -d' ' -f1)"
-            if [ "$before" != "$after" ]; then
+            shipped="$GATEWAY_DATA_PATH/modules.json.shipped"
+            before="$(docker exec "$IGNITION_CONTAINER" md5sum "$shipped" 2>/dev/null | cut -d' ' -f1 || true)"
+            local_sum="$(md5sum services/modules.json | cut -d' ' -f1)"
+            if [ "$before" != "$local_sum" ]; then
+              docker exec -i "$IGNITION_CONTAINER" sh -c "cat > '$GATEWAY_DATA_PATH/modules.json'" < services/modules.json
+              docker exec -i "$IGNITION_CONTAINER" sh -c "cat > '$shipped'" < services/modules.json
               echo "  modules.json changed"
               restart=1
             fi
