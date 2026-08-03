@@ -4,6 +4,27 @@ Every operational procedure for cloud.mustrysolutions.com. If you find
 yourself doing something on the server that is not in here, either stop or
 add it here afterwards.
 
+## 0. Edge / TLS lives in a separate stack
+
+This repo manages the **gateway + database + runner only**. TLS termination and
+public routing for `cloud.mustrysolutions.com` (ports 80/443, the Let's Encrypt
+certificate, and the Tesla Fleet public key) live in a **separate,
+privately-owned edge stack**: `Mustry-Solutions/mustry-cloud-edge`, checked out
+at `/opt/edge` on the server. That edge Caddy reverse-proxies to this gateway
+(`ignition:8088`) over this stack's docker network (`cicd-capstone_default`,
+referenced as `external` there).
+
+Implications for the procedures below:
+- Anything about the certificate, 80/443, or the public URL not responding is
+  an **edge-stack** matter — see that repo's README (`cd /opt/edge`).
+- This stack publishes **no** host ports (IRON RULE); the gateway is reachable
+  only via the edge or on the docker network.
+- The edge depends on this gateway + network being up, not the reverse. The
+  deploy smoke-check still probes the public URL (which now flows through the
+  edge), so a green deploy also confirms the edge is serving. Rewiring it to hit
+  `http://ignition:8088/StatusPing` internally — decoupling the deploy from the
+  edge — is a recommended follow-up (needs a token with `workflow` scope).
+
 ## 1. Bootstrap (first bring-up, or rebuild after server loss)
 
 The only manual sequence; everything afterwards flows through git.
@@ -16,9 +37,10 @@ cp .env.example .env        # fill in RUNNER_GITHUB_PAT (or a fresh RUNNER_TOKEN
 scripts/setup.sh            # generates the admin secret, validates, compose up
 ```
 
-Then: watch `docker compose logs -f caddy` until the certificate is issued,
-check the runner appears under the repo's Settings -> Actions -> Runners, and
-open https://cloud.mustrysolutions.com.
+Then: check the runner appears under the repo's Settings -> Actions -> Runners.
+TLS + the public URL are the edge stack's job (§0) — bring that up separately
+(`cd /opt/edge && docker compose up -d`) and watch `docker compose logs -f` there
+until the certificate is issued, then open https://cloud.mustrysolutions.com.
 
 One credential lives in two homes: the postgres username/password that
 `setup.sh` generated must also be set as GitHub Actions secrets
