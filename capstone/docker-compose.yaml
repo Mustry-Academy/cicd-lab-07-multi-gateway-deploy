@@ -5,17 +5,23 @@
 # source of truth for everything running on the server: push to main and the
 # on-server runner applies this file (see .github/workflows/deploy-capstone.yml).
 #
-#   caddy       ports 80 + 443     TLS termination (auto Let's Encrypt),
-#                                  reverse proxy to the gateway
-#   ignition    no published port  the gateway itself, only reachable via caddy
+#   ignition    no published port  the gateway itself, reachable only via the
+#                                  edge proxy on the shared docker network
 #   postgres    no published port  the course database: the lab's referenced-
 #                                  secret DB connection, migrations, tag history
 #   runner      no ports           GitHub Actions self-hosted runner, applies
 #                                  changes to this stack
 #
-# IRON RULE: no service other than caddy may publish a port. Docker's published
-# ports bypass UFW (Docker writes its own iptables rules ahead of ufw's), so
-# the firewall model of this server is exactly "published ports == caddy's
+# TLS termination + public routing for cloud.mustrysolutions.com live in a
+# SEPARATE, privately-owned edge stack (Mustry-Solutions/mustry-cloud-edge),
+# not this repo. That stack owns the host's :80/:443, terminates TLS, and
+# reverse-proxies to this gateway (ignition:8088) over this stack's docker
+# network. This stack no longer manages the edge; see docs/runbook.md §0.
+#
+# IRON RULE: no service in this stack may publish a host port — the box's
+# 80/443 belong to the edge stack's caddy alone. Docker's published ports
+# bypass UFW (Docker writes its own iptables rules ahead of ufw's), so the
+# firewall model of this server is exactly "published ports == the edge caddy's
 # 80/443, everything else binds nowhere or to 127.0.0.1".
 #
 # Secrets never live in this file. Runtime values come from .env (gitignored,
@@ -25,25 +31,6 @@
 name: cicd-capstone
 
 services:
-  caddy:
-    image: caddy:2.11.4
-    container_name: cicd-capstone-caddy
-    restart: unless-stopped
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile:ro
-      - caddy-data:/data        # certificates + ACME account — must persist
-      - caddy-config:/config
-    logging: &logging
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
-    networks:
-      - default
-
   ignition:
     # Pin deliberately; upgrade = bump this tag in a PR, merge, done (the
     # deploy workflow pulls and recreates). Latest 8.3 patch on purpose — this
@@ -93,7 +80,11 @@ services:
           memory: 3G
         reservations:
           memory: 1G
-    logging: *logging
+    logging: &logging
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     networks:
       - default
 
@@ -202,7 +193,5 @@ secrets:
 
 volumes:
   gateway-data:
-  caddy-data:
-  caddy-config:
   runner-state:
   postgres-data:
