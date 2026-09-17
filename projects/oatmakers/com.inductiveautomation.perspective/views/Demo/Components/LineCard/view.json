@@ -10,7 +10,7 @@
     "power": "",
     "colour": "",
     "batch": "",
-    "id": 0
+    "lineNumber": 0
   },
   "propConfig": {
     "params.name": {
@@ -49,7 +49,7 @@
       "paramDirection": "input",
       "persistent": true
     },
-    "params.id": {
+    "params.lineNumber": {
       "paramDirection": "input",
       "persistent": true
     }
@@ -319,7 +319,7 @@
               "type": "script",
               "scope": "G",
               "config": {
-                "script": "\tself.session.custom.demo.line = self.view.params.id\n\tsystem.perspective.navigate(\"/process\")"
+                "script": "\tself.session.custom.demo.line = self.view.params.lineNumber\n\tself.session.custom.demo.batch = self.view.params.batch\n\tsystem.perspective.navigate(\"/process\")"
               }
             }
           }

@@ -86,10 +86,12 @@ def view(name,root,params=None,custom=None,config=None,height=1000):
     write(V/name/'view.json',d);resource(V/name,['view.json']);return d
 
 metric=flex('root',[bound_label('Title','view.params.title','Demo/Eyebrow'),flex('Reading',[bound_label('Value','view.params.value','Demo/MetricValue'),bound_label('Unit','view.params.unit','Demo/MetricUnit')],'row',classes='Demo/MetricReading'),bound_label('Hint','view.params.hint','Demo/Muted')],classes='Demo/Metric')
+metric['props']['style'].update({'borderTopWidth':'3px','borderTopStyle':'solid'})
+metric['propConfig']={'props.style.borderTopColor':expr('if({view.params.accent} = "amber", "#b87517", if({view.params.accent} = "blue", "#487fa5", "#357a5b"))')}
 view('Demo/Components/Metric',metric,params={'title':'METRIC','value':'0','unit':'','hint':'','accent':'green'},height=140)
-line=flex('root',[flex('LineHeading',[bound_label('Name','view.params.name','Demo/SectionTitle'),bound_label('State','view.params.state','Demo/Badge')],'row',classes='Demo/Spread'),bound_label('Product','view.params.product','Demo/Muted'),bound_label('Throughput','view.params.throughput','Demo/LineValue'),flex('Facts',[bound_label('Temperature','view.params.temperature','Demo/Body'),bound_label('Moisture','view.params.moisture','Demo/Body'),bound_label('Power','view.params.power','Demo/Body')],'row',classes='Demo/Facts'),button('OpenLine','Explore line',script='\tself.session.custom.demo.line = self.view.params.id\n\tsystem.perspective.navigate("/process")',classes='Demo/QuietButton')],classes='Demo/Panel')
+line=flex('root',[flex('LineHeading',[bound_label('Name','view.params.name','Demo/SectionTitle'),bound_label('State','view.params.state','Demo/Badge')],'row',classes='Demo/Spread'),bound_label('Product','view.params.product','Demo/Muted'),bound_label('Throughput','view.params.throughput','Demo/LineValue'),flex('Facts',[bound_label('Temperature','view.params.temperature','Demo/Body'),bound_label('Moisture','view.params.moisture','Demo/Body'),bound_label('Power','view.params.power','Demo/Body')],'row',classes='Demo/Facts'),button('OpenLine','Explore line',script='\tself.session.custom.demo.line = self.view.params.lineNumber\n\tself.session.custom.demo.batch = self.view.params.batch\n\tsystem.perspective.navigate("/process")',classes='Demo/QuietButton')],classes='Demo/Panel')
 line['children'][0]['children'][1]['propConfig']['props.style.color']=prop('view.params.colour')
-view('Demo/Components/LineCard',line,params={k:'' for k in ['name','state','product','throughput','temperature','moisture','power','colour','batch']}|{'id':0},height=230)
+view('Demo/Components/LineCard',line,params={k:'' for k in ['name','state','product','throughput','temperature','moisture','power','colour','batch']}|{'lineNumber':0},height=230)
 
 event_card=flex('root',[flex('Top',[bound_label('State','view.params.state','Demo/Badge'),bound_label('Time','view.params.time','Demo/Muted')],'row',classes='Demo/Spread'),bound_label('Line','view.params.line','Demo/Body'),bound_label('Description','view.params.description','Demo/Muted')],classes='Demo/EventCard')
 view('Demo/Components/Event',event_card,params={'state':'','time':'','line':'','description':''},height=82)
@@ -122,7 +124,7 @@ def dropdown(name,options,path,width='190px'):
 
 def page(name,title,subtitle,content,custom=None,configs=None):
     heading=flex('Heading',[flex('Identity',[label('Eyebrow','OATMAKERS / CUSTOMER DEMO','Demo/Eyebrow'),label('Title',title,'Demo/PageTitle'),label('Subtitle',subtitle,'Demo/Subtitle')],grow=1),button('ResetScenario','Reset demo filters',script='\tself.session.custom.demo.scene = "live"\n\tself.session.custom.demo.period = "day"\n\tself.session.custom.demo.line = 0\n\tself.session.custom.demo.batch = ""',classes='Demo/QuietButton')],'row',classes='Demo/PageHeader')
-    filters=flex('Filters',[dropdown(k,OPTIONS[k],'session.custom.demo.'+k) for k in ['scene','period','line']],'row',classes='Demo/Filters')
+    filters=flex('Filters',[dropdown(k.title(),OPTIONS[k],'session.custom.demo.'+k) for k in ['scene','period','line']],'row',classes='Demo/Filters')
     filters['children'].append(bound_label('Clock','view.custom.data.clock','Demo/Clock'))
     status=bound_label('Status','view.custom.data.message','Demo/Status')
     status['propConfig']['props.style.backgroundColor']=expr('if({view.custom.data.stale}, "#fff1d9", "#e8f1ea")')
@@ -170,7 +172,7 @@ batchSelector=dropdown('BatchSelector',[('','Latest available batch')],'session.
 batchHeader=bound_label('BatchIdentity','view.custom.data.selectedBatch.reference','Demo/SectionTitle')
 inspectionLabel=label('InspectionHistory','','Demo/Muted')
 inspectionLabel['propConfig']={'props.text':{'binding':{'type':'property','config':{'path':'view.custom.data.inspection'},'transforms':[{'type':'script','code':'\tif not value or not value.get("checkedAt"):\n\t\treturn "No demo inspection recorded for this batch yet."\n\treturn "Recorded inspection: {0}, {1}.".format(value["checkedAt"], value["decision"])'}]}}}
-inspectionButton=button('RecordInspection','Record demo inspection',script='\ttry:\n\t\tself.view.custom.inspectionResult = application.demo.recordInspection(self.view.custom.data.selectedBatch.reference)\n\t\tself.view.refreshBinding("custom.data")\n\texcept:\n\t\tself.view.custom.inspectionResult = "Could not record the inspection. Select a recent batch and try again."')
+inspectionButton=button('RecordInspection','Record demo inspection',script='\ttry:\n\t\tself.view.custom.inspectionResult = application.demo.recordInspection(self.view.custom.data.selectedBatch.reference)\n\t\tself.view.refreshBinding("custom.data")\n\texcept (Exception, application.demo.JavaException):\n\t\tself.view.custom.inspectionResult = "Could not record the inspection. Select a recent batch and try again."')
 inspectionButton['propConfig']={'props.enabled':prop('view.custom.data.ready')}
 page('Demo/Quality','Quality & batch traceability','Follow a production batch into its process measurements and release decision.',[
  flex('BatchChoice',[label('ChooseBatch','Inspect batch','Demo/SectionTitle'),batchSelector],'row','Demo/Filters'),
@@ -186,7 +188,7 @@ for name,kind,title,initial,extra in spec:
     field=embed(name,'Templates/InputFields/'+kind,params,basis='76px')
     field['props']['style']={'classes':'Demo/FormInput'}
     fields.append(field)
-submit=button('Submit','Create demo batch',script='\tif self.view.custom.busy:\n\t\treturn\n\tself.view.custom.busy = True\n\ttry:\n\t\tfrom java.util import UUID\n\t\tif not self.view.custom.requestId:\n\t\t\tself.view.custom.requestId = str(UUID.randomUUID())\n\t\tself.view.custom.result = application.demo.createOrder(dict(self.view.custom.values), self.view.custom.requestId)\n\t\tself.view.refreshBinding("custom.data")\n\texcept:\n\t\tself.view.custom.result = "Could not create the demo batch. Check your values or open Demo health."\n\tfinally:\n\t\tself.view.custom.busy = False')
+submit=button('Submit','Create demo batch',script='\tif self.view.custom.busy:\n\t\treturn\n\tself.view.custom.busy = True\n\ttry:\n\t\tif not self.view.custom.requestId:\n\t\t\tself.view.custom.requestId = application.demo.newRequestId()\n\t\tself.view.custom.result = application.demo.createOrder(dict(self.view.custom.values), self.view.custom.requestId)\n\t\tself.view.refreshBinding("custom.data")\n\texcept (Exception, application.demo.JavaException):\n\t\tself.view.custom.result = "Could not create the demo batch. Check your values or open Demo health."\n\tfinally:\n\t\tself.view.custom.busy = False')
 submit['propConfig']={'props.enabled':expr('{view.custom.validation.valid} && !{view.custom.busy} && {view.custom.data.ready}')}
 new=button('NewRequest','Start another demo request',script='\tself.view.custom.requestId = ""\n\tself.view.custom.result = "Edit the fields and create another demo batch."',classes='Demo/QuietButton')
 form=panel('Form','Create a production request','Demonstration data only. This action never controls equipment.',fields+[bound_label('FormValidation','view.custom.validation.message','Demo/Muted'),submit,new,bound_label('SubmitResult','view.custom.result','Demo/Status')],basis='560px')

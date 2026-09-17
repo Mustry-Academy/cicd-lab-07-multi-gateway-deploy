@@ -21,7 +21,7 @@ for attempt in range(args.attempts):
                 health=json.load(response)
         assert health.get('ok'), 'Demo data is not ready: '+json.dumps(health)
         if not args.health_file:
-            assert health.get('appRevision')=='showroom-1', 'Unexpected demo application revision'
+            assert health.get('appRevision')=='showroom-3.0.1', 'Unexpected demo application revision'
         assert health['ageSeconds']<=180, 'History stopped advancing'
         assert health['coverageDays']>=88, 'Insufficient rolling history'
         assert health['retentionDays']==90, 'Wrong retention policy'

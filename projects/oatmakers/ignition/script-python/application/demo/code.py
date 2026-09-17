@@ -5,7 +5,7 @@ from java.lang import Exception as JavaException
 from java.util.concurrent.locks import ReentrantLock
 
 DATABASE = 'OatmakersDemo'
-REVISION = 'showroom-1'
+REVISION = 'showroom-3.0.1'
 _cache = {}
 _lock = ReentrantLock()
 
@@ -57,6 +57,8 @@ def snapshot(scene='live', period='day', line=0, batch=''):
 			result = _queryJson('SELECT oat_demo.snapshot(?, ?, ?, ?)', list(key))
 			if not result.get('ready'):
 				result = _empty(result.get('message', 'Preparing demonstration history.'))
+			for line_data in result.get('lines', []):
+				line_data['lineNumber'] = line_data.pop('id')
 			result['orders'] = list(result.get('orders', []))
 			result['submissions'] = recentOrders()
 			result['appRevision'] = REVISION
@@ -129,14 +131,18 @@ def recordInspection(reference):
 	batch = data.get('selectedBatch', {})
 	if not reference or batch.get('reference') != reference:
 		raise ValueError('Select a recent production batch before recording its check.')
-	_queryJson("""WITH saved AS (
+	saved = _queryJson("""WITH saved AS (
 		INSERT INTO oat_demo.inspection(batch_reference,decision,peak_moisture,temperature)
-		VALUES(?,?,?,?) ON CONFLICT(batch_reference) DO NOTHING RETURNING batch_reference
-	) SELECT jsonb_build_object('saved', EXISTS(SELECT 1 FROM saved))""",
-		[str(reference), batch['quality'], batch['peak_moisture'], batch['temperature']])
+		VALUES(?,?,?,?) ON CONFLICT(batch_reference) DO NOTHING RETURNING decision
+	) SELECT jsonb_build_object('decision',coalesce((SELECT decision FROM saved),(SELECT decision FROM oat_demo.inspection WHERE batch_reference=?)))""",
+		[str(reference), batch['quality'], batch['peak_moisture'], batch['temperature'],str(reference)])
 	_lock.lock()
 	try:
 		_cache.clear()
 	finally:
 		_lock.unlock()
-	return 'Demo inspection recorded for {0}: {1}.'.format(reference, batch['quality'])
+	return 'Demo inspection recorded for {0}: {1}.'.format(reference, saved['decision'])
+
+
+def newRequestId():
+	return str(UUID.randomUUID())

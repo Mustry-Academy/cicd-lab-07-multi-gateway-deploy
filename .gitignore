@@ -77,3 +77,4 @@ services/config/resources/migration-log-*.md
 
 # Local customer-demo validation evidence
 /build/
+/.ignition-lint/

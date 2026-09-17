@@ -43,7 +43,9 @@
     "props": {
       "direction": "column",
       "style": {
-        "classes": "Demo/Metric"
+        "classes": "Demo/Metric",
+        "borderTopWidth": "3px",
+        "borderTopStyle": "solid"
       }
     },
     "children": [
@@ -171,6 +173,16 @@
     ],
     "position": {
       "shrink": 0
+    },
+    "propConfig": {
+      "props.style.borderTopColor": {
+        "binding": {
+          "type": "expr",
+          "config": {
+            "expression": "if({view.params.accent} = \"amber\", \"#b87517\", if({view.params.accent} = \"blue\", \"#487fa5\", \"#357a5b\"))"
+          }
+        }
+      }
     }
   }
 }

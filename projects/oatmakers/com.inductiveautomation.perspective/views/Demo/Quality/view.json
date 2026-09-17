@@ -213,7 +213,7 @@
           {
             "type": "ia.input.dropdown",
             "meta": {
-              "name": "scene"
+              "name": "Scene"
             },
             "props": {
               "options": [
@@ -261,7 +261,7 @@
           {
             "type": "ia.input.dropdown",
             "meta": {
-              "name": "period"
+              "name": "Period"
             },
             "props": {
               "options": [
@@ -309,7 +309,7 @@
           {
             "type": "ia.input.dropdown",
             "meta": {
-              "name": "line"
+              "name": "Line"
             },
             "props": {
               "options": [
@@ -672,7 +672,7 @@
                   "type": "script",
                   "scope": "G",
                   "config": {
-                    "script": "\ttry:\n\t\tself.view.custom.inspectionResult = application.demo.recordInspection(self.view.custom.data.selectedBatch.reference)\n\t\tself.view.refreshBinding(\"custom.data\")\n\texcept:\n\t\tself.view.custom.inspectionResult = \"Could not record the inspection. Select a recent batch and try again.\""
+                    "script": "\ttry:\n\t\tself.view.custom.inspectionResult = application.demo.recordInspection(self.view.custom.data.selectedBatch.reference)\n\t\tself.view.refreshBinding(\"custom.data\")\n\texcept (Exception, application.demo.JavaException):\n\t\tself.view.custom.inspectionResult = \"Could not record the inspection. Select a recent batch and try again.\""
                   }
                 }
               }

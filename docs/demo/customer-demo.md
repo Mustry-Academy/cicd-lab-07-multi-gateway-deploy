@@ -53,6 +53,9 @@ After changing resources:
 ```sh
 IGNITION_URL=http://localhost:18094 scripts/scan.sh local
 python3 tools/demo/validate.py
+# With ign-lint 0.6.1 installed in a Python 3.10-3.13 environment:
+python3 tools/demo/lint_config.py oatmakers
+ign-lint --config build/lint/rules.json --files "projects/oatmakers/**/view.json"
 python3 tests/demo/test_database.py
 python3 tests/demo/test_deploy.py
 ```
@@ -76,6 +79,6 @@ Release through the repository's existing project tag and `release.yaml` pin. A 
 
 Scoped file backups are removed after 90 days. The server's existing gateway/database backup policy remains independently managed.
 
-The **Customer demo readiness** workflow checks every six hours from the trusted server runner. It reads the database heartbeat and visits the public Perspective routes. It does not depend on an optional Web Dev license. An optional read-only JSON health resource is also included for gateways licensed for Web Dev.
+The **Customer demo readiness** job in the existing **Deploy** workflow checks every six hours from the trusted server runner. It reads the database heartbeat and visits the public Perspective routes. It does not depend on an optional Web Dev license. An optional read-only JSON health resource is also included for gateways licensed for Web Dev.
 
 If readiness fails, inspect the Actions run and the native Demo health page. Check the database connection `OatmakersDemo`, the `DemoRuntime` secret provider and gateway logger `Oatmakers.Demo`. An unavailable database produces an explicit unavailable state. Restoring the connection lets the timer catch up automatically.

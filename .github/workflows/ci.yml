@@ -124,7 +124,8 @@ jobs:
             exit 0
           fi
           pip install ign-lint==0.6.1
-          ign-lint --config rule_config.json --files "projects/$PROJECT/**/view.json"
+          python3 tools/demo/lint_config.py "$PROJECT"
+          ign-lint --config build/lint/rules.json --files "projects/$PROJECT/**/view.json"
 
   validate-release:
     name: Validate release.yaml

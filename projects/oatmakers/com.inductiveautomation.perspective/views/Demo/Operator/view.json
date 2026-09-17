@@ -259,7 +259,7 @@
           {
             "type": "ia.input.dropdown",
             "meta": {
-              "name": "scene"
+              "name": "Scene"
             },
             "props": {
               "options": [
@@ -307,7 +307,7 @@
           {
             "type": "ia.input.dropdown",
             "meta": {
-              "name": "period"
+              "name": "Period"
             },
             "props": {
               "options": [
@@ -355,7 +355,7 @@
           {
             "type": "ia.input.dropdown",
             "meta": {
-              "name": "line"
+              "name": "Line"
             },
             "props": {
               "options": [
@@ -804,7 +804,7 @@
                   "type": "script",
                   "scope": "G",
                   "config": {
-                    "script": "\tif self.view.custom.busy:\n\t\treturn\n\tself.view.custom.busy = True\n\ttry:\n\t\tfrom java.util import UUID\n\t\tif not self.view.custom.requestId:\n\t\t\tself.view.custom.requestId = str(UUID.randomUUID())\n\t\tself.view.custom.result = application.demo.createOrder(dict(self.view.custom.values), self.view.custom.requestId)\n\t\tself.view.refreshBinding(\"custom.data\")\n\texcept:\n\t\tself.view.custom.result = \"Could not create the demo batch. Check your values or open Demo health.\"\n\tfinally:\n\t\tself.view.custom.busy = False"
+                    "script": "\tif self.view.custom.busy:\n\t\treturn\n\tself.view.custom.busy = True\n\ttry:\n\t\tif not self.view.custom.requestId:\n\t\t\tself.view.custom.requestId = application.demo.newRequestId()\n\t\tself.view.custom.result = application.demo.createOrder(dict(self.view.custom.values), self.view.custom.requestId)\n\t\tself.view.refreshBinding(\"custom.data\")\n\texcept (Exception, application.demo.JavaException):\n\t\tself.view.custom.result = \"Could not create the demo batch. Check your values or open Demo health.\"\n\tfinally:\n\t\tself.view.custom.busy = False"
                   }
                 }
               }

@@ -2,7 +2,8 @@
   "custom": {
     "validation": {
       "isInvalid": false
-    }
+    },
+    "raw": null
   },
   "params": {
     "enabled": true,
@@ -71,11 +72,19 @@
         "overlayOptOut": true,
         "transforms": [
           {
-            "code": "\tvalidationResult = common.validation.input.validateDropdownInput(\n\t\tvalue,\n\t\trequired=self.params.required\n\t)\n\treturn len(validationResult.get('errorMessage', '')) > 0",
+            "code": "\tvalidation_result = common.validation.input.validateDropdownInput(\n\t\tvalue,\n\t\trequired=self.params.required\n\t)\n\treturn len(validation_result.get('errorMessage', '')) > 0",
             "type": "script"
           }
         ],
         "type": "property"
+      }
+    },
+    "custom.raw": {
+      "binding": {
+        "type": "property",
+        "config": {
+          "path": "/root/ValueContainer/Dropdown.props.value"
+        }
       }
     }
   },
@@ -186,7 +195,7 @@
                 },
                 "onChange": {
                   "enabled": null,
-                  "script": "\tvalue = currentValue.value\n\tvalidationResult = common.validation.input.validateDropdownInput(\n\t\tvalue,\n\t\trequired=self.view.params.required\n\t)\n\tself.view.params.value = value\n\tself.view.params.validatedInput = common.validation.input.resolveValidatedInput(\n\t\tvalue,\n\t\tself.view.params.input,\n\t\tvalidationResult,\n\t\tblankValue=None\n\t)"
+                  "script": "\tvalue = currentValue.value\n\tvalidation_result = common.validation.input.validateDropdownInput(\n\t\tvalue,\n\t\trequired=self.view.params.required\n\t)\n\tself.view.params.value = value\n\tself.view.params.validatedInput = common.validation.input.resolveValidatedInput(\n\t\tvalue,\n\t\tself.view.params.input,\n\t\tvalidation_result,\n\t\tblankValue=None\n\t)"
                 }
               }
             },
@@ -224,12 +233,12 @@
               "props.text": {
                 "binding": {
                   "config": {
-                    "path": "../Dropdown.props.text"
+                    "path": "view.custom.raw"
                   },
                   "overlayOptOut": true,
                   "transforms": [
                     {
-                      "code": "\tvalidationResult = common.validation.input.validateDropdownInput(\n\t\tvalue,\n\t\trequired=self.view.params.required\n\t)\n\treturn validationResult.get('errorMessage', '')",
+                      "code": "\tvalidation_result = common.validation.input.validateDropdownInput(\n\t\tvalue,\n\t\trequired=self.view.params.required\n\t)\n\treturn validation_result.get('errorMessage', '')",
                       "type": "script"
                     }
                   ],

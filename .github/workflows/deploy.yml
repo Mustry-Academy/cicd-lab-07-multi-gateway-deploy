@@ -75,6 +75,13 @@ on:
       - "release.yaml"
       - ".github/workflows/deploy.yml"
   workflow_dispatch:
+    inputs:
+      readiness_only:
+        description: Run the read-only customer demo readiness check
+        type: boolean
+        default: false
+  schedule:
+    - cron: '17 */6 * * *'
 
 # Never cancel a deploy mid-ship; queue the next one.
 concurrency:
@@ -86,6 +93,7 @@ permissions:
 
 jobs:
   deploy:
+    if: github.event_name != 'schedule' && inputs.readiness_only != true
     name: Deploy release.yaml to production
     runs-on: [self-hosted, cicd-capstone]
     timeout-minutes: 30
@@ -578,3 +586,13 @@ jobs:
       - name: Restore previous demo resources if verification fails
         if: failure() && env.DEMO_SCOPED_DEPLOY == 'true' && env.DEMO_BACKUP != ''
         run: tools/demo/rollback-scoped.sh
+
+  demo-readiness:
+    name: Customer demo readiness
+    if: github.event_name == 'schedule' || inputs.readiness_only == true
+    runs-on: [self-hosted, cicd-capstone]
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check timer progress, history and native page routes
+        run: tools/demo/check-runtime.sh progress
