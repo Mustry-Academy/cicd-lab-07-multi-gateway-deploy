@@ -36,6 +36,8 @@ jobs:
           PGUSER: ignition
           PGPASSWORD: demo-test-only
         run: |
+          python3 tools/demo/build_views.py
+          git diff --exit-code -- projects/oatmakers
           python3 tools/demo/validate.py
           python3 tests/demo/test_database.py
           python3 tests/demo/test_deploy.py

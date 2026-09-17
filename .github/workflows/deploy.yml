@@ -195,7 +195,23 @@ jobs:
           fi
           echo "Prerequisites OK (container=$IGNITION_CONTAINER state=$state)."
 
+      - name: Detect isolated customer demo release
+        run: |
+          if [ -f payload/services/config/resources/core/ignition/database-connection/OatmakersDemo/config.json ]; then
+            echo "DEMO_SCOPED_DEPLOY=true" >> "$GITHUB_ENV"
+          fi
+
+      - name: Verify demo hot-reload authorization
+        if: env.DEMO_SCOPED_DEPLOY == 'true'
+        run: |
+          for resource in config projects; do
+            curl -fsS --connect-timeout 5 --max-time 30 -X POST \
+              -H "X-Ignition-API-Token: $IGNITION_API_KEY" \
+              "$IGNITION_URL/data/api/v1/scan/$resource" > /dev/null
+          done
+
       - name: Materialize and ship secret files
+        if: env.DEMO_SCOPED_DEPLOY != 'true'
         # GitHub secrets → files → /run/secrets/ in the gateway container,
         # where the file-type secret provider reads them on demand (no
         # restart: a faulted DB connection re-validates on its next cycle).
@@ -226,19 +242,6 @@ jobs:
             shipped=$((shipped + 1))
           done
           [ "$shipped" -gt 0 ] || echo "No secret values configured — nothing shipped."
-
-      - name: Detect isolated customer demo release
-        run: |
-          if [ -f payload/services/config/resources/core/ignition/database-connection/OatmakersDemo/config.json ]; then
-            echo "DEMO_SCOPED_DEPLOY=true" >> "$GITHUB_ENV"
-          fi
-
-      - name: Verify demo hot-reload authorization
-        if: env.DEMO_SCOPED_DEPLOY == 'true'
-        run: |
-          curl -fsS --connect-timeout 5 --max-time 30 -X POST \
-            -H "X-Ignition-API-Token: $IGNITION_API_KEY" \
-            "$IGNITION_URL/data/api/v1/scan/projects" > /dev/null
 
       - name: Materialize durable demo database credentials
         # Ignition accepts a referenced password but requires a scalar username.
@@ -505,7 +508,7 @@ jobs:
           # transient 5xx / connection failures with a bounded retry.
           run_scans() {
             local what code tries
-            for what in projects config; do
+            for what in config projects; do
               tries=0
               while :; do
                 code="$(curl -sS -o /dev/null -w '%{http_code}' -X POST \

@@ -272,5 +272,5 @@ css='''
 @media(max-width:1100px) { .psc-Demo\\/Page { padding:20px; } .psc-Demo\\/MetricValue { font-size:28px; } }
 @media(max-width:650px) { .psc-Demo\\/Page { padding:16px; gap:14px; } .psc-Demo\\/PageTitle { font-size:25px; } .psc-Demo\\/Clock { margin-left:0; } .psc-Demo\\/Panel { padding:15px; } .psc-Demo\\/Wrap > * { flex-basis:100% !important; } .psc-Demo\\/Repeater { height:auto; min-height:150px; } }
 '''
-p=P/'stylesheet';p.mkdir(exist_ok=True);existing=(p/'stylesheet.css').read_text() if (p/'stylesheet.css').exists() else '';marker='/* Oatmakers customer demo */';existing=existing.split(marker)[0];(p/'stylesheet.css').write_text(existing+'\n'+marker+'\n'+css);resource(p,['stylesheet.css'])
+p=P/'stylesheet';p.mkdir(exist_ok=True);existing=(p/'stylesheet.css').read_text() if (p/'stylesheet.css').exists() else '';marker='/* Oatmakers customer demo */';existing=existing.split(marker)[0].rstrip();(p/'stylesheet.css').write_text((existing+'\n\n' if existing else '')+marker+'\n'+css);resource(p,['stylesheet.css'])
 print('Built',len(routes),'demo pages and shared components.')
