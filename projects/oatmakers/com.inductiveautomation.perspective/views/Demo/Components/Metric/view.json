@@ -1,0 +1,176 @@
+{
+  "custom": {},
+  "params": {
+    "title": "METRIC",
+    "value": "0",
+    "unit": "",
+    "hint": "",
+    "accent": "green"
+  },
+  "propConfig": {
+    "params.title": {
+      "paramDirection": "input",
+      "persistent": true
+    },
+    "params.value": {
+      "paramDirection": "input",
+      "persistent": true
+    },
+    "params.unit": {
+      "paramDirection": "input",
+      "persistent": true
+    },
+    "params.hint": {
+      "paramDirection": "input",
+      "persistent": true
+    },
+    "params.accent": {
+      "paramDirection": "input",
+      "persistent": true
+    }
+  },
+  "props": {
+    "defaultSize": {
+      "width": 1280,
+      "height": 140
+    }
+  },
+  "root": {
+    "type": "ia.container.flex",
+    "meta": {
+      "name": "root"
+    },
+    "props": {
+      "direction": "column",
+      "style": {
+        "classes": "Demo/Metric"
+      }
+    },
+    "children": [
+      {
+        "type": "ia.display.label",
+        "meta": {
+          "name": "Title"
+        },
+        "props": {
+          "text": "",
+          "style": {
+            "classes": "Demo/Eyebrow"
+          }
+        },
+        "position": {
+          "shrink": 0,
+          "basis": "auto"
+        },
+        "propConfig": {
+          "props.text": {
+            "binding": {
+              "type": "property",
+              "config": {
+                "path": "view.params.title"
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "ia.container.flex",
+        "meta": {
+          "name": "Reading"
+        },
+        "props": {
+          "direction": "row",
+          "style": {
+            "classes": "Demo/MetricReading"
+          }
+        },
+        "children": [
+          {
+            "type": "ia.display.label",
+            "meta": {
+              "name": "Value"
+            },
+            "props": {
+              "text": "",
+              "style": {
+                "classes": "Demo/MetricValue"
+              }
+            },
+            "position": {
+              "shrink": 0,
+              "basis": "auto"
+            },
+            "propConfig": {
+              "props.text": {
+                "binding": {
+                  "type": "property",
+                  "config": {
+                    "path": "view.params.value"
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "ia.display.label",
+            "meta": {
+              "name": "Unit"
+            },
+            "props": {
+              "text": "",
+              "style": {
+                "classes": "Demo/MetricUnit"
+              }
+            },
+            "position": {
+              "shrink": 0,
+              "basis": "auto"
+            },
+            "propConfig": {
+              "props.text": {
+                "binding": {
+                  "type": "property",
+                  "config": {
+                    "path": "view.params.unit"
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "position": {
+          "shrink": 0
+        }
+      },
+      {
+        "type": "ia.display.label",
+        "meta": {
+          "name": "Hint"
+        },
+        "props": {
+          "text": "",
+          "style": {
+            "classes": "Demo/Muted"
+          }
+        },
+        "position": {
+          "shrink": 0,
+          "basis": "auto"
+        },
+        "propConfig": {
+          "props.text": {
+            "binding": {
+              "type": "property",
+              "config": {
+                "path": "view.params.hint"
+              }
+            }
+          }
+        }
+      }
+    ],
+    "position": {
+      "shrink": 0
+    }
+  }
+}

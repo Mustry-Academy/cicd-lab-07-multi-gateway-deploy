@@ -1,10 +1,12 @@
 {
-  "scope": "G",
+  "scope": "A",
   "version": 1,
   "restricted": false,
   "overridable": true,
   "files": [
-    "view.json"
+    "code.py"
   ],
-  "attributes": {}
+  "attributes": {
+    "hintScope": 2
+  }
 }

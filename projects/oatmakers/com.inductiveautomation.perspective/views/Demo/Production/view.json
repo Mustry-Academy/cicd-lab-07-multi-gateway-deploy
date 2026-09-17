@@ -1,0 +1,892 @@
+{
+  "custom": {
+    "data": {
+      "ready": false,
+      "stale": false,
+      "message": "Loading demonstration data...",
+      "metrics": [],
+      "lines": [],
+      "trend": [],
+      "orders": [],
+      "planning": [],
+      "losses": [],
+      "events": [],
+      "quality": [],
+      "batchOptions": [],
+      "selectedBatch": {
+        "reference": "Loading batch",
+        "product": "",
+        "quality": "Awaiting data"
+      },
+      "inspection": {},
+      "submissions": [],
+      "window": "",
+      "clock": "",
+      "health": {
+        "ok": false,
+        "ageSeconds": "n/a",
+        "coverageDays": "n/a",
+        "lineCount": "n/a",
+        "sampleCount": "n/a"
+      },
+      "availability": "n/a",
+      "performance": "n/a",
+      "yield": "n/a"
+    },
+    "selectionNotice": ""
+  },
+  "params": {},
+  "propConfig": {
+    "custom.data": {
+      "binding": {
+        "type": "expr-struct",
+        "config": {
+          "waitOnAll": true,
+          "struct": {
+            "tick": "now(10000)",
+            "scene": "{session.custom.demo.scene}",
+            "period": "{session.custom.demo.period}",
+            "line": "{session.custom.demo.line}",
+            "batch": "{session.custom.demo.batch}"
+          }
+        },
+        "transforms": [
+          {
+            "type": "script",
+            "code": "\treturn application.demo.snapshot(value[\"scene\"], value[\"period\"], value[\"line\"], value[\"batch\"])"
+          }
+        ]
+      }
+    },
+    "custom.selectionNotice": {
+      "persistent": true
+    }
+  },
+  "props": {
+    "defaultSize": {
+      "width": 1280,
+      "height": 1000
+    }
+  },
+  "root": {
+    "type": "ia.container.flex",
+    "meta": {
+      "name": "root"
+    },
+    "props": {
+      "direction": "column",
+      "style": {
+        "classes": "Demo/Page"
+      }
+    },
+    "children": [
+      {
+        "type": "ia.container.flex",
+        "meta": {
+          "name": "Heading"
+        },
+        "props": {
+          "direction": "row",
+          "wrap": "wrap",
+          "style": {
+            "classes": "Demo/PageHeader"
+          }
+        },
+        "children": [
+          {
+            "type": "ia.container.flex",
+            "meta": {
+              "name": "Identity"
+            },
+            "props": {
+              "direction": "column",
+              "style": {
+                "minWidth": "0"
+              }
+            },
+            "children": [
+              {
+                "type": "ia.display.label",
+                "meta": {
+                  "name": "Eyebrow"
+                },
+                "props": {
+                  "text": "OATMAKERS / CUSTOMER DEMO",
+                  "style": {
+                    "classes": "Demo/Eyebrow"
+                  }
+                },
+                "position": {
+                  "shrink": 0,
+                  "basis": "auto"
+                }
+              },
+              {
+                "type": "ia.display.label",
+                "meta": {
+                  "name": "Title"
+                },
+                "props": {
+                  "text": "Production planning",
+                  "style": {
+                    "classes": "Demo/PageTitle"
+                  }
+                },
+                "position": {
+                  "shrink": 0,
+                  "basis": "auto"
+                }
+              },
+              {
+                "type": "ia.display.label",
+                "meta": {
+                  "name": "Subtitle"
+                },
+                "props": {
+                  "text": "Follow every batch from its production run to quality release.",
+                  "style": {
+                    "classes": "Demo/Subtitle"
+                  }
+                },
+                "position": {
+                  "shrink": 0,
+                  "basis": "auto"
+                }
+              }
+            ],
+            "position": {
+              "shrink": 1,
+              "grow": 1,
+              "basis": "260px"
+            }
+          },
+          {
+            "type": "ia.input.button",
+            "meta": {
+              "name": "ResetScenario"
+            },
+            "props": {
+              "text": "Reset demo filters",
+              "style": {
+                "classes": "Demo/QuietButton",
+                "height": "40px"
+              }
+            },
+            "position": {
+              "shrink": 0,
+              "basis": "150px"
+            },
+            "events": {
+              "component": {
+                "onActionPerformed": {
+                  "type": "script",
+                  "scope": "G",
+                  "config": {
+                    "script": "\tself.session.custom.demo.scene = \"live\"\n\tself.session.custom.demo.period = \"day\"\n\tself.session.custom.demo.line = 0\n\tself.session.custom.demo.batch = \"\""
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "position": {
+          "shrink": 0
+        }
+      },
+      {
+        "type": "ia.container.flex",
+        "meta": {
+          "name": "Filters"
+        },
+        "props": {
+          "direction": "row",
+          "wrap": "wrap",
+          "style": {
+            "classes": "Demo/Filters"
+          }
+        },
+        "children": [
+          {
+            "type": "ia.input.dropdown",
+            "meta": {
+              "name": "scene"
+            },
+            "props": {
+              "options": [
+                {
+                  "value": "live",
+                  "label": "Live production"
+                },
+                {
+                  "value": "stoppage",
+                  "label": "Replay: line stoppage"
+                },
+                {
+                  "value": "quality",
+                  "label": "Replay: quality deviation"
+                },
+                {
+                  "value": "recovery",
+                  "label": "Replay: recovery"
+                }
+              ],
+              "value": "live",
+              "search": {
+                "enabled": false
+              },
+              "style": {
+                "classes": "Demo/Select"
+              }
+            },
+            "position": {
+              "shrink": 0,
+              "basis": "190px"
+            },
+            "propConfig": {
+              "props.value": {
+                "binding": {
+                  "type": "property",
+                  "config": {
+                    "path": "session.custom.demo.scene",
+                    "bidirectional": true
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "ia.input.dropdown",
+            "meta": {
+              "name": "period"
+            },
+            "props": {
+              "options": [
+                {
+                  "value": "shift",
+                  "label": "Last 8 hours"
+                },
+                {
+                  "value": "day",
+                  "label": "Last 24 hours"
+                },
+                {
+                  "value": "week",
+                  "label": "Last 7 days"
+                },
+                {
+                  "value": "month",
+                  "label": "Last 30 days"
+                }
+              ],
+              "value": "shift",
+              "search": {
+                "enabled": false
+              },
+              "style": {
+                "classes": "Demo/Select"
+              }
+            },
+            "position": {
+              "shrink": 0,
+              "basis": "190px"
+            },
+            "propConfig": {
+              "props.value": {
+                "binding": {
+                  "type": "property",
+                  "config": {
+                    "path": "session.custom.demo.period",
+                    "bidirectional": true
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "ia.input.dropdown",
+            "meta": {
+              "name": "line"
+            },
+            "props": {
+              "options": [
+                {
+                  "value": 0,
+                  "label": "All production lines"
+                },
+                {
+                  "value": 1,
+                  "label": "Rolling line 01"
+                },
+                {
+                  "value": 2,
+                  "label": "Cutting line 02"
+                },
+                {
+                  "value": 3,
+                  "label": "Milling line 03"
+                }
+              ],
+              "value": 0,
+              "search": {
+                "enabled": false
+              },
+              "style": {
+                "classes": "Demo/Select"
+              }
+            },
+            "position": {
+              "shrink": 0,
+              "basis": "190px"
+            },
+            "propConfig": {
+              "props.value": {
+                "binding": {
+                  "type": "property",
+                  "config": {
+                    "path": "session.custom.demo.line",
+                    "bidirectional": true
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "ia.display.label",
+            "meta": {
+              "name": "Clock"
+            },
+            "props": {
+              "text": "",
+              "style": {
+                "classes": "Demo/Clock"
+              }
+            },
+            "position": {
+              "shrink": 0,
+              "basis": "auto"
+            },
+            "propConfig": {
+              "props.text": {
+                "binding": {
+                  "type": "property",
+                  "config": {
+                    "path": "view.custom.data.clock"
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "position": {
+          "shrink": 0
+        }
+      },
+      {
+        "type": "ia.display.label",
+        "meta": {
+          "name": "Status"
+        },
+        "props": {
+          "text": "",
+          "style": {
+            "classes": "Demo/Status"
+          }
+        },
+        "position": {
+          "shrink": 0,
+          "basis": "auto"
+        },
+        "propConfig": {
+          "props.text": {
+            "binding": {
+              "type": "property",
+              "config": {
+                "path": "view.custom.data.message"
+              }
+            }
+          },
+          "props.style.backgroundColor": {
+            "binding": {
+              "type": "expr",
+              "config": {
+                "expression": "if({view.custom.data.stale}, \"#fff1d9\", \"#e8f1ea\")"
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "ia.display.label",
+        "meta": {
+          "name": "Window"
+        },
+        "props": {
+          "text": "",
+          "style": {
+            "classes": "Demo/Muted"
+          }
+        },
+        "position": {
+          "shrink": 0,
+          "basis": "auto"
+        },
+        "propConfig": {
+          "props.text": {
+            "binding": {
+              "type": "property",
+              "config": {
+                "path": "view.custom.data.window"
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "ia.display.label",
+        "meta": {
+          "name": "SelectionNotice"
+        },
+        "props": {
+          "text": "",
+          "style": {
+            "classes": "Demo/Muted"
+          }
+        },
+        "position": {
+          "shrink": 0,
+          "basis": "auto"
+        },
+        "propConfig": {
+          "props.text": {
+            "binding": {
+              "type": "property",
+              "config": {
+                "path": "view.custom.selectionNotice"
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "ia.display.flex-repeater",
+        "meta": {
+          "name": "Metrics"
+        },
+        "props": {
+          "path": "Demo/Components/Metric",
+          "direction": "row",
+          "wrap": "wrap",
+          "useDefaultViewWidth": false,
+          "useDefaultViewHeight": true,
+          "elementPosition": {
+            "basis": "230px",
+            "grow": 1,
+            "shrink": 0
+          },
+          "instances": [],
+          "style": {
+            "classes": "Demo/Repeater"
+          }
+        },
+        "position": {
+          "shrink": 0,
+          "basis": "auto"
+        },
+        "propConfig": {
+          "props.instances": {
+            "binding": {
+              "type": "property",
+              "config": {
+                "path": "view.custom.data.metrics"
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "ia.container.flex",
+        "meta": {
+          "name": "Plan"
+        },
+        "props": {
+          "direction": "column",
+          "style": {
+            "classes": "Demo/Panel"
+          }
+        },
+        "children": [
+          {
+            "type": "ia.display.label",
+            "meta": {
+              "name": "PlanTitle"
+            },
+            "props": {
+              "text": "Batch plan and actual production",
+              "style": {
+                "classes": "Demo/SectionTitle"
+              }
+            },
+            "position": {
+              "shrink": 0,
+              "basis": "auto"
+            }
+          },
+          {
+            "type": "ia.display.label",
+            "meta": {
+              "name": "PlanSubtitle"
+            },
+            "props": {
+              "text": "Select a row to open the matching quality record. All quantities are calculated from stored minute samples.",
+              "style": {
+                "classes": "Demo/Muted"
+              }
+            },
+            "position": {
+              "shrink": 0,
+              "basis": "auto"
+            }
+          },
+          {
+            "type": "ia.display.table",
+            "meta": {
+              "name": "Orders"
+            },
+            "props": {
+              "data": [],
+              "columns": [
+                {
+                  "field": "reference",
+                  "visible": true,
+                  "editable": false,
+                  "render": "auto",
+                  "header": {
+                    "title": "Batch"
+                  },
+                  "width": 190,
+                  "strictWidth": false
+                },
+                {
+                  "field": "line",
+                  "visible": true,
+                  "editable": false,
+                  "render": "auto",
+                  "header": {
+                    "title": "Production line"
+                  },
+                  "width": 170,
+                  "strictWidth": false
+                },
+                {
+                  "field": "product",
+                  "visible": true,
+                  "editable": false,
+                  "render": "auto",
+                  "header": {
+                    "title": "Product"
+                  },
+                  "width": 150,
+                  "strictWidth": false
+                },
+                {
+                  "field": "started",
+                  "visible": true,
+                  "editable": false,
+                  "render": "auto",
+                  "header": {
+                    "title": "Started"
+                  },
+                  "width": 140,
+                  "strictWidth": false
+                },
+                {
+                  "field": "produced_kg",
+                  "visible": true,
+                  "editable": false,
+                  "render": "auto",
+                  "header": {
+                    "title": "Output kg"
+                  },
+                  "width": 115,
+                  "strictWidth": false
+                },
+                {
+                  "field": "target_kg",
+                  "visible": true,
+                  "editable": false,
+                  "render": "auto",
+                  "header": {
+                    "title": "Target kg"
+                  },
+                  "width": 115,
+                  "strictWidth": false
+                },
+                {
+                  "field": "status",
+                  "visible": true,
+                  "editable": false,
+                  "render": "auto",
+                  "header": {
+                    "title": "Status"
+                  },
+                  "width": 150,
+                  "strictWidth": false
+                }
+              ],
+              "pager": {
+                "top": false,
+                "bottom": true,
+                "initialOption": 10,
+                "options": [
+                  10,
+                  20,
+                  50
+                ]
+              },
+              "selection": {
+                "enabled": true,
+                "mode": "row"
+              },
+              "filter": {
+                "enabled": true
+              },
+              "headerStyle": {
+                "backgroundColor": "#edf2e8",
+                "color": "#355541",
+                "fontWeight": "600",
+                "fontSize": 12
+              },
+              "rows": {
+                "height": 36,
+                "striped": {
+                  "enabled": true,
+                  "color": "#f7f9f4"
+                }
+              },
+              "style": {
+                "classes": "Demo/Table"
+              }
+            },
+            "position": {
+              "shrink": 0,
+              "basis": "530px"
+            },
+            "propConfig": {
+              "props.data": {
+                "binding": {
+                  "type": "property",
+                  "config": {
+                    "path": "view.custom.data.planning"
+                  }
+                }
+              }
+            },
+            "events": {
+              "component": {
+                "onRowClick": {
+                  "type": "script",
+                  "scope": "G",
+                  "config": {
+                    "script": "\trow = self.props.data[event.row]\n\tif row.get(\"status\") == \"Scheduled\":\n\t\tself.view.custom.selectionNotice = \"This batch is scheduled. Quality measurements become available after production starts.\"\n\t\treturn\n\tself.session.custom.demo.batch = row[\"reference\"]\n\tsystem.perspective.navigate(\"/quality\")"
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "position": {
+          "shrink": 0,
+          "grow": 0
+        }
+      },
+      {
+        "type": "ia.container.flex",
+        "meta": {
+          "name": "Submitted"
+        },
+        "props": {
+          "direction": "column",
+          "style": {
+            "classes": "Demo/Panel"
+          }
+        },
+        "children": [
+          {
+            "type": "ia.display.label",
+            "meta": {
+              "name": "SubmittedTitle"
+            },
+            "props": {
+              "text": "Demo production requests",
+              "style": {
+                "classes": "Demo/SectionTitle"
+              }
+            },
+            "position": {
+              "shrink": 0,
+              "basis": "auto"
+            }
+          },
+          {
+            "type": "ia.display.label",
+            "meta": {
+              "name": "SubmittedSubtitle"
+            },
+            "props": {
+              "text": "Generated examples and operator requests are retained for at most 90 days.",
+              "style": {
+                "classes": "Demo/Muted"
+              }
+            },
+            "position": {
+              "shrink": 0,
+              "basis": "auto"
+            }
+          },
+          {
+            "type": "ia.display.table",
+            "meta": {
+              "name": "SubmittedOrders"
+            },
+            "props": {
+              "data": [],
+              "columns": [
+                {
+                  "field": "reference",
+                  "visible": true,
+                  "editable": false,
+                  "render": "auto",
+                  "header": {
+                    "title": "Reference"
+                  },
+                  "width": 170,
+                  "strictWidth": false
+                },
+                {
+                  "field": "product",
+                  "visible": true,
+                  "editable": false,
+                  "render": "auto",
+                  "header": {
+                    "title": "Product"
+                  },
+                  "width": 180,
+                  "strictWidth": false
+                },
+                {
+                  "field": "quantity_kg",
+                  "visible": true,
+                  "editable": false,
+                  "render": "auto",
+                  "header": {
+                    "title": "Requested kg"
+                  },
+                  "width": 120,
+                  "strictWidth": false
+                },
+                {
+                  "field": "bags",
+                  "visible": true,
+                  "editable": false,
+                  "render": "auto",
+                  "header": {
+                    "title": "Bags"
+                  },
+                  "width": 90,
+                  "strictWidth": false
+                },
+                {
+                  "field": "mode",
+                  "visible": true,
+                  "editable": false,
+                  "render": "auto",
+                  "header": {
+                    "title": "Mode"
+                  },
+                  "width": 110,
+                  "strictWidth": false
+                },
+                {
+                  "field": "source",
+                  "visible": true,
+                  "editable": false,
+                  "render": "auto",
+                  "header": {
+                    "title": "Source"
+                  },
+                  "width": 150,
+                  "strictWidth": false
+                },
+                {
+                  "field": "submitted",
+                  "visible": true,
+                  "editable": false,
+                  "render": "auto",
+                  "header": {
+                    "title": "Created"
+                  },
+                  "width": 150,
+                  "strictWidth": false
+                }
+              ],
+              "pager": {
+                "top": false,
+                "bottom": true,
+                "initialOption": 10,
+                "options": [
+                  10,
+                  20,
+                  50
+                ]
+              },
+              "selection": {
+                "enabled": true,
+                "mode": "row"
+              },
+              "filter": {
+                "enabled": true
+              },
+              "headerStyle": {
+                "backgroundColor": "#edf2e8",
+                "color": "#355541",
+                "fontWeight": "600",
+                "fontSize": 12
+              },
+              "rows": {
+                "height": 36,
+                "striped": {
+                  "enabled": true,
+                  "color": "#f7f9f4"
+                }
+              },
+              "style": {
+                "classes": "Demo/Table"
+              }
+            },
+            "position": {
+              "shrink": 0,
+              "basis": "260px"
+            },
+            "propConfig": {
+              "props.data": {
+                "binding": {
+                  "type": "property",
+                  "config": {
+                    "path": "view.custom.data.submissions"
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "position": {
+          "shrink": 0,
+          "grow": 0
+        }
+      }
+    ],
+    "position": {
+      "shrink": 0
+    }
+  }
+}

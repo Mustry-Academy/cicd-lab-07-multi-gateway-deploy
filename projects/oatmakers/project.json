@@ -1,6 +1,6 @@
 {
-  "title": "Oatmakers",
-  "description": "The shared production project — every Part 2 challenge lands here.",
+  "title": "Oatmakers | Connected factory demo",
+  "description": "A populated factory demonstration with production, performance, quality, operator workflows and rolling history.",
   "enabled": true,
   "inheritable": false,
   "parent": ""

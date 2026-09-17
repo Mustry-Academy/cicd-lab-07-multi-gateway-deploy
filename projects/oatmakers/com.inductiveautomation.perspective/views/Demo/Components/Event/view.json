@@ -1,0 +1,172 @@
+{
+  "custom": {},
+  "params": {
+    "state": "",
+    "time": "",
+    "line": "",
+    "description": ""
+  },
+  "propConfig": {
+    "params.state": {
+      "paramDirection": "input",
+      "persistent": true
+    },
+    "params.time": {
+      "paramDirection": "input",
+      "persistent": true
+    },
+    "params.line": {
+      "paramDirection": "input",
+      "persistent": true
+    },
+    "params.description": {
+      "paramDirection": "input",
+      "persistent": true
+    }
+  },
+  "props": {
+    "defaultSize": {
+      "width": 1280,
+      "height": 82
+    }
+  },
+  "root": {
+    "type": "ia.container.flex",
+    "meta": {
+      "name": "root"
+    },
+    "props": {
+      "direction": "column",
+      "style": {
+        "classes": "Demo/EventCard"
+      }
+    },
+    "children": [
+      {
+        "type": "ia.container.flex",
+        "meta": {
+          "name": "Top"
+        },
+        "props": {
+          "direction": "row",
+          "wrap": "wrap",
+          "style": {
+            "classes": "Demo/Spread"
+          }
+        },
+        "children": [
+          {
+            "type": "ia.display.label",
+            "meta": {
+              "name": "State"
+            },
+            "props": {
+              "text": "",
+              "style": {
+                "classes": "Demo/Badge"
+              }
+            },
+            "position": {
+              "shrink": 0,
+              "basis": "auto"
+            },
+            "propConfig": {
+              "props.text": {
+                "binding": {
+                  "type": "property",
+                  "config": {
+                    "path": "view.params.state"
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "ia.display.label",
+            "meta": {
+              "name": "Time"
+            },
+            "props": {
+              "text": "",
+              "style": {
+                "classes": "Demo/Muted"
+              }
+            },
+            "position": {
+              "shrink": 0,
+              "basis": "auto"
+            },
+            "propConfig": {
+              "props.text": {
+                "binding": {
+                  "type": "property",
+                  "config": {
+                    "path": "view.params.time"
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "position": {
+          "shrink": 0
+        }
+      },
+      {
+        "type": "ia.display.label",
+        "meta": {
+          "name": "Line"
+        },
+        "props": {
+          "text": "",
+          "style": {
+            "classes": "Demo/Body"
+          }
+        },
+        "position": {
+          "shrink": 0,
+          "basis": "auto"
+        },
+        "propConfig": {
+          "props.text": {
+            "binding": {
+              "type": "property",
+              "config": {
+                "path": "view.params.line"
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "ia.display.label",
+        "meta": {
+          "name": "Description"
+        },
+        "props": {
+          "text": "",
+          "style": {
+            "classes": "Demo/Muted"
+          }
+        },
+        "position": {
+          "shrink": 0,
+          "basis": "auto"
+        },
+        "propConfig": {
+          "props.text": {
+            "binding": {
+              "type": "property",
+              "config": {
+                "path": "view.params.description"
+              }
+            }
+          }
+        }
+      }
+    ],
+    "position": {
+      "shrink": 0
+    }
+  }
+}

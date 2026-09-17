@@ -1,0 +1,49 @@
+name: oatmakers-showroom-local
+services:
+  database:
+    image: postgres:17.5
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ignition
+      POSTGRES_USER: ignition
+      POSTGRES_PASSWORD: lab07-postgres-pw
+      TZ: Europe/Brussels
+    volumes:
+      - demo-db:/var/lib/postgresql/data
+    networks:
+      default:
+        aliases: [postgres]
+    healthcheck:
+      test: [CMD-SHELL, 'pg_isready -U ignition -d ignition']
+      interval: 5s
+      timeout: 3s
+      retries: 20
+  gateway:
+    image: inductiveautomation/ignition:8.3.8
+    restart: unless-stopped
+    ports: ['127.0.0.1:18094:8088']
+    volumes:
+      - demo-gateway:/usr/local/bin/ignition/data
+      - ./projects:/usr/local/bin/ignition/data/projects
+      - ./services/config:/usr/local/bin/ignition/data/config
+      - ./local-development/secrets:/run/secrets:ro
+      - ./local-development/secrets/POSTGRES_PASSWORD:/usr/local/bin/ignition/data/demo-secrets/POSTGRES_PASSWORD:ro
+    environment:
+      ACCEPT_IGNITION_EULA: 'Y'
+      IGNITION_EDITION: standard
+      DISABLE_QUICKSTART: 'true'
+      GATEWAY_ADMIN_USERNAME: admin
+      GATEWAY_ADMIN_PASSWORD: password
+      TZ: Europe/Brussels
+    command: ['-n', oatmakers-showroom-local, '-m', '1024', '--', 'wrapper.java.initmemory=256']
+    depends_on:
+      database:
+        condition: service_healthy
+    healthcheck:
+      test: [CMD, curl, -fsS, 'http://localhost:8088/StatusPing']
+      interval: 15s
+      timeout: 5s
+      retries: 20
+volumes:
+  demo-db:
+  demo-gateway:

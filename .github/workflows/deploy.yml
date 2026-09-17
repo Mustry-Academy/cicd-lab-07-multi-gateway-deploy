@@ -227,6 +227,42 @@ jobs:
           done
           [ "$shipped" -gt 0 ] || echo "No secret values configured — nothing shipped."
 
+      - name: Detect isolated customer demo release
+        run: |
+          if [ -f payload/services/config/resources/core/ignition/database-connection/OatmakersDemo/config.json ]; then
+            echo "DEMO_SCOPED_DEPLOY=true" >> "$GITHUB_ENV"
+          fi
+
+      - name: Verify demo hot-reload authorization
+        if: env.DEMO_SCOPED_DEPLOY == 'true'
+        run: |
+          curl -fsS --connect-timeout 5 --max-time 30 -X POST \
+            -H "X-Ignition-API-Token: $IGNITION_API_KEY" \
+            "$IGNITION_URL/data/api/v1/scan/projects" > /dev/null
+
+      - name: Materialize durable demo database credentials
+        # Ignition accepts a referenced password but requires a scalar username.
+        # Keep the actual deployment username out of the public project files.
+        env:
+          POSTGRES_USERNAME: ${{ secrets.POSTGRES_USERNAME }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+        run: |
+          set -euo pipefail
+          config=payload/services/config/resources/core/ignition/database-connection/OatmakersDemo/config.json
+          if [ -f "$config" ]; then
+            test -n "$POSTGRES_USERNAME" || { echo "POSTGRES_USERNAME is missing" >&2; exit 1; }
+            python3 - "$config" <<'PYCODE'
+          import json, os, pathlib, sys
+          path = pathlib.Path(sys.argv[1])
+          value = json.loads(path.read_text())
+          value["username"] = os.environ["POSTGRES_USERNAME"]
+          path.write_text(json.dumps(value, indent=2) + "\n")
+          PYCODE
+            test -n "$POSTGRES_PASSWORD" || { echo "POSTGRES_PASSWORD is missing" >&2; exit 1; }
+            docker exec -u root "$IGNITION_CONTAINER" install -d -o 2003 -g 0 -m 750 "$GATEWAY_DATA_PATH/demo-secrets"
+            printf '%s' "$POSTGRES_PASSWORD" | docker exec -i -u root "$IGNITION_CONTAINER" sh -c               'umask 077; cat > /usr/local/bin/ignition/data/demo-secrets/POSTGRES_PASSWORD; chown 2003:0 /usr/local/bin/ignition/data/demo-secrets/POSTGRES_PASSWORD; chmod 400 /usr/local/bin/ignition/data/demo-secrets/POSTGRES_PASSWORD'
+          fi
+
       - name: Migrate database
         # BEFORE the ship steps, and never continue-on-error: a failed
         # migration must stop the run before anything ships. golang-migrate
@@ -272,6 +308,10 @@ jobs:
           }
           db_url="postgres://$(urlenc "$POSTGRES_USERNAME"):$(urlenc "$POSTGRES_PASSWORD")@${POSTGRES_CONTAINER}:5432/${POSTGRES_DB}?sslmode=disable"
 
+          if [ "${DEMO_SCOPED_DEPLOY:-false}" = true ]; then
+            db_url="${db_url}&x-migrations-table=oat_demo_schema_migrations"
+          fi
+
           cid="$(docker create --network "$network" "$MIGRATE_IMAGE" \
             -path=/migrations -database "$db_url" up)"
           trap 'docker rm -f "$cid" > /dev/null 2>&1 || true' EXIT
@@ -279,7 +319,12 @@ jobs:
           echo "migrate up → $POSTGRES_DB (network: $network)"
           docker start -a "$cid"
 
+      - name: Back up and ship isolated customer demo
+        if: env.DEMO_SCOPED_DEPLOY == 'true'
+        run: tools/demo/deploy-scoped.sh payload
+
       - name: Ship projects and config into gateway container
+        if: env.DEMO_SCOPED_DEPLOY != 'true'
         # Wipe-then-copy so "removed from release.yaml → removed from
         # production" holds for projects, and "deleted in repo → deleted on
         # gateway" holds for config. The preserved subtrees are the ones the
@@ -360,6 +405,7 @@ jobs:
           find payload/projects -mindepth 1 -maxdepth 1 -type d -exec basename {} \; | sed 's/^/  /'
 
       - name: Ship boot-time payload (modules + JARs), restart if changed
+        if: env.DEMO_SCOPED_DEPLOY != 'true'
         # Modules and lib JARs only load at BOOT. Deliberately the LAST ship
         # step: if this restarts the gateway, nothing may touch its file
         # tree while it boots (a wipe racing a boot faults the gateway —
@@ -488,6 +534,10 @@ jobs:
           }
           rc=0
           run_scans || rc=$?
+          if [ "$rc" = "42" ] && [ "${DEMO_SCOPED_DEPLOY:-false}" = "true" ]; then
+            echo "Demo scan was denied. Refusing to restart a shared gateway." >&2
+            exit 1
+          fi
           if [ "$rc" = "42" ]; then
             echo "Scan not authorized — the gateway has not loaded the deployed"
             echo "API token / security-properties yet (first deploy to a fresh"
@@ -517,3 +567,11 @@ jobs:
           done
           echo "Gateway did not come up within 5 minutes" >&2
           exit 1
+
+      - name: Verify customer demo data and page routes
+        if: env.DEMO_SCOPED_DEPLOY == 'true'
+        run: tools/demo/check-runtime.sh progress
+
+      - name: Restore previous demo resources if verification fails
+        if: failure() && env.DEMO_SCOPED_DEPLOY == 'true' && env.DEMO_BACKUP != ''
+        run: tools/demo/rollback-scoped.sh

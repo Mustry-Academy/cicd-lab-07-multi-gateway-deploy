@@ -1,0 +1,14 @@
+{
+  "profile": {
+    "type": "file"
+  },
+  "settings": {
+    "files": {
+      "databasePassword": {
+        "description": "Persistent credential for the isolated customer demonstration database",
+        "filePath": "/usr/local/bin/ignition/data/demo-secrets/POSTGRES_PASSWORD",
+        "fileType": "CLEARTEXT"
+      }
+    }
+  }
+}

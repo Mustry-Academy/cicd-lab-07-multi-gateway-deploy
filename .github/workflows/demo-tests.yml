@@ -1,0 +1,41 @@
+name: Customer demo tests
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'projects/oatmakers/**'
+      - 'db-migration/**'
+      - 'tools/demo/**'
+      - 'tests/demo/**'
+      - '.github/workflows/demo-tests.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  database:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    services:
+      postgres:
+        image: postgres:17.5
+        env:
+          POSTGRES_USER: ignition
+          POSTGRES_PASSWORD: demo-test-only
+          POSTGRES_DB: ignition
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd 'pg_isready -U ignition -d ignition'
+          --health-interval 5s --health-timeout 3s --health-retries 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate resources and time-travel data lifecycle
+        env:
+          DEMO_TEST_CONTAINER: ''
+          PGHOST: localhost
+          PGPORT: '5432'
+          PGUSER: ignition
+          PGPASSWORD: demo-test-only
+        run: |
+          python3 tools/demo/validate.py
+          python3 tests/demo/test_database.py
+          python3 tests/demo/test_deploy.py
