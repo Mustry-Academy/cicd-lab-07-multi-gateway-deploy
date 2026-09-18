@@ -29,7 +29,7 @@
       "viewPath": "Demo/Quality"
     },
     "/operator": {
-      "title": "Operator workflow",
+      "title": "Production orders",
       "viewPath": "Demo/Operator"
     },
     "/demo/health": {
@@ -37,7 +37,7 @@
       "viewPath": "Demo/Health"
     },
     "/demo/input-fields": {
-      "title": "Operator workflow",
+      "title": "Production orders",
       "viewPath": "Demo/Operator"
     },
     "/scada": {

@@ -1,0 +1,1301 @@
+{
+  "custom": {
+    "data": {
+      "pressure": 0,
+      "temperature": 0,
+      "level": 0,
+      "interface": 0,
+      "gas": 0,
+      "suction": 0,
+      "discharge": 0,
+      "exportPressure": 0,
+      "flow": 0,
+      "drain": 0,
+      "iop": 0
+    }
+  },
+  "params": {},
+  "propConfig": {
+    "custom.data": {
+      "binding": {
+        "type": "expr",
+        "config": {
+          "expression": "now(1000)"
+        },
+        "transforms": [
+          {
+            "type": "script",
+            "code": "\treturn application.demo.separatorData()"
+          }
+        ]
+      },
+      "persistent": true
+    }
+  },
+  "props": {
+    "defaultSize": {
+      "width": 1740,
+      "height": 910
+    }
+  },
+  "root": {
+    "type": "ia.container.coord",
+    "meta": {
+      "name": "root"
+    },
+    "props": {
+      "mode": "fixed",
+      "style": {
+        "backgroundColor": "transparent",
+        "overflow": "visible",
+        "containerType": "inline-size"
+      }
+    },
+    "children": [
+      {
+        "type": "ia.display.image",
+        "meta": {
+          "name": "Piping"
+        },
+        "props": {
+          "source": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNzQwIiBoZWlnaHQ9IjkxMCIgdmlld0JveD0iMCAwIDE3NDAgOTEwIj48cGF0aCBkPSJNMTcwIDEyMyBIMTg5IFExOTQgMTIzIDE5NCAxMjkgVjIwMSBINTE4IFE1MjQgMjAxIDUyNCAyMDcgVjI0MiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNTY1OTU3IiBzdHJva2Utd2lkdGg9IjEuOCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgLz48cGF0aCBkPSJNMTcwIDIwMSBIMjc3IFY4MTggUTI3NyA4MjIgMjgyIDgyMiBIMTQyMCBWNjEzIEgxNTIwIiBmaWxsPSJub25lIiBzdHJva2U9IiM1NjU5NTciIHN0cm9rZS13aWR0aD0iMS44IiBzdHJva2UtbGluZWpvaW49InJvdW5kIiAvPjxwYXRoIGQ9Ik0xNzAgMzU5IEgyNzciIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzU2NTk1NyIgc3Ryb2tlLXdpZHRoPSIxLjgiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIC8+PHBhdGggZD0iTTE3MCA0NDkgSDI3NyIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNTY1OTU3IiBzdHJva2Utd2lkdGg9IjEuOCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgLz48cGF0aCBkPSJNMTcwIDUzOSBIMjcwIiBmaWxsPSJub25lIiBzdHJva2U9IiM1NjU5NTciIHN0cm9rZS13aWR0aD0iMS44IiBzdHJva2UtbGluZWpvaW49InJvdW5kIiAvPjxwYXRoIGQ9Ik0yODYgNTM4IEg1NDAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzU2NTk1NyIgc3Ryb2tlLXdpZHRoPSIxLjgiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIC8+PHBhdGggZD0iTTU1NSA1MzggSDgzOSBWNDk0IiBmaWxsPSJub25lIiBzdHJva2U9IiM1NjU5NTciIHN0cm9rZS13aWR0aD0iMS44IiBzdHJva2UtbGluZWpvaW49InJvdW5kIiAvPjxwYXRoIGQ9Ik04MzkgNDk0IFY3MTAgUTgzOSA3MTYgODQ1IDcxNiBIMTUyMCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNTY1OTU3IiBzdHJva2Utd2lkdGg9IjEuOCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgLz48cGF0aCBkPSJNODM5IDYxMyBIMTUyMCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNTY1OTU3IiBzdHJva2Utd2lkdGg9IjEuOCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgLz48cGF0aCBkPSJNMTI4NCA0NzEgSDEzMzAgUTEzMzYgNDcxIDEzMzYgNDc3IFY2MTMiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzU2NTk1NyIgc3Ryb2tlLXdpZHRoPSIxLjgiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIC8+PHBhdGggZD0iTTEwNTEgMzY1IEgxMDAwIiBmaWxsPSJub25lIiBzdHJva2U9IiM1NjU5NTciIHN0cm9rZS13aWR0aD0iMS44IiBzdHJva2UtbGluZWpvaW49InJvdW5kIiAvPjxwYXRoIGQ9Ik0zNjggNDMyIFY1NzYgUTM2OCA1ODEgMzc0IDU4MSBINjk3IFY3MzQiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzU2NTk1NyIgc3Ryb2tlLXdpZHRoPSIxIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBzdHJva2UtZGFzaGFycmF5PSI0IDMiLz48cGF0aCBkPSJNMTA3MSAzNjUgSDE0NzEuNSBWNTc5IiBmaWxsPSJub25lIiBzdHJva2U9IiM1NjU5NTciIHN0cm9rZS13aWR0aD0iMSIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgc3Ryb2tlLWRhc2hhcnJheT0iNCAzIi8+PHBhdGggZD0iTTEzNjcgNTY5IEgxMzkwIFY2NzcgSDEyNjYuNSBWNzg4IiBmaWxsPSJub25lIiBzdHJva2U9IiM1NjU5NTciIHN0cm9rZS13aWR0aD0iMSIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgc3Ryb2tlLWRhc2hhcnJheT0iNCAzIi8+PHBhdGggZD0iTTg5OCAyNDIgVjIwMSBRODk4IDE5NyA5MDQgMTk3IEgxNTIwIiBmaWxsPSJub25lIiBzdHJva2U9IiNkMWMzODkiIHN0cm9rZS13aWR0aD0iMS43IiBzdHJva2UtbGluZWpvaW49InJvdW5kIiAvPjxwYXRoIGQ9Ik0xMTkwIDE5NyBWMTI1IFExMTkwIDExOSAxMTk2IDExOSBIMTUyMCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZDFjMzg5IiBzdHJva2Utd2lkdGg9IjEuNyIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgLz48cGF0aCBkPSJNNTQ5IDQ5NiBWNzYzIFE1NDkgNzY4IDU1NSA3NjggSDE1MzAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzkzYmNkMSIgc3Ryb2tlLXdpZHRoPSIxLjciIHN0cm9rZS1saW5lam9pbj0icm91bmQiIC8+PHBhdGggZD0iTTE0MjAgNzE4IFY3NjMiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzU2NTk1NyIgc3Ryb2tlLXdpZHRoPSIxLjciIHN0cm9rZS1saW5lam9pbj0icm91bmQiIC8+PHBhdGggZD0iTTU1MCAyNDIgVjIwNiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNTY1OTU3IiBzdHJva2Utd2lkdGg9IjEiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIC8+PHBhdGggZD0iTTY0NSAyNDIgVjE2OSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNTY1OTU3IiBzdHJva2Utd2lkdGg9IjEiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIC8+PHBhdGggZD0iTTg1NSAyNDIgVjE3MSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNTY1OTU3IiBzdHJva2Utd2lkdGg9IjEiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIC8+PHBhdGggZD0iTTc2MiAyNDIgVjIwNyIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNTY1OTU3IiBzdHJva2Utd2lkdGg9IjEiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIC8+PHBhdGggZD0iTTk3OSA2MTMgVjU2MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNTY1OTU3IiBzdHJva2Utd2lkdGg9IjEiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIC8+PHBhdGggZD0iTTExMjIgNjEzIFY1ODAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzU2NTk1NyIgc3Ryb2tlLXdpZHRoPSIxIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiAvPjxwYXRoIGQ9Ik0xMTkwIDYxMyBWNTUyIiBmaWxsPSJub25lIiBzdHJva2U9IiM1NjU5NTciIHN0cm9rZS13aWR0aD0iMSIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgLz48cGF0aCBkPSJNMTM1NyA2MTMgVjU3OSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNTY1OTU3IiBzdHJva2Utd2lkdGg9IjEiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIC8+PHBhdGggZD0iTTEwODAgMTk3IFYxNjMiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzU2NTk1NyIgc3Ryb2tlLXdpZHRoPSIxIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiAvPjxwYXRoIGQ9Ik01ODggNzY4IFY3MzEiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzU2NTk1NyIgc3Ryb2tlLXdpZHRoPSIxIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiAvPjxwYXRoIGQ9Ik0xMDAwIDI1OCBWMjYwIFExMDAwIDI2NSA5OTQgMjY1IEg5NDAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzU2NTk1NyIgc3Ryb2tlLXdpZHRoPSIxIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiAvPjxwYXRoIGQ9Ik0zMTAgNDIyIEgyOTggVjM3NCBRMjk4IDM2NiAzMDggMzY2IEg0MzAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzU2NTk1NyIgc3Ryb2tlLXdpZHRoPSIxIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiAvPjxwYXRoIGQ9Ik0zMjAgNDMyIFY0NzAgUTMyMCA0NzcgMzMwIDQ3NyBINDkwIiBmaWxsPSJub25lIiBzdHJva2U9IiM1NjU5NTciIHN0cm9rZS13aWR0aD0iMSIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgLz48cGF0aCBkPSJNNDAyIDUyOCBWNTM5IiBmaWxsPSJub25lIiBzdHJva2U9IiM1NjU5NTciIHN0cm9rZS13aWR0aD0iMSIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgLz48cGF0aCBkPSJNMTAwOCA0OTggVjQ5NCBIOTAwIiBmaWxsPSJub25lIiBzdHJva2U9IiM1NjU5NTciIHN0cm9rZS13aWR0aD0iMSIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgLz48cGF0aCBkPSJNMTE1OCAyNyBWMTcgSDEzODguNSBWMTYzIiBmaWxsPSJub25lIiBzdHJva2U9IiM1NjU5NTciIHN0cm9rZS13aWR0aD0iMSIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgc3Ryb2tlLWRhc2hhcnJheT0iMyAzIi8+PHBhdGggZD0iTTEwOTEgNTAuNSBIMTE0NSBNMTE3MCA1MC41IEgxMjU1LjUgTTEyNzEgNjEgVjg1IiBmaWxsPSJub25lIiBzdHJva2U9IiM1NjU5NTciIHN0cm9rZS13aWR0aD0iMS40IiBzdHJva2UtbGluZWpvaW49InJvdW5kIiAvPjxnIGZpbGw9IiNlNmU2ZTYiIHN0cm9rZT0iIzc3NyI+PHJlY3QgeD0iMTA2MCIgeT0iNDAiIHdpZHRoPSIzMSIgaGVpZ2h0PSIyMSIvPjxyZWN0IHg9IjEyNTUuNSIgeT0iNDAiIHdpZHRoPSIzMSIgaGVpZ2h0PSIyMSIvPjxwYXRoIGQ9Ik0xMTQ1IDQ1IEwxMTcwIDU2IFY0NSBMMTE0NSA1NiBaIi8+PHJlY3QgeD0iMTE1MCIgeT0iMjciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNCIvPjwvZz48ZyBmb250LWZhbWlseT0iQXJpYWwiIGZpbGw9IiM1NTUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtc2l6ZT0iMTIiPjx0ZXh0IHg9IjEwNzUuNSIgeT0iNTUiPkFTPC90ZXh0Pjx0ZXh0IHg9IjEyNzEiIHk9IjU1Ij5JL1A8L3RleHQ+PHRleHQgeD0iMTE1OCIgeT0iMzgiPlM8L3RleHQ+PHRleHQgeD0iMTE1OCIgeT0iNzEiPlNPVjE1MUEyPC90ZXh0PjwvZz48L3N2Zz4=",
+          "fit": {
+            "mode": "contain"
+          },
+          "style": {
+            "pointerEvents": "none"
+          }
+        },
+        "position": {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 1740.0,
+          "height": 910.0
+        }
+      },
+      {
+        "type": "ia.display.image",
+        "meta": {
+          "name": "Vessel"
+        },
+        "props": {
+          "source": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MTAiIGhlaWdodD0iMjYwIiB2aWV3Qm94PSIwIDAgNjEwIDI2MCI+PC9zdmc+",
+          "fit": {
+            "mode": "contain"
+          },
+          "style": {
+            "pointerEvents": "none"
+          }
+        },
+        "position": {
+          "x": 410.0,
+          "y": 240.0,
+          "width": 610.0,
+          "height": 260.0
+        },
+        "propConfig": {
+          "props.source": {
+            "binding": {
+              "type": "expr",
+              "config": {
+                "expression": "now(1000)"
+              },
+              "transforms": [
+                {
+                  "type": "script",
+                  "code": "\treturn application.demo.separatorVesselSvg()"
+                }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "type": "ia.display.view",
+        "meta": {
+          "name": "PressureTrend"
+        },
+        "props": {
+          "path": "Demo/Separator/Trend",
+          "params": {
+            "signal": "pressure",
+            "colour": "#d2ab53",
+            "sp": 3.88
+          },
+          "useDefaultViewWidth": false,
+          "useDefaultViewHeight": false
+        },
+        "position": {
+          "x": 424.0,
+          "y": 284.0,
+          "width": 570.0,
+          "height": 61.99999999999999
+        }
+      },
+      {
+        "type": "ia.display.view",
+        "meta": {
+          "name": "LevelTrend"
+        },
+        "props": {
+          "path": "Demo/Separator/Trend",
+          "params": {
+            "signal": "level",
+            "colour": "#7c8185",
+            "sp": 47.33
+          },
+          "useDefaultViewWidth": false,
+          "useDefaultViewHeight": false
+        },
+        "position": {
+          "x": 720.0,
+          "y": 340.0,
+          "width": 271.0,
+          "height": 61.99999999999999
+        }
+      },
+      {
+        "type": "ia.display.view",
+        "meta": {
+          "name": "InterfaceTrend"
+        },
+        "props": {
+          "path": "Demo/Separator/Trend",
+          "params": {
+            "signal": "interface",
+            "colour": "#789cad",
+            "sp": 21.51
+          },
+          "useDefaultViewWidth": false,
+          "useDefaultViewHeight": false
+        },
+        "position": {
+          "x": 444.0,
+          "y": 429.0,
+          "width": 268.0,
+          "height": 65.0
+        }
+      },
+      {
+        "type": "ia.display.view",
+        "meta": {
+          "name": "PI153A"
+        },
+        "props": {
+          "path": "Demo/Separator/Instrument",
+          "params": {
+            "tag": "PI153A",
+            "kind": "PI",
+            "signal": "pressure",
+            "colour": "#f7f7f7",
+            "value": "--"
+          },
+          "useDefaultViewWidth": false,
+          "useDefaultViewHeight": false
+        },
+        "position": {
+          "x": 540.0,
+          "y": 164.0,
+          "width": 130.0,
+          "height": 51.0
+        },
+        "propConfig": {
+          "props.params.value": {
+            "binding": {
+              "type": "expr",
+              "config": {
+                "expression": "try({view.custom.data.pressure}, 0)"
+              },
+              "transforms": [
+                {
+                  "type": "script",
+                  "code": "\treturn u\"{0:.2f} bar\".format(value or 0)"
+                }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "type": "ia.display.view",
+        "meta": {
+          "name": "PI152A"
+        },
+        "props": {
+          "path": "Demo/Separator/Instrument",
+          "params": {
+            "tag": "PI152A",
+            "kind": "PI",
+            "signal": "pressure",
+            "colour": "#f7f7f7",
+            "value": "--"
+          },
+          "useDefaultViewWidth": false,
+          "useDefaultViewHeight": false
+        },
+        "position": {
+          "x": 635.0,
+          "y": 127.0,
+          "width": 130.0,
+          "height": 51.0
+        },
+        "propConfig": {
+          "props.params.value": {
+            "binding": {
+              "type": "expr",
+              "config": {
+                "expression": "try({view.custom.data.pressure}, 0)"
+              },
+              "transforms": [
+                {
+                  "type": "script",
+                  "code": "\treturn u\"{0:.2f} bar\".format(value or 0)"
+                }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "type": "ia.display.view",
+        "meta": {
+          "name": "PIC151A"
+        },
+        "props": {
+          "path": "Demo/Separator/Instrument",
+          "params": {
+            "tag": "PIC151A",
+            "kind": "PI",
+            "signal": "pressure",
+            "colour": "#f7f7f7",
+            "value": "--"
+          },
+          "useDefaultViewWidth": false,
+          "useDefaultViewHeight": false
+        },
+        "position": {
+          "x": 845.0,
+          "y": 129.0,
+          "width": 130.0,
+          "height": 51.0
+        },
+        "propConfig": {
+          "props.params.value": {
+            "binding": {
+              "type": "expr",
+              "config": {
+                "expression": "try({view.custom.data.pressure}, 0)"
+              },
+              "transforms": [
+                {
+                  "type": "script",
+                  "code": "\treturn u\"{0:.2f} bar\".format(value or 0)"
+                }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "type": "ia.display.view",
+        "meta": {
+          "name": "TI151A"
+        },
+        "props": {
+          "path": "Demo/Separator/Instrument",
+          "params": {
+            "tag": "TI151A",
+            "kind": "TI",
+            "signal": "temperature",
+            "colour": "#f7f7f7",
+            "value": "--"
+          },
+          "useDefaultViewWidth": false,
+          "useDefaultViewHeight": false
+        },
+        "position": {
+          "x": 752.0,
+          "y": 165.0,
+          "width": 130.0,
+          "height": 51.0
+        },
+        "propConfig": {
+          "props.params.value": {
+            "binding": {
+              "type": "expr",
+              "config": {
+                "expression": "try({view.custom.data.temperature}, 0)"
+              },
+              "transforms": [
+                {
+                  "type": "script",
+                  "code": "\treturn u\"{0:.2f} \u00b0C\".format(value or 0)"
+                }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "type": "ia.display.view",
+        "meta": {
+          "name": "LI156A"
+        },
+        "props": {
+          "path": "Demo/Separator/Instrument",
+          "params": {
+            "tag": "LI156A",
+            "kind": "LI",
+            "signal": "iop",
+            "colour": "#f7f7f7",
+            "value": "--"
+          },
+          "useDefaultViewWidth": false,
+          "useDefaultViewHeight": false
+        },
+        "position": {
+          "x": 990.0,
+          "y": 216.0,
+          "width": 130.0,
+          "height": 51.0
+        },
+        "propConfig": {
+          "props.params.value": {
+            "binding": {
+              "type": "expr",
+              "config": {
+                "expression": "try({view.custom.data.iop}, 0)"
+              },
+              "transforms": [
+                {
+                  "type": "script",
+                  "code": "\treturn \"IOP\""
+                }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "type": "ia.display.view",
+        "meta": {
+          "name": "LIC152A"
+        },
+        "props": {
+          "path": "Demo/Separator/Instrument",
+          "params": {
+            "tag": "LIC152A",
+            "kind": "LI",
+            "signal": "level",
+            "colour": "#a7eef0",
+            "value": "--"
+          },
+          "useDefaultViewWidth": false,
+          "useDefaultViewHeight": false
+        },
+        "position": {
+          "x": 1051.0,
+          "y": 333.0,
+          "width": 130.0,
+          "height": 51.0
+        },
+        "propConfig": {
+          "props.params.value": {
+            "binding": {
+              "type": "expr",
+              "config": {
+                "expression": "try({view.custom.data.level}, 0)"
+              },
+              "transforms": [
+                {
+                  "type": "script",
+                  "code": "\treturn u\"{0:.2f} %\".format(value or 0)"
+                }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "type": "ia.display.view",
+        "meta": {
+          "name": "LIC151A"
+        },
+        "props": {
+          "path": "Demo/Separator/Instrument",
+          "params": {
+            "tag": "LIC151A",
+            "kind": "LI",
+            "signal": "interface",
+            "colour": "#ffe044",
+            "value": "--"
+          },
+          "useDefaultViewWidth": false,
+          "useDefaultViewHeight": false
+        },
+        "position": {
+          "x": 310.0,
+          "y": 390.0,
+          "width": 130.0,
+          "height": 51.0
+        },
+        "propConfig": {
+          "props.params.value": {
+            "binding": {
+              "type": "expr",
+              "config": {
+                "expression": "try({view.custom.data.interface}, 0)"
+              },
+              "transforms": [
+                {
+                  "type": "script",
+                  "code": "\treturn u\"{0:.2f} %\".format(value or 0)"
+                }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "type": "ia.display.view",
+        "meta": {
+          "name": "LI157A"
+        },
+        "props": {
+          "path": "Demo/Separator/Instrument",
+          "params": {
+            "tag": "LI157A",
+            "kind": "LI",
+            "signal": "drain",
+            "colour": "#f7f7f7",
+            "value": "--"
+          },
+          "useDefaultViewWidth": false,
+          "useDefaultViewHeight": false
+        },
+        "position": {
+          "x": 392.0,
+          "y": 486.0,
+          "width": 130.0,
+          "height": 51.0
+        },
+        "propConfig": {
+          "props.params.value": {
+            "binding": {
+              "type": "expr",
+              "config": {
+                "expression": "try({view.custom.data.drain}, 0)"
+              },
+              "transforms": [
+                {
+                  "type": "script",
+                  "code": "\treturn u\"{0:.0f} %\".format(value or 0)"
+                }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "type": "ia.display.view",
+        "meta": {
+          "name": "LI153A"
+        },
+        "props": {
+          "path": "Demo/Separator/Instrument",
+          "params": {
+            "tag": "LI153A",
+            "kind": "LI",
+            "signal": "level",
+            "colour": "#f7f7f7",
+            "value": "--"
+          },
+          "useDefaultViewWidth": false,
+          "useDefaultViewHeight": false
+        },
+        "position": {
+          "x": 998.0,
+          "y": 476.0,
+          "width": 130.0,
+          "height": 51.0
+        },
+        "propConfig": {
+          "props.params.value": {
+            "binding": {
+              "type": "expr",
+              "config": {
+                "expression": "try({view.custom.data.level}, 0)"
+              },
+              "transforms": [
+                {
+                  "type": "script",
+                  "code": "\treturn u\"{0:.2f} %\".format(value or 0)"
+                }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "type": "ia.display.view",
+        "meta": {
+          "name": "FIC151A"
+        },
+        "props": {
+          "path": "Demo/Separator/Instrument",
+          "params": {
+            "tag": "FIC151A",
+            "kind": "FI",
+            "signal": "gas",
+            "colour": "#f7f7f7",
+            "value": "--"
+          },
+          "useDefaultViewWidth": false,
+          "useDefaultViewHeight": false
+        },
+        "position": {
+          "x": 1070.0,
+          "y": 121.0,
+          "width": 130.0,
+          "height": 51.0
+        },
+        "propConfig": {
+          "props.params.value": {
+            "binding": {
+              "type": "expr",
+              "config": {
+                "expression": "try({view.custom.data.gas}, 0)"
+              },
+              "transforms": [
+                {
+                  "type": "script",
+                  "code": "\treturn u\"{0:.1f} MMSCF/D\".format(value or 0)"
+                }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "type": "ia.display.view",
+        "meta": {
+          "name": "PI162A"
+        },
+        "props": {
+          "path": "Demo/Separator/Instrument",
+          "params": {
+            "tag": "PI162A",
+            "kind": "PI",
+            "signal": "suction",
+            "colour": "#f7f7f7",
+            "value": "--"
+          },
+          "useDefaultViewWidth": false,
+          "useDefaultViewHeight": false
+        },
+        "position": {
+          "x": 968.9999999999999,
+          "y": 518.0,
+          "width": 130.0,
+          "height": 51.0
+        },
+        "propConfig": {
+          "props.params.value": {
+            "binding": {
+              "type": "expr",
+              "config": {
+                "expression": "try({view.custom.data.suction}, 0)"
+              },
+              "transforms": [
+                {
+                  "type": "script",
+                  "code": "\treturn u\"{0:.1f} bar\".format(value or 0)"
+                }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "type": "ia.display.view",
+        "meta": {
+          "name": "PI165A"
+        },
+        "props": {
+          "path": "Demo/Separator/Instrument",
+          "params": {
+            "tag": "PI165A",
+            "kind": "PI",
+            "signal": "discharge",
+            "colour": "#f7f7f7",
+            "value": "--"
+          },
+          "useDefaultViewWidth": false,
+          "useDefaultViewHeight": false
+        },
+        "position": {
+          "x": 1112.0,
+          "y": 538.0,
+          "width": 130.0,
+          "height": 51.0
+        },
+        "propConfig": {
+          "props.params.value": {
+            "binding": {
+              "type": "expr",
+              "config": {
+                "expression": "try({view.custom.data.discharge}, 0)"
+              },
+              "transforms": [
+                {
+                  "type": "script",
+                  "code": "\treturn u\"{0:.1f} bar\".format(value or 0)"
+                }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "type": "ia.display.view",
+        "meta": {
+          "name": "PI164A"
+        },
+        "props": {
+          "path": "Demo/Separator/Instrument",
+          "params": {
+            "tag": "PI164A",
+            "kind": "PI",
+            "signal": "exportPressure",
+            "colour": "#f7f7f7",
+            "value": "--"
+          },
+          "useDefaultViewWidth": false,
+          "useDefaultViewHeight": false
+        },
+        "position": {
+          "x": 1180.0,
+          "y": 510.0,
+          "width": 130.0,
+          "height": 51.0
+        },
+        "propConfig": {
+          "props.params.value": {
+            "binding": {
+              "type": "expr",
+              "config": {
+                "expression": "try({view.custom.data.exportPressure}, 0)"
+              },
+              "transforms": [
+                {
+                  "type": "script",
+                  "code": "\treturn u\"{0:.1f} bar\".format(value or 0)"
+                }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "type": "ia.display.view",
+        "meta": {
+          "name": "FIC161A"
+        },
+        "props": {
+          "path": "Demo/Separator/Instrument",
+          "params": {
+            "tag": "FIC161A",
+            "kind": "FI",
+            "signal": "flow",
+            "colour": "#f7f7f7",
+            "value": "--"
+          },
+          "useDefaultViewWidth": false,
+          "useDefaultViewHeight": false
+        },
+        "position": {
+          "x": 1347.0,
+          "y": 537.0,
+          "width": 130.0,
+          "height": 51.0
+        },
+        "propConfig": {
+          "props.params.value": {
+            "binding": {
+              "type": "expr",
+              "config": {
+                "expression": "try({view.custom.data.flow}, 0)"
+              },
+              "transforms": [
+                {
+                  "type": "script",
+                  "code": "\treturn u\"{0:.1f} M3/h\".format(value or 0)"
+                }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "type": "ia.display.view",
+        "meta": {
+          "name": "FIC152A"
+        },
+        "props": {
+          "path": "Demo/Separator/Instrument",
+          "params": {
+            "tag": "FIC152A",
+            "kind": "FI",
+            "signal": "iop",
+            "colour": "#f7f7f7",
+            "value": "--"
+          },
+          "useDefaultViewWidth": false,
+          "useDefaultViewHeight": false
+        },
+        "position": {
+          "x": 578.0,
+          "y": 689.0,
+          "width": 130.0,
+          "height": 51.0
+        },
+        "propConfig": {
+          "props.params.value": {
+            "binding": {
+              "type": "expr",
+              "config": {
+                "expression": "try({view.custom.data.iop}, 0)"
+              },
+              "transforms": [
+                {
+                  "type": "script",
+                  "code": "\treturn \"IOP\""
+                }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "type": "ia.display.view",
+        "meta": {
+          "name": "SDV151A"
+        },
+        "props": {
+          "path": "Demo/Separator/Device",
+          "params": {
+            "tag": "SDV151A",
+            "source": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2NSIgaGVpZ2h0PSI4OCIgdmlld0JveD0iMCAwIDY1IDg4Ij48ZyBmb250LWZhbWlseT0iQXJpYWwiIGZpbGw9IiM1NTUiPjxyZWN0IHg9IjEuMjUiIHk9IjEuMjUiIHdpZHRoPSI2Mi41IiBoZWlnaHQ9Ijg1LjUiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2YwYTEyOCIgc3Ryb2tlLXdpZHRoPSIyLjUiLz48cGF0aCBkPSJNMTcuNSA0MC4wIEw0Ny41IDU2LjAgVjQwLjAgTDE3LjUgNTYuMCBaIiBmaWxsPSIjYTdkZmE1IiBzdHJva2U9IiM1NTUiIHN0cm9rZS13aWR0aD0iMS42Ii8+PHBhdGggZD0iTTMyLjUgMjYuMCBWNDguMCIgc3Ryb2tlPSIjNTU1IiBzdHJva2Utd2lkdGg9IjEuNCIvPjxyZWN0IHg9IjIyLjUiIHk9IjE0LjAiIHdpZHRoPSIyMCIgaGVpZ2h0PSIxMiIgZmlsbD0iI2E3ZGZhNSIgc3Ryb2tlPSIjNTU1IiBzdHJva2Utd2lkdGg9IjEuNCIvPjxwYXRoIGQ9Ik0yMi41IDIwLjAgaDIwIE0zMi41IDE0LjAgdjEyIiBzdHJva2U9IiM1NTUiLz48dGV4dCB4PSIzMi41IiB5PSI4MyIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zaXplPSIxMiIgZm9udC13ZWlnaHQ9IjYwMCI+U0RWMTUxQTwvdGV4dD48L2c+PC9zdmc+",
+            "signal": "pressure"
+          },
+          "useDefaultViewWidth": false,
+          "useDefaultViewHeight": false
+        },
+        "position": {
+          "x": 200.0,
+          "y": 153.0,
+          "width": 65.0,
+          "height": 88.0
+        }
+      },
+      {
+        "type": "ia.display.view",
+        "meta": {
+          "name": "PCV151A2"
+        },
+        "props": {
+          "path": "Demo/Separator/Device",
+          "params": {
+            "tag": "PCV151A2",
+            "source": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI3OCIgaGVpZ2h0PSI4OCIgdmlld0JveD0iMCAwIDc4IDg4Ij48ZyBmb250LWZhbWlseT0iQXJpYWwiIGZpbGw9IiM1NTUiPjxyZWN0IHg9IjEuMjUiIHk9IjEuMjUiIHdpZHRoPSI3NS41IiBoZWlnaHQ9Ijg1LjUiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2YwYTEyOCIgc3Ryb2tlLXdpZHRoPSIyLjUiLz48cGF0aCBkPSJNMjQuMCA0MC4wIEw1NC4wIDU2LjAgVjQwLjAgTDI0LjAgNTYuMCBaIiBmaWxsPSIjYTdkZmE1IiBzdHJva2U9IiM1NTUiIHN0cm9rZS13aWR0aD0iMS42Ii8+PHBhdGggZD0iTTM5LjAgMjYuMCBWNDguMCIgc3Ryb2tlPSIjNTU1IiBzdHJva2Utd2lkdGg9IjEuNCIvPjxwYXRoIGQ9Ik0yNS4wIDI2LjAgYTE0IDEyIDAgMCAxIDI4IDAgWiIgZmlsbD0iI2E3ZGZhNSIgc3Ryb2tlPSIjNTU1IiBzdHJva2Utd2lkdGg9IjEuNCIvPjx0ZXh0IHg9IjU5LjAiIHk9IjI1LjAiIGZvbnQtc2l6ZT0iMTIiPkE8L3RleHQ+PHRleHQgeD0iMzkuMCIgeT0iODMiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtc2l6ZT0iMTIiIGZvbnQtd2VpZ2h0PSI2MDAiPlBDVjE1MUEyPC90ZXh0PjwvZz48L3N2Zz4=",
+            "signal": "gas"
+          },
+          "useDefaultViewWidth": false,
+          "useDefaultViewHeight": false
+        },
+        "position": {
+          "x": 1232.0,
+          "y": 71.0,
+          "width": 78.0,
+          "height": 88.0
+        }
+      },
+      {
+        "type": "ia.display.view",
+        "meta": {
+          "name": "PCV151A1"
+        },
+        "props": {
+          "path": "Demo/Separator/Device",
+          "params": {
+            "tag": "PCV151A1",
+            "source": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI3NyIgaGVpZ2h0PSI4OCIgdmlld0JveD0iMCAwIDc3IDg4Ij48ZyBmb250LWZhbWlseT0iQXJpYWwiIGZpbGw9IiM1NTUiPjxwYXRoIGQ9Ik0yMy41IDQwLjAgTDUzLjUgNTYuMCBWNDAuMCBMMjMuNSA1Ni4wIFoiIGZpbGw9IiNhN2RmYTUiIHN0cm9rZT0iIzU1NSIgc3Ryb2tlLXdpZHRoPSIxLjYiLz48cGF0aCBkPSJNMzguNSAyNi4wIFY0OC4wIiBzdHJva2U9IiM1NTUiIHN0cm9rZS13aWR0aD0iMS40Ii8+PHBhdGggZD0iTTI0LjUgMjYuMCBhMTQgMTIgMCAwIDEgMjggMCBaIiBmaWxsPSIjYTdkZmE1IiBzdHJva2U9IiM1NTUiIHN0cm9rZS13aWR0aD0iMS40Ii8+PHRleHQgeD0iNTguNSIgeT0iMjUuMCIgZm9udC1zaXplPSIxMiI+QTwvdGV4dD48dGV4dCB4PSIzOC41IiB5PSI4MyIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zaXplPSIxMiIgZm9udC13ZWlnaHQ9IjYwMCI+UENWMTUxQTE8L3RleHQ+PC9nPjwvc3ZnPg==",
+            "signal": "gas"
+          },
+          "useDefaultViewWidth": false,
+          "useDefaultViewHeight": false
+        },
+        "position": {
+          "x": 1350.0,
+          "y": 149.0,
+          "width": 77.0,
+          "height": 88.0
+        }
+      },
+      {
+        "type": "ia.display.view",
+        "meta": {
+          "name": "SDV161A"
+        },
+        "props": {
+          "path": "Demo/Separator/Device",
+          "params": {
+            "tag": "SDV161A",
+            "source": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI3NiIgaGVpZ2h0PSI4OCIgdmlld0JveD0iMCAwIDc2IDg4Ij48ZyBmb250LWZhbWlseT0iQXJpYWwiIGZpbGw9IiM1NTUiPjxyZWN0IHg9IjEuMjUiIHk9IjEuMjUiIHdpZHRoPSI3My41IiBoZWlnaHQ9Ijg1LjUiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2YwYTEyOCIgc3Ryb2tlLXdpZHRoPSIyLjUiLz48cGF0aCBkPSJNMjMuMCA0MC4wIEw1My4wIDU2LjAgVjQwLjAgTDIzLjAgNTYuMCBaIiBmaWxsPSIjYTdkZmE1IiBzdHJva2U9IiM1NTUiIHN0cm9rZS13aWR0aD0iMS42Ii8+PHBhdGggZD0iTTM4LjAgMjYuMCBWNDguMCIgc3Ryb2tlPSIjNTU1IiBzdHJva2Utd2lkdGg9IjEuNCIvPjxyZWN0IHg9IjI4LjAiIHk9IjE0LjAiIHdpZHRoPSIyMCIgaGVpZ2h0PSIxMiIgZmlsbD0iI2E3ZGZhNSIgc3Ryb2tlPSIjNTU1IiBzdHJva2Utd2lkdGg9IjEuNCIvPjxwYXRoIGQ9Ik0yOC4wIDIwLjAgaDIwIE0zOC4wIDE0LjAgdjEyIiBzdHJva2U9IiM1NTUiLz48dGV4dCB4PSIzOC4wIiB5PSI4MyIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zaXplPSIxMiIgZm9udC13ZWlnaHQ9IjYwMCI+U0RWMTYxQTwvdGV4dD48L2c+PC9zdmc+",
+            "signal": "suction"
+          },
+          "useDefaultViewWidth": false,
+          "useDefaultViewHeight": false
+        },
+        "position": {
+          "x": 875.0,
+          "y": 565.0,
+          "width": 76.0,
+          "height": 88.0
+        }
+      },
+      {
+        "type": "ia.display.view",
+        "meta": {
+          "name": "P01A"
+        },
+        "props": {
+          "path": "Demo/Separator/Device",
+          "params": {
+            "tag": "P01A",
+            "source": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI3NiIgaGVpZ2h0PSI4OCIgdmlld0JveD0iMCAwIDc2IDg4Ij48ZyBmb250LWZhbWlseT0iQXJpYWwiIGZpbGw9IiM1NTUiPjxyZWN0IHg9IjEuMjUiIHk9IjEuMjUiIHdpZHRoPSI3My41IiBoZWlnaHQ9Ijg1LjUiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2YwYTEyOCIgc3Ryb2tlLXdpZHRoPSIyLjUiLz48Y2lyY2xlIGN4PSIzOC4wIiBjeT0iNDguMCIgcj0iMjEiIGZpbGw9IiNjMGRmYjgiIHN0cm9rZT0iIzU1NSIgc3Ryb2tlLXdpZHRoPSIyIi8+PHBhdGggZD0iTTM4LjAgNDguMCBxLTIyIC0yMCAtOSAtMTkgcTE1IC0zIDEzIDE0IFoiIHRyYW5zZm9ybT0icm90YXRlKDAgMzguMCA0OC4wKSIgZmlsbD0iIzU0ODQ1NSIvPjxwYXRoIGQ9Ik0zOC4wIDQ4LjAgcS0yMiAtMjAgLTkgLTE5IHExNSAtMyAxMyAxNCBaIiB0cmFuc2Zvcm09InJvdGF0ZSg5MCAzOC4wIDQ4LjApIiBmaWxsPSIjNTQ4NDU1Ii8+PHBhdGggZD0iTTM4LjAgNDguMCBxLTIyIC0yMCAtOSAtMTkgcTE1IC0zIDEzIDE0IFoiIHRyYW5zZm9ybT0icm90YXRlKDE4MCAzOC4wIDQ4LjApIiBmaWxsPSIjNTQ4NDU1Ii8+PHBhdGggZD0iTTM4LjAgNDguMCBxLTIyIC0yMCAtOSAtMTkgcTE1IC0zIDEzIDE0IFoiIHRyYW5zZm9ybT0icm90YXRlKDI3MCAzOC4wIDQ4LjApIiBmaWxsPSIjNTQ4NDU1Ii8+PGNpcmNsZSBjeD0iMzguMCIgY3k9IjQ4LjAiIHI9IjUiIGZpbGw9IiM1NTUiLz48dGV4dCB4PSI2MSIgeT0iMTciIGZvbnQtc2l6ZT0iMTIiPk08L3RleHQ+PHRleHQgeD0iNjEiIHk9IjcyIiBmb250LXNpemU9IjEwIj5SPC90ZXh0Pjx0ZXh0IHg9IjM4LjAiIHk9IjgzIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LXNpemU9IjEyIiBmb250LXdlaWdodD0iNjAwIj5QMDFBPC90ZXh0PjwvZz48L3N2Zz4=",
+            "signal": "flow"
+          },
+          "useDefaultViewWidth": false,
+          "useDefaultViewHeight": false
+        },
+        "position": {
+          "x": 1025.0,
+          "y": 565.0,
+          "width": 76.0,
+          "height": 88.0
+        }
+      },
+      {
+        "type": "ia.display.view",
+        "meta": {
+          "name": "SDV162A"
+        },
+        "props": {
+          "path": "Demo/Separator/Device",
+          "params": {
+            "tag": "SDV162A",
+            "source": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI3NyIgaGVpZ2h0PSI4OCIgdmlld0JveD0iMCAwIDc3IDg4Ij48ZyBmb250LWZhbWlseT0iQXJpYWwiIGZpbGw9IiM1NTUiPjxyZWN0IHg9IjEuMjUiIHk9IjEuMjUiIHdpZHRoPSI3NC41IiBoZWlnaHQ9Ijg1LjUiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2YwYTEyOCIgc3Ryb2tlLXdpZHRoPSIyLjUiLz48cGF0aCBkPSJNMjMuNSA0MC4wIEw1My41IDU2LjAgVjQwLjAgTDIzLjUgNTYuMCBaIiBmaWxsPSIjYTdkZmE1IiBzdHJva2U9IiM1NTUiIHN0cm9rZS13aWR0aD0iMS42Ii8+PHBhdGggZD0iTTM4LjUgMjYuMCBWNDguMCIgc3Ryb2tlPSIjNTU1IiBzdHJva2Utd2lkdGg9IjEuNCIvPjxyZWN0IHg9IjI4LjUiIHk9IjE0LjAiIHdpZHRoPSIyMCIgaGVpZ2h0PSIxMiIgZmlsbD0iI2E3ZGZhNSIgc3Ryb2tlPSIjNTU1IiBzdHJva2Utd2lkdGg9IjEuNCIvPjxwYXRoIGQ9Ik0yOC41IDIwLjAgaDIwIE0zOC41IDE0LjAgdjEyIiBzdHJva2U9IiM1NTUiLz48dGV4dCB4PSIzOC41IiB5PSI4MyIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zaXplPSIxMiIgZm9udC13ZWlnaHQ9IjYwMCI+U0RWMTYyQTwvdGV4dD48L2c+PC9zdmc+",
+            "signal": "exportPressure"
+          },
+          "useDefaultViewWidth": false,
+          "useDefaultViewHeight": false
+        },
+        "position": {
+          "x": 1241.0,
+          "y": 565.0,
+          "width": 77.0,
+          "height": 88.0
+        }
+      },
+      {
+        "type": "ia.display.view",
+        "meta": {
+          "name": "LCV152A"
+        },
+        "props": {
+          "path": "Demo/Separator/Device",
+          "params": {
+            "tag": "LCV152A",
+            "source": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI3NyIgaGVpZ2h0PSI4OCIgdmlld0JveD0iMCAwIDc3IDg4Ij48ZyBmb250LWZhbWlseT0iQXJpYWwiIGZpbGw9IiM1NTUiPjxwYXRoIGQ9Ik0yMy41IDQwLjAgTDUzLjUgNTYuMCBWNDAuMCBMMjMuNSA1Ni4wIFoiIGZpbGw9IiNhN2RmYTUiIHN0cm9rZT0iIzU1NSIgc3Ryb2tlLXdpZHRoPSIxLjYiLz48cGF0aCBkPSJNMzguNSAyNi4wIFY0OC4wIiBzdHJva2U9IiM1NTUiIHN0cm9rZS13aWR0aD0iMS40Ii8+PHBhdGggZD0iTTI0LjUgMjYuMCBhMTQgMTIgMCAwIDEgMjggMCBaIiBmaWxsPSIjYTdkZmE1IiBzdHJva2U9IiM1NTUiIHN0cm9rZS13aWR0aD0iMS40Ii8+PHRleHQgeD0iNTguNSIgeT0iMjUuMCIgZm9udC1zaXplPSIxMiI+QTwvdGV4dD48dGV4dCB4PSIzOC41IiB5PSI4MyIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zaXplPSIxMiIgZm9udC13ZWlnaHQ9IjYwMCI+TENWMTUyQTwvdGV4dD48L2c+PC9zdmc+",
+            "signal": "flow"
+          },
+          "useDefaultViewWidth": false,
+          "useDefaultViewHeight": false
+        },
+        "position": {
+          "x": 1433.0,
+          "y": 565.0,
+          "width": 77.0,
+          "height": 88.0
+        }
+      },
+      {
+        "type": "ia.display.view",
+        "meta": {
+          "name": "LCV151A"
+        },
+        "props": {
+          "path": "Demo/Separator/Device",
+          "params": {
+            "tag": "LCV151A",
+            "source": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4MCIgaGVpZ2h0PSI4OCIgdmlld0JveD0iMCAwIDgwIDg4Ij48ZyBmb250LWZhbWlseT0iQXJpYWwiIGZpbGw9IiM1NTUiPjxwYXRoIGQ9Ik0yNS4wIDQwLjAgTDU1LjAgNTYuMCBWNDAuMCBMMjUuMCA1Ni4wIFoiIGZpbGw9IiNiM2IzYjMiIHN0cm9rZT0iIzU1NSIgc3Ryb2tlLXdpZHRoPSIxLjYiLz48cGF0aCBkPSJNNDAuMCAyNi4wIFY0OC4wIiBzdHJva2U9IiM1NTUiIHN0cm9rZS13aWR0aD0iMS40Ii8+PHBhdGggZD0iTTI2LjAgMjYuMCBhMTQgMTIgMCAwIDEgMjggMCBaIiBmaWxsPSIjYjNiM2IzIiBzdHJva2U9IiM1NTUiIHN0cm9rZS13aWR0aD0iMS40Ii8+PHRleHQgeD0iNjAuMCIgeT0iMjUuMCIgZm9udC1zaXplPSIxMiI+TTwvdGV4dD48dGV4dCB4PSI0MC4wIiB5PSI4MyIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zaXplPSIxMiIgZm9udC13ZWlnaHQ9IjYwMCI+TENWMTUxQTwvdGV4dD48L2c+PC9zdmc+",
+            "signal": "interface"
+          },
+          "useDefaultViewWidth": false,
+          "useDefaultViewHeight": false
+        },
+        "position": {
+          "x": 657.0,
+          "y": 720.0,
+          "width": 80.0,
+          "height": 88.0
+        }
+      },
+      {
+        "type": "ia.display.view",
+        "meta": {
+          "name": "SDV152A"
+        },
+        "props": {
+          "path": "Demo/Separator/Device",
+          "params": {
+            "tag": "SDV152A",
+            "source": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2NyIgaGVpZ2h0PSI4OCIgdmlld0JveD0iMCAwIDY3IDg4Ij48ZyBmb250LWZhbWlseT0iQXJpYWwiIGZpbGw9IiM1NTUiPjxwYXRoIGQ9Ik0xOC41IDQwLjAgTDQ4LjUgNTYuMCBWNDAuMCBMMTguNSA1Ni4wIFoiIGZpbGw9IiNiM2IzYjMiIHN0cm9rZT0iIzU1NSIgc3Ryb2tlLXdpZHRoPSIxLjYiLz48cGF0aCBkPSJNMzMuNSAyNi4wIFY0OC4wIiBzdHJva2U9IiM1NTUiIHN0cm9rZS13aWR0aD0iMS40Ii8+PHJlY3QgeD0iMjMuNSIgeT0iMTQuMCIgd2lkdGg9IjIwIiBoZWlnaHQ9IjEyIiBmaWxsPSIjYjNiM2IzIiBzdHJva2U9IiM1NTUiIHN0cm9rZS13aWR0aD0iMS40Ii8+PHBhdGggZD0iTTIzLjUgMjAuMCBoMjAgTTMzLjUgMTQuMCB2MTIiIHN0cm9rZT0iIzU1NSIvPjx0ZXh0IHg9IjMzLjUiIHk9IjgzIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LXNpemU9IjEyIiBmb250LXdlaWdodD0iNjAwIj5TRFYxNTJBPC90ZXh0PjwvZz48L3N2Zz4=",
+            "signal": "interface"
+          },
+          "useDefaultViewWidth": false,
+          "useDefaultViewHeight": false
+        },
+        "position": {
+          "x": 755.0,
+          "y": 720.0,
+          "width": 67.0,
+          "height": 88.0
+        }
+      },
+      {
+        "type": "ia.display.view",
+        "meta": {
+          "name": "FCV161A"
+        },
+        "props": {
+          "path": "Demo/Separator/Device",
+          "params": {
+            "tag": "FCV161A",
+            "source": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI3OSIgaGVpZ2h0PSI4OCIgdmlld0JveD0iMCAwIDc5IDg4Ij48ZyBmb250LWZhbWlseT0iQXJpYWwiIGZpbGw9IiM1NTUiPjxyZWN0IHg9IjEuMjUiIHk9IjEuMjUiIHdpZHRoPSI3Ni41IiBoZWlnaHQ9Ijg1LjUiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2YwYTEyOCIgc3Ryb2tlLXdpZHRoPSIyLjUiLz48cGF0aCBkPSJNMjQuNSA0MC4wIEw1NC41IDU2LjAgVjQwLjAgTDI0LjUgNTYuMCBaIiBmaWxsPSIjYTdkZmE1IiBzdHJva2U9IiM1NTUiIHN0cm9rZS13aWR0aD0iMS42Ii8+PHBhdGggZD0iTTM5LjUgMjYuMCBWNDguMCIgc3Ryb2tlPSIjNTU1IiBzdHJva2Utd2lkdGg9IjEuNCIvPjxwYXRoIGQ9Ik0yNS41IDI2LjAgYTE0IDEyIDAgMCAxIDI4IDAgWiIgZmlsbD0iI2E3ZGZhNSIgc3Ryb2tlPSIjNTU1IiBzdHJva2Utd2lkdGg9IjEuNCIvPjx0ZXh0IHg9IjU5LjUiIHk9IjI1LjAiIGZvbnQtc2l6ZT0iMTIiPkE8L3RleHQ+PHRleHQgeD0iMzkuNSIgeT0iODMiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtc2l6ZT0iMTIiIGZvbnQtd2VpZ2h0PSI2MDAiPkZDVjE2MUE8L3RleHQ+PC9nPjwvc3ZnPg==",
+            "signal": "flow"
+          },
+          "useDefaultViewWidth": false,
+          "useDefaultViewHeight": false
+        },
+        "position": {
+          "x": 1227.0,
+          "y": 774.0,
+          "width": 79.0,
+          "height": 88.0
+        }
+      },
+      {
+        "type": "ia.display.view",
+        "meta": {
+          "name": "AntiFoamLink"
+        },
+        "props": {
+          "path": "Demo/Separator/Stream",
+          "params": {
+            "text": "AntiFoam",
+            "source": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMzIiIGhlaWdodD0iMjgiIHZpZXdCb3g9IjAgMCAxMzIgMjgiPjxwYXRoIGQ9Ik0wIDAgSDExOCBhMTQgMTQgMCAwIDEgMCAyOCBIMCBaIiBmaWxsPSIjNTk1YzVhIi8+PGNpcmNsZSBjeD0iMTE4IiBjeT0iMTQiIHI9IjkiIGZpbGw9IiNjZGQwY2QiLz48cGF0aCBkPSJNMTE1IDggbDcgNiAtNyA2IFoiIGZpbGw9IiM2MDY0NWYiLz48dGV4dCB4PSI1My41IiB5PSIxNyIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjEwLjUiIGZpbGw9IndoaXRlIj5BbnRpRm9hbTwvdGV4dD48L3N2Zz4="
+          },
+          "useDefaultViewWidth": false,
+          "useDefaultViewHeight": false
+        },
+        "position": {
+          "x": 38.0,
+          "y": 109.0,
+          "width": 132.0,
+          "height": 28.0
+        }
+      },
+      {
+        "type": "ia.display.view",
+        "meta": {
+          "name": "FromHeaderALink"
+        },
+        "props": {
+          "path": "Demo/Separator/Stream",
+          "params": {
+            "text": "From Header A",
+            "source": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMzIiIGhlaWdodD0iMjgiIHZpZXdCb3g9IjAgMCAxMzIgMjgiPjxwYXRoIGQ9Ik0wIDAgSDExOCBhMTQgMTQgMCAwIDEgMCAyOCBIMCBaIiBmaWxsPSIjNTk1YzVhIi8+PGNpcmNsZSBjeD0iMTE4IiBjeT0iMTQiIHI9IjkiIGZpbGw9IiNjZGQwY2QiLz48cGF0aCBkPSJNMTE1IDggbDcgNiAtNyA2IFoiIGZpbGw9IiM2MDY0NWYiLz48dGV4dCB4PSI1My41IiB5PSIxNyIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjEwLjUiIGZpbGw9IndoaXRlIj5Gcm9tIEhlYWRlciBBPC90ZXh0Pjwvc3ZnPg=="
+          },
+          "useDefaultViewWidth": false,
+          "useDefaultViewHeight": false
+        },
+        "position": {
+          "x": 38.0,
+          "y": 187.0,
+          "width": 132.0,
+          "height": 28.0
+        }
+      },
+      {
+        "type": "ia.display.view",
+        "meta": {
+          "name": "FromClosedDrainLink"
+        },
+        "props": {
+          "path": "Demo/Separator/Stream",
+          "params": {
+            "text": "From Closed Drain",
+            "source": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMzIiIGhlaWdodD0iMjgiIHZpZXdCb3g9IjAgMCAxMzIgMjgiPjxwYXRoIGQ9Ik0wIDAgSDExOCBhMTQgMTQgMCAwIDEgMCAyOCBIMCBaIiBmaWxsPSIjNTk1YzVhIi8+PGNpcmNsZSBjeD0iMTE4IiBjeT0iMTQiIHI9IjkiIGZpbGw9IiNjZGQwY2QiLz48cGF0aCBkPSJNMTE1IDggbDcgNiAtNyA2IFoiIGZpbGw9IiM2MDY0NWYiLz48dGV4dCB4PSI1My41IiB5PSIxNyIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjEwLjUiIGZpbGw9IndoaXRlIj5Gcm9tIENsb3NlZCBEcmFpbjwvdGV4dD48L3N2Zz4="
+          },
+          "useDefaultViewWidth": false,
+          "useDefaultViewHeight": false
+        },
+        "position": {
+          "x": 38.0,
+          "y": 345.0,
+          "width": 132.0,
+          "height": 28.0
+        }
+      },
+      {
+        "type": "ia.display.view",
+        "meta": {
+          "name": "FromOpenDrainLink"
+        },
+        "props": {
+          "path": "Demo/Separator/Stream",
+          "params": {
+            "text": "From Open Drain",
+            "source": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMzIiIGhlaWdodD0iMjgiIHZpZXdCb3g9IjAgMCAxMzIgMjgiPjxwYXRoIGQ9Ik0wIDAgSDExOCBhMTQgMTQgMCAwIDEgMCAyOCBIMCBaIiBmaWxsPSIjNTk1YzVhIi8+PGNpcmNsZSBjeD0iMTE4IiBjeT0iMTQiIHI9IjkiIGZpbGw9IiNjZGQwY2QiLz48cGF0aCBkPSJNMTE1IDggbDcgNiAtNyA2IFoiIGZpbGw9IiM2MDY0NWYiLz48dGV4dCB4PSI1My41IiB5PSIxNyIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjEwLjUiIGZpbGw9IndoaXRlIj5Gcm9tIE9wZW4gRHJhaW48L3RleHQ+PC9zdmc+"
+          },
+          "useDefaultViewWidth": false,
+          "useDefaultViewHeight": false
+        },
+        "position": {
+          "x": 38.0,
+          "y": 435.0,
+          "width": 132.0,
+          "height": 28.0
+        }
+      },
+      {
+        "type": "ia.display.view",
+        "meta": {
+          "name": "CorrosionInhibitorLink"
+        },
+        "props": {
+          "path": "Demo/Separator/Stream",
+          "params": {
+            "text": "Corrosion Inhibitor",
+            "source": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMzIiIGhlaWdodD0iMjgiIHZpZXdCb3g9IjAgMCAxMzIgMjgiPjxwYXRoIGQ9Ik0wIDAgSDExOCBhMTQgMTQgMCAwIDEgMCAyOCBIMCBaIiBmaWxsPSIjNTk1YzVhIi8+PGNpcmNsZSBjeD0iMTE4IiBjeT0iMTQiIHI9IjkiIGZpbGw9IiNjZGQwY2QiLz48cGF0aCBkPSJNMTE1IDggbDcgNiAtNyA2IFoiIGZpbGw9IiM2MDY0NWYiLz48dGV4dCB4PSI1My41IiB5PSIxNyIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjEwLjUiIGZpbGw9IndoaXRlIj5Db3Jyb3Npb24gSW5oaWJpdG9yPC90ZXh0Pjwvc3ZnPg=="
+          },
+          "useDefaultViewWidth": false,
+          "useDefaultViewHeight": false
+        },
+        "position": {
+          "x": 38.0,
+          "y": 525.0,
+          "width": 132.0,
+          "height": 28.0
+        }
+      },
+      {
+        "type": "ia.display.view",
+        "meta": {
+          "name": "ToFlareLink"
+        },
+        "props": {
+          "path": "Demo/Separator/Stream",
+          "params": {
+            "text": "To Flare",
+            "source": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMzIiIGhlaWdodD0iMjgiIHZpZXdCb3g9IjAgMCAxMzIgMjgiPjxwYXRoIGQ9Ik0wIDAgSDExOCBhMTQgMTQgMCAwIDEgMCAyOCBIMCBaIiBmaWxsPSIjNTk1YzVhIi8+PGNpcmNsZSBjeD0iMTE4IiBjeT0iMTQiIHI9IjkiIGZpbGw9IiNjZGQwY2QiLz48cGF0aCBkPSJNMTE1IDggbDcgNiAtNyA2IFoiIGZpbGw9IiM2MDY0NWYiLz48dGV4dCB4PSI1My41IiB5PSIxNyIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjEwLjUiIGZpbGw9IndoaXRlIj5UbyBGbGFyZTwvdGV4dD48L3N2Zz4="
+          },
+          "useDefaultViewWidth": false,
+          "useDefaultViewHeight": false
+        },
+        "position": {
+          "x": 1520.0,
+          "y": 105.0,
+          "width": 132.0,
+          "height": 28.0
+        }
+      },
+      {
+        "type": "ia.display.view",
+        "meta": {
+          "name": "ToGasScrubberLink"
+        },
+        "props": {
+          "path": "Demo/Separator/Stream",
+          "params": {
+            "text": "To Gas Scrubber",
+            "source": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMzIiIGhlaWdodD0iMjgiIHZpZXdCb3g9IjAgMCAxMzIgMjgiPjxwYXRoIGQ9Ik0wIDAgSDExOCBhMTQgMTQgMCAwIDEgMCAyOCBIMCBaIiBmaWxsPSIjNTk1YzVhIi8+PGNpcmNsZSBjeD0iMTE4IiBjeT0iMTQiIHI9IjkiIGZpbGw9IiNjZGQwY2QiLz48cGF0aCBkPSJNMTE1IDggbDcgNiAtNyA2IFoiIGZpbGw9IiM2MDY0NWYiLz48dGV4dCB4PSI1My41IiB5PSIxNyIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjEwLjUiIGZpbGw9IndoaXRlIj5UbyBHYXMgU2NydWJiZXI8L3RleHQ+PC9zdmc+"
+          },
+          "useDefaultViewWidth": false,
+          "useDefaultViewHeight": false
+        },
+        "position": {
+          "x": 1520.0,
+          "y": 183.0,
+          "width": 132.0,
+          "height": 28.0
+        }
+      },
+      {
+        "type": "ia.display.view",
+        "meta": {
+          "name": "FromBoosterPumpCLink"
+        },
+        "props": {
+          "path": "Demo/Separator/Stream",
+          "params": {
+            "text": "From Booster Pump C",
+            "source": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMTIiIGhlaWdodD0iMjgiIHZpZXdCb3g9IjAgMCAxMTIgMjgiPjxwYXRoIGQ9Ik0wIDAgSDk4IGExNCAxNCAwIDAgMSAwIDI4IEgwIFoiIGZpbGw9IiM1OTVjNWEiLz48Y2lyY2xlIGN4PSI5OCIgY3k9IjE0IiByPSI5IiBmaWxsPSIjY2RkMGNkIi8+PHBhdGggZD0iTTk1IDggbDcgNiAtNyA2IFoiIGZpbGw9IiM2MDY0NWYiLz48dGV4dCB4PSI0My41IiB5PSIxMSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjEwLjUiIGZpbGw9IndoaXRlIj5Gcm9tIEJvb3N0ZXI8L3RleHQ+PHRleHQgeD0iNDMuNSIgeT0iMjIiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxMC41IiBmaWxsPSJ3aGl0ZSI+UHVtcCBDPC90ZXh0Pjwvc3ZnPg=="
+          },
+          "useDefaultViewWidth": false,
+          "useDefaultViewHeight": false
+        },
+        "position": {
+          "x": 1172.0,
+          "y": 457.0,
+          "width": 112.0,
+          "height": 28.0
+        }
+      },
+      {
+        "type": "ia.display.view",
+        "meta": {
+          "name": "ToCrudeExportLink"
+        },
+        "props": {
+          "path": "Demo/Separator/Stream",
+          "params": {
+            "text": "To Crude Export",
+            "source": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMzIiIGhlaWdodD0iMjgiIHZpZXdCb3g9IjAgMCAxMzIgMjgiPjxwYXRoIGQ9Ik0wIDAgSDExOCBhMTQgMTQgMCAwIDEgMCAyOCBIMCBaIiBmaWxsPSIjNTk1YzVhIi8+PGNpcmNsZSBjeD0iMTE4IiBjeT0iMTQiIHI9IjkiIGZpbGw9IiNjZGQwY2QiLz48cGF0aCBkPSJNMTE1IDggbDcgNiAtNyA2IFoiIGZpbGw9IiM2MDY0NWYiLz48dGV4dCB4PSI1My41IiB5PSIxNyIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjEwLjUiIGZpbGw9IndoaXRlIj5UbyBDcnVkZSBFeHBvcnQ8L3RleHQ+PC9zdmc+"
+          },
+          "useDefaultViewWidth": false,
+          "useDefaultViewHeight": false
+        },
+        "position": {
+          "x": 1520.0,
+          "y": 600.0,
+          "width": 132.0,
+          "height": 28.0
+        }
+      },
+      {
+        "type": "ia.display.view",
+        "meta": {
+          "name": "ToBoosterPumpCLink"
+        },
+        "props": {
+          "path": "Demo/Separator/Stream",
+          "params": {
+            "text": "To Booster Pump C",
+            "source": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMzIiIGhlaWdodD0iMjgiIHZpZXdCb3g9IjAgMCAxMzIgMjgiPjxwYXRoIGQ9Ik0wIDAgSDExOCBhMTQgMTQgMCAwIDEgMCAyOCBIMCBaIiBmaWxsPSIjNTk1YzVhIi8+PGNpcmNsZSBjeD0iMTE4IiBjeT0iMTQiIHI9IjkiIGZpbGw9IiNjZGQwY2QiLz48cGF0aCBkPSJNMTE1IDggbDcgNiAtNyA2IFoiIGZpbGw9IiM2MDY0NWYiLz48dGV4dCB4PSI1My41IiB5PSIxNyIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjEwLjUiIGZpbGw9IndoaXRlIj5UbyBCb29zdGVyIFB1bXAgQzwvdGV4dD48L3N2Zz4="
+          },
+          "useDefaultViewWidth": false,
+          "useDefaultViewHeight": false
+        },
+        "position": {
+          "x": 1520.0,
+          "y": 703.0,
+          "width": 132.0,
+          "height": 28.0
+        }
+      },
+      {
+        "type": "ia.display.label",
+        "meta": {
+          "name": "VesselTag"
+        },
+        "props": {
+          "text": "PP-V-01A",
+          "style": {
+            "classes": "Separator/VesselTag"
+          }
+        },
+        "position": {
+          "x": 647.0,
+          "y": 265.0,
+          "width": 155.0,
+          "height": 25.0
+        }
+      },
+      {
+        "type": "ia.display.label",
+        "meta": {
+          "name": "HistoryCaption"
+        },
+        "props": {
+          "text": "-1 hr  \u21b6",
+          "style": {
+            "classes": "Separator/Small"
+          }
+        },
+        "position": {
+          "x": 493.0,
+          "y": 474.00000000000006,
+          "width": 100.0,
+          "height": 25.0
+        }
+      },
+      {
+        "type": "ia.display.label",
+        "meta": {
+          "name": "Sea"
+        },
+        "props": {
+          "text": "Dump To Sea",
+          "style": {
+            "classes": "Separator/Small"
+          }
+        },
+        "position": {
+          "x": 1538.0,
+          "y": 758.0,
+          "width": 130.0,
+          "height": 25.0
+        }
+      },
+      {
+        "type": "ia.display.label",
+        "meta": {
+          "name": "Title"
+        },
+        "props": {
+          "text": "Separator A",
+          "style": {
+            "classes": "Separator/Title"
+          }
+        },
+        "position": {
+          "x": 750.0,
+          "y": 869.0,
+          "width": 249.99999999999997,
+          "height": 38.0
+        }
+      },
+      {
+        "type": "ia.display.label",
+        "meta": {
+          "name": "Simulation"
+        },
+        "props": {
+          "text": "SIMULATION",
+          "style": {
+            "classes": "Separator/Simulation"
+          }
+        },
+        "position": {
+          "x": 1560.0,
+          "y": 879.0,
+          "width": 132.0,
+          "height": 20.0
+        }
+      }
+    ]
+  }
+}

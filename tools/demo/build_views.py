@@ -127,19 +127,28 @@ for name,title,key,unit in [('Output','GOOD OUTPUT','good_kg','kg'),('Moisture',
 batch_root=flex('root',[bound_label('BatchTitle','view.params.reference','Demo/SectionTitle'),bound_label('Product','view.custom.batch.product','Demo/Subtitle'),bound_label('Status','view.custom.batch.status','Demo/Badge'),flex('Measurements',batch_cards,'row','Demo/Wrap'),qc,bound_label('Result','view.custom.result','Demo/Muted')],classes='Demo/PopupRoot')
 view('Demo/BatchDetails',batch_root,params={'reference':''},custom={'batch':{'available':False,'product':'','status':'Loading'},'result':''},config={'custom.batch':bind_script('view.params.reference','\treturn application.demo.batchDetails(value)')},height=400)
 
-# The request form never gets its own scroll container. The grid owns its scroll.
+# The order form never gets its own scroll container. The grid owns its scroll.
 fields=[]
-spec=[('Reference','TextInputField','Batch reference','DEMO-001',{}),('Product','DropdownInputField','Product','Rolled oats',{'options':[{'label':v,'value':v} for v in ['Rolled oats','Steel-cut oats','Oat flour']]}),('Quantity','NumericInputField','Weight (kg)','1250.5',{'decimalAllowed':True,'negativeAllowed':False}),('Bags','NumericInputField','Bags','50',{'decimalAllowed':False,'negativeAllowed':False}),('Mode','MultiStateInputField','Run mode','Trial',{'states':[{'value':v,'text':v,'selectedStyle':{'classes':''},'unselectedStyle':{'classes':''}} for v in ['Trial','Production','Hold']]})]
+spec=[('Reference','TextInputField','Order number','MO-001',{}),('Product','DropdownInputField','Product','Rolled oats',{'options':[{'label':v,'value':v} for v in ['Rolled oats','Steel-cut oats','Oat flour']]}),('Quantity','NumericInputField','Planned quantity (kg)','1250.5',{'decimalAllowed':True,'negativeAllowed':False}),('Bags','NumericInputField','Planned bags','50',{'decimalAllowed':False,'negativeAllowed':False}),('Mode','MultiStateInputField','Run mode','Trial',{'states':[{'value':v,'text':v,'selectedStyle':{'classes':''},'unselectedStyle':{'classes':''}} for v in ['Trial','Production','Hold']]})]
 for name,kind,title,initial,extra in spec:
     field=embed(name,'Templates/InputFields/'+kind,{'label':title,'labelFieldWidth':'130px','inputFieldWidth':'220px','input':initial,'value':initial,'validatedInput':initial,'required':True,'enabled':True,'placeholder':'Enter a value...'}|extra,basis='66px')
     field['props']['style']={'overflow':'visible'};fields.append(field)
-submit=button('Submit','Create demo request',script='\tif self.view.custom.busy:\n\t\treturn\n\tself.view.custom.busy = True\n\ttry:\n\t\tif not self.view.custom.requestId:\n\t\t\tself.view.custom.requestId = application.demo.newRequestId()\n\t\tself.view.custom.result = application.demo.createOrder(dict(self.view.custom.values),self.view.custom.requestId)\n\t\tself.view.refreshBinding("custom.requests")\n\texcept (Exception, application.demo.JavaException):\n\t\tself.view.custom.result = "Could not create the request. Review the inputs and connection."\n\tfinally:\n\t\tself.view.custom.busy = False')
+submit=button('Submit','Create order',script='\tif self.view.custom.busy:\n\t\treturn\n\tself.view.custom.busy = True\n\ttry:\n\t\tif not self.view.custom.requestId:\n\t\t\tself.view.custom.requestId = application.demo.newRequestId()\n\t\tself.view.custom.result = application.demo.createOrder(dict(self.view.custom.values),self.view.custom.requestId)\n\t\tself.view.refreshBinding("custom.requests")\n\texcept (Exception, application.demo.JavaException):\n\t\tself.view.custom.result = "Could not save the production order. Try again."\n\tfinally:\n\t\tself.view.custom.busy = False')
 submit['propConfig']={'props.enabled':expr('{view.custom.validation.valid} && !{view.custom.busy} && {view.custom.live.ready}')}
-form=panel('Form','Create a production request','Demonstration records only.',fields+[bound_label('Validation','view.custom.validation.message','Demo/Muted'),submit,bound_label('Result','view.custom.result','Demo/Status')],basis='450px',grow=0);form['props']['style'].update({'overflow':'visible','alignSelf':'flex-start'})
-request_grid=grid('Requests','view.custom.requests',[('reference','Reference',190),('product','Product',160),('quantity_kg','Weight kg',120),('bags','Bags',80),('mode','Mode',110),('submitted','Created',140)],height='0px');request_grid['position']={'basis':'0px','grow':1,'shrink':1}
-request_panel=panel('RequestList','Production requests','Your saved requests remain available after reloading.',[request_grid],basis='560px',grow=1);request_panel['props']['style'].update({'height':'calc(100vh - 215px)','minHeight':'400px','overflow':'hidden'})
+form=panel('Form','New production order','',fields+[bound_label('Validation','view.custom.validation.message','Demo/Muted'),submit,bound_label('Result','view.custom.result','Demo/Status')],basis='450px',grow=0);form['props']['style'].update({'overflow':'visible','alignSelf':'flex-start'})
+request_grid=grid('Requests','view.custom.requests',[('reference','Order number',190),('product','Product',160),('quantity_kg','Quantity (kg)',140),('bags','Bags',80),('mode','Run mode',110),('submitted','Created',140)],height='0px');request_grid['position']={'basis':'0px','grow':1,'shrink':1}
+request_panel=panel('RequestList','Order list','',[request_grid],basis='560px',grow=1);request_panel['props']['style'].update({'height':'calc(100vh - 215px)','minHeight':'400px','overflow':'hidden'})
 workspace=flex('Workspace',[form,request_panel],'row','Demo/Workspace')
-page('Demo/Operator','Operator workflow','Create a request while the production list stays in view.',[workspace],custom={'values':{},'validation':{'valid':False,'message':''},'requestId':'','busy':False,'result':'','requests':[]},config={'custom.values':dict(struct_binding({name.lower():'{/root/Workspace/Form/'+name+'.props.params.value}' for name,*_ in spec},'\treturn value'),onChange={'enabled':True,'script':'\tself.custom.requestId = ""'}),'custom.validation':bind_script('view.custom.values','\treturn application.demo.validateOrder(value)'),'custom.requests':struct_binding({'refresh':'now(5000)'},'\treturn application.demo.recentOrders()')})
+page('Demo/Operator','Production orders','',[workspace],custom={'values':{},'validation':{'valid':False,'message':''},'requestId':'','busy':False,'result':'','requests':[]},config={'custom.values':dict(struct_binding({name.lower():'{/root/Workspace/Form/'+name+'.props.params.value}' for name,*_ in spec},'\treturn value'),onChange={'enabled':True,'script':'\tself.custom.requestId = ""'}),'custom.validation':bind_script('view.custom.values','\treturn application.demo.validateOrder(value)'),'custom.requests':struct_binding({'refresh':'now(5000)'},'\treturn application.demo.recentOrders()')})
+
+operator_file=V/'Demo/Operator/view.json'
+operator=json.loads(operator_file.read_text())
+def trim_empty_captions(component):
+    if 'children' in component:
+        component['children']=[c for c in component['children'] if not (c.get('type')=='ia.display.label' and c.get('props',{}).get('text')=='' and not c.get('propConfig'))]
+        for child in component['children']:trim_empty_captions(child)
+trim_empty_captions(operator['root'])
+write(operator_file,operator)
 
 from build_separator import build_separator, SEPARATOR_CSS
 build_separator()
@@ -150,9 +159,9 @@ view('Demo/TagHistory',flex('root',[bound_label('Title','view.params.title','Dem
 health_cards=[]
 for name,title,key,unit,hint in [('Age','LIVE DATA AGE','liveAgeSeconds','sec','One-second recorded telemetry'),('History','HISTORY','coverageDays','days','Minute history, capped at three months'),('Lines','LINES','lineCount','','Three simulated production lines')]:
     card=embed(name,'Demo/Components/Metric',{'title':title,'unit':unit,'hint':hint},basis='240px',grow=1);card['propConfig']={'props.params.value':prop('view.custom.health.'+key)};health_cards.append(card)
-page('Demo/Health','Demo health','Data freshness and automatic retention.',[flex('Metrics',health_cards,'row','Demo/Wrap'),label('Policy','One-second telemetry is retained for 6 hours. Minute history, demo requests and inspections are retained for at most 90 days or three calendar months.','Demo/Body')],custom={'health':{'liveAgeSeconds':'n/a','coverageDays':'n/a','lineCount':'n/a'}},config={'custom.health':struct_binding({'refresh':'now(5000)'},'\treturn application.demo.health()')})
+page('Demo/Health','Demo health','Data freshness and automatic retention.',[flex('Metrics',health_cards,'row','Demo/Wrap'),label('Policy','One-second telemetry is retained for 6 hours. Minute history, production orders and inspections are retained for at most 90 days or three calendar months.','Demo/Body')],custom={'health':{'liveAgeSeconds':'n/a','coverageDays':'n/a','lineCount':'n/a'}},config={'custom.health':struct_binding({'refresh':'now(5000)'},'\treturn application.demo.health()')})
 
-routes=[('/','Factory overview','Demo/Overview'),('/scada','SCADA','Demo/SCADA'),('/production','Production planning','Demo/Production'),('/performance','Performance','Demo/Performance'),('/quality','Quality & traceability','Demo/Quality'),('/operator','Operator workflow','Demo/Operator')]
+routes=[('/','Factory overview','Demo/Overview'),('/scada','SCADA','Demo/SCADA'),('/production','Production planning','Demo/Production'),('/performance','Performance','Demo/Performance'),('/quality','Quality & traceability','Demo/Quality'),('/operator','Production orders','Demo/Operator')]
 logo=base64.b64encode((ROOT/'tools/demo/scada-assets/oatmakers-logo.svg').read_bytes()).decode()
 nav=[node('ia.display.image','Brand',{'source':'data:image/svg+xml;base64,'+logo,'fit':{'mode':'contain'},'style':{'classes':'Demo/BrandLogo'}},basis='74px'),label('BrandDetail','CONNECTED OPERATIONS','Demo/NavEyebrow'),label('DemoLabel','LIVE SIMULATION','Demo/NavBadge')]
 for i,(path,title,_) in enumerate(routes):
@@ -162,7 +171,7 @@ view('Sidenav',flex('root',nav,classes='Demo/Navigation'),height=900)
 config=json.loads((P/'page-config/config.json').read_text());config['pages'].pop('/components',None)
 for route,title,path in routes:config['pages'][route]={'title':title,'viewPath':path}
 config['pages']['/process']={'title':'SCADA','viewPath':'Demo/SCADA'};config['pages']['/demo/health']={'title':'Demo health','viewPath':'Demo/Health'}
-config['pages']['/oee']={'title':'Performance','viewPath':'Demo/Performance'};config['pages']['/demo/input-fields']={'title':'Operator workflow','viewPath':'Demo/Operator'}
+config['pages']['/oee']={'title':'Performance','viewPath':'Demo/Performance'};config['pages']['/demo/input-fields']={'title':'Production orders','viewPath':'Demo/Operator'}
 nav_docks=config.get('sharedDocks', {})
 if not nav_docks.get('left'):
     nav_docks=next((p.get('docks') for p in config['pages'].values() if p.get('docks',{}).get('left')), {})

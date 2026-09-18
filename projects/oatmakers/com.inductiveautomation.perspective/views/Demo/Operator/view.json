@@ -166,25 +166,9 @@
                   "name": "Title"
                 },
                 "props": {
-                  "text": "Operator workflow",
+                  "text": "Production orders",
                   "style": {
                     "classes": "Demo/PageTitle"
-                  }
-                },
-                "position": {
-                  "shrink": 0,
-                  "basis": "auto"
-                }
-              },
-              {
-                "type": "ia.display.label",
-                "meta": {
-                  "name": "Subtitle"
-                },
-                "props": {
-                  "text": "Create a request while the production list stays in view.",
-                  "style": {
-                    "classes": "Demo/Subtitle"
                   }
                 },
                 "position": {
@@ -285,25 +269,9 @@
                   "name": "FormTitle"
                 },
                 "props": {
-                  "text": "Create a production request",
+                  "text": "New production order",
                   "style": {
                     "classes": "Demo/SectionTitle"
-                  }
-                },
-                "position": {
-                  "shrink": 0,
-                  "basis": "auto"
-                }
-              },
-              {
-                "type": "ia.display.label",
-                "meta": {
-                  "name": "FormSubtitle"
-                },
-                "props": {
-                  "text": "Demonstration records only.",
-                  "style": {
-                    "classes": "Demo/Muted"
                   }
                 },
                 "position": {
@@ -319,12 +287,12 @@
                 "props": {
                   "path": "Templates/InputFields/TextInputField",
                   "params": {
-                    "label": "Batch reference",
+                    "label": "Order number",
                     "labelFieldWidth": "130px",
                     "inputFieldWidth": "220px",
-                    "input": "DEMO-001",
-                    "value": "DEMO-001",
-                    "validatedInput": "DEMO-001",
+                    "input": "MO-001",
+                    "value": "MO-001",
+                    "validatedInput": "MO-001",
                     "required": true,
                     "enabled": true,
                     "placeholder": "Enter a value..."
@@ -391,7 +359,7 @@
                 "props": {
                   "path": "Templates/InputFields/NumericInputField",
                   "params": {
-                    "label": "Weight (kg)",
+                    "label": "Planned quantity (kg)",
                     "labelFieldWidth": "130px",
                     "inputFieldWidth": "220px",
                     "input": "1250.5",
@@ -422,7 +390,7 @@
                 "props": {
                   "path": "Templates/InputFields/NumericInputField",
                   "params": {
-                    "label": "Bags",
+                    "label": "Planned bags",
                     "labelFieldWidth": "130px",
                     "inputFieldWidth": "220px",
                     "input": "50",
@@ -538,7 +506,7 @@
                   "name": "Submit"
                 },
                 "props": {
-                  "text": "Create demo request",
+                  "text": "Create order",
                   "style": {
                     "classes": "Demo/Button"
                   }
@@ -553,7 +521,7 @@
                       "type": "script",
                       "scope": "G",
                       "config": {
-                        "script": "\tif self.view.custom.busy:\n\t\treturn\n\tself.view.custom.busy = True\n\ttry:\n\t\tif not self.view.custom.requestId:\n\t\t\tself.view.custom.requestId = application.demo.newRequestId()\n\t\tself.view.custom.result = application.demo.createOrder(dict(self.view.custom.values),self.view.custom.requestId)\n\t\tself.view.refreshBinding(\"custom.requests\")\n\texcept (Exception, application.demo.JavaException):\n\t\tself.view.custom.result = \"Could not create the request. Review the inputs and connection.\"\n\tfinally:\n\t\tself.view.custom.busy = False"
+                        "script": "\tif self.view.custom.busy:\n\t\treturn\n\tself.view.custom.busy = True\n\ttry:\n\t\tif not self.view.custom.requestId:\n\t\t\tself.view.custom.requestId = application.demo.newRequestId()\n\t\tself.view.custom.result = application.demo.createOrder(dict(self.view.custom.values),self.view.custom.requestId)\n\t\tself.view.refreshBinding(\"custom.requests\")\n\texcept (Exception, application.demo.JavaException):\n\t\tself.view.custom.result = \"Could not save the production order. Try again.\"\n\tfinally:\n\t\tself.view.custom.busy = False"
                       }
                     }
                   }
@@ -623,25 +591,9 @@
                   "name": "RequestListTitle"
                 },
                 "props": {
-                  "text": "Production requests",
+                  "text": "Order list",
                   "style": {
                     "classes": "Demo/SectionTitle"
-                  }
-                },
-                "position": {
-                  "shrink": 0,
-                  "basis": "auto"
-                }
-              },
-              {
-                "type": "ia.display.label",
-                "meta": {
-                  "name": "RequestListSubtitle"
-                },
-                "props": {
-                  "text": "Your saved requests remain available after reloading.",
-                  "style": {
-                    "classes": "Demo/Muted"
                   }
                 },
                 "position": {
@@ -659,7 +611,7 @@
                     "columns": [
                       {
                         "field": "reference",
-                        "header": "Reference",
+                        "header": "Order number",
                         "width": 190
                       },
                       {
@@ -669,8 +621,8 @@
                       },
                       {
                         "field": "quantity_kg",
-                        "header": "Weight kg",
-                        "width": 120,
+                        "header": "Quantity (kg)",
+                        "width": 140,
                         "type": "number",
                         "align": "right",
                         "decimals": 1
@@ -685,7 +637,7 @@
                       },
                       {
                         "field": "mode",
-                        "header": "Mode",
+                        "header": "Run mode",
                         "width": 110
                       },
                       {

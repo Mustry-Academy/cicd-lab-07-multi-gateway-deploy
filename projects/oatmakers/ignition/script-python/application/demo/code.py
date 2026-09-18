@@ -5,7 +5,7 @@ from java.lang import Exception as JavaException
 from java.util.concurrent.locks import ReentrantLock
 
 DATABASE = 'OatmakersDemo'
-REVISION = 'showroom-4.3.2'
+REVISION = 'showroom-4.4.0'
 _cache = {}
 _lock = ReentrantLock()
 
@@ -95,11 +95,11 @@ def validateOrder(values):
 	if clean['reference'] and len(clean['reference']) > 40:
 		errors['reference'] = 'Use at most 40 characters.'
 	if clean['quantity'] is not None and not 0 < clean['quantity'] <= 100000:
-		errors['quantity'] = 'Weight must be above 0 and at most 100,000 kg.'
+		errors['quantity'] = 'Planned quantity must be above 0 and at most 100,000 kg.'
 	if clean['bags'] is not None and not 0 < clean['bags'] <= 10000:
-		errors['bags'] = 'Bags must be between 1 and 10,000.'
+		errors['bags'] = 'Planned bags must be between 1 and 10,000.'
 	return {'valid': not bool(errors), 'errors': errors, 'values': clean,
-		'message': 'Ready to create a demo batch.' if not errors else ' '.join(errors[k] for k in sorted(errors))}
+		'message': '' if not errors else ' '.join(errors[k] for k in sorted(errors))}
 
 
 def createOrder(values, requestId):
@@ -124,7 +124,7 @@ def createOrder(values, requestId):
 		_cache.clear()
 	finally:
 		_lock.unlock()
-	return 'Demo batch {0} created. It appears in the production requests list.'.format(v['reference'])
+	return 'Production order {0} created.'.format(v['reference'])
 
 
 def recordInspection(reference):

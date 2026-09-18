@@ -2,7 +2,7 @@
 
 Open https://cloud.mustrysolutions.com/data/perspective/client/oatmakers/ or launch **Oatmakers | Connected factory demo** from the Perspective launcher. Reload an existing session after a release.
 
-All measurements and requests are simulated. Writes are confined to the `oat_demo` database schema and `[default]OatmakersDemo` memory tags. No screen controls equipment or changes customer records.
+All measurements and orders are simulated. Writes are confined to the `oat_demo` database schema and `[default]OatmakersDemo` memory tags. No screen controls equipment or changes customer records.
 
 ## Screens
 
@@ -13,10 +13,10 @@ All measurements and requests are simulated. Writes are confined to the `oat_dem
 | `/production` | Mustry Resource Timeline with shift, day, hour and week navigation; click a batch for details |
 | `/performance` | Mustry Date Time Range Picker controlling historical charts and aggregate metrics |
 | `/quality` | Mustry Data Grid for batches in the selected dates, with measurement and inspection details |
-| `/operator` | Validated request form alongside an independently scrolling Mustry Data Grid |
+| `/operator` | Production-order entry form alongside an independently scrolling Mustry Data Grid |
 | `/demo/health` | Telemetry age, retained history and continuity status |
 
-Legacy `/process`, `/oee` and `/demo/input-fields` links open SCADA, Performance and Operator workflow. The course observatory remains at `/observatory`. The component library is removed from the customer navigation and routes.
+Legacy `/process`, `/oee` and `/demo/input-fields` links open SCADA, Performance and Production orders. The course observatory remains at `/observatory`. The component library is removed from the customer navigation and routes.
 
 ## Demonstration walkthrough
 
@@ -25,13 +25,13 @@ Legacy `/process`, `/oee` and `/demo/input-fields` links open SCADA, Performance
 3. On Performance, choose a live preset or exact calendar dates and times. The selected range controls the database query. Manual selections stop following the clock.
 4. Open Production planning, change between shift and week scales, and inspect a batch.
 5. In Quality, choose older dates, select a batch, inspect its measurements and record a demo inspection.
-6. In Operator workflow, create a request. It appears in the grid and remains after reloading. The form has no internal scrollbar.
+6. In Production orders, create a production order. It appears in the grid and remains after reloading. The form has no internal scrollbar.
 
 ## Data lifecycle
 
 The dedicated gateway timer runs every second even without a browser. It records deterministic, changing measurements for three lines and writes their latest values to the OatMakers memory tags. Tag-history popups query the same recorded source. A disconnected source shows unavailable readings rather than invented browser values.
 
-Fine telemetry is retained for six hours. Minute history, requests and inspections are retained for the shorter of 90 days and three calendar months. First deployment seeds the retained history. Watermarks fill gaps after downtime, bounded by those retention windows. Database advisory locks prevent overlapping generators and repeated timestamps insert nothing.
+Fine telemetry is retained for six hours. Minute history, orders and inspections are retained for the shorter of 90 days and three calendar months. First deployment seeds the retained history. Watermarks fill gaps after downtime, bounded by those retention windows. Database advisory locks prevent overlapping generators and repeated timestamps insert nothing.
 
 One-second production quantities sum to their minute totals. Charts use fine data for recent ranges and minute data for older ranges, with at most approximately 900 plotted points. Line filters and explicit start/end timestamps are applied in SQL. Throughput and power are normalized by the represented duration. The overview emphasizes current operation; slower aggregate efficiency metrics are on Performance.
 
@@ -108,3 +108,14 @@ Geometry uses a common design coordinate system for piping, instrument circles,
 value badges, valve bodies and highlighted frames. Device flow ports share the
 same axis as their connected pipes. Instrument leads stop at circle boundaries,
 and pneumatic lines stop at the AS/I-P enclosures instead of crossing their text.
+
+## Separator navigation
+
+`Demo/Separator/Process` contains the complete diagram and its live bindings in
+fixed 1740 by 910 coordinates. `Demo/SCADA` embeds it with Mustry Pan & Zoom.
+Wheel zoom, drag-to-pan, zoom buttons, reset, fit and the minimap are enabled.
+The sidebar and page header stay outside the zoom transform. The view and
+module content are transparent on the same grey background.
+
+The order-entry page uses Production orders, Order number, Planned quantity,
+Planned bags and Create order. It saves the same order records as before.

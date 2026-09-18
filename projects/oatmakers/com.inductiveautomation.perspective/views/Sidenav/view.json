@@ -262,7 +262,7 @@
           "name": "Nav5"
         },
         "props": {
-          "text": "Operator workflow",
+          "text": "Production orders",
           "style": {
             "classes": "Demo/NavButton"
           }
