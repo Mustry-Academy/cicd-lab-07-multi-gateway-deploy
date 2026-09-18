@@ -4,7 +4,7 @@
   "restricted": false,
   "overridable": true,
   "files": [
-    "view.json"
+    "stylesheet.css"
   ],
   "attributes": {}
 }

@@ -1,0 +1,333 @@
+{
+  "custom": {},
+  "params": {
+    "name": "",
+    "state": "",
+    "product": "",
+    "throughput": "",
+    "temperature": "",
+    "moisture": "",
+    "power": "",
+    "colour": "",
+    "batch": "",
+    "lineNumber": 0
+  },
+  "propConfig": {
+    "params.name": {
+      "paramDirection": "input",
+      "persistent": true
+    },
+    "params.state": {
+      "paramDirection": "input",
+      "persistent": true
+    },
+    "params.product": {
+      "paramDirection": "input",
+      "persistent": true
+    },
+    "params.throughput": {
+      "paramDirection": "input",
+      "persistent": true
+    },
+    "params.temperature": {
+      "paramDirection": "input",
+      "persistent": true
+    },
+    "params.moisture": {
+      "paramDirection": "input",
+      "persistent": true
+    },
+    "params.power": {
+      "paramDirection": "input",
+      "persistent": true
+    },
+    "params.colour": {
+      "paramDirection": "input",
+      "persistent": true
+    },
+    "params.batch": {
+      "paramDirection": "input",
+      "persistent": true
+    },
+    "params.lineNumber": {
+      "paramDirection": "input",
+      "persistent": true
+    }
+  },
+  "props": {
+    "defaultSize": {
+      "width": 1280,
+      "height": 230
+    }
+  },
+  "root": {
+    "type": "ia.container.flex",
+    "meta": {
+      "name": "root"
+    },
+    "props": {
+      "direction": "column",
+      "style": {
+        "classes": "Demo/Panel"
+      }
+    },
+    "children": [
+      {
+        "type": "ia.container.flex",
+        "meta": {
+          "name": "LineHeading"
+        },
+        "props": {
+          "direction": "row",
+          "wrap": "wrap",
+          "style": {
+            "classes": "Demo/Spread"
+          }
+        },
+        "children": [
+          {
+            "type": "ia.display.label",
+            "meta": {
+              "name": "Name"
+            },
+            "props": {
+              "text": "",
+              "style": {
+                "classes": "Demo/SectionTitle"
+              }
+            },
+            "position": {
+              "shrink": 0,
+              "basis": "auto"
+            },
+            "propConfig": {
+              "props.text": {
+                "binding": {
+                  "type": "property",
+                  "config": {
+                    "path": "view.params.name"
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "ia.display.label",
+            "meta": {
+              "name": "State"
+            },
+            "props": {
+              "text": "",
+              "style": {
+                "classes": "Demo/Badge"
+              }
+            },
+            "position": {
+              "shrink": 0,
+              "basis": "auto"
+            },
+            "propConfig": {
+              "props.text": {
+                "binding": {
+                  "type": "property",
+                  "config": {
+                    "path": "view.params.state"
+                  }
+                }
+              },
+              "props.style.color": {
+                "binding": {
+                  "type": "property",
+                  "config": {
+                    "path": "view.params.colour"
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "position": {
+          "shrink": 0
+        }
+      },
+      {
+        "type": "ia.display.label",
+        "meta": {
+          "name": "Product"
+        },
+        "props": {
+          "text": "",
+          "style": {
+            "classes": "Demo/Muted"
+          }
+        },
+        "position": {
+          "shrink": 0,
+          "basis": "auto"
+        },
+        "propConfig": {
+          "props.text": {
+            "binding": {
+              "type": "property",
+              "config": {
+                "path": "view.params.product"
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "ia.display.label",
+        "meta": {
+          "name": "Throughput"
+        },
+        "props": {
+          "text": "",
+          "style": {
+            "classes": "Demo/LineValue"
+          }
+        },
+        "position": {
+          "shrink": 0,
+          "basis": "auto"
+        },
+        "propConfig": {
+          "props.text": {
+            "binding": {
+              "type": "property",
+              "config": {
+                "path": "view.params.throughput"
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "ia.container.flex",
+        "meta": {
+          "name": "Facts"
+        },
+        "props": {
+          "direction": "row",
+          "wrap": "wrap",
+          "style": {
+            "classes": "Demo/Facts"
+          }
+        },
+        "children": [
+          {
+            "type": "ia.display.label",
+            "meta": {
+              "name": "Temperature"
+            },
+            "props": {
+              "text": "",
+              "style": {
+                "classes": "Demo/Body"
+              }
+            },
+            "position": {
+              "shrink": 0,
+              "basis": "auto"
+            },
+            "propConfig": {
+              "props.text": {
+                "binding": {
+                  "type": "property",
+                  "config": {
+                    "path": "view.params.temperature"
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "ia.display.label",
+            "meta": {
+              "name": "Moisture"
+            },
+            "props": {
+              "text": "",
+              "style": {
+                "classes": "Demo/Body"
+              }
+            },
+            "position": {
+              "shrink": 0,
+              "basis": "auto"
+            },
+            "propConfig": {
+              "props.text": {
+                "binding": {
+                  "type": "property",
+                  "config": {
+                    "path": "view.params.moisture"
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "ia.display.label",
+            "meta": {
+              "name": "Power"
+            },
+            "props": {
+              "text": "",
+              "style": {
+                "classes": "Demo/Body"
+              }
+            },
+            "position": {
+              "shrink": 0,
+              "basis": "auto"
+            },
+            "propConfig": {
+              "props.text": {
+                "binding": {
+                  "type": "property",
+                  "config": {
+                    "path": "view.params.power"
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "position": {
+          "shrink": 0
+        }
+      },
+      {
+        "type": "ia.input.button",
+        "meta": {
+          "name": "OpenLine"
+        },
+        "props": {
+          "text": "Explore line",
+          "style": {
+            "classes": "Demo/QuietButton"
+          }
+        },
+        "position": {
+          "shrink": 0,
+          "basis": "40px"
+        },
+        "events": {
+          "component": {
+            "onActionPerformed": {
+              "type": "script",
+              "scope": "G",
+              "config": {
+                "script": "\tself.session.custom.demo.line = self.view.params.lineNumber\n\tself.session.custom.demo.batch = self.view.params.batch\n\tsystem.perspective.navigate(\"/process\")"
+              }
+            }
+          }
+        }
+      }
+    ],
+    "position": {
+      "shrink": 0
+    }
+  }
+}

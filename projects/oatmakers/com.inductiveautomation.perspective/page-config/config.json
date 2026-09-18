@@ -1,16 +1,48 @@
 {
   "pages": {
     "/": {
-      "title": "Oatmakers",
-      "viewPath": "home"
+      "title": "Factory overview",
+      "viewPath": "Demo/Overview"
     },
     "/observatory": {
       "title": "Gateway Observatory",
       "viewPath": "Showcase/Gateway Observatory"
     },
     "/oee": {
-      "title": "OEE Overview",
-      "viewPath": "Showcase/OEE Overview"
+      "title": "Performance",
+      "viewPath": "Demo/Performance"
+    },
+    "/production": {
+      "title": "Production planning",
+      "viewPath": "Demo/Production"
+    },
+    "/process": {
+      "title": "Process detail",
+      "viewPath": "Demo/Process"
+    },
+    "/performance": {
+      "title": "Performance",
+      "viewPath": "Demo/Performance"
+    },
+    "/quality": {
+      "title": "Quality & traceability",
+      "viewPath": "Demo/Quality"
+    },
+    "/operator": {
+      "title": "Operator workflow",
+      "viewPath": "Demo/Operator"
+    },
+    "/components": {
+      "title": "Component library",
+      "viewPath": "Demo/ComponentsGallery"
+    },
+    "/demo/health": {
+      "title": "Demo health",
+      "viewPath": "Demo/Health"
+    },
+    "/demo/input-fields": {
+      "title": "Operator workflow",
+      "viewPath": "Demo/Operator"
     }
   },
   "sharedDocks": {
@@ -18,7 +50,7 @@
     "left": [
       {
         "anchor": "fixed",
-        "autoBreakpoint": 480,
+        "autoBreakpoint": 1000,
         "content": "push",
         "handle": "show",
         "iconUrl": "",
@@ -26,7 +58,7 @@
         "modal": false,
         "resizable": false,
         "show": "visible",
-        "size": 265,
+        "size": 225,
         "viewParams": {},
         "viewPath": "Sidenav"
       }

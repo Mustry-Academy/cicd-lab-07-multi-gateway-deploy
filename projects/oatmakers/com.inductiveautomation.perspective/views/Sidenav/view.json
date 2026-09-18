@@ -1,186 +1,418 @@
 {
   "custom": {},
   "params": {},
+  "propConfig": {},
   "props": {
     "defaultSize": {
-      "height": 900,
-      "width": 240
+      "width": 1280,
+      "height": 900
     }
   },
   "root": {
-    "children": [
-      {
-        "children": [
-          {
-            "meta": {
-              "name": "Eyebrow"
-            },
-            "position": {
-              "basis": "auto",
-              "shrink": 0
-            },
-            "props": {
-              "style": {
-                "color": "#7aa2f7",
-                "fontSize": "11px",
-                "fontWeight": 700,
-                "letterSpacing": "2px",
-                "textTransform": "uppercase"
-              },
-              "text": "OATMAKERS · SITE 7"
-            },
-            "type": "ia.display.label"
-          },
-          {
-            "meta": {
-              "name": "Title"
-            },
-            "position": {
-              "basis": "auto",
-              "shrink": 0
-            },
-            "props": {
-              "style": {
-                "color": "#F9FAFB",
-                "fontSize": "18px",
-                "fontWeight": 800,
-                "marginTop": "6px"
-              },
-              "text": "Course showcase"
-            },
-            "type": "ia.display.label"
-          },
-          {
-            "meta": {
-              "name": "Caption"
-            },
-            "position": {
-              "basis": "auto",
-              "shrink": 0
-            },
-            "props": {
-              "style": {
-                "color": "#9aa8bd",
-                "fontSize": "12px",
-                "lineHeight": "1.45",
-                "marginTop": "8px"
-              },
-              "text": "Views built by participants during the CI/CD for Ignition course and deployed to this shared gateway."
-            },
-            "type": "ia.display.label"
-          }
-        ],
-        "meta": {
-          "name": "Header"
-        },
-        "position": {
-          "basis": "auto",
-          "shrink": 0
-        },
-        "props": {
-          "direction": "column",
-          "style": {
-            "borderBottom": "1px solid #2a3a55",
-            "padding": "18px 16px 16px 16px"
-          }
-        },
-        "type": "ia.container.flex"
-      },
-      {
-        "meta": {
-          "name": "Menu"
-        },
-        "position": {
-          "basis": "0px",
-          "grow": 1
-        },
-        "props": {
-          "items": [
-            {
-              "enabled": true,
-              "items": [],
-              "label": {
-                "icon": {
-                  "color": "#7aa2f7",
-                  "path": "material/home"
-                },
-                "text": "Home"
-              },
-              "navIcon": {
-                "color": "#7aa2f7",
-                "library": "",
-                "name": "",
-                "path": ""
-              },
-              "resetOnClick": false,
-              "showHeader": true,
-              "target": "/",
-              "visible": true
-            },
-            {
-              "enabled": true,
-              "items": [],
-              "label": {
-                "icon": {
-                  "color": "#7aa2f7",
-                  "path": "material/show_chart"
-                },
-                "text": "OEE Overview · Jasper"
-              },
-              "navIcon": {
-                "color": "#7aa2f7",
-                "library": "",
-                "name": "",
-                "path": ""
-              },
-              "resetOnClick": false,
-              "showHeader": true,
-              "target": "/oee",
-              "visible": true
-            },
-            {
-              "enabled": true,
-              "items": [],
-              "label": {
-                "icon": {
-                  "color": "#7aa2f7",
-                  "path": "material/dashboard"
-                },
-                "text": "Gateway Observatory · Rudy"
-              },
-              "navIcon": {
-                "color": "#7aa2f7",
-                "library": "",
-                "name": "",
-                "path": ""
-              },
-              "resetOnClick": false,
-              "showHeader": true,
-              "target": "/observatory",
-              "visible": true
-            }
-          ],
-          "itemStyle": {
-            "color": "#E6EDF7",
-            "fontSize": "14px"
-          },
-          "style": {
-            "backgroundColor": "#15233a",
-            "color": "#E6EDF7"
-          }
-        },
-        "type": "ia.navigation.menutree"
-      }
-    ],
+    "type": "ia.container.flex",
     "meta": {
       "name": "root"
     },
     "props": {
       "direction": "column",
       "style": {
-        "backgroundColor": "#15233a"
+        "classes": "Demo/Navigation"
       }
     },
-    "type": "ia.container.flex"
+    "children": [
+      {
+        "type": "ia.display.label",
+        "meta": {
+          "name": "Wordmark"
+        },
+        "props": {
+          "text": "OATMAKERS",
+          "style": {
+            "classes": "Demo/Brand"
+          }
+        },
+        "position": {
+          "shrink": 0,
+          "basis": "auto"
+        }
+      },
+      {
+        "type": "ia.display.label",
+        "meta": {
+          "name": "BrandDetail"
+        },
+        "props": {
+          "text": "CONNECTED FACTORY",
+          "style": {
+            "classes": "Demo/NavEyebrow"
+          }
+        },
+        "position": {
+          "shrink": 0,
+          "basis": "auto"
+        }
+      },
+      {
+        "type": "ia.display.label",
+        "meta": {
+          "name": "DemoBadge"
+        },
+        "props": {
+          "text": "SIMULATED CUSTOMER DEMO",
+          "style": {
+            "classes": "Demo/NavBadge"
+          }
+        },
+        "position": {
+          "shrink": 0,
+          "basis": "auto"
+        }
+      },
+      {
+        "type": "ia.input.button",
+        "meta": {
+          "name": "Nav0"
+        },
+        "props": {
+          "text": "Factory overview",
+          "style": {
+            "classes": "Demo/NavButton"
+          }
+        },
+        "position": {
+          "shrink": 0,
+          "basis": "45px"
+        },
+        "events": {
+          "dom": {
+            "onClick": {
+              "type": "nav",
+              "scope": "C",
+              "config": {
+                "page": "/"
+              }
+            }
+          }
+        },
+        "propConfig": {
+          "props.style.backgroundColor": {
+            "binding": {
+              "type": "expr",
+              "config": {
+                "expression": "if({page.props.path} = \"/\", \"#315844\", \"transparent\")"
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "ia.input.button",
+        "meta": {
+          "name": "Nav1"
+        },
+        "props": {
+          "text": "Production planning",
+          "style": {
+            "classes": "Demo/NavButton"
+          }
+        },
+        "position": {
+          "shrink": 0,
+          "basis": "45px"
+        },
+        "events": {
+          "dom": {
+            "onClick": {
+              "type": "nav",
+              "scope": "C",
+              "config": {
+                "page": "/production"
+              }
+            }
+          }
+        },
+        "propConfig": {
+          "props.style.backgroundColor": {
+            "binding": {
+              "type": "expr",
+              "config": {
+                "expression": "if({page.props.path} = \"/production\", \"#315844\", \"transparent\")"
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "ia.input.button",
+        "meta": {
+          "name": "Nav2"
+        },
+        "props": {
+          "text": "Process detail",
+          "style": {
+            "classes": "Demo/NavButton"
+          }
+        },
+        "position": {
+          "shrink": 0,
+          "basis": "45px"
+        },
+        "events": {
+          "dom": {
+            "onClick": {
+              "type": "nav",
+              "scope": "C",
+              "config": {
+                "page": "/process"
+              }
+            }
+          }
+        },
+        "propConfig": {
+          "props.style.backgroundColor": {
+            "binding": {
+              "type": "expr",
+              "config": {
+                "expression": "if({page.props.path} = \"/process\", \"#315844\", \"transparent\")"
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "ia.input.button",
+        "meta": {
+          "name": "Nav3"
+        },
+        "props": {
+          "text": "Performance",
+          "style": {
+            "classes": "Demo/NavButton"
+          }
+        },
+        "position": {
+          "shrink": 0,
+          "basis": "45px"
+        },
+        "events": {
+          "dom": {
+            "onClick": {
+              "type": "nav",
+              "scope": "C",
+              "config": {
+                "page": "/performance"
+              }
+            }
+          }
+        },
+        "propConfig": {
+          "props.style.backgroundColor": {
+            "binding": {
+              "type": "expr",
+              "config": {
+                "expression": "if({page.props.path} = \"/performance\", \"#315844\", \"transparent\")"
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "ia.input.button",
+        "meta": {
+          "name": "Nav4"
+        },
+        "props": {
+          "text": "Quality & traceability",
+          "style": {
+            "classes": "Demo/NavButton"
+          }
+        },
+        "position": {
+          "shrink": 0,
+          "basis": "45px"
+        },
+        "events": {
+          "dom": {
+            "onClick": {
+              "type": "nav",
+              "scope": "C",
+              "config": {
+                "page": "/quality"
+              }
+            }
+          }
+        },
+        "propConfig": {
+          "props.style.backgroundColor": {
+            "binding": {
+              "type": "expr",
+              "config": {
+                "expression": "if({page.props.path} = \"/quality\", \"#315844\", \"transparent\")"
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "ia.input.button",
+        "meta": {
+          "name": "Nav5"
+        },
+        "props": {
+          "text": "Operator workflow",
+          "style": {
+            "classes": "Demo/NavButton"
+          }
+        },
+        "position": {
+          "shrink": 0,
+          "basis": "45px"
+        },
+        "events": {
+          "dom": {
+            "onClick": {
+              "type": "nav",
+              "scope": "C",
+              "config": {
+                "page": "/operator"
+              }
+            }
+          }
+        },
+        "propConfig": {
+          "props.style.backgroundColor": {
+            "binding": {
+              "type": "expr",
+              "config": {
+                "expression": "if({page.props.path} = \"/operator\", \"#315844\", \"transparent\")"
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "ia.input.button",
+        "meta": {
+          "name": "Nav6"
+        },
+        "props": {
+          "text": "Component library",
+          "style": {
+            "classes": "Demo/NavButton"
+          }
+        },
+        "position": {
+          "shrink": 0,
+          "basis": "45px"
+        },
+        "events": {
+          "dom": {
+            "onClick": {
+              "type": "nav",
+              "scope": "C",
+              "config": {
+                "page": "/components"
+              }
+            }
+          }
+        },
+        "propConfig": {
+          "props.style.backgroundColor": {
+            "binding": {
+              "type": "expr",
+              "config": {
+                "expression": "if({page.props.path} = \"/components\", \"#315844\", \"transparent\")"
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "ia.input.button",
+        "meta": {
+          "name": "Nav7"
+        },
+        "props": {
+          "text": "Demo health",
+          "style": {
+            "classes": "Demo/NavButton"
+          }
+        },
+        "position": {
+          "shrink": 0,
+          "basis": "45px"
+        },
+        "events": {
+          "dom": {
+            "onClick": {
+              "type": "nav",
+              "scope": "C",
+              "config": {
+                "page": "/demo/health"
+              }
+            }
+          }
+        },
+        "propConfig": {
+          "props.style.backgroundColor": {
+            "binding": {
+              "type": "expr",
+              "config": {
+                "expression": "if({page.props.path} = \"/demo/health\", \"#315844\", \"transparent\")"
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "ia.container.flex",
+        "meta": {
+          "name": "Spacer"
+        },
+        "props": {
+          "direction": "column"
+        },
+        "children": [],
+        "position": {
+          "shrink": 0,
+          "grow": 1
+        }
+      },
+      {
+        "type": "ia.display.label",
+        "meta": {
+          "name": "Retention"
+        },
+        "props": {
+          "text": "ROLLING 90-DAY HISTORY",
+          "style": {
+            "classes": "Demo/NavEyebrow"
+          }
+        },
+        "position": {
+          "shrink": 0,
+          "basis": "auto"
+        }
+      },
+      {
+        "type": "ia.display.label",
+        "meta": {
+          "name": "Footer"
+        },
+        "props": {
+          "text": "A Mustry Solutions demonstration",
+          "style": {
+            "classes": "Demo/NavFooter"
+          }
+        },
+        "position": {
+          "shrink": 0,
+          "basis": "auto"
+        }
+      }
+    ],
+    "position": {
+      "shrink": 0
+    }
   }
 }

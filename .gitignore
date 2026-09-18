@@ -74,3 +74,7 @@ services/config/resources/migration-log-*.md
 # .json extension the Flint docs use).
 /.flint/tokens/*
 !/.flint/tokens/*.example
+
+# Local customer-demo validation evidence
+/build/
+/.ignition-lint/

@@ -1,0 +1,823 @@
+{
+  "custom": {
+    "data": {
+      "ready": false,
+      "stale": false,
+      "message": "Loading demonstration data...",
+      "metrics": [],
+      "lines": [],
+      "trend": [],
+      "orders": [],
+      "planning": [],
+      "losses": [],
+      "events": [],
+      "quality": [],
+      "batchOptions": [],
+      "selectedBatch": {
+        "reference": "Loading batch",
+        "product": "",
+        "quality": "Awaiting data"
+      },
+      "inspection": {},
+      "submissions": [],
+      "window": "",
+      "clock": "",
+      "health": {
+        "ok": false,
+        "ageSeconds": "n/a",
+        "coverageDays": "n/a",
+        "lineCount": "n/a",
+        "sampleCount": "n/a"
+      },
+      "availability": "n/a",
+      "performance": "n/a",
+      "yield": "n/a"
+    },
+    "selectionNotice": ""
+  },
+  "params": {},
+  "propConfig": {
+    "custom.data": {
+      "binding": {
+        "type": "expr-struct",
+        "config": {
+          "waitOnAll": true,
+          "struct": {
+            "tick": "now(10000)",
+            "scene": "{session.custom.demo.scene}",
+            "period": "{session.custom.demo.period}",
+            "line": "{session.custom.demo.line}",
+            "batch": "{session.custom.demo.batch}"
+          }
+        },
+        "transforms": [
+          {
+            "type": "script",
+            "code": "\treturn application.demo.snapshot(value[\"scene\"], value[\"period\"], value[\"line\"], value[\"batch\"])"
+          }
+        ]
+      }
+    },
+    "custom.selectionNotice": {
+      "persistent": true
+    }
+  },
+  "props": {
+    "defaultSize": {
+      "width": 1280,
+      "height": 1000
+    }
+  },
+  "root": {
+    "type": "ia.container.flex",
+    "meta": {
+      "name": "root"
+    },
+    "props": {
+      "direction": "column",
+      "style": {
+        "classes": "Demo/Page"
+      }
+    },
+    "children": [
+      {
+        "type": "ia.container.flex",
+        "meta": {
+          "name": "Heading"
+        },
+        "props": {
+          "direction": "row",
+          "wrap": "wrap",
+          "style": {
+            "classes": "Demo/PageHeader"
+          }
+        },
+        "children": [
+          {
+            "type": "ia.container.flex",
+            "meta": {
+              "name": "Identity"
+            },
+            "props": {
+              "direction": "column",
+              "style": {
+                "minWidth": "0"
+              }
+            },
+            "children": [
+              {
+                "type": "ia.display.label",
+                "meta": {
+                  "name": "Eyebrow"
+                },
+                "props": {
+                  "text": "OATMAKERS / CUSTOMER DEMO",
+                  "style": {
+                    "classes": "Demo/Eyebrow"
+                  }
+                },
+                "position": {
+                  "shrink": 0,
+                  "basis": "auto"
+                }
+              },
+              {
+                "type": "ia.display.label",
+                "meta": {
+                  "name": "Title"
+                },
+                "props": {
+                  "text": "Demo readiness",
+                  "style": {
+                    "classes": "Demo/PageTitle"
+                  }
+                },
+                "position": {
+                  "shrink": 0,
+                  "basis": "auto"
+                }
+              },
+              {
+                "type": "ia.display.label",
+                "meta": {
+                  "name": "Subtitle"
+                },
+                "props": {
+                  "text": "Check data freshness, history coverage and the automatic retention policy.",
+                  "style": {
+                    "classes": "Demo/Subtitle"
+                  }
+                },
+                "position": {
+                  "shrink": 0,
+                  "basis": "auto"
+                }
+              }
+            ],
+            "position": {
+              "shrink": 1,
+              "grow": 1,
+              "basis": "260px"
+            }
+          },
+          {
+            "type": "ia.input.button",
+            "meta": {
+              "name": "ResetScenario"
+            },
+            "props": {
+              "text": "Reset demo filters",
+              "style": {
+                "classes": "Demo/QuietButton",
+                "height": "40px"
+              }
+            },
+            "position": {
+              "shrink": 0,
+              "basis": "150px"
+            },
+            "events": {
+              "component": {
+                "onActionPerformed": {
+                  "type": "script",
+                  "scope": "G",
+                  "config": {
+                    "script": "\tself.session.custom.demo.scene = \"live\"\n\tself.session.custom.demo.period = \"day\"\n\tself.session.custom.demo.line = 0\n\tself.session.custom.demo.batch = \"\""
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "position": {
+          "shrink": 0
+        }
+      },
+      {
+        "type": "ia.container.flex",
+        "meta": {
+          "name": "Filters"
+        },
+        "props": {
+          "direction": "row",
+          "wrap": "wrap",
+          "style": {
+            "classes": "Demo/Filters"
+          }
+        },
+        "children": [
+          {
+            "type": "ia.input.dropdown",
+            "meta": {
+              "name": "Scene"
+            },
+            "props": {
+              "options": [
+                {
+                  "value": "live",
+                  "label": "Live production"
+                },
+                {
+                  "value": "stoppage",
+                  "label": "Replay: line stoppage"
+                },
+                {
+                  "value": "quality",
+                  "label": "Replay: quality deviation"
+                },
+                {
+                  "value": "recovery",
+                  "label": "Replay: recovery"
+                }
+              ],
+              "value": "live",
+              "search": {
+                "enabled": false
+              },
+              "style": {
+                "classes": "Demo/Select"
+              }
+            },
+            "position": {
+              "shrink": 0,
+              "basis": "190px"
+            },
+            "propConfig": {
+              "props.value": {
+                "binding": {
+                  "type": "property",
+                  "config": {
+                    "path": "session.custom.demo.scene",
+                    "bidirectional": true
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "ia.input.dropdown",
+            "meta": {
+              "name": "Period"
+            },
+            "props": {
+              "options": [
+                {
+                  "value": "shift",
+                  "label": "Last 8 hours"
+                },
+                {
+                  "value": "day",
+                  "label": "Last 24 hours"
+                },
+                {
+                  "value": "week",
+                  "label": "Last 7 days"
+                },
+                {
+                  "value": "month",
+                  "label": "Last 30 days"
+                }
+              ],
+              "value": "shift",
+              "search": {
+                "enabled": false
+              },
+              "style": {
+                "classes": "Demo/Select"
+              }
+            },
+            "position": {
+              "shrink": 0,
+              "basis": "190px"
+            },
+            "propConfig": {
+              "props.value": {
+                "binding": {
+                  "type": "property",
+                  "config": {
+                    "path": "session.custom.demo.period",
+                    "bidirectional": true
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "ia.input.dropdown",
+            "meta": {
+              "name": "Line"
+            },
+            "props": {
+              "options": [
+                {
+                  "value": 0,
+                  "label": "All production lines"
+                },
+                {
+                  "value": 1,
+                  "label": "Rolling line 01"
+                },
+                {
+                  "value": 2,
+                  "label": "Cutting line 02"
+                },
+                {
+                  "value": 3,
+                  "label": "Milling line 03"
+                }
+              ],
+              "value": 0,
+              "search": {
+                "enabled": false
+              },
+              "style": {
+                "classes": "Demo/Select"
+              }
+            },
+            "position": {
+              "shrink": 0,
+              "basis": "190px"
+            },
+            "propConfig": {
+              "props.value": {
+                "binding": {
+                  "type": "property",
+                  "config": {
+                    "path": "session.custom.demo.line",
+                    "bidirectional": true
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "ia.display.label",
+            "meta": {
+              "name": "Clock"
+            },
+            "props": {
+              "text": "",
+              "style": {
+                "classes": "Demo/Clock"
+              }
+            },
+            "position": {
+              "shrink": 0,
+              "basis": "auto"
+            },
+            "propConfig": {
+              "props.text": {
+                "binding": {
+                  "type": "property",
+                  "config": {
+                    "path": "view.custom.data.clock"
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "position": {
+          "shrink": 0
+        }
+      },
+      {
+        "type": "ia.display.label",
+        "meta": {
+          "name": "Status"
+        },
+        "props": {
+          "text": "",
+          "style": {
+            "classes": "Demo/Status"
+          }
+        },
+        "position": {
+          "shrink": 0,
+          "basis": "auto"
+        },
+        "propConfig": {
+          "props.text": {
+            "binding": {
+              "type": "property",
+              "config": {
+                "path": "view.custom.data.message"
+              }
+            }
+          },
+          "props.style.backgroundColor": {
+            "binding": {
+              "type": "expr",
+              "config": {
+                "expression": "if({view.custom.data.stale}, \"#fff1d9\", \"#e8f1ea\")"
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "ia.display.label",
+        "meta": {
+          "name": "Window"
+        },
+        "props": {
+          "text": "",
+          "style": {
+            "classes": "Demo/Muted"
+          }
+        },
+        "position": {
+          "shrink": 0,
+          "basis": "auto"
+        },
+        "propConfig": {
+          "props.text": {
+            "binding": {
+              "type": "property",
+              "config": {
+                "path": "view.custom.data.window"
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "ia.display.label",
+        "meta": {
+          "name": "SelectionNotice"
+        },
+        "props": {
+          "text": "",
+          "style": {
+            "classes": "Demo/Muted"
+          }
+        },
+        "position": {
+          "shrink": 0,
+          "basis": "auto"
+        },
+        "propConfig": {
+          "props.text": {
+            "binding": {
+              "type": "property",
+              "config": {
+                "path": "view.custom.selectionNotice"
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "ia.container.flex",
+        "meta": {
+          "name": "HealthCards"
+        },
+        "props": {
+          "direction": "row",
+          "wrap": "wrap",
+          "style": {
+            "classes": "Demo/Wrap"
+          }
+        },
+        "children": [
+          {
+            "type": "ia.display.view",
+            "meta": {
+              "name": "Freshness"
+            },
+            "props": {
+              "path": "Demo/Components/Metric",
+              "params": {
+                "title": "DATA AGE",
+                "unit": "sec",
+                "hint": "Fresh points should be less than 180 seconds old"
+              },
+              "useDefaultViewWidth": false,
+              "useDefaultViewHeight": false
+            },
+            "position": {
+              "shrink": 0,
+              "basis": "230px",
+              "grow": 1
+            },
+            "propConfig": {
+              "props.params.value": {
+                "binding": {
+                  "type": "property",
+                  "config": {
+                    "path": "view.custom.data.health.ageSeconds"
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "ia.display.view",
+            "meta": {
+              "name": "Coverage"
+            },
+            "props": {
+              "path": "Demo/Components/Metric",
+              "params": {
+                "title": "HISTORY AVAILABLE",
+                "unit": "days",
+                "hint": "Rolling window, automatically maintained"
+              },
+              "useDefaultViewWidth": false,
+              "useDefaultViewHeight": false
+            },
+            "position": {
+              "shrink": 0,
+              "basis": "230px",
+              "grow": 1
+            },
+            "propConfig": {
+              "props.params.value": {
+                "binding": {
+                  "type": "property",
+                  "config": {
+                    "path": "view.custom.data.health.coverageDays"
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "ia.display.view",
+            "meta": {
+              "name": "LineCount"
+            },
+            "props": {
+              "path": "Demo/Components/Metric",
+              "params": {
+                "title": "PRODUCTION LINES",
+                "unit": "",
+                "hint": "Each line has a coherent process simulation"
+              },
+              "useDefaultViewWidth": false,
+              "useDefaultViewHeight": false
+            },
+            "position": {
+              "shrink": 0,
+              "basis": "230px",
+              "grow": 1
+            },
+            "propConfig": {
+              "props.params.value": {
+                "binding": {
+                  "type": "property",
+                  "config": {
+                    "path": "view.custom.data.health.lineCount"
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "ia.display.view",
+            "meta": {
+              "name": "Samples"
+            },
+            "props": {
+              "path": "Demo/Components/Metric",
+              "params": {
+                "title": "STORED MEASUREMENTS",
+                "unit": "",
+                "hint": "Minute samples across the retained history"
+              },
+              "useDefaultViewWidth": false,
+              "useDefaultViewHeight": false
+            },
+            "position": {
+              "shrink": 0,
+              "basis": "230px",
+              "grow": 1
+            },
+            "propConfig": {
+              "props.params.value": {
+                "binding": {
+                  "type": "property",
+                  "config": {
+                    "path": "view.custom.data.health.sampleCount"
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "position": {
+          "shrink": 0
+        }
+      },
+      {
+        "type": "ia.container.flex",
+        "meta": {
+          "name": "Readiness"
+        },
+        "props": {
+          "direction": "column",
+          "style": {
+            "classes": "Demo/Panel"
+          }
+        },
+        "children": [
+          {
+            "type": "ia.display.label",
+            "meta": {
+              "name": "ReadinessTitle"
+            },
+            "props": {
+              "text": "Ready without an open browser",
+              "style": {
+                "classes": "Demo/SectionTitle"
+              }
+            },
+            "position": {
+              "shrink": 0,
+              "basis": "auto"
+            }
+          },
+          {
+            "type": "ia.display.label",
+            "meta": {
+              "name": "ReadinessSubtitle"
+            },
+            "props": {
+              "text": "The gateway timer runs every 30 seconds. The demo keeps recording when everyone closes their session.",
+              "style": {
+                "classes": "Demo/Muted"
+              }
+            },
+            "position": {
+              "shrink": 0,
+              "basis": "auto"
+            }
+          },
+          {
+            "type": "ia.display.label",
+            "meta": {
+              "name": "ReadyState"
+            },
+            "props": {
+              "text": "",
+              "style": {
+                "classes": "Demo/Status"
+              }
+            },
+            "position": {
+              "shrink": 0,
+              "basis": "auto"
+            },
+            "propConfig": {
+              "props.text": {
+                "binding": {
+                  "type": "property",
+                  "config": {
+                    "path": "view.custom.data.message"
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "ia.display.label",
+            "meta": {
+              "name": "RetentionPolicy"
+            },
+            "props": {
+              "text": "Data is retained for at most 90 days or three calendar months, whichever is shorter. The same policy covers demo requests and inspections.",
+              "style": {
+                "classes": "Demo/Body"
+              }
+            },
+            "position": {
+              "shrink": 0,
+              "basis": "auto"
+            }
+          }
+        ],
+        "position": {
+          "shrink": 0,
+          "grow": 0
+        }
+      },
+      {
+        "type": "ia.container.flex",
+        "meta": {
+          "name": "Operations"
+        },
+        "props": {
+          "direction": "column",
+          "style": {
+            "classes": "Demo/Panel"
+          }
+        },
+        "children": [
+          {
+            "type": "ia.display.label",
+            "meta": {
+              "name": "OperationsTitle"
+            },
+            "props": {
+              "text": "What happens automatically",
+              "style": {
+                "classes": "Demo/SectionTitle"
+              }
+            },
+            "position": {
+              "shrink": 0,
+              "basis": "auto"
+            }
+          },
+          {
+            "type": "ia.display.label",
+            "meta": {
+              "name": "OperationsSubtitle"
+            },
+            "props": {
+              "text": "The data lifecycle is bounded and repeatable.",
+              "style": {
+                "classes": "Demo/Muted"
+              }
+            },
+            "position": {
+              "shrink": 0,
+              "basis": "auto"
+            }
+          },
+          {
+            "type": "ia.display.label",
+            "meta": {
+              "name": "Policy"
+            },
+            "props": {
+              "text": "Each tick fills missing minute samples after an outage and prunes expired data. Database locking prevents overlapping workers.",
+              "style": {
+                "classes": "Demo/Body"
+              }
+            },
+            "position": {
+              "shrink": 0,
+              "basis": "auto"
+            }
+          },
+          {
+            "type": "ia.display.label",
+            "meta": {
+              "name": "ReplayPolicy"
+            },
+            "props": {
+              "text": "Replays select a complete recent cycle from stored data. Each browser session has its own scenario, line and period settings.",
+              "style": {
+                "classes": "Demo/Body"
+              }
+            },
+            "position": {
+              "shrink": 0,
+              "basis": "auto"
+            }
+          },
+          {
+            "type": "ia.display.label",
+            "meta": {
+              "name": "StatusPolicy"
+            },
+            "props": {
+              "text": "An unavailable database produces an explicit error state. The screens recover automatically when the connection returns.",
+              "style": {
+                "classes": "Demo/Body"
+              }
+            },
+            "position": {
+              "shrink": 0,
+              "basis": "auto"
+            }
+          },
+          {
+            "type": "ia.display.label",
+            "meta": {
+              "name": "MonitoringPolicy"
+            },
+            "props": {
+              "text": "The cloud readiness check runs every six hours and verifies both page availability and the freshness of the underlying data.",
+              "style": {
+                "classes": "Demo/Body"
+              }
+            },
+            "position": {
+              "shrink": 0,
+              "basis": "auto"
+            }
+          }
+        ],
+        "position": {
+          "shrink": 0,
+          "grow": 0
+        }
+      }
+    ],
+    "position": {
+      "shrink": 0
+    }
+  }
+}

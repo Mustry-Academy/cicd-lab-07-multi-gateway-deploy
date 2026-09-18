@@ -1,0 +1,13 @@
+{
+  "custom": {
+    "demo": {
+      "scene": "live",
+      "period": "day",
+      "line": 0,
+      "batch": ""
+    }
+  },
+  "props": {
+    "theme": "light"
+  }
+}
