@@ -251,7 +251,8 @@
               },
               "style": {
                 "overflow": "visible",
-                "classes": "Demo/DateRange"
+                "classes": "Demo/DateRange",
+                "height": "40px"
               },
               "output": {
                 "startDateTime": "",

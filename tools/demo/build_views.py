@@ -112,6 +112,7 @@ page('Demo/Performance','Performance & history','Pick exact dates or a live pres
 # One modern record grid, with an explicit inspect action.
 quality_picker=picker('QualityRange')
 quality_picker['props']['selection']['rollingAmount']=24
+quality_picker['props']['style']['height']='40px'
 qgrid=grid('BatchGrid','view.custom.batches',[('reference','Batch',190),('product','Product',160),('line','Line',170),('good_kg','Good output kg',150),('quality','Quality decision',170)],height='480px',selectable=True)
 inspect=button('InspectBatch','Inspect selected batch',script='\tapplication.demo.showBatch(self.view.custom.selected)',classes='Demo/Button');inspect['propConfig']={'props.enabled':expr('len({view.custom.selected}) > 0')}
 inspect['position']={'basis':'auto','grow':0,'shrink':0}
