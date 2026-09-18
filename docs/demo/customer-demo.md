@@ -39,7 +39,7 @@ Batch output and quality are derived from six-hour recorded groups. A peak moist
 
 ## Mustry UI module
 
-The pinned signed `Mustry_UI-0.5.1.modl` is built from the source commit and Actions run recorded in `tools/demo/mustry-ui-version.json`. The signed module and signature-verification build steps passed. The dry-run workflow subsequently failed in its unrelated PDF documentation footer step; no public module release was published by this change. The module manifest marks it as free, so it does not rely on a trial license.
+The pinned signed `Mustry_UI-0.5.2.modl` is built from the source commit and Actions run recorded in `tools/demo/mustry-ui-version.json`. The signed module and signature-verification build steps passed. The dry-run workflow subsequently failed in its unrelated PDF documentation footer step; no public module release was published by this change. The module manifest marks it as free, so it does not rely on a trial license.
 
 Screens use the module's Date Time Range Picker, Resource Timeline, Data Grid and Pan Zoom View. The module has no chart renderer; the shared history view pairs its range picker with a styled native Perspective XY chart. The picker output, not a separate preset dropdown, defines the queried range.
 

@@ -166,7 +166,7 @@
     "licenseAgreementHash": 106690219
   },
   "com.mustrysolutions.perspective.components": {
-    "filename": "/third-party-modules/Mustry_UI-0.5.1.modl",
+    "filename": "/third-party-modules/Mustry_UI-0.5.2.modl",
     "onStartup": "enabled",
     "certFingerprint": "9cf87a32d018c8153b68e507e9666b9fa7932983",
     "licenseAgreementHash": 2865025977
