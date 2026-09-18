@@ -1,51 +1,69 @@
 
-:root { --demo-ink:#1c382c; --demo-muted:#738579; --demo-bg:#f3f6f2; --demo-line:#e0e9df; }
+/* High-performance HMI (ISA-101): a low-contrast grey canvas, process content in
+   greyscale, and colour spent only where it means something is abnormal. The
+   accent below is for interaction affordances, never for a healthy process. */
+:root {
+  --demo-ink:#23282d; --demo-muted:#6d757c; --demo-bg:#e9ecee; --demo-line:#d3d8dc;
+  --demo-surface:#f6f7f8; --demo-accent:#3f5a73;
+  --demo-alarm:#b23b34; --demo-warn:#b57a17; --demo-info:#4a6f96;
+}
 .psc-Demo\/Page { container-type:inline-size; container-name:demo; background:var(--demo-bg); color:var(--demo-ink); padding:24px 30px; gap:18px; overflow:auto; font-family:Arial,sans-serif; }
 .psc-Demo\/PageHeader { align-items:center; justify-content:space-between; gap:20px; overflow:visible; }
 .psc-Demo\/PageTitle { font-size:28px; font-weight:700; line-height:1.3; padding:4px 0; white-space:normal; }
-.psc-Demo\/Eyebrow { font-size:10px; font-weight:700; letter-spacing:1.3px; color:#718573; }
-.psc-Demo\/Subtitle { font-size:13px; color:#6a7e70; line-height:1.5; white-space:normal; }
+.psc-Demo\/Eyebrow { font-size:10px; font-weight:700; letter-spacing:1.3px; color:var(--demo-muted); }
+.psc-Demo\/Subtitle { font-size:13px; color:var(--demo-muted); line-height:1.5; white-space:normal; }
 .psc-Demo\/SectionTitle { font-size:17px; font-weight:700; white-space:normal; }
 .psc-Demo\/Body { font-size:14px; line-height:1.5; white-space:normal; }
-.psc-Demo\/Muted { font-size:12px; color:#748175; line-height:1.5; white-space:normal; }
-.psc-Demo\/Panel { background:#fff; border:1px solid var(--demo-line); border-radius:10px; padding:20px; gap:12px; min-width:0; overflow:visible; }
-.psc-Demo\/Metric { background:white; border:1px solid var(--demo-line); border-radius:10px; padding:18px 20px; gap:10px; height:100%; box-sizing:border-box; }
+.psc-Demo\/Muted { font-size:12px; color:var(--demo-muted); line-height:1.5; white-space:normal; }
+.psc-Demo\/Panel { background:var(--demo-surface); border:1px solid var(--demo-line); border-radius:6px; padding:20px; gap:12px; min-width:0; overflow:visible; }
+.psc-Demo\/Metric { background:var(--demo-surface); border:1px solid var(--demo-line); border-radius:6px; padding:18px 20px; gap:10px; height:100%; box-sizing:border-box; }
 .psc-Demo\/MetricReading { align-items:baseline; gap:8px; }
-.psc-Demo\/MetricValue { font-size:32px; font-weight:700; font-variant-numeric:tabular-nums; color:#234e3b; }
-.psc-Demo\/MetricUnit { font-size:14px; color:#748175; }
+/* The reading is the loudest thing on a high-performance screen -- by contrast,
+   not by hue. */
+.psc-Demo\/MetricValue { font-size:32px; font-weight:700; font-variant-numeric:tabular-nums; color:var(--demo-ink); }
+.psc-Demo\/MetricUnit { font-size:14px; color:var(--demo-muted); }
 .psc-Demo\/Repeater { gap:14px; overflow:visible; }
 .psc-Demo\/Wrap,.psc-Demo\/Workspace { gap:18px; align-items:stretch; overflow:visible; }
 .psc-Demo\/Filters { gap:10px; align-items:center; min-height:44px; overflow:visible !important; position:relative; z-index:4; }
-.psc-Demo\/Select { height:40px; min-height:40px; border-radius:6px; border-color:#dce5da; background:white; font-size:13px; overflow:visible; }
-.psc-Demo\/DateRange { min-height:40px; overflow:visible !important; --dtrp-accent:#327d58; --dtrp-bg:#fff; }
+.psc-Demo\/Select { height:40px; min-height:40px; border-radius:4px; border-color:var(--demo-line); background:#fff; font-size:13px; overflow:visible; }
+.psc-Demo\/DateRange { min-height:40px; overflow:visible !important; --dtrp-accent:var(--demo-accent); --dtrp-bg:#fff; }
 .psc-Demo\/HistoryRoot { overflow:visible; gap:10px; min-height:0; }
-.psc-Demo\/PopupRoot { overflow:visible !important; background:white; padding:20px; gap:14px; min-height:0; }
-.psc-Demo\/DemoBadge { padding:7px 12px; border-radius:6px; background:#e5efe4; color:#55764b; font-size:10px; letter-spacing:1px; }
-.psc-Demo\/LiveStatus { font-size:12px; color:#277b57; }
-.psc-Demo\/Status { padding:10px; border-radius:6px; font-size:12px; color:#315e43; white-space:normal; }
-.psc-Demo\/Button { background:#327d58; color:white; border:1px solid #327d58; border-radius:6px; padding:8px 16px; font-weight:600; }
-.psc-Demo\/Button:disabled { background:#dce5db; border-color:#dce5db; color:#748475; }
-.psc-Demo\/QuietButton,.psc-Demo\/ReadingButton { background:#f8faf7; color:#35674e; border:1px solid #e1e8dc; border-radius:6px; padding:8px 12px; font-size:12px; }
-.psc-Demo\/ReadingButton { font-variant-numeric:tabular-nums; background:#f2f7f0; }
-.psc-Demo\/Badge { padding:5px 8px; border-radius:5px; background:#eef5ec; font-size:11px; font-weight:700; }
+.psc-Demo\/PopupRoot { overflow:visible !important; background:var(--demo-surface); padding:20px; gap:14px; min-height:0; }
+.psc-Demo\/DemoBadge { padding:7px 12px; border-radius:4px; background:#dfe3e6; color:#4d555c; font-size:10px; letter-spacing:1px; }
+.psc-Demo\/LiveStatus { font-size:12px; color:var(--demo-muted); }
+.psc-Demo\/Status { padding:10px; border-radius:4px; font-size:12px; color:var(--demo-ink); white-space:normal; }
+.psc-Demo\/Button { background:var(--demo-accent); color:#fff; border:1px solid var(--demo-accent); border-radius:4px; padding:8px 16px; font-weight:600; }
+.psc-Demo\/Button:disabled { background:#d7dbde; border-color:#d7dbde; color:#8b9198; }
+.psc-Demo\/QuietButton,.psc-Demo\/ReadingButton { background:#fff; color:var(--demo-ink); border:1px solid var(--demo-line); border-radius:4px; padding:8px 12px; font-size:12px; }
+.psc-Demo\/ReadingButton { font-variant-numeric:tabular-nums; }
+.psc-Demo\/Badge { padding:5px 8px; border-radius:3px; background:#dfe3e6; font-size:11px; font-weight:700; }
 .psc-Demo\/Spread { justify-content:space-between; align-items:center; gap:8px; }
-.psc-Demo\/LineValue { font-size:28px; font-weight:700; font-variant-numeric:tabular-nums; color:#2d7150; }
+.psc-Demo\/LineValue { font-size:28px; font-weight:700; font-variant-numeric:tabular-nums; color:var(--demo-ink); }
 .psc-Demo\/Chart { font-size:11px; min-width:0; }
-.psc-Demo\/DataGrid { --dg-accent:#347857; --dg-bg:#fff; --dg-header-bg:#f2f6ef; --dg-border:#e5ece0; --dg-text:#284532; --dg-muted:#77897c; border:1px solid #e1e9dd; border-radius:8px; min-height:180px; }
-.psc-Demo\/PlanningTimeline { --tml-accent:#347857; --tml-bg:#fff; --tml-group-bg:#f1f6ef; --tml-border:#e0e9da; --tml-line:#edf1e9; --tml-text:#294231; border:1px solid #dfe8da; border-radius:10px; background:white; }
-.psc-Demo\/ScadaPage { overflow:hidden; }
-.psc-Demo\/ScadaMap { border:1px solid #dce6d8; border-radius:10px; --pz-canvas:#f7faf7; --pz-accent:#347857; }
-.psc-Demo\/TagFace { background:#ffffffec; border:1px solid #d5e3d1; border-radius:6px; padding:6px 10px; gap:3px; cursor:pointer; box-sizing:border-box; overflow:visible; }
-.psc-Demo\/TagFace:hover { border-color:#418666; box-shadow:0 2px 8px #315c3920; }
-.psc-Demo\/TagName { font-size:15px; font-weight:600; color:#55735c; }
-.psc-Demo\/TagValue { font-size:26px; font-weight:700; font-variant-numeric:tabular-nums; color:#2e6d4c; }
-.psc-Demo\/TagUnit { font-size:15px; color:#758677; }
-.psc-Demo\/Navigation { background:#1d382c; padding:28px 16px 20px; gap:9px; color:#e7eee2; height:100%; box-sizing:border-box; font-family:Arial,sans-serif; }
-.psc-Demo\/Brand { font-size:24px; font-weight:800; letter-spacing:1.2px; color:#f4eedb; padding:0 9px; }
-.psc-Demo\/NavEyebrow { font-size:9px; letter-spacing:1.3px; color:#abc0a9; padding:0 9px; }
-.psc-Demo\/NavBadge { font-size:9px; color:#cbdba6; background:#2e4b39; padding:9px; border-radius:5px; margin:15px 0; }
-.psc-Demo\/NavButton { background:transparent; color:#d9e4d6; border:0; border-radius:6px; padding:10px 12px; font-size:12px; }
-.psc-Demo\/NavButton:hover { background:#36543f; }
-.psc-Demo\/NavFooter { font-size:10px; color:#9db69e; padding:4px 9px; }
+.psc-Demo\/DataGrid { --dg-accent:var(--demo-accent); --dg-bg:#fff; --dg-header-bg:#eceff1; --dg-border:var(--demo-line); --dg-text:var(--demo-ink); --dg-muted:var(--demo-muted); border:1px solid var(--demo-line); border-radius:4px; min-height:180px; }
+.psc-Demo\/PlanningTimeline { --tml-accent:var(--demo-accent); --tml-bg:#fff; --tml-group-bg:#eceff1; --tml-border:var(--demo-line); --tml-line:#e4e8ea; --tml-text:var(--demo-ink); border:1px solid var(--demo-line); border-radius:6px; background:#fff; }
+.psc-Demo\/ScadaPage { overflow:hidden; background:#c5c7c9; }
+.psc-Demo\/ScadaWorkspace { gap:12px; min-height:0; align-items:stretch; }
+.psc-Demo\/ScadaMap.mustry-panzoom { border:0; border-radius:0; --pz-canvas:#c5c7c9; --pz-bg:#c5c7c9; --pz-accent:#343b40; --pz-alert:var(--demo-alarm); }
+.psc-Demo\/ScadaMap .mustry-pz-content { background:transparent; box-shadow:none; border:0; }
+.psc-Demo\/ScadaTrendPanel { gap:4px; padding:8px 0 0; border-top:1px solid #a8aeb3; min-width:0; min-height:250px; }
+.psc-Demo\/ScadaState { font-size:12px; font-weight:700; margin-left:auto; }
+.psc-Demo\/TagFace { background:transparent; border:0; border-radius:0; padding:3px 6px; gap:2px; cursor:pointer; box-sizing:border-box; overflow:visible; }
+.psc-Demo\/TagFace:hover { outline:1px solid #8d979f; outline-offset:2px; }
+.psc-Demo\/TagName { font-size:15px; font-weight:600; color:#434b51; }
+.psc-Demo\/TagValue { font-size:26px; font-weight:700; font-variant-numeric:tabular-nums; color:#333399; }
+.psc-Demo\/PvLabel { font-size:12px; font-weight:700; color:#333399; }
+.psc-Demo\/SpLabel,.psc-Demo\/SpValue { font-size:15px; color:#006400; font-variant-numeric:tabular-nums; }
+.psc-Demo\/TagUnit { font-size:13px; color:#515b63; }
+.psc-Demo\/TagCondition { font-size:12px; font-weight:700; color:#865900; }
+.psc-Demo\/BrandLogo { background:#f2f3f1; padding:8px; margin-bottom:8px; }
+@container demo (max-width:1000px) { .psc-Demo\/ScadaPage { overflow:auto; } .psc-Demo\/ScadaWorkspace { flex-wrap:wrap !important; flex-shrink:0 !important; } .psc-Demo\/ScadaMap { flex-basis:100% !important; min-height:500px !important; } .psc-Demo\/ScadaTrendPanel { flex-basis:300px !important; min-height:300px; } }
+.psc-Demo\/Navigation { background:#2b3238; padding:28px 16px 20px; gap:9px; color:#dde1e4; height:100%; box-sizing:border-box; font-family:Arial,sans-serif; }
+.psc-Demo\/Brand { font-size:24px; font-weight:800; letter-spacing:1.2px; color:#f2f4f5; padding:0 9px; }
+.psc-Demo\/NavEyebrow { font-size:9px; letter-spacing:1.3px; color:#a6aeb4; padding:0 9px; }
+.psc-Demo\/NavBadge { font-size:9px; color:#c8ced3; background:#3a434a; padding:9px; border-radius:3px; margin:15px 0; }
+.psc-Demo\/NavButton { background:transparent; color:#d5dade; border:0; border-radius:4px; padding:10px 12px; font-size:12px; }
+.psc-Demo\/NavButton:hover { background:#3d474f; }
+.psc-Demo\/NavFooter { font-size:10px; color:#98a1a8; padding:4px 9px; }
 @container demo (max-width:900px) { .psc-Demo\/Workspace { flex-wrap:wrap !important; } .psc-Demo\/Workspace > * { flex-basis:100% !important; } .psc-Demo\/PageHeader { flex-wrap:wrap !important; } }
 @media(max-width:650px) { .psc-Demo\/Page { padding:14px; } .psc-Demo\/PageTitle { font-size:24px; } .psc-Demo\/Filters { flex-wrap:wrap !important; } }

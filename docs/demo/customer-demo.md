@@ -39,7 +39,7 @@ Batch output and quality are derived from six-hour recorded groups. A peak moist
 
 ## Mustry UI module
 
-The pinned signed `Mustry_UI-0.5.1.modl` is built from the source commit and Actions run recorded in `tools/demo/mustry-ui-version.json`. The signed module and signature-verification build steps passed. The dry-run workflow subsequently failed in its unrelated PDF documentation footer step; no public module release was published by this change. The module manifest marks it as free, so it does not rely on a trial license.
+The pinned signed `Mustry_UI-0.5.2.modl` is built from the source commit and Actions run recorded in `tools/demo/mustry-ui-version.json`. The signed module and signature-verification build steps passed. The dry-run workflow subsequently failed in its unrelated PDF documentation footer step; no public module release was published by this change. The module manifest marks it as free, so it does not rely on a trial license.
 
 Screens use the module's Date Time Range Picker, Resource Timeline, Data Grid and Pan Zoom View. The module has no chart renderer; the shared history view pairs its range picker with a styled native Perspective XY chart. The picker output, not a separate preset dropdown, defines the queried range.
 
@@ -72,3 +72,35 @@ The deployment backs up and replaces only the Oatmakers project and its `Oatmake
 The Deploy workflow's readiness job runs every six hours. It reads database health directly and checks public routes, so it does not require a Web Dev license. The optional `/system/webdev/oatmakers/api/demo-health` endpoint also returns health where Web Dev is available. An HTTP route check alone does not validate rendering; release review additionally exercises the real screens in a browser.
 
 For failures, inspect Actions, Demo health, database connection `OatmakersDemo`, secret provider `DemoRuntime` and gateway logger `Oatmakers.Demo`. Restoring the connection lets the timer catch up automatically. Scoped project backups expire after 90 days; the server's broader backup policy is managed independently.
+
+## Local startup
+
+Run `tools/demo/start-local.sh` from this lab checkout. It reconciles the local
+database, applies migrations, recreates the gateway to load the current project
+and pinned module, scans resources and resets the development trial. Existing
+gateway and database volumes are retained. The default URL is
+`http://localhost:18096/data/perspective/client/oatmakers/`.
+
+To use port 8088, stop any other gateway using that port, then run
+`DEMO_HTTP_PORT=8088 tools/demo/start-local.sh`. The root demo-oatmakers project
+is a separate application with different pages and backend dependencies.
+
+## SCADA presentation
+
+The SCADA design follows the level-2 example on slide 38 of Graham Nasby's
+[2017 ISA-101 and high-performance HMI presentation](https://www.grahamnasby.com/files_publications/NasbyG_2017_HighPerformanceHMIs_IntelligentWastewaterSeminar_WEAO_sept14-2017_slides-public.pdf):
+blue PV, green SP, grey process equipment and an always-visible trend. Colour
+is accompanied by explicit labels and abnormal-condition text.
+
+The drawing and pan/zoom content are transparent on one grey background.
+The embedded trend stays outside the zoom transform. Selecting a measurement
+changes the trend; changing the process area resets the drawing to fit.
+
+SP values are read-only nominal simulation targets, not plant control writes.
+Power is consumption and has no SP. The temperature and moisture trend limits
+come from the demo's existing quality specifications. The OatMakers SVG logo
+is embedded in the project so deployment does not depend on a gateway image.
+
+Local verification covers both process areas, zoom out to 46%, zoom in to
+141%, automatic fit on area changes, PV selection, live chart data and the
+seven-page runtime readiness check.

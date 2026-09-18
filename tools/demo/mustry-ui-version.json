@@ -1,11 +1,11 @@
 {
   "moduleId": "com.mustrysolutions.perspective.components",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "source": "https://github.com/Mustry-Solutions/mustry-perspective-component-module",
-  "commit": "dbb3c6945829fa4c2e624bfdecd2968e6bd884fe",
-  "buildRun": 35329676524,
-  "sha256": "d3581834d315c194784066d574d1299da928420b0b9491f702fd228484bae442",
-  "file": "third-party-modules/Mustry_UI-0.5.1.modl",
+  "commit": "ee0713f",
+  "buildRun": 35343548742,
+  "sha256": "47f0ff288cacba217c1b2de38d6ef2d3c9a2509d0ab34e373bb4cca3565ab24c",
+  "file": "third-party-modules/Mustry_UI-0.5.2.modl",
   "certFingerprint": "9cf87a32d018c8153b68e507e9666b9fa7932983",
   "licenseAgreementHash": 2865025977
 }

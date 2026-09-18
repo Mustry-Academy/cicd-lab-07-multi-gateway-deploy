@@ -19,7 +19,7 @@
         "config": {
           "waitOnAll": true,
           "struct": {
-            "tick": "now(5000)"
+            "tick": "now(1000)"
           }
         },
         "transforms": [
@@ -185,7 +185,7 @@
             "binding": {
               "type": "expr",
               "config": {
-                "expression": "if({view.custom.live.ready}, \"Live \u00b7 recorded at \" + {view.custom.live.updatedAt} + \" \u00b7 updates every 5 seconds\", \"Live telemetry is unavailable\")"
+                "expression": "if({view.custom.live.ready}, \"Live \u00b7 recorded at \" + {view.custom.live.updatedAt} + \" \u00b7 updates every second\", \"Live telemetry is unavailable\")"
               }
             }
           },
@@ -193,7 +193,7 @@
             "binding": {
               "type": "expr",
               "config": {
-                "expression": "if({view.custom.live.ready}, \"#277b57\", \"#b66622\")"
+                "expression": "if({view.custom.live.ready}, \"#6d757c\", \"#b57a17\")"
               }
             }
           }
@@ -211,19 +211,19 @@
                 "id": "1",
                 "label": "Rolling line 01",
                 "group": "Oat processing",
-                "color": "#2d8962"
+                "color": "#39444f"
               },
               {
                 "id": "2",
                 "label": "Cutting line 02",
                 "group": "Oat processing",
-                "color": "#428ac3"
+                "color": "#77889a"
               },
               {
                 "id": "3",
                 "label": "Milling line 03",
                 "group": "Oat processing",
-                "color": "#c59139"
+                "color": "#aeb8c0"
               }
             ],
             "rowHeight": 76,
@@ -241,22 +241,32 @@
               {
                 "id": "planned",
                 "label": "Scheduled",
-                "color": "#7790a7"
+                "color": "#9aa3ab"
               },
               {
                 "id": "running",
                 "label": "In production",
-                "color": "#2d8962"
+                "color": "#4d5862"
               },
               {
                 "id": "quality",
                 "label": "Quality review",
-                "color": "#c89128"
+                "color": "#b57a17"
               },
               {
                 "id": "complete",
                 "label": "Completed",
-                "color": "#b0bdb4"
+                "color": "#c3cad0"
+              },
+              {
+                "id": "stop",
+                "label": "Unplanned stop",
+                "color": "#b23b34"
+              },
+              {
+                "id": "changeover",
+                "label": "Changeover / CIP",
+                "color": "#7d8891"
               }
             ],
             "shifts": [

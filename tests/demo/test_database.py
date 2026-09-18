@@ -53,10 +53,11 @@ try:
     check(sql("SELECT oat_demo.tick(now()-interval '1 day')",expected=False)!=0,'clock regression cannot rewind or delete current history')
     check(not value("SELECT oat_demo.health(now()-interval '1 hour')")['ok'],'health detects a regressed clock instead of reporting future data as fresh')
     live=value('SELECT oat_demo.health_live()')
-    check(live['ok'] and 103000<live['liveSampleCount']<=103680,'five-second telemetry is fresh and bounded to 48 hours')
+    check(live['ok'] and 64000<live['liveSampleCount']<=64800,'one-second telemetry is fresh and bounded to 6 hours')
+    check(live['liveIntervalSeconds']==1 and live['liveRetentionHours']==6,'health reports the one-second grid the screens poll at')
     check(value('SELECT oat_demo.tick_live((SELECT last_tick FROM oat_demo.live_runtime))')['inserted']==0,'fine telemetry ticks are idempotent')
     check(sql("WITH minute AS (SELECT date_trunc('minute',at) t FROM oat_demo.live_sample WHERE line_id=1 AND state='Running' AND at<now()-interval '1 minute' ORDER BY at DESC LIMIT 1) SELECT count(DISTINCT total_kg)>1 FROM oat_demo.live_sample,minute WHERE line_id=1 AND at>=t AND at<t+interval '1 minute'")=='t','production rates visibly change within a minute')
-    check(sql("WITH fine AS (SELECT sum(total_kg) kg FROM generate_series(date_trunc('minute',now()),date_trunc('minute',now())+interval '55 seconds',interval '5 seconds') t CROSS JOIN LATERAL oat_demo.measure_live(t,1)) SELECT abs(fine.kg-m.total_kg)<0.00001 FROM fine CROSS JOIN oat_demo.measure(date_trunc('minute',now()),1) m")=='t','fine production quantities reconcile with minute history')
+    check(sql("WITH fine AS (SELECT sum(total_kg) kg FROM generate_series(date_trunc('minute',now()),date_trunc('minute',now())+interval '59 seconds',interval '1 second') t CROSS JOIN LATERAL oat_demo.measure_live(t,1)) SELECT abs(fine.kg-m.total_kg)<0.00001 FROM fine CROSS JOIN oat_demo.measure(date_trunc('minute',now()),1) m")=='t','fine production quantities reconcile with minute history')
     check(sql("SELECT count(*) FROM oat_demo.live_sample WHERE good_kg>total_kg OR good_kg<0 OR total_kg<0 OR energy_kwh<0")=='0','fine production and energy remain physically consistent')
     check(sql("SELECT oat_demo.tick_live(now()-interval '1 day')",expected=False)!=0,'fine clock regression cannot overwrite current samples')
     for days,metric in [(1,'rate'),(7,'temperature'),(30,'power'),(89,'moisture')]:
@@ -72,6 +73,32 @@ try:
     detail=value("SELECT oat_demo.batch_detail('%s')"%batches[0]['reference'])
     check(detail['available'] and detail['reference']==batches[0]['reference'],'batch popup resolves historical references outside the old three-day window')
     check(sql("SELECT oat_demo.history_range(1,9999999999999,0,'invalid')",expected=False)!=0,'invalid history measurements are rejected')
+
+    # The board has to look like a factory, not a ruled sheet: the lines must not
+    # share start times, batches must not all be the same length, there must be
+    # real gaps between them, and the stops in the telemetry must reach the board.
+    window="(extract(epoch FROM now()-interval '24 hours')*1000)::bigint,(extract(epoch FROM now()+interval '12 hours')*1000)::bigint"
+    plan=value('SELECT oat_demo.batches_range('+window+',0)')
+    starts={}
+    for b in plan:
+        starts.setdefault(b['lineNumber'],[]).append((b['startEpochMs'],b['endEpochMs'],b['plannedMinutes']))
+    check(len(starts)==3,'every line appears on the board')
+    check(len({tuple(sorted(s for s,_,_ in v)) for v in starts.values()})==3,'no two lines run the same start times')
+    check(len({m for v in starts.values() for _,_,m in v})>1,'batches are not all the same length')
+    gaps=[]
+    for runs in starts.values():
+        runs.sort()
+        gaps += [runs[i+1][0]-runs[i][1] for i in range(len(runs)-1)]
+    check(gaps and all(g>0 for g in gaps),'every line has a real gap between consecutive batches')
+    check(any(g>=30*60*1000 for g in gaps),'at least one gap is a full changeover or CIP window')
+    board=value('SELECT oat_demo.timeline_range('+window+',0)')
+    stops=[e for e in board if e.get('isDowntime')]
+    check(len(board)>len(plan) and stops,'the board carries downtime alongside the planned batches')
+    check({e['category'] for e in stops} & {'stop','quality','changeover'},'downtime is categorised for the timeline legend')
+    check(all(e['endEpochMs']>e['startEpochMs'] for e in board),'no board entry ends before it starts')
+    check(sql('SELECT oat_demo.timeline_range(1,9999999999999,0)',expected=False)!=0,'an unbounded planning window is rejected')
+    detail=value("SELECT oat_demo.batch_detail('%s')"%plan[0]['reference'])
+    check(detail['available'],'a batch from the varied plan still resolves to a popup record')
     # Keep one minute absent to test a real outage catch-up from a committed watermark.
     count=int(sql('SELECT count(*) FROM oat_demo.sample'))
     future="(SELECT last_tick+interval '21 days' FROM oat_demo.runtime)"
@@ -80,7 +107,7 @@ try:
     check(h['ok'] and h['sampleCount']<=388803,'three-week unattended jump catches up and retains a bounded window')
     sql('SELECT oat_demo.tick_live((SELECT last_tick FROM oat_demo.runtime))')
     fine=value('SELECT oat_demo.health_live((SELECT last_tick FROM oat_demo.live_runtime))')
-    check(fine['ok'] and fine['liveSampleCount']<=103680,'fine telemetry catches up after three weeks and retains only 48 hours')
+    check(fine['ok'] and fine['liveSampleCount']<=64800,'fine telemetry catches up after three weeks and retains only 6 hours')
     check(sql("SELECT count(*) FROM oat_demo.sample WHERE at<(SELECT greatest(last_tick-interval '90 days',last_tick-interval '3 months') FROM oat_demo.runtime)")=='0','no samples exceed either retention limit')
     sql("INSERT INTO oat_demo.operator_order VALUES('00000000-0000-0000-0000-000000000001',now()-interval '100 days','OLD','Rolled oats',100,4,'Trial','Operator demo')")
     sql("INSERT INTO oat_demo.inspection VALUES('OLD',now()-interval '100 days','Released',11.5,82.0)")

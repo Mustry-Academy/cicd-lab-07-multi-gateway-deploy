@@ -21,19 +21,22 @@
     },
     "children": [
       {
-        "type": "ia.display.label",
+        "type": "ia.display.image",
         "meta": {
           "name": "Brand"
         },
         "props": {
-          "text": "OATMAKERS",
+          "source": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA3MjAgMjAwIiB3aWR0aD0iNzIwIiBoZWlnaHQ9IjIwMCIgcm9sZT0iaW1nIiBhcmlhLWxhYmVsPSJPYXRNYWtlcnMiPgogIDxkZWZzPgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFpbiIgeDE9IjAiIHkxPSIwIiB4Mj0iMCIgeTI9IjEiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiNFQkJFNTgiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjQzg5MDJGIi8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogICAgPGNsaXBQYXRoIGlkPSJyaW5nIj4KICAgICAgPGNpcmNsZSBjeD0iMTAwIiBjeT0iMTAwIiByPSI4MiIvPgogICAgPC9jbGlwUGF0aD4KICAgIDxnIGlkPSJvYXRncmFpbiI+CiAgICAgIDxwYXRoIGQ9Ik0wLC0xMyBDNS41LC03IDUuNSw3IDAsMTMgQy01LjUsNyAtNS41LC03IDAsLTEzIFoiIGZpbGw9InVybCgjZ3JhaW4pIi8+CiAgICAgIDxwYXRoIGQ9Ik0wLC0xMyBDMiwtNyAyLDcgMCwxMyIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjQTg3NzI0IiBzdHJva2Utd2lkdGg9IjEiIG9wYWNpdHk9IjAuNTUiLz4KICAgIDwvZz4KICA8L2RlZnM+CgogIDwhLS0gbWFyayAtLT4KICA8Y2lyY2xlIGN4PSIxMDAiIGN5PSIxMDAiIHI9Ijg2IiBmaWxsPSJub25lIiBzdHJva2U9IiMyNDM4MkIiIHN0cm9rZS13aWR0aD0iNiIvPgogIDxnIGNsaXAtcGF0aD0idXJsKCNyaW5nKSI+CiAgICA8cGF0aCBkPSJNNCwxNDggUTc4LDExMiAxOTYsMTU2IEwxOTYsMjAwIEw0LDIwMCBaIiBmaWxsPSIjN0U5NDYxIi8+CiAgICA8cGF0aCBkPSJNNCwxNjYgUTk2LDEzMiAxOTYsMTc2IEwxOTYsMjAwIEw0LDIwMCBaIiBmaWxsPSIjMjQzODJCIi8+CiAgPC9nPgogIDxwYXRoIGQ9Ik0xMDAsMTQ4IFExMDMsMTA0IDEwMCw1MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMjQzODJCIiBzdHJva2Utd2lkdGg9IjQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgogIDx1c2UgaHJlZj0iI29hdGdyYWluIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgxMDAsNDQpIi8+CiAgPHVzZSBocmVmPSIjb2F0Z3JhaW4iIHRyYW5zZm9ybT0idHJhbnNsYXRlKDg3LDcwKSByb3RhdGUoLTMwKSIvPgogIDx1c2UgaHJlZj0iI29hdGdyYWluIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgxMTMsNzApIHJvdGF0ZSgzMCkiLz4KICA8dXNlIGhyZWY9IiNvYXRncmFpbiIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoODQsOTYpIHJvdGF0ZSgtMzYpIi8+CiAgPHVzZSBocmVmPSIjb2F0Z3JhaW4iIHRyYW5zZm9ybT0idHJhbnNsYXRlKDExNiw5Nikgcm90YXRlKDM2KSIvPgogIDx1c2UgaHJlZj0iI29hdGdyYWluIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSg4NiwxMjIpIHJvdGF0ZSgtNDIpIi8+CiAgPHVzZSBocmVmPSIjb2F0Z3JhaW4iIHRyYW5zZm9ybT0idHJhbnNsYXRlKDExNCwxMjIpIHJvdGF0ZSg0MikiLz4KCiAgPCEtLSB3b3JkbWFyayAtLT4KICA8dGV4dCB4PSIyMjUiIHk9IjEyNyIgZm9udC1mYW1pbHk9IidOdW5pdG8gU2FucycsJ1NlZ29lIFVJJywnSGVsdmV0aWNhIE5ldWUnLEFyaWFsLHNhbnMtc2VyaWYiCiAgICAgICAgZm9udC1zaXplPSI3NiIgZm9udC13ZWlnaHQ9IjcwMCIgbGV0dGVyLXNwYWNpbmc9Ii0xIj4KICAgIDx0c3BhbiBmaWxsPSIjQzg5MDJGIj5PYXQ8L3RzcGFuPjx0c3BhbiBmaWxsPSIjMjQzODJCIj5NYWtlcnM8L3RzcGFuPgogIDwvdGV4dD4KICA8dGV4dCB4PSIyMjgiIHk9IjE1NiIgZm9udC1mYW1pbHk9IidOdW5pdG8gU2FucycsJ1NlZ29lIFVJJywnSGVsdmV0aWNhIE5ldWUnLEFyaWFsLHNhbnMtc2VyaWYiCiAgICAgICAgZm9udC1zaXplPSIyMSIgZm9udC13ZWlnaHQ9IjYwMCIgbGV0dGVyLXNwYWNpbmc9IjEwLjUiIGZpbGw9IiM3RTk0NjEiPlJPTExFRCAmIzE4MzsgT0FUUzwvdGV4dD4KPC9zdmc+Cg==",
+          "fit": {
+            "mode": "contain"
+          },
           "style": {
-            "classes": "Demo/Brand"
+            "classes": "Demo/BrandLogo"
           }
         },
         "position": {
           "shrink": 0,
-          "basis": "auto"
+          "basis": "74px"
         }
       },
       {
@@ -99,7 +102,7 @@
             "binding": {
               "type": "expr",
               "config": {
-                "expression": "if({page.props.path} = \"/\", \"#315844\", \"transparent\")"
+                "expression": "if({page.props.path} = \"/\", \"#3d474f\", \"transparent\")"
               }
             }
           }
@@ -136,7 +139,7 @@
             "binding": {
               "type": "expr",
               "config": {
-                "expression": "if({page.props.path} = \"/scada\", \"#315844\", \"transparent\")"
+                "expression": "if({page.props.path} = \"/scada\", \"#3d474f\", \"transparent\")"
               }
             }
           }
@@ -173,7 +176,7 @@
             "binding": {
               "type": "expr",
               "config": {
-                "expression": "if({page.props.path} = \"/production\", \"#315844\", \"transparent\")"
+                "expression": "if({page.props.path} = \"/production\", \"#3d474f\", \"transparent\")"
               }
             }
           }
@@ -210,7 +213,7 @@
             "binding": {
               "type": "expr",
               "config": {
-                "expression": "if({page.props.path} = \"/performance\", \"#315844\", \"transparent\")"
+                "expression": "if({page.props.path} = \"/performance\", \"#3d474f\", \"transparent\")"
               }
             }
           }
@@ -247,7 +250,7 @@
             "binding": {
               "type": "expr",
               "config": {
-                "expression": "if({page.props.path} = \"/quality\", \"#315844\", \"transparent\")"
+                "expression": "if({page.props.path} = \"/quality\", \"#3d474f\", \"transparent\")"
               }
             }
           }
@@ -284,7 +287,7 @@
             "binding": {
               "type": "expr",
               "config": {
-                "expression": "if({page.props.path} = \"/operator\", \"#315844\", \"transparent\")"
+                "expression": "if({page.props.path} = \"/operator\", \"#3d474f\", \"transparent\")"
               }
             }
           }

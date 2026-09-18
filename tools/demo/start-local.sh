@@ -13,11 +13,11 @@ done
 docker run --rm --network oatmakers-ui-local_default \
   -v "$PWD/db-migration/migrate:/migrations:ro" migrate/migrate:v4.17.1 \
   -path=/migrations -database 'postgres://ignition:lab07-postgres-pw@postgres:5432/ignition?sslmode=disable&x-migrations-table=oat_demo_schema_migrations' up
-if [ "$(docker inspect -f '{{.State.Running}}' oatmakers-ui-local-gateway-1 2>/dev/null || true)" != true ]; then
-  docker compose -f compose.demo.yml up -d gateway
-fi
+# Recreate the local gateway so changed mounts and module binaries are loaded.
+docker compose -f compose.demo.yml up -d --force-recreate gateway
+url="http://$(docker compose -f compose.demo.yml port gateway 8088)"
 for _ in $(seq 1 45); do
-  if curl -fsS --max-time 3 http://localhost:18096/StatusPing 2>/dev/null | grep -q RUNNING; then break; fi
+  if curl -fsS --max-time 3 "$url/StatusPing" 2>/dev/null | grep -q RUNNING; then break; fi
   sleep 2
 done
 if [ "$first_boot" = true ]; then
@@ -27,7 +27,8 @@ if [ "$first_boot" = true ]; then
 import json, subprocess
 from pathlib import Path
 path=Path('services/config/resources/core/ignition/security-properties/config.json')
-original=json.loads(subprocess.check_output(['git','show','HEAD:'+str(path)]))
+prefix=subprocess.check_output(['git','rev-parse','--show-prefix'],text=True).strip()
+original=json.loads(subprocess.check_output(['git','show','HEAD:'+prefix+str(path)]))
 current=json.loads(path.read_text())
 for key in ('readPermissions','writePermissions'):
     current[key]=original[key]
@@ -35,10 +36,10 @@ path.write_text(json.dumps(current,indent=2)+'\n')
 PYTHON
   docker compose -f compose.demo.yml restart gateway
   for _ in $(seq 1 60); do
-    if curl -fsS --max-time 3 http://localhost:18096/StatusPing 2>/dev/null | grep -q RUNNING; then break; fi
+    if curl -fsS --max-time 3 "$url/StatusPing" 2>/dev/null | grep -q RUNNING; then break; fi
     sleep 2
   done
 fi
-IGNITION_URL=http://localhost:18096 scripts/scan.sh local
-IGNITION_URL=http://localhost:18096 scripts/reset-trial.sh local
-echo 'Open http://localhost:18096/data/perspective/client/oatmakers/'
+IGNITION_URL="$url" scripts/scan.sh local
+IGNITION_URL="$url" scripts/reset-trial.sh local
+echo "Open $url/data/perspective/client/oatmakers/"

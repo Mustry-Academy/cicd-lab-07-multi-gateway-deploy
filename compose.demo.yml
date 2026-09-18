@@ -26,11 +26,11 @@ services:
       - ./third-party-modules:/module-source:ro
       - ./tools/demo/mustry-ui-registry.json:/registry.json:ro
     entrypoint: [/bin/sh, -c]
-    command: ['mkdir -p /data/custom-modules /data/projects; cp /module-source/Mustry_UI-0.5.1.modl /data/custom-modules/Mustry_UI.modl; if [ ! -f /data/modules.json ]; then cp /registry.json /data/modules.json; fi; chown -R 2003:0 /data']
+    command: ['mkdir -p /data/custom-modules /data/projects; cp /module-source/Mustry_UI-0.5.2.modl /data/custom-modules/Mustry_UI.modl; if [ ! -f /data/modules.json ]; then cp /registry.json /data/modules.json; fi; chown -R 2003:0 /data']
   gateway:
     image: inductiveautomation/ignition:8.3.8
     restart: unless-stopped
-    ports: ['127.0.0.1:18096:8088']
+    ports: ['127.0.0.1:${DEMO_HTTP_PORT:-18096}:8088']
     volumes:
       - demo-gateway:/usr/local/bin/ignition/data
       - ./third-party-modules:/module-source:ro

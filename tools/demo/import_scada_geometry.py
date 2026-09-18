@@ -5,6 +5,9 @@ from xml.etree.ElementTree import Element,SubElement,tostring
 parser=argparse.ArgumentParser();parser.add_argument('views');args=parser.parse_args()
 source=Path(args.views);output=Path(__file__).parent/'scada-assets'
 NS='http://www.w3.org/2000/svg'
+# High-performance HMI palette: the process itself is greyscale.
+HMI_LINE='#8c9196'
+HMI_DASH='#a9aeb3'
 def number(v,relative=1):
     if isinstance(v,str) and v.endswith('%'):return float(v[:-1])*relative/100
     try:return float(str(v).replace('px','').replace('deg',''))
@@ -12,8 +15,8 @@ def number(v,relative=1):
 
 def clean(value):
     if isinstance(value,str):
-        if value.startswith('var('):return '#748779'
-        if value.lower() in ('#ff0000','#f00','red'):return '#748779'
+        if value.startswith('var('):return HMI_LINE
+        if value.lower() in ('#ff0000','#f00','red'):return HMI_LINE
         if value=='undefined':return ''
     return str(value)
 def svg_element(data):
@@ -38,16 +41,17 @@ def svg_element(data):
     for c in data.get('elements',[]):e.append(svg_element(c))
     return e
 
-def convert_view(path,params,stack=()):
+OCCUPIED=[]
+def convert_view(path,params,stack=(),collect=False):
     if path in stack or len(stack)>12:return Element('g')
     file=source/path/'view.json'
     if not file.exists():return Element('g')
     d=json.loads(file.read_text());cfg=dict(d.get('params',{}));cfg.update(params)
     size=d.get('props',{}).get('defaultSize',{});w=size.get('width') or 300;h=size.get('height') or 200
-    root=Element('svg',{'viewBox':f'0 0 {w} {h}','width':'100%','height':'100%','preserveAspectRatio':'none','overflow':'visible'})
+    root=Element('svg',{'viewBox':f'0 0 {w} {h}','width':'100%','height':'100%','preserveAspectRatio':'xMidYMid meet','overflow':'visible'})
     if path.endswith('Connecter'):
         vertical=cfg.get('Vertical',False)
-        SubElement(root,'line',{'x1':str(w/2 if vertical else 0),'y1':str(0 if vertical else h/2),'x2':str(w/2 if vertical else w),'y2':str(h if vertical else h/2),'stroke':'#92a79a','stroke-width':'2','stroke-dasharray':'6 5'})
+        SubElement(root,'line',{'x1':str(w/2 if vertical else 0),'y1':str(0 if vertical else h/2),'x2':str(w/2 if vertical else w),'y2':str(h if vertical else h/2),'stroke':HMI_DASH,'stroke-width':'2','stroke-dasharray':'6 5'})
         return root
     children=d['root'].get('children',[])
     flex=d['root']['type']=='ia.container.flex'; cursor=0
@@ -64,6 +68,7 @@ def convert_view(path,params,stack=()):
             cw=number(pos.get('width',w),w) or w;ch=number(pos.get('height',h),h) or h;x=number(pos.get('x',0),w);y=number(pos.get('y',0),h)
         angle=number(pos.get('rotate',{}).get('angle',0));anchor=str(pos.get('rotate',{}).get('anchor','50% 50%')).split()
         ax=number(anchor[0],cw) if anchor else cw/2;ay=number(anchor[1],ch) if len(anchor)>1 else ch/2
+        if collect:OCCUPIED.append({'x':round(x,1),'y':round(y,1),'width':round(cw,1),'height':round(ch,1)})
         group=SubElement(root,'g',{'transform':f'translate({x},{y}) rotate({angle},{ax},{ay})'})
         canvas=SubElement(group,'svg',{'width':str(cw),'height':str(ch),'overflow':'visible'})
         if typ=='ia.shapes.svg':
@@ -75,16 +80,30 @@ def convert_view(path,params,stack=()):
 layout={}
 for key,path in [('peeling','Templates/PE/L01-PE'),('heating','Templates/HT/L01-HT')]:
     d=json.loads((source/path/'view.json').read_text());size=d['props']['defaultSize']
-    root=convert_view(path,{})
+    OCCUPIED[:]=[]
+    root=convert_view(path,{},collect=True)
     root.set('xmlns',NS)
-    root.set('style','fill:none;stroke:#7b9082;stroke-width:1.5')
+    root.set('style','fill:none;stroke:'+HMI_LINE+';stroke-width:1.5')
     output.mkdir(exist_ok=True);(output/(key+'.svg')).write_bytes(tostring(root))
     instruments=[]
     for c in d['root'].get('children',[]):
         p=c.get('props',{});ref=p.get('path','')
         if not any(x in ref for x in ('Graphs/','/AIO/','TemperatureShower')):continue
-        text=json.dumps(c).lower();metric='temperature' if 'temp' in text else ('pressure' if 'pressure' in text else ('moisture' if 'moisture' in text else 'rate'))
-        pos=c.get('position',{}); instruments.append({'x':number(pos.get('x',0)),'y':number(pos.get('y',0)),'width':max(150,number(pos.get('width',200))),'height':60,'metric':metric})
-    layout[key]={'width':size['width'],'height':size['height'],'instruments':instruments}
+        # The metric comes from the bound tag, never from the enclosing view path:
+        # every faceplate here lives under .../TemperatureShower, so matching on the
+        # whole widget made each one read as a temperature.
+        tag=str(p.get('params',{}).get('tagPath') or '').lower()
+        if not tag:continue   # unbound placeholder -- it shows no measurement
+        metric=(''
+            or ('pressure' if 'pressure' in tag else '')
+            or ('temperature' if 'temp' in tag else '')
+            or ('moisture' if 'moist' in tag or 'humid' in tag else '')
+            or ('power' if 'power' in tag or 'energy' in tag or 'kw' in tag else '')
+            or 'rate')
+        pos=c.get('position',{})
+        instruments.append({'x':number(pos.get('x',0)),'y':number(pos.get('y',0)),
+            'width':max(150,number(pos.get('width',200))),'height':60,'metric':metric,'tag':tag})
+    layout[key]={'width':size['width'],'height':size['height'],'instruments':instruments,
+        'occupied':[b for b in OCCUPIED if b['width']>1 and b['height']>1]}
 (output/'layout.json').write_text(json.dumps(layout,indent=2)+'\n')
 print('Exported original Oatmakers vector geometry and instrument positions.')
