@@ -1,25 +1,67 @@
 {
-  "custom": {},
+  "custom": {
+    "value": 0,
+    "lastUpdate": 0,
+    "fresh": false
+  },
   "params": {
-    "title": "",
-    "value": "",
-    "unit": "",
-    "hint": ""
+    "lineNumber": 1,
+    "metric": "temperature",
+    "tag": "Temperature",
+    "label": "Temperature",
+    "unit": "\u00b0C"
   },
   "propConfig": {
-    "params.title": {
+    "custom.value": {
+      "binding": {
+        "type": "tag",
+        "config": {
+          "mode": "indirect",
+          "tagPath": "[default]OatmakersDemo/Line{line}/{tag}",
+          "references": {
+            "line": "{view.params.lineNumber}",
+            "tag": "{view.params.tag}"
+          }
+        }
+      }
+    },
+    "custom.lastUpdate": {
+      "binding": {
+        "type": "tag",
+        "config": {
+          "mode": "indirect",
+          "tagPath": "[default]OatmakersDemo/Line{line}/LastUpdate",
+          "references": {
+            "line": "{view.params.lineNumber}"
+          }
+        }
+      }
+    },
+    "custom.fresh": {
+      "binding": {
+        "type": "expr",
+        "config": {
+          "expression": "dateDiff({view.custom.lastUpdate}, now(1000), \"second\") < 30"
+        }
+      }
+    },
+    "params.lineNumber": {
       "paramDirection": "input",
       "persistent": true
     },
-    "params.value": {
+    "params.metric": {
+      "paramDirection": "input",
+      "persistent": true
+    },
+    "params.tag": {
+      "paramDirection": "input",
+      "persistent": true
+    },
+    "params.label": {
       "paramDirection": "input",
       "persistent": true
     },
     "params.unit": {
-      "paramDirection": "input",
-      "persistent": true
-    },
-    "params.hint": {
       "paramDirection": "input",
       "persistent": true
     }
@@ -27,7 +69,7 @@
   "props": {
     "defaultSize": {
       "width": 1280,
-      "height": 135
+      "height": 60
     }
   },
   "root": {
@@ -38,19 +80,19 @@
     "props": {
       "direction": "column",
       "style": {
-        "classes": "Demo/Metric"
+        "classes": "Demo/TagFace"
       }
     },
     "children": [
       {
         "type": "ia.display.label",
         "meta": {
-          "name": "Title"
+          "name": "Name"
         },
         "props": {
           "text": "",
           "style": {
-            "classes": "Demo/Eyebrow"
+            "classes": "Demo/TagName"
           }
         },
         "position": {
@@ -62,7 +104,7 @@
             "binding": {
               "type": "property",
               "config": {
-                "path": "view.params.title"
+                "path": "view.params.label"
               }
             }
           }
@@ -88,7 +130,7 @@
             "props": {
               "text": "",
               "style": {
-                "classes": "Demo/MetricValue"
+                "classes": "Demo/TagValue"
               }
             },
             "position": {
@@ -98,9 +140,9 @@
             "propConfig": {
               "props.text": {
                 "binding": {
-                  "type": "property",
+                  "type": "expr",
                   "config": {
-                    "path": "view.params.value"
+                    "expression": "if({view.custom.fresh}, numberFormat({view.custom.value}, \"#,##0.0\"), \"n/a\")"
                   }
                 }
               }
@@ -114,7 +156,7 @@
             "props": {
               "text": "",
               "style": {
-                "classes": "Demo/MetricUnit"
+                "classes": "Demo/TagUnit"
               }
             },
             "position": {
@@ -136,36 +178,21 @@
         "position": {
           "shrink": 0
         }
-      },
-      {
-        "type": "ia.display.label",
-        "meta": {
-          "name": "Hint"
-        },
-        "props": {
-          "text": "",
-          "style": {
-            "classes": "Demo/Muted"
-          }
-        },
-        "position": {
-          "shrink": 0,
-          "basis": "auto"
-        },
-        "propConfig": {
-          "props.text": {
-            "binding": {
-              "type": "property",
-              "config": {
-                "path": "view.params.hint"
-              }
-            }
-          }
-        }
       }
     ],
     "position": {
       "shrink": 0
+    },
+    "events": {
+      "dom": {
+        "onClick": {
+          "type": "script",
+          "scope": "G",
+          "config": {
+            "script": "\tapplication.demo.showHistory(self.view.params.lineNumber, self.view.params.metric)"
+          }
+        }
+      }
     }
   }
 }

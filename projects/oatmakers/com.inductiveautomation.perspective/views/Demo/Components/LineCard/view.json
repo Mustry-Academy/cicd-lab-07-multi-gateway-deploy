@@ -1,18 +1,21 @@
 {
   "custom": {},
   "params": {
+    "lineNumber": 1,
     "name": "",
     "state": "",
     "product": "",
-    "throughput": "",
-    "temperature": "",
-    "moisture": "",
-    "power": "",
-    "colour": "",
-    "batch": "",
-    "lineNumber": 0
+    "rate": 0,
+    "temperature": 0,
+    "moisture": 0,
+    "pressure": 0,
+    "colour": "#2d8962"
   },
   "propConfig": {
+    "params.lineNumber": {
+      "paramDirection": "input",
+      "persistent": true
+    },
     "params.name": {
       "paramDirection": "input",
       "persistent": true
@@ -25,7 +28,7 @@
       "paramDirection": "input",
       "persistent": true
     },
-    "params.throughput": {
+    "params.rate": {
       "paramDirection": "input",
       "persistent": true
     },
@@ -37,19 +40,11 @@
       "paramDirection": "input",
       "persistent": true
     },
-    "params.power": {
+    "params.pressure": {
       "paramDirection": "input",
       "persistent": true
     },
     "params.colour": {
-      "paramDirection": "input",
-      "persistent": true
-    },
-    "params.batch": {
-      "paramDirection": "input",
-      "persistent": true
-    },
-    "params.lineNumber": {
       "paramDirection": "input",
       "persistent": true
     }
@@ -57,7 +52,7 @@
   "props": {
     "defaultSize": {
       "width": 1280,
-      "height": 230
+      "height": 270
     }
   },
   "root": {
@@ -75,7 +70,7 @@
       {
         "type": "ia.container.flex",
         "meta": {
-          "name": "LineHeading"
+          "name": "Heading"
         },
         "props": {
           "direction": "row",
@@ -179,7 +174,23 @@
       {
         "type": "ia.display.label",
         "meta": {
-          "name": "Throughput"
+          "name": "SpeedCaption"
+        },
+        "props": {
+          "text": "LIVE THROUGHPUT",
+          "style": {
+            "classes": "Demo/Eyebrow"
+          }
+        },
+        "position": {
+          "shrink": 0,
+          "basis": "auto"
+        }
+      },
+      {
+        "type": "ia.display.label",
+        "meta": {
+          "name": "Rate"
         },
         "props": {
           "text": "",
@@ -196,8 +207,14 @@
             "binding": {
               "type": "property",
               "config": {
-                "path": "view.params.throughput"
-              }
+                "path": "view.params.rate"
+              },
+              "transforms": [
+                {
+                  "type": "script",
+                  "code": "\treturn \"{0:,.0f} kg/h\".format(value or 0)"
+                }
+              ]
             }
           }
         }
@@ -205,30 +222,42 @@
       {
         "type": "ia.container.flex",
         "meta": {
-          "name": "Facts"
+          "name": "Readings"
         },
         "props": {
           "direction": "row",
           "wrap": "wrap",
           "style": {
-            "classes": "Demo/Facts"
+            "classes": "Demo/Wrap"
           }
         },
         "children": [
           {
-            "type": "ia.display.label",
+            "type": "ia.input.button",
             "meta": {
               "name": "Temperature"
             },
             "props": {
               "text": "",
               "style": {
-                "classes": "Demo/Body"
+                "classes": "Demo/ReadingButton"
               }
             },
             "position": {
-              "shrink": 0,
-              "basis": "auto"
+              "basis": "90px",
+              "grow": 1,
+              "shrink": 1
+            },
+            "events": {
+              "component": {
+                "onActionPerformed": {
+                  "type": "script",
+                  "scope": "G",
+                  "config": {
+                    "script": "\tapplication.demo.showHistory(self.view.params.lineNumber, \"temperature\")"
+                  }
+                }
+              }
             },
             "propConfig": {
               "props.text": {
@@ -236,25 +265,43 @@
                   "type": "property",
                   "config": {
                     "path": "view.params.temperature"
-                  }
+                  },
+                  "transforms": [
+                    {
+                      "type": "script",
+                      "code": "\treturn \"{0:.1f} {1}\".format(value or 0, u\"\\u00b0C\")"
+                    }
+                  ]
                 }
               }
             }
           },
           {
-            "type": "ia.display.label",
+            "type": "ia.input.button",
             "meta": {
               "name": "Moisture"
             },
             "props": {
               "text": "",
               "style": {
-                "classes": "Demo/Body"
+                "classes": "Demo/ReadingButton"
               }
             },
             "position": {
-              "shrink": 0,
-              "basis": "auto"
+              "basis": "90px",
+              "grow": 1,
+              "shrink": 1
+            },
+            "events": {
+              "component": {
+                "onActionPerformed": {
+                  "type": "script",
+                  "scope": "G",
+                  "config": {
+                    "script": "\tapplication.demo.showHistory(self.view.params.lineNumber, \"moisture\")"
+                  }
+                }
+              }
             },
             "propConfig": {
               "props.text": {
@@ -262,33 +309,57 @@
                   "type": "property",
                   "config": {
                     "path": "view.params.moisture"
-                  }
+                  },
+                  "transforms": [
+                    {
+                      "type": "script",
+                      "code": "\treturn \"{0:.1f} {1}\".format(value or 0, u\"%\")"
+                    }
+                  ]
                 }
               }
             }
           },
           {
-            "type": "ia.display.label",
+            "type": "ia.input.button",
             "meta": {
-              "name": "Power"
+              "name": "Pressure"
             },
             "props": {
               "text": "",
               "style": {
-                "classes": "Demo/Body"
+                "classes": "Demo/ReadingButton"
               }
             },
             "position": {
-              "shrink": 0,
-              "basis": "auto"
+              "basis": "90px",
+              "grow": 1,
+              "shrink": 1
+            },
+            "events": {
+              "component": {
+                "onActionPerformed": {
+                  "type": "script",
+                  "scope": "G",
+                  "config": {
+                    "script": "\tapplication.demo.showHistory(self.view.params.lineNumber, \"pressure\")"
+                  }
+                }
+              }
             },
             "propConfig": {
               "props.text": {
                 "binding": {
                   "type": "property",
                   "config": {
-                    "path": "view.params.power"
-                  }
+                    "path": "view.params.pressure"
+                  },
+                  "transforms": [
+                    {
+                      "type": "script",
+                      "code": "\treturn \"{0:.1f} {1}\".format(value or 0, u\"bar\")"
+                    }
+                  ]
                 }
               }
             }
@@ -301,10 +372,10 @@
       {
         "type": "ia.input.button",
         "meta": {
-          "name": "OpenLine"
+          "name": "Scada"
         },
         "props": {
-          "text": "Explore line",
+          "text": "Open SCADA",
           "style": {
             "classes": "Demo/QuietButton"
           }
@@ -319,7 +390,7 @@
               "type": "script",
               "scope": "G",
               "config": {
-                "script": "\tself.session.custom.demo.line = self.view.params.lineNumber\n\tself.session.custom.demo.batch = self.view.params.batch\n\tsystem.perspective.navigate(\"/process\")"
+                "script": "\tself.session.custom.demo.scadaLine = self.view.params.lineNumber\n\tsystem.perspective.navigate(\"/scada\")"
               }
             }
           }

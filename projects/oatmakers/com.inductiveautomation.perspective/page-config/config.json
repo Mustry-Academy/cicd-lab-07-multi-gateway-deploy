@@ -17,8 +17,8 @@
       "viewPath": "Demo/Production"
     },
     "/process": {
-      "title": "Process detail",
-      "viewPath": "Demo/Process"
+      "title": "SCADA",
+      "viewPath": "Demo/SCADA"
     },
     "/performance": {
       "title": "Performance",
@@ -32,10 +32,6 @@
       "title": "Operator workflow",
       "viewPath": "Demo/Operator"
     },
-    "/components": {
-      "title": "Component library",
-      "viewPath": "Demo/ComponentsGallery"
-    },
     "/demo/health": {
       "title": "Demo health",
       "viewPath": "Demo/Health"
@@ -43,6 +39,10 @@
     "/demo/input-fields": {
       "title": "Operator workflow",
       "viewPath": "Demo/Operator"
+    },
+    "/scada": {
+      "title": "SCADA",
+      "viewPath": "Demo/SCADA"
     }
   },
   "sharedDocks": {

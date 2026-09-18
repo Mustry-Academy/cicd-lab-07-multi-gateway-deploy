@@ -1,43 +1,51 @@
-/* Oatmakers customer demo */
 
-:root { --demo-ink:#18352a; --demo-muted:#718177; --demo-green:#357a5b; --demo-bg:#f4f5f0; --demo-line:#e0e7dc; }
-.psc-Demo\/Page { container-type:inline-size; container-name:demo; background:var(--demo-bg); color:var(--demo-ink); padding:28px 32px 40px; gap:18px; overflow:auto; font-family:Arial,sans-serif; }
-.psc-Demo\/PageHeader { align-items:center; gap:24px; flex-wrap:wrap; }
-.psc-Demo\/PageTitle { font-size:30px; font-weight:700; line-height:1.3; padding:4px 0 8px; }
-.psc-Demo\/Eyebrow { font-size:10px; font-weight:700; letter-spacing:1.4px; color:#748274; }
-.psc-Demo\/Subtitle { font-size:14px; color:#63766a; white-space:normal; line-height:1.5; }
+:root { --demo-ink:#1c382c; --demo-muted:#738579; --demo-bg:#f3f6f2; --demo-line:#e0e9df; }
+.psc-Demo\/Page { container-type:inline-size; container-name:demo; background:var(--demo-bg); color:var(--demo-ink); padding:24px 30px; gap:18px; overflow:auto; font-family:Arial,sans-serif; }
+.psc-Demo\/PageHeader { align-items:center; justify-content:space-between; gap:20px; overflow:visible; }
+.psc-Demo\/PageTitle { font-size:28px; font-weight:700; line-height:1.3; padding:4px 0; white-space:normal; }
+.psc-Demo\/Eyebrow { font-size:10px; font-weight:700; letter-spacing:1.3px; color:#718573; }
+.psc-Demo\/Subtitle { font-size:13px; color:#6a7e70; line-height:1.5; white-space:normal; }
 .psc-Demo\/SectionTitle { font-size:17px; font-weight:700; white-space:normal; }
 .psc-Demo\/Body { font-size:14px; line-height:1.5; white-space:normal; }
 .psc-Demo\/Muted { font-size:12px; color:#748175; line-height:1.5; white-space:normal; }
-.psc-Demo\/Panel { background:#fff; border:1px solid var(--demo-line); border-radius:12px; padding:20px; gap:12px; min-width:0; box-shadow:0 2px 6px #19372905; }
-.psc-Demo\/Metric { background:#fff; border:1px solid var(--demo-line); border-radius:12px; padding:20px 22px; gap:12px; height:100%; box-sizing:border-box; }
+.psc-Demo\/Panel { background:#fff; border:1px solid var(--demo-line); border-radius:10px; padding:20px; gap:12px; min-width:0; overflow:visible; }
+.psc-Demo\/Metric { background:white; border:1px solid var(--demo-line); border-radius:10px; padding:18px 20px; gap:10px; height:100%; box-sizing:border-box; }
 .psc-Demo\/MetricReading { align-items:baseline; gap:8px; }
-.psc-Demo\/MetricValue { font-size:35px; font-weight:700; color:#234e3b; }
-.psc-Demo\/MetricUnit { font-size:15px; color:#748175; }
+.psc-Demo\/MetricValue { font-size:32px; font-weight:700; font-variant-numeric:tabular-nums; color:#234e3b; }
+.psc-Demo\/MetricUnit { font-size:14px; color:#748175; }
 .psc-Demo\/Repeater { gap:14px; overflow:visible; }
-.psc-Demo\/Wrap { flex-wrap:wrap; gap:18px; align-items:stretch; }
-.psc-Demo\/Filters { gap:10px; align-items:center; flex-wrap:wrap; min-height:42px; }
-.psc-Demo\/Select { height:40px; min-height:40px; border-radius:7px; border-color:#dce3d8; background:#fff; font-size:13px; }
-.psc-Demo\/Clock { margin-left:auto; font-size:12px; color:#687b6f; }
-.psc-Demo\/Status { padding:10px 14px; border-radius:7px; font-size:12px; color:#315e43; white-space:normal; }
-.psc-Demo\/Button { background:#357a5b; color:white; border:1px solid #357a5b; border-radius:7px; font-weight:600; padding:8px 16px; }
-.psc-Demo\/Button:disabled { background:#d8e2d8; border-color:#d8e2d8; color:#718175; }
-.psc-Demo\/QuietButton { background:#fff; color:#356b51; border:1px solid #dce3d8; border-radius:7px; padding:8px 14px; font-size:12px; }
-.psc-Demo\/Badge { padding:6px 9px; border-radius:6px; background:#f0f5ee; font-size:11px; font-weight:700; }
+.psc-Demo\/Wrap,.psc-Demo\/Workspace { gap:18px; align-items:stretch; overflow:visible; }
+.psc-Demo\/Filters { gap:10px; align-items:center; min-height:44px; overflow:visible !important; position:relative; z-index:4; }
+.psc-Demo\/Select { height:40px; min-height:40px; border-radius:6px; border-color:#dce5da; background:white; font-size:13px; overflow:visible; }
+.psc-Demo\/DateRange { min-height:40px; overflow:visible !important; --dtrp-accent:#327d58; --dtrp-bg:#fff; }
+.psc-Demo\/HistoryRoot { overflow:visible; gap:10px; min-height:0; }
+.psc-Demo\/PopupRoot { overflow:visible !important; background:white; padding:20px; gap:14px; min-height:0; }
+.psc-Demo\/DemoBadge { padding:7px 12px; border-radius:6px; background:#e5efe4; color:#55764b; font-size:10px; letter-spacing:1px; }
+.psc-Demo\/LiveStatus { font-size:12px; color:#277b57; }
+.psc-Demo\/Status { padding:10px; border-radius:6px; font-size:12px; color:#315e43; white-space:normal; }
+.psc-Demo\/Button { background:#327d58; color:white; border:1px solid #327d58; border-radius:6px; padding:8px 16px; font-weight:600; }
+.psc-Demo\/Button:disabled { background:#dce5db; border-color:#dce5db; color:#748475; }
+.psc-Demo\/QuietButton,.psc-Demo\/ReadingButton { background:#f8faf7; color:#35674e; border:1px solid #e1e8dc; border-radius:6px; padding:8px 12px; font-size:12px; }
+.psc-Demo\/ReadingButton { font-variant-numeric:tabular-nums; background:#f2f7f0; }
+.psc-Demo\/Badge { padding:5px 8px; border-radius:5px; background:#eef5ec; font-size:11px; font-weight:700; }
 .psc-Demo\/Spread { justify-content:space-between; align-items:center; gap:8px; }
-.psc-Demo\/Facts { gap:15px; color:#6d7d70; font-size:12px; flex-wrap:wrap; }
-.psc-Demo\/LineValue { font-size:27px; font-weight:700; color:#315f45; }
-.psc-Demo\/EventCard { padding:10px 0; gap:6px; border-bottom:1px solid #e5ebe0; }
-.psc-Demo\/Table { font-size:12px; border:1px solid #e9eee5; border-radius:6px; }
+.psc-Demo\/LineValue { font-size:28px; font-weight:700; font-variant-numeric:tabular-nums; color:#2d7150; }
 .psc-Demo\/Chart { font-size:11px; min-width:0; }
-.psc-Demo\/Code { font-family:monospace; font-size:12px; white-space:pre-wrap; align-items:flex-start; }
-.psc-Demo\/Navigation { background:#18372c; padding:30px 16px 24px; gap:9px; color:#e8f1e6; height:100%; box-sizing:border-box; font-family:Arial,sans-serif; }
-.psc-Demo\/Brand { font-weight:800; letter-spacing:1.2px; font-size:24px; color:#f3edd9; padding:0 9px; }
-.psc-Demo\/NavEyebrow { font-size:9px; letter-spacing:1.5px; color:#abc2ac; padding:0 9px; }
-.psc-Demo\/NavBadge { font-size:9px; letter-spacing:.6px; color:#d3d6a2; background:#294639; padding:9px; border-radius:5px; margin:18px 0; }
-.psc-Demo\/NavButton { justify-content:flex-start; text-align:left; background:transparent; color:#d5e3d5; border:0; border-radius:7px; padding:11px 13px; font-size:12px; }
-.psc-Demo\/NavButton:hover,.psc-Demo\/NavButton:focus { background:#315844; color:#fff; }
-.psc-Demo\/NavFooter { font-size:10px; color:#99b59f; padding:4px 9px; white-space:normal; }
-@container demo (max-width:650px) { .psc-Demo\/PageTitle { font-size:25px; white-space:normal; } .psc-Demo\/Wrap > * { flex-basis:100% !important; } .psc-Demo\/FormInput { flex-basis:110px !important; } .psc-Demo\/Clock { margin-left:0; } .psc-Demo\/Filters { align-items:stretch; } }
-@media(max-width:1100px) { .psc-Demo\/Page { padding:20px; } .psc-Demo\/MetricValue { font-size:28px; } }
-@media(max-width:650px) { .psc-Demo\/Page { padding:16px; gap:14px; } .psc-Demo\/PageTitle { font-size:25px; } .psc-Demo\/Clock { margin-left:0; } .psc-Demo\/Panel { padding:15px; } .psc-Demo\/Wrap > * { flex-basis:100% !important; } .psc-Demo\/Repeater { height:auto; min-height:150px; } }
+.psc-Demo\/DataGrid { --dg-accent:#347857; --dg-bg:#fff; --dg-header-bg:#f2f6ef; --dg-border:#e5ece0; --dg-text:#284532; --dg-muted:#77897c; border:1px solid #e1e9dd; border-radius:8px; min-height:180px; }
+.psc-Demo\/PlanningTimeline { --tml-accent:#347857; --tml-bg:#fff; --tml-group-bg:#f1f6ef; --tml-border:#e0e9da; --tml-line:#edf1e9; --tml-text:#294231; border:1px solid #dfe8da; border-radius:10px; background:white; }
+.psc-Demo\/ScadaPage { overflow:hidden; }
+.psc-Demo\/ScadaMap { border:1px solid #dce6d8; border-radius:10px; --pz-canvas:#f7faf7; --pz-accent:#347857; }
+.psc-Demo\/TagFace { background:#ffffffec; border:1px solid #d5e3d1; border-radius:6px; padding:6px 10px; gap:3px; cursor:pointer; box-sizing:border-box; overflow:visible; }
+.psc-Demo\/TagFace:hover { border-color:#418666; box-shadow:0 2px 8px #315c3920; }
+.psc-Demo\/TagName { font-size:15px; font-weight:600; color:#55735c; }
+.psc-Demo\/TagValue { font-size:26px; font-weight:700; font-variant-numeric:tabular-nums; color:#2e6d4c; }
+.psc-Demo\/TagUnit { font-size:15px; color:#758677; }
+.psc-Demo\/Navigation { background:#1d382c; padding:28px 16px 20px; gap:9px; color:#e7eee2; height:100%; box-sizing:border-box; font-family:Arial,sans-serif; }
+.psc-Demo\/Brand { font-size:24px; font-weight:800; letter-spacing:1.2px; color:#f4eedb; padding:0 9px; }
+.psc-Demo\/NavEyebrow { font-size:9px; letter-spacing:1.3px; color:#abc0a9; padding:0 9px; }
+.psc-Demo\/NavBadge { font-size:9px; color:#cbdba6; background:#2e4b39; padding:9px; border-radius:5px; margin:15px 0; }
+.psc-Demo\/NavButton { background:transparent; color:#d9e4d6; border:0; border-radius:6px; padding:10px 12px; font-size:12px; }
+.psc-Demo\/NavButton:hover { background:#36543f; }
+.psc-Demo\/NavFooter { font-size:10px; color:#9db69e; padding:4px 9px; }
+@container demo (max-width:900px) { .psc-Demo\/Workspace { flex-wrap:wrap !important; } .psc-Demo\/Workspace > * { flex-basis:100% !important; } .psc-Demo\/PageHeader { flex-wrap:wrap !important; } }
+@media(max-width:650px) { .psc-Demo\/Page { padding:14px; } .psc-Demo\/PageTitle { font-size:24px; } .psc-Demo\/Filters { flex-wrap:wrap !important; } }

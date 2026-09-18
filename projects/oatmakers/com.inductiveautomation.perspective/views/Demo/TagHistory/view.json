@@ -1,0 +1,139 @@
+{
+  "custom": {},
+  "params": {
+    "lineNumber": 1,
+    "metric": "temperature",
+    "title": "Temperature",
+    "tagPath": ""
+  },
+  "propConfig": {
+    "params.lineNumber": {
+      "paramDirection": "input",
+      "persistent": true
+    },
+    "params.metric": {
+      "paramDirection": "input",
+      "persistent": true
+    },
+    "params.title": {
+      "paramDirection": "input",
+      "persistent": true
+    },
+    "params.tagPath": {
+      "paramDirection": "input",
+      "persistent": true
+    }
+  },
+  "props": {
+    "defaultSize": {
+      "width": 1280,
+      "height": 560
+    }
+  },
+  "root": {
+    "type": "ia.container.flex",
+    "meta": {
+      "name": "root"
+    },
+    "props": {
+      "direction": "column",
+      "style": {
+        "classes": "Demo/PopupRoot"
+      }
+    },
+    "children": [
+      {
+        "type": "ia.display.label",
+        "meta": {
+          "name": "Title"
+        },
+        "props": {
+          "text": "",
+          "style": {
+            "classes": "Demo/SectionTitle"
+          }
+        },
+        "position": {
+          "shrink": 0,
+          "basis": "auto"
+        },
+        "propConfig": {
+          "props.text": {
+            "binding": {
+              "type": "property",
+              "config": {
+                "path": "view.params.title"
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "ia.display.label",
+        "meta": {
+          "name": "Tag"
+        },
+        "props": {
+          "text": "",
+          "style": {
+            "classes": "Demo/Muted"
+          }
+        },
+        "position": {
+          "shrink": 0,
+          "basis": "auto"
+        },
+        "propConfig": {
+          "props.text": {
+            "binding": {
+              "type": "property",
+              "config": {
+                "path": "view.params.tagPath"
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "ia.display.view",
+        "meta": {
+          "name": "History"
+        },
+        "props": {
+          "path": "Demo/HistoryChart",
+          "params": {
+            "showSelectors": false
+          },
+          "useDefaultViewWidth": false,
+          "useDefaultViewHeight": false
+        },
+        "position": {
+          "shrink": 1,
+          "basis": "0px",
+          "grow": 1
+        },
+        "propConfig": {
+          "props.params.lineNumber": {
+            "binding": {
+              "type": "property",
+              "config": {
+                "path": "view.params.lineNumber"
+              }
+            }
+          },
+          "props.params.metric": {
+            "binding": {
+              "type": "property",
+              "config": {
+                "path": "view.params.metric"
+              }
+            }
+          }
+        }
+      }
+    ],
+    "position": {
+      "shrink": 0
+    }
+  }
+}

@@ -181,6 +181,11 @@ jobs:
             fi
           done
 
+          if git cat-file -e "refs/tags/$oat_tag:tools/demo/mustry-ui-version.json" 2>/dev/null; then
+            mkdir -p payload/tools/demo
+            git show "refs/tags/$oat_tag:tools/demo/mustry-ui-version.json" > payload/tools/demo/mustry-ui-version.json
+          fi
+
           # system-properties is per-gateway identity: the repo carries the
           # LOCAL gateway's copy (systemName lab07-local), production
           # keeps its own (cicd-capstone). Never ship it.
@@ -342,6 +347,14 @@ jobs:
           docker cp "$dir/." "$cid:/migrations/" > /dev/null
           echo "migrate up → $POSTGRES_DB (network: $network)"
           docker start -a "$cid"
+
+      - name: Stage pinned Mustry UI without replacing other module registrations
+        if: env.DEMO_SCOPED_DEPLOY == 'true'
+        run: python3 tools/demo/install-module.py payload
+
+      - name: Load Mustry UI when its binary or registration changed
+        if: env.DEMO_SCOPED_DEPLOY == 'true'
+        run: bash tools/demo/restart-module.sh
 
       - name: Back up and ship isolated customer demo
         if: env.DEMO_SCOPED_DEPLOY == 'true'

@@ -23,7 +23,7 @@
       {
         "type": "ia.display.label",
         "meta": {
-          "name": "Wordmark"
+          "name": "Brand"
         },
         "props": {
           "text": "OATMAKERS",
@@ -42,7 +42,7 @@
           "name": "BrandDetail"
         },
         "props": {
-          "text": "CONNECTED FACTORY",
+          "text": "CONNECTED OPERATIONS",
           "style": {
             "classes": "Demo/NavEyebrow"
           }
@@ -55,10 +55,10 @@
       {
         "type": "ia.display.label",
         "meta": {
-          "name": "DemoBadge"
+          "name": "DemoLabel"
         },
         "props": {
-          "text": "SIMULATED CUSTOMER DEMO",
+          "text": "LIVE SIMULATION",
           "style": {
             "classes": "Demo/NavBadge"
           }
@@ -111,6 +111,43 @@
           "name": "Nav1"
         },
         "props": {
+          "text": "SCADA",
+          "style": {
+            "classes": "Demo/NavButton"
+          }
+        },
+        "position": {
+          "shrink": 0,
+          "basis": "45px"
+        },
+        "events": {
+          "dom": {
+            "onClick": {
+              "type": "nav",
+              "scope": "C",
+              "config": {
+                "page": "/scada"
+              }
+            }
+          }
+        },
+        "propConfig": {
+          "props.style.backgroundColor": {
+            "binding": {
+              "type": "expr",
+              "config": {
+                "expression": "if({page.props.path} = \"/scada\", \"#315844\", \"transparent\")"
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "ia.input.button",
+        "meta": {
+          "name": "Nav2"
+        },
+        "props": {
           "text": "Production planning",
           "style": {
             "classes": "Demo/NavButton"
@@ -137,43 +174,6 @@
               "type": "expr",
               "config": {
                 "expression": "if({page.props.path} = \"/production\", \"#315844\", \"transparent\")"
-              }
-            }
-          }
-        }
-      },
-      {
-        "type": "ia.input.button",
-        "meta": {
-          "name": "Nav2"
-        },
-        "props": {
-          "text": "Process detail",
-          "style": {
-            "classes": "Demo/NavButton"
-          }
-        },
-        "position": {
-          "shrink": 0,
-          "basis": "45px"
-        },
-        "events": {
-          "dom": {
-            "onClick": {
-              "type": "nav",
-              "scope": "C",
-              "config": {
-                "page": "/process"
-              }
-            }
-          }
-        },
-        "propConfig": {
-          "props.style.backgroundColor": {
-            "binding": {
-              "type": "expr",
-              "config": {
-                "expression": "if({page.props.path} = \"/process\", \"#315844\", \"transparent\")"
               }
             }
           }
@@ -291,80 +291,6 @@
         }
       },
       {
-        "type": "ia.input.button",
-        "meta": {
-          "name": "Nav6"
-        },
-        "props": {
-          "text": "Component library",
-          "style": {
-            "classes": "Demo/NavButton"
-          }
-        },
-        "position": {
-          "shrink": 0,
-          "basis": "45px"
-        },
-        "events": {
-          "dom": {
-            "onClick": {
-              "type": "nav",
-              "scope": "C",
-              "config": {
-                "page": "/components"
-              }
-            }
-          }
-        },
-        "propConfig": {
-          "props.style.backgroundColor": {
-            "binding": {
-              "type": "expr",
-              "config": {
-                "expression": "if({page.props.path} = \"/components\", \"#315844\", \"transparent\")"
-              }
-            }
-          }
-        }
-      },
-      {
-        "type": "ia.input.button",
-        "meta": {
-          "name": "Nav7"
-        },
-        "props": {
-          "text": "Demo health",
-          "style": {
-            "classes": "Demo/NavButton"
-          }
-        },
-        "position": {
-          "shrink": 0,
-          "basis": "45px"
-        },
-        "events": {
-          "dom": {
-            "onClick": {
-              "type": "nav",
-              "scope": "C",
-              "config": {
-                "page": "/demo/health"
-              }
-            }
-          }
-        },
-        "propConfig": {
-          "props.style.backgroundColor": {
-            "binding": {
-              "type": "expr",
-              "config": {
-                "expression": "if({page.props.path} = \"/demo/health\", \"#315844\", \"transparent\")"
-              }
-            }
-          }
-        }
-      },
-      {
         "type": "ia.container.flex",
         "meta": {
           "name": "Spacer"
@@ -379,19 +305,30 @@
         }
       },
       {
-        "type": "ia.display.label",
+        "type": "ia.input.button",
         "meta": {
-          "name": "Retention"
+          "name": "Health"
         },
         "props": {
-          "text": "ROLLING 90-DAY HISTORY",
+          "text": "Demo health",
           "style": {
-            "classes": "Demo/NavEyebrow"
+            "classes": "Demo/NavButton"
           }
         },
         "position": {
           "shrink": 0,
-          "basis": "auto"
+          "basis": "40px"
+        },
+        "events": {
+          "dom": {
+            "onClick": {
+              "type": "nav",
+              "scope": "C",
+              "config": {
+                "page": "/demo/health"
+              }
+            }
+          }
         }
       },
       {
@@ -400,7 +337,7 @@
           "name": "Footer"
         },
         "props": {
-          "text": "A Mustry Solutions demonstration",
+          "text": "Mustry Solutions",
           "style": {
             "classes": "Demo/NavFooter"
           }
