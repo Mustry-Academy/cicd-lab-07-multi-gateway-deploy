@@ -43,7 +43,7 @@ readings=[]
 for key in ['temperature','moisture','pressure']:
     b=button(key.title(),'',script='\tapplication.demo.showHistory(self.view.params.lineNumber, '+json.dumps(key)+')',classes='Demo/ReadingButton')
     b['position']={'basis':'90px','grow':1,'shrink':1}
-    b['propConfig']={'props.text':bind_script('view.params.'+key,'\treturn "{0:.1f} {1}".format(value or 0, '+'u'+json.dumps(METRICS[key][2])+')')};readings.append(b)
+    b['propConfig']={'props.text':bind_script('view.params.'+key,'\treturn u"{0:.1f} {1}".format(value or 0, '+'u'+json.dumps(METRICS[key][2])+')')};readings.append(b)
 line_children += [flex('Readings',readings,'row','Demo/Wrap'),button('Scada','Open SCADA',script='\tself.session.custom.demo.scadaLine = self.view.params.lineNumber\n\tsystem.perspective.navigate("/scada")',classes='Demo/QuietButton')]
 line_root=flex('root',line_children,classes='Demo/Panel');line_root['children'][0]['children'][1]['propConfig']['props.style.color']=prop('view.params.colour')
 view('Demo/Components/LineCard',line_root,params={'lineNumber':1,'name':'','state':'','product':'','rate':0,'temperature':0,'moisture':0,'pressure':0,'colour':'#2d8962'},height=270)

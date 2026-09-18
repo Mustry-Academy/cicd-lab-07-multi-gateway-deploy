@@ -269,7 +269,7 @@
                   "transforms": [
                     {
                       "type": "script",
-                      "code": "\treturn \"{0:.1f} {1}\".format(value or 0, u\"\\u00b0C\")"
+                      "code": "\treturn u\"{0:.1f} {1}\".format(value or 0, u\"\\u00b0C\")"
                     }
                   ]
                 }
@@ -313,7 +313,7 @@
                   "transforms": [
                     {
                       "type": "script",
-                      "code": "\treturn \"{0:.1f} {1}\".format(value or 0, u\"%\")"
+                      "code": "\treturn u\"{0:.1f} {1}\".format(value or 0, u\"%\")"
                     }
                   ]
                 }
@@ -357,7 +357,7 @@
                   "transforms": [
                     {
                       "type": "script",
-                      "code": "\treturn \"{0:.1f} {1}\".format(value or 0, u\"bar\")"
+                      "code": "\treturn u\"{0:.1f} {1}\".format(value or 0, u\"bar\")"
                     }
                   ]
                 }
