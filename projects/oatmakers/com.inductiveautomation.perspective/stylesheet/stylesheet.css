@@ -69,19 +69,6 @@
 @media(max-width:650px) { .psc-Demo\/Page { padding:14px; } .psc-Demo\/PageTitle { font-size:24px; } .psc-Demo\/Filters { flex-wrap:wrap !important; } }
 
 .psc-Separator\/Page { background:#e6e6e6; color:#565957; overflow:hidden; width:100%; height:100%; font-family:Arial,sans-serif; }
-.psc-Separator\/Tabs { gap:0; background:#f2f2f2; border-top:3px solid #657074; align-items:stretch; }
-.psc-Separator\/Tab { border:0; border-right:1px solid #d6d6d6; border-bottom:1px solid #d4d4d4; border-radius:0; padding:2px 4px; color:#666; background:#f4f4f4; font-size:12px; font-weight:400; white-space:nowrap; }
-.psc-Separator\/SelectedTab { background:#e6e6e6; border-bottom-color:#e6e6e6; font-weight:700; }
-.psc-Separator\/Instrument { gap:3px; cursor:pointer; overflow:visible; }
-.psc-Separator\/InstrumentTag { font-size:0.75cqw; height:17px; font-weight:500; color:#565957; }
-.psc-Separator\/InstrumentReading { gap:5px; align-items:center; overflow:visible; }
-.psc-Separator\/InstrumentType { border:1px solid #7d817f; border-radius:50%; width:1.18cqw; height:1.18cqw; flex-shrink:0; font-size:0.52cqw; text-align:center; color:#666; }
-.psc-Separator\/InstrumentValue { border-radius:16px; padding:2px 7px; font-size:0.74cqw; color:#6c706f; white-space:nowrap; font-variant-numeric:tabular-nums; }
-.psc-Separator\/Device { border:3px solid transparent; gap:0; cursor:pointer; overflow:visible; }
-.psc-Separator\/DeviceTag { font-size:0.73cqw; text-align:center; color:#555; font-weight:600; }
-.psc-Separator\/Stream { border:0; background:#595c5a; color:white; border-radius:0 18px 18px 0; align-items:center; gap:4px; padding:2px 3px; cursor:pointer; }
-.psc-Separator\/StreamText { font-size:0.63cqw; text-align:center; line-height:1.1; white-space:normal; }
-.psc-Separator\/StreamArrow { background:#cdd0cd; color:#60645f; border-radius:50%; height:18px; text-align:center; font-size:11px; }
 .psc-Separator\/VesselTag { text-align:center; font-size:0.76cqw; font-weight:600; color:#666; }
 .psc-Separator\/Small { font-size:0.74cqw; color:#727777; }
 .psc-Separator\/Title { text-align:center; font-size:1.4cqw; font-family:'Arial Narrow',Arial,sans-serif; font-weight:600; color:#5a5e5c; }

@@ -2,223 +2,66 @@
   "pages": {
     "/": {
       "title": "Factory overview",
-      "viewPath": "Demo/Overview",
-      "docks": {
-        "cornerPriority": "top-bottom",
-        "left": [
-          {
-            "anchor": "fixed",
-            "autoBreakpoint": 1000,
-            "content": "push",
-            "handle": "show",
-            "iconUrl": "",
-            "id": "sidenav",
-            "modal": false,
-            "resizable": false,
-            "show": "visible",
-            "size": 225,
-            "viewParams": {},
-            "viewPath": "Sidenav"
-          }
-        ]
-      }
+      "viewPath": "Demo/Overview"
     },
     "/observatory": {
       "title": "Gateway Observatory",
-      "viewPath": "Showcase/Gateway Observatory",
-      "docks": {
-        "cornerPriority": "top-bottom",
-        "left": [
-          {
-            "anchor": "fixed",
-            "autoBreakpoint": 1000,
-            "content": "push",
-            "handle": "show",
-            "iconUrl": "",
-            "id": "sidenav",
-            "modal": false,
-            "resizable": false,
-            "show": "visible",
-            "size": 225,
-            "viewParams": {},
-            "viewPath": "Sidenav"
-          }
-        ]
-      }
+      "viewPath": "Showcase/Gateway Observatory"
     },
     "/oee": {
       "title": "Performance",
-      "viewPath": "Demo/Performance",
-      "docks": {
-        "cornerPriority": "top-bottom",
-        "left": [
-          {
-            "anchor": "fixed",
-            "autoBreakpoint": 1000,
-            "content": "push",
-            "handle": "show",
-            "iconUrl": "",
-            "id": "sidenav",
-            "modal": false,
-            "resizable": false,
-            "show": "visible",
-            "size": 225,
-            "viewParams": {},
-            "viewPath": "Sidenav"
-          }
-        ]
-      }
+      "viewPath": "Demo/Performance"
     },
     "/production": {
       "title": "Production planning",
-      "viewPath": "Demo/Production",
-      "docks": {
-        "cornerPriority": "top-bottom",
-        "left": [
-          {
-            "anchor": "fixed",
-            "autoBreakpoint": 1000,
-            "content": "push",
-            "handle": "show",
-            "iconUrl": "",
-            "id": "sidenav",
-            "modal": false,
-            "resizable": false,
-            "show": "visible",
-            "size": 225,
-            "viewParams": {},
-            "viewPath": "Sidenav"
-          }
-        ]
-      }
+      "viewPath": "Demo/Production"
     },
     "/process": {
       "title": "SCADA",
-      "viewPath": "Demo/SCADA",
-      "docks": {}
+      "viewPath": "Demo/SCADA"
     },
     "/performance": {
       "title": "Performance",
-      "viewPath": "Demo/Performance",
-      "docks": {
-        "cornerPriority": "top-bottom",
-        "left": [
-          {
-            "anchor": "fixed",
-            "autoBreakpoint": 1000,
-            "content": "push",
-            "handle": "show",
-            "iconUrl": "",
-            "id": "sidenav",
-            "modal": false,
-            "resizable": false,
-            "show": "visible",
-            "size": 225,
-            "viewParams": {},
-            "viewPath": "Sidenav"
-          }
-        ]
-      }
+      "viewPath": "Demo/Performance"
     },
     "/quality": {
       "title": "Quality & traceability",
-      "viewPath": "Demo/Quality",
-      "docks": {
-        "cornerPriority": "top-bottom",
-        "left": [
-          {
-            "anchor": "fixed",
-            "autoBreakpoint": 1000,
-            "content": "push",
-            "handle": "show",
-            "iconUrl": "",
-            "id": "sidenav",
-            "modal": false,
-            "resizable": false,
-            "show": "visible",
-            "size": 225,
-            "viewParams": {},
-            "viewPath": "Sidenav"
-          }
-        ]
-      }
+      "viewPath": "Demo/Quality"
     },
     "/operator": {
       "title": "Operator workflow",
-      "viewPath": "Demo/Operator",
-      "docks": {
-        "cornerPriority": "top-bottom",
-        "left": [
-          {
-            "anchor": "fixed",
-            "autoBreakpoint": 1000,
-            "content": "push",
-            "handle": "show",
-            "iconUrl": "",
-            "id": "sidenav",
-            "modal": false,
-            "resizable": false,
-            "show": "visible",
-            "size": 225,
-            "viewParams": {},
-            "viewPath": "Sidenav"
-          }
-        ]
-      }
+      "viewPath": "Demo/Operator"
     },
     "/demo/health": {
       "title": "Demo health",
-      "viewPath": "Demo/Health",
-      "docks": {
-        "cornerPriority": "top-bottom",
-        "left": [
-          {
-            "anchor": "fixed",
-            "autoBreakpoint": 1000,
-            "content": "push",
-            "handle": "show",
-            "iconUrl": "",
-            "id": "sidenav",
-            "modal": false,
-            "resizable": false,
-            "show": "visible",
-            "size": 225,
-            "viewParams": {},
-            "viewPath": "Sidenav"
-          }
-        ]
-      }
+      "viewPath": "Demo/Health"
     },
     "/demo/input-fields": {
       "title": "Operator workflow",
-      "viewPath": "Demo/Operator",
-      "docks": {
-        "cornerPriority": "top-bottom",
-        "left": [
-          {
-            "anchor": "fixed",
-            "autoBreakpoint": 1000,
-            "content": "push",
-            "handle": "show",
-            "iconUrl": "",
-            "id": "sidenav",
-            "modal": false,
-            "resizable": false,
-            "show": "visible",
-            "size": 225,
-            "viewParams": {},
-            "viewPath": "Sidenav"
-          }
-        ]
-      }
+      "viewPath": "Demo/Operator"
     },
     "/scada": {
       "title": "SCADA",
-      "viewPath": "Demo/SCADA",
-      "docks": {}
+      "viewPath": "Demo/SCADA"
     }
   },
   "sharedDocks": {
-    "cornerPriority": "top-bottom"
+    "cornerPriority": "top-bottom",
+    "left": [
+      {
+        "anchor": "fixed",
+        "autoBreakpoint": 1000,
+        "content": "push",
+        "handle": "show",
+        "iconUrl": "",
+        "id": "sidenav",
+        "modal": false,
+        "resizable": false,
+        "show": "visible",
+        "size": 225,
+        "viewParams": {},
+        "viewPath": "Sidenav"
+      }
+    ]
   }
 }

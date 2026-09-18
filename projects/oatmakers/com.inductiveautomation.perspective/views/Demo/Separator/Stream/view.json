@@ -1,10 +1,15 @@
 {
   "custom": {},
   "params": {
-    "text": "From Header A"
+    "text": "From Header A",
+    "source": ""
   },
   "propConfig": {
     "params.text": {
+      "paramDirection": "input",
+      "persistent": true
+    },
+    "params.source": {
       "paramDirection": "input",
       "persistent": true
     }
@@ -16,59 +21,46 @@
     }
   },
   "root": {
-    "type": "ia.container.flex",
+    "type": "ia.container.coord",
     "meta": {
       "name": "root"
     },
     "props": {
-      "direction": "row",
+      "mode": "percent",
       "style": {
-        "classes": "Separator/Stream"
+        "cursor": "pointer"
       }
     },
     "children": [
       {
-        "type": "ia.display.label",
+        "type": "ia.display.image",
         "meta": {
-          "name": "Text"
+          "name": "Graphic"
         },
         "props": {
-          "text": "",
+          "source": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMzIiIGhlaWdodD0iMjgiIHZpZXdCb3g9IjAgMCAxMzIgMjgiPjwvc3ZnPg==",
+          "fit": {
+            "mode": "fill"
+          },
           "style": {
-            "classes": "Separator/StreamText"
+            "pointerEvents": "none"
           }
         },
         "position": {
-          "basis": "0px",
-          "grow": 1,
-          "shrink": 1
+          "x": 0,
+          "y": 0,
+          "width": 1,
+          "height": 1
         },
         "propConfig": {
-          "props.text": {
+          "props.source": {
             "binding": {
               "type": "property",
               "config": {
-                "path": "view.params.text"
+                "path": "view.params.source"
               }
             }
           }
-        }
-      },
-      {
-        "type": "ia.display.label",
-        "meta": {
-          "name": "Arrow"
-        },
-        "props": {
-          "text": "\u25b6",
-          "style": {
-            "classes": "Separator/StreamArrow"
-          }
-        },
-        "position": {
-          "basis": "18px",
-          "grow": 0,
-          "shrink": 0
         }
       }
     ],

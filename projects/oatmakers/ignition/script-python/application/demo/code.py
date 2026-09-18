@@ -5,7 +5,7 @@ from java.lang import Exception as JavaException
 from java.util.concurrent.locks import ReentrantLock
 
 DATABASE = 'OatmakersDemo'
-REVISION = 'showroom-4.3.1'
+REVISION = 'showroom-4.3.2'
 _cache = {}
 _lock = ReentrantLock()
 
@@ -325,7 +325,7 @@ def separatorData():
 
 def _separatorSvg(content, width, height):
 	import base64
-	markup = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {0} {1}" preserveAspectRatio="none" width="{0}" height="{1}">{2}</svg>'.format(width, height, content)
+	markup = u'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {0} {1}" preserveAspectRatio="none" width="{0}" height="{1}">{2}</svg>'.format(width, height, content)
 	return 'data:image/svg+xml;base64,' + base64.b64encode(markup.encode('utf-8'))
 
 
@@ -375,3 +375,14 @@ def showSeparatorDetail(tag, signal):
 	system.perspective.openPopup('separator-detail', 'Demo/Separator/Detail',
 		params={'tag':tag,'signal':signal}, title=tag,
 		position={'width':520,'height':340}, modal=False, draggable=True, resizable=True)
+
+
+
+def separatorInstrumentSvg(tag, kind, value, colour):
+	def escape(text):
+		return unicode(text).replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;').replace('"', '&quot;')
+	body = u'<g font-family="Arial" fill="#565957"><text x="0" y="12" font-size="12">{0}</text>'.format(escape(tag))
+	body += u'<circle cx="10" cy="32" r="10" fill="#e6e6e6" stroke="#7d817f" stroke-width="1"/><text x="10" y="35" text-anchor="middle" font-size="8">{0}</text>'.format(escape(kind))
+	pill_width = min(102, max(64, len(unicode(value))*6 + 14))
+	body += u'<rect x="26" y="22" width="{2}" height="20" rx="10" fill="{0}"/><text x="{3}" y="36" text-anchor="middle" font-size="11.5">{1}</text></g>'.format(escape(colour), escape(value), pill_width, 26 + pill_width/2.0)
+	return _separatorSvg(body, 130, 51)

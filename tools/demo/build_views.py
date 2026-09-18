@@ -167,8 +167,8 @@ nav_docks=config.get('sharedDocks', {})
 if not nav_docks.get('left'):
     nav_docks=next((p.get('docks') for p in config['pages'].values() if p.get('docks',{}).get('left')), {})
 for route,definition in config['pages'].items():
-    definition['docks']=copy.deepcopy(nav_docks) if route not in ('/scada','/process') else {}
-config['sharedDocks']={'cornerPriority':'top-bottom'}
+    definition.pop('docks', None)
+config['sharedDocks']=copy.deepcopy(nav_docks)
 write(P/'page-config/config.json',config)
 write(P/'session-props/props.json',{'custom':{'demo':{'scadaLine':1,'scadaArea':'peeling','scadaMetric':'temperature'}},'props':{'theme':'light'}});resource(P/'session-props',['props.json'])
 for old in ['Demo/ComponentsGallery','Demo/Process']:
