@@ -1,0 +1,85 @@
+{
+  "custom": {},
+  "params": {
+    "signal": "level",
+    "colour": "#81888d",
+    "sp": 47.3
+  },
+  "propConfig": {
+    "params.signal": {
+      "paramDirection": "input",
+      "persistent": true
+    },
+    "params.colour": {
+      "paramDirection": "input",
+      "persistent": true
+    },
+    "params.sp": {
+      "paramDirection": "input",
+      "persistent": true
+    }
+  },
+  "props": {
+    "defaultSize": {
+      "width": 1280,
+      "height": 70
+    }
+  },
+  "root": {
+    "type": "ia.container.coord",
+    "meta": {
+      "name": "root"
+    },
+    "props": {
+      "mode": "percent"
+    },
+    "children": [
+      {
+        "type": "ia.display.image",
+        "meta": {
+          "name": "Plot"
+        },
+        "props": {
+          "source": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyODAiIGhlaWdodD0iNzAiIHZpZXdCb3g9IjAgMCAyODAgNzAiPjwvc3ZnPg==",
+          "fit": {
+            "mode": "fill"
+          },
+          "style": {
+            "pointerEvents": "none"
+          }
+        },
+        "position": {
+          "x": 0,
+          "y": 0,
+          "width": 1,
+          "height": 1
+        },
+        "propConfig": {
+          "props.source": {
+            "binding": {
+              "type": "expr-struct",
+              "config": {
+                "waitOnAll": true,
+                "struct": {
+                  "tick": "now(1000)",
+                  "signal": "{view.params.signal}",
+                  "colour": "{view.params.colour}",
+                  "sp": "{view.params.sp}"
+                }
+              },
+              "transforms": [
+                {
+                  "type": "script",
+                  "code": "\treturn application.demo.separatorTrendSvg(value[\"signal\"], value[\"colour\"], value[\"sp\"])"
+                }
+              ]
+            }
+          }
+        }
+      }
+    ],
+    "position": {
+      "shrink": 0
+    }
+  }
+}

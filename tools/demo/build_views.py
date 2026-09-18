@@ -2,6 +2,8 @@
 import base64,copy,json,shutil
 from view_primitives import *
 M='mustrysolutions.perspective.'
+EMPTY_RANGE={'start':0,'end':0,'valid':False,'realtime':False}
+EMPTY_HISTORY={'points':[],'count':0,'message':'Loading recorded history...'}
 COLORS=['#39444f','#77889a','#aeb8c0']
 LINES=[(0,'All lines'),(1,'Rolling line 01'),(2,'Cutting line 02'),(3,'Milling line 03')]
 METRICS={'rate':('Throughput','Throughput','kg/h'),'temperature':('Temperature','Temperature','°C'),'moisture':('Moisture','Moisture','%'),'pressure':('Pressure','Pressure','bar'),'power':('Power','Power','kW')}
@@ -30,7 +32,8 @@ def grid(name,source,columns,key='reference',height='350px',selectable=False):
 def picker(name='DateRange'):
     presets=[{'label':title,'type':'rolling','rolling':{'amount':amount,'unit':unit}} for title,amount,unit in [('Last 15 min',0.25,'hours'),('Last hour',1,'hours'),('Last 8 hours',8,'hours'),('Last 24 hours',24,'hours'),('Last 7 days',7,'days'),('Last 30 days',30,'days')]]
     n=node(M+'input.datetimerangepicker',name,{'config':{'display':'popover','layout':'twoMonths','granularity':'second','timezone':'Europe/Brussels','locale':'en-GB','disableDates':'future','spanDays':{'max':90},'showPresets':True,'showClear':False,'popover':{'placeholder':'Choose history range','closeOnSelect':True,'dateFormat':'DD/MM/YYYY'},'presets':presets,'realtime':{'enabled':True,'refreshSeconds':5}},'selection':{'rollingAmount':1,'rollingUnit':'hours'},'style':{'overflow':'visible','classes':'Demo/DateRange'}},basis='390px')
-    n['propConfig']={'props.config.dateBounds.earliest':{'binding':{'type':'expr','config':{'expression':'dateFormat(addDays(now(60000), -90), "yyyy-MM-dd")'}}}}
+    n['props']['output']={'startDateTime':'','endDateTime':'','startEpochMs':0,'endEpochMs':0,'durationDays':0,'durationHours':0,'durationLabel':'','isValid':False,'isRealtime':False}
+    n['propConfig']={'props.output':{'persistent':True},'props.config.dateBounds.earliest':{'binding':{'type':'expr','config':{'expression':'dateFormat(addDays(now(60000), -90), "yyyy-MM-dd")'}}}}
     return n
 
 # Common visual components.
@@ -61,10 +64,15 @@ for i in range(3):
     hchart['propConfig'][f'props.series[{i}].visible']=expr('{view.params.lineNumber} = 0 || {view.params.lineNumber} = '+str(i+1))
     hchart['propConfig'][f'props.series[{i}].hiddenInLegend']=expr('{view.params.lineNumber} != 0 && {view.params.lineNumber} != '+str(i+1))
 hchart['propConfig']['props.yAxes[0].label.enabled']={'persistent':True};hchart['props']['yAxes'][0]['label']['enabled']=True
-hchart['propConfig']['props.yAxes[0].label.text']=bind_script('view.params.metric','\treturn application.demo.METRICS[value][2]')
+hchart['propConfig']['props.yAxes[0].label.text']=bind_script('view.params.metric','\treturn application.demo.METRICS.get(value or "rate", application.demo.METRICS["rate"])[2]')
 history_root=flex('root',[control,hchart,bound_label('HistoryMessage','view.custom.history.message','Demo/Muted')],classes='Demo/HistoryRoot')
-range_cfg={'binding':{'type':'expr-struct','config':{'waitOnAll':True,'struct':{'start':'{/root/Controls/DateRange.props.output.startEpochMs}','end':'{/root/Controls/DateRange.props.output.endEpochMs}','valid':'{/root/Controls/DateRange.props.output.isValid}','realtime':'{/root/Controls/DateRange.props.output.isRealtime}'}}}}
-view('Demo/HistoryChart',history_root,params={'lineNumber':0,'metric':'rate','showSelectors':True,'range':{}},custom={'range':{'start':0,'end':0,'valid':False,'realtime':True},'history':{'points':[],'message':'Select a recorded range.'}},config={'custom.range':range_cfg,'params.lineNumber':{'paramDirection':'inout','persistent':True},'params.metric':{'paramDirection':'inout','persistent':True},'params.range':dict(prop('view.custom.range'),paramDirection='output'),'custom.history':struct_binding({'range':'{view.custom.range}','line':'{view.params.lineNumber}','metric':'{view.params.metric}','refresh':'now(5000)'},'\treturn application.demo.history(value["range"]["start"], value["range"]["end"], value["line"], value["metric"])')},height=430)
+range_cfg={'binding':{'type':'expr-struct','config':{'waitOnAll':True,'struct':{'start':'try({/root/Controls/DateRange.props.output.startEpochMs}, 0)','end':'try({/root/Controls/DateRange.props.output.endEpochMs}, 0)','valid':'try({/root/Controls/DateRange.props.output.isValid}, false)','realtime':'try({/root/Controls/DateRange.props.output.isRealtime}, false)'}}}}
+view('Demo/HistoryChart',history_root,params={'lineNumber':0,'metric':'rate','showSelectors':True,'range':copy.deepcopy(EMPTY_RANGE)},custom={'range':copy.deepcopy(EMPTY_RANGE),'history':copy.deepcopy(EMPTY_HISTORY)},config={'custom.range':dict(range_cfg,persistent=True),'params.lineNumber':{'paramDirection':'inout','persistent':True},'params.metric':{'paramDirection':'inout','persistent':True},'params.range':dict(prop('view.custom.range'),paramDirection='output',persistent=True),'custom.history':struct_binding({'range':'{view.custom.range}','line':'{view.params.lineNumber}','metric':'{view.params.metric}','refresh':'now(5000)'},'\tvalue = value or {}\n\trange_value = value.get("range") or {}\n\tif not range_value.get("valid", False):\n\t\treturn {"points": [], "count": 0, "message": "Loading recorded history..."}\n\treturn application.demo.history(range_value.get("start", 0), range_value.get("end", 0), value.get("line", 0), value.get("metric", "rate"))')},height=430)
+
+for path in ['Demo/HistoryChart']:
+    file=V/path/'view.json';data=json.loads(file.read_text())
+    data['propConfig']['custom.history']['persistent']=True
+    write(file,data)
 
 # Minimal fixed-height headers leave the operational content its space.
 EMPTY_LIVE={'ready':False,'metrics':[],'lines':[],'trend':[],'updatedEpochMs':0,'updatedAt':'','shiftStart':''}
@@ -96,10 +104,10 @@ timeline['events']={'component':{'onEventClick':{'type':'script','scope':'G','co
 page('Demo/Production','Production planning','Browse shifts, pan through the schedule and open a batch for details.',[
  timeline,label('PlanningHelp','Use Hour, Day, Shift or Week to change the scale. Click a batch to inspect its production and quality record.','Demo/Muted')],custom={'events':[]},config={'custom.events':struct_binding({'start':'{/root/Timeline.props.output.visibleStartMs}','end':'{/root/Timeline.props.output.visibleEndMs}','refresh':'now(5000)'},'\treturn application.demo.timeline(value["start"], value["end"])')})
 
-history=embed('History','Demo/HistoryChart',{'lineNumber':0,'metric':'rate','showSelectors':True},basis='460px')
+history=embed('History','Demo/HistoryChart',{'lineNumber':0,'metric':'rate','showSelectors':True,'range':copy.deepcopy(EMPTY_RANGE)},basis='460px')
 page('Demo/Performance','Performance & history','Pick exact dates or a live preset. Every chart uses that recorded range.',[
  history,repeater('Metrics','Demo/Components/Metric','view.custom.summary.metrics','auto'),
- grid('Losses','view.custom.summary.losses',[('reason','Loss reason',250),('minutes','Line minutes',140),('lost_kg','Lost output kg',160)],key='reason',height='250px')],custom={'summary':{'metrics':[],'losses':[]}},config={'custom.summary':struct_binding({'start':'{/root/History.props.params.range.start}','end':'{/root/History.props.params.range.end}','line':'{/root/History.props.params.lineNumber}','refresh':'now(10000)'},'\treturn application.demo.rangeSnapshot(value["start"], value["end"], value["line"])')},live_header=False)
+ grid('Losses','view.custom.summary.losses',[('reason','Loss reason',250),('minutes','Line minutes',140),('lost_kg','Lost output kg',160)],key='reason',height='250px')],custom={'summary':{'metrics':[],'losses':[]}},config={'custom.summary':struct_binding({'start':'try({/root/History.props.params.range.start}, 0)','end':'try({/root/History.props.params.range.end}, 0)','line':'{/root/History.props.params.lineNumber}','refresh':'now(10000)'},'\treturn application.demo.rangeSnapshot(value["start"], value["end"], value["line"])')},live_header=False)
 
 # One modern record grid, with an explicit inspect action.
 quality_picker=picker('QualityRange')
@@ -133,117 +141,8 @@ request_panel=panel('RequestList','Production requests','Your saved requests rem
 workspace=flex('Workspace',[form,request_panel],'row','Demo/Workspace')
 page('Demo/Operator','Operator workflow','Create a request while the production list stays in view.',[workspace],custom={'values':{},'validation':{'valid':False,'message':''},'requestId':'','busy':False,'result':'','requests':[]},config={'custom.values':dict(struct_binding({name.lower():'{/root/Workspace/Form/'+name+'.props.params.value}' for name,*_ in spec},'\treturn value'),onChange={'enabled':True,'script':'\tself.custom.requestId = ""'}),'custom.validation':bind_script('view.custom.values','\treturn application.demo.validateOrder(value)'),'custom.requests':struct_binding({'refresh':'now(5000)'},'\treturn application.demo.recentOrders()')})
 
-# Live readings use explicit PV/SP labels. Setpoints are read-only simulation targets.
-inst_root=flex('root',[
- bound_label('Name','view.params.label','Demo/TagName'),
- flex('Reading',[label('PV','PV','Demo/PvLabel'),label('Value','','Demo/TagValue'),bound_label('Unit','view.params.unit','Demo/TagUnit')],'row','Demo/MetricReading'),
- flex('Target',[label('SP','SP','Demo/SpLabel'),label('Setpoint','','Demo/SpValue'),bound_label('Unit','view.params.unit','Demo/TagUnit')],'row','Demo/MetricReading'),
- label('Condition','','Demo/TagCondition')],classes='Demo/TagFace')
-inst_root['children'][1]['children'][1]['propConfig']={'props.text':expr('if({view.custom.fresh}, numberFormat({view.custom.value}, "#,##0.0"), "n/a")')}
-inst_root['children'][2]['propConfig']={'position.display':expr('{view.params.metric} != "power"')}
-inst_root['children'][2]['children'][1]['propConfig']={'props.text':expr('numberFormat({view.custom.setpoint}, "#,##0.0")')}
-inst_root['children'][3]['propConfig']={'props.text':expr('if(!{view.custom.fresh}, "! STALE DATA", if({view.params.metric} = "moisture" && {view.custom.value} > 13, "! HIGH MOISTURE", if({view.params.metric} = "temperature" && {view.custom.value} > 86, "! HIGH TEMPERATURE", "")))'),'position.display':expr('!{view.custom.fresh} || ({view.params.metric} = "moisture" && {view.custom.value} > 13) || ({view.params.metric} = "temperature" && {view.custom.value} > 86)')}
-inst_root['events']={'dom':{'onClick':{'type':'script','scope':'G','config':{'script':'\tself.session.custom.demo.scadaMetric = self.view.params.metric'}}}}
-view('Demo/ScadaViews/Instrument',inst_root,params={'lineNumber':1,'metric':'temperature','tag':'Temperature','label':'Temperature','unit':'°C'},custom={'value':0,'lastUpdate':0,'fresh':False,'setpoint':0},config={'custom.value':{'binding':{'type':'tag','config':{'mode':'indirect','tagPath':'[default]OatmakersDemo/Line{line}/{tag}','references':{'line':'{view.params.lineNumber}','tag':'{view.params.tag}'}}}},'custom.lastUpdate':{'binding':{'type':'tag','config':{'mode':'indirect','tagPath':'[default]OatmakersDemo/Line{line}/LastUpdate','references':{'line':'{view.params.lineNumber}'}}}},'custom.fresh':expr('dateDiff({view.custom.lastUpdate}, now(1000), "second") < 15'),'custom.setpoint':struct_binding({'line':'{view.params.lineNumber}','metric':'{view.params.metric}'},'\treturn application.demo.scadaSetpoint(value["line"], value["metric"])')},height=100)
-layouts=json.loads((ROOT/'tools/demo/scada-assets/layout.json').read_text())
-FACE_W,FACE_H=230,110
-# Faceplates start from the positions the original drawing gave them, then move
-# to the nearest spot that clears the equipment. Hand-picked coordinates, and the
-# original positions taken literally, are both how cards ended up sitting on top
-# of the conveyor and the hopper.
-def _hits(box,others,pad):
-    return any(box[0]<o[2]+pad and o[0]<box[2]+pad and box[1]<o[3]+pad and o[1]<box[3]+pad for o in others)
-
-def place(cfg):
-    # A rotated conveyor's bounding box is mostly empty diagonal, and treating it
-    # as solid walls off a third of the canvas. Boxes past a fifth of the drawing
-    # are that artefact, not equipment an operator would lose behind a card.
-    span=cfg['width']*cfg['height']*0.2
-    gear=[(b['x'],b['y'],b['x']+b['width'],b['y']+b['height'])
-        for b in cfg['occupied'] if b['width']*b['height']<=span]
-    limit=(0,0,cfg['width'],cfg['height']);placed=[];out=[]
-    # Rings of candidate offsets, nearest first, so a card stays as close to the
-    # instrument it belongs to as the drawing allows.
-    steps=[(0,0)]+[(dx*r,dy*r) for r in range(20,481,20)
-        for dx,dy in ((0,-1),(0,1),(-1,0),(1,0),(-1,-1),(1,-1),(-1,1),(1,1))]
-    for item in sorted(cfg['instruments'],key=lambda i:(i['y'],i['x'])):
-        w=max(FACE_W,item['width'])
-        for dx,dy in steps:
-            x=min(max(item['x']+dx,4),limit[2]-w-4);y=min(max(item['y']+dy,4),limit[3]-FACE_H-4)
-            box=(x,y,x+w,y+FACE_H)
-            if _hits(box,gear,8) or _hits(box,placed,16):
-                continue
-            placed.append(box);out.append(dict(item,x=x,y=y,width=w,height=FACE_H));break
-    return out[:5]
-
-# Each area shows a spread of the recorded measurements rather than the same one
-# repeated: the faceplates read the simulated line tags, so which measurement sits
-# at which position is a presentation choice, unlike the position itself.
-for area,order in {'peeling':['rate','moisture','power','pressure','temperature'],
-                   'heating':['temperature','pressure','power','rate','moisture']}.items():
-    chosen=place(layouts[area]);used=[]
-    for item in chosen:
-        metric=item['metric'] if item['metric'] not in used else next(m for m in order if m not in used)
-        used.append(metric);item['metric']=metric
-    layouts[area]['instruments']=chosen
-
-for area,cfg in layouts.items():
-    width=cfg['width']+120;height=cfg['height']+120
-    encoded=base64.b64encode((ROOT/('tools/demo/scada-assets/'+area+'.svg')).read_bytes()).decode()
-    background=node('ia.display.image','OriginalDrawing',{'source':'data:image/svg+xml;base64,'+encoded,'fit':{'mode':'contain'},'style':{'pointerEvents':'none'}});background['position']={'x':60,'y':60,'width':cfg['width'],'height':cfg['height']}
-    nodes=[background]
-    for index,instrument in enumerate(cfg['instruments']):
-        metric=instrument['metric'];tag,title,unit=METRICS[metric]
-        e=embed('Measurement'+str(index),'Demo/ScadaViews/Instrument',{'metric':metric,'tag':tag,'label':title,'unit':unit})
-        e['position']={'x':instrument['x']+60,'y':instrument['y']+60,'width':instrument['width'],'height':instrument['height']}
-        e['propConfig']={'props.params.lineNumber':prop('view.params.lineNumber')};nodes.append(e)
-    root=node('ia.container.coord','root',{'mode':'fixed','style':{'backgroundColor':'transparent','overflow':'visible'}},nodes)
-    d=view('Demo/ScadaViews/'+area.title(),root,params={'lineNumber':1},height=height);d['props']['defaultSize']['width']=width;write(V/('Demo/ScadaViews/'+area.title())/'view.json',d)
-scada_controls=flex('Controls',[select('Line',LINES[1:],'session.custom.demo.scadaLine'),select('Area',[('peeling','Peeling & conveying'),('heating','Heat treatment')],'session.custom.demo.scadaArea'),label('Hint','Drag to pan, wheel to zoom. Select a PV to trend it.','Demo/Muted')],'row','Demo/Filters')
-pan=node(M+'display.panzoomview','ScadaMap',{'config':{'viewPath':'Demo/ScadaViews/Peeling','viewParams':[{'name':'lineNumber','value':1}],'contentWidth':layouts['peeling']['width']+120,'contentHeight':layouts['peeling']['height']+120,'minZoom':0.25,'maxZoom':4,'showControls':True,'showMinimap':True,'showPoiList':True,'wheelZoom':True,'doubleClickZoom':True,'flyToMs':350,'home':{'x':-1,'y':-1,'zoom':0}},'data':{'pois':[]},'style':{'classes':'Demo/ScadaMap'}},basis='0px',grow=1)
-pan['position']['shrink']=1;pan['props']['style']['minHeight']='360px'
-# Tell the pan/zoom the real canvas size for the area on screen. Left at 0 it has
-# to wait for the embedded view to report one, and until it does it frames the
-# drawing inside a stock 1600x1200 box -- the empty rectangle around the SCADA.
-def area_expr(field):
-    return expr('if({session.custom.demo.scadaArea} = "heating", %d, %d)'%(
-        layouts['heating'][field]+120,layouts['peeling'][field]+120))
-pan['propConfig']={'props.config.contentWidth':area_expr('width'),'props.config.contentHeight':area_expr('height'),
- 'props.config.viewPath':expr('if({session.custom.demo.scadaArea} = "heating", "Demo/ScadaViews/Heating", "Demo/ScadaViews/Peeling")'),'props.config.viewParams[0].value':prop('session.custom.demo.scadaLine'),'props.data.pois':bind_script('session.custom.demo.scadaArea','\tif value == "heating":\n\t\treturn [{"name":"Heater", "x":500,"y":600,"zoom":1.1},{"name":"Heat exchanger","x":850,"y":900,"zoom":1.4}]\n\treturn [{"name":"Infeed", "x":300,"y":150,"zoom":1.5},{"name":"Peeling", "x":580,"y":490,"zoom":1.3},\n\t\t{"name":"Discharge", "x":850,"y":710,"zoom":1.4}]')}
-pan['propConfig']['props.config.contentHeight']['onChange']={'enabled':True,'script':'\tif currentValue.value != previousValue.value:\n\t\tself.props.state.zoom = 0'}
-trend_plot=chart('ScadaTrend',[('pv','PV','#333399'),('sp','SP','#006400'),('low','Low limit','#555b60'),('high','High limit','#555b60')],source='view.custom.trend.points',height='260px')
-trend_plot['position']={'basis':'0px','grow':1,'shrink':1}
-trend_plot['props']['style']['minHeight']='180px'
-trend_plot['props']['cursor']['behavior']='none'
-trend_plot['props']['background']={'render':'color','color':'#c5c7c9','opacity':1}
-trend_plot['props']['style']['backgroundColor']='#c5c7c9'
-trend_plot['props']['xAxes'][0]['date']['format']='HH:mm'
-trend_plot['props']['xAxes'][0]['appearance']['grid']['minDistance']=75
-trend_plot['props']['yAxes'][0]['value']['range']['min']=''
-trend_plot['propConfig']['props.yAxes[0].value.range.min']=bind_script('session.custom.demo.scadaMetric','\treturn {"temperature": 50, "moisture": 10}.get(value, 0)')
-trend_plot['propConfig']['props.yAxes[0].value.range.max']=bind_script('session.custom.demo.scadaMetric','\treturn {"temperature": 90, "moisture": 15, "pressure": 3, "rate": 2300, "power": 80}[value]')
-for series in trend_plot['props']['series']:
-    series['line']['appearance']['fill']['opacity']=0
-    series['line']['appearance']['stroke']['width']=2
-for index in (1,2,3):
-    trend_plot['props']['series'][index]['line']['appearance']['stroke']['dashArray']='6,4'
-    trend_plot['props']['series'][index]['line']['appearance']['stroke']['width']=1
-trend_plot['propConfig'].update({'props.series[1].visible':expr('{session.custom.demo.scadaMetric} != "power"'),'props.series[1].hiddenInLegend':expr('{session.custom.demo.scadaMetric} = "power"'), 'props.series[2].visible':expr('{session.custom.demo.scadaMetric} = "temperature" || {session.custom.demo.scadaMetric} = "moisture"'), 'props.series[3].visible':expr('{session.custom.demo.scadaMetric} = "temperature" || {session.custom.demo.scadaMetric} = "moisture"'), 'props.series[2].hiddenInLegend':expr('{session.custom.demo.scadaMetric} != "temperature" && {session.custom.demo.scadaMetric} != "moisture"'), 'props.series[3].hiddenInLegend':expr('{session.custom.demo.scadaMetric} != "temperature" && {session.custom.demo.scadaMetric} != "moisture"')})
-trend_title=label('TrendTitle','','Demo/SectionTitle')
-trend_title['propConfig']={'props.text':bind_script('session.custom.demo.scadaMetric','\treturn application.demo.METRICS[value][1] + " trend"')}
-trend_unit=label('TrendUnit','','Demo/Muted')
-trend_unit['propConfig']={'props.text':bind_script('session.custom.demo.scadaMetric','\treturn application.demo.METRICS[value][2] + " | last 15 minutes"')}
-trend_panel=flex('TrendPanel',[flex('TrendControls',[trend_title,select('Measurement',[(k,v[1]) for k,v in METRICS.items()],'session.custom.demo.scadaMetric',width='180px'),trend_unit,label('Convention','PV measured | SP simulation target','Demo/Muted')],'row','Demo/Filters'),trend_plot],classes='Demo/ScadaTrendPanel',basis='270px')
-status=label('LineState','','Demo/ScadaState')
-status['propConfig']={'props.text':expr('"LINE STATE: " + {view.custom.state}'),'props.style.color':expr('if({view.custom.state} = "Stopped", "#a52b24", if({view.custom.state} = "Quality hold", "#865900", "#343b40"))')}
-scada_controls['children'].append(status)
-workspace=flex('ScadaWorkspace',[pan,trend_panel],'column','Demo/ScadaWorkspace',basis='0px',grow=1)
-workspace['position']['shrink']=1
-page('Demo/SCADA','SCADA','Process overview and live measurements.',[scada_controls,workspace],custom={'trend':{'points':[],'message':'Loading recorded values...'},'state':'Starting'},config={
- 'custom.trend':struct_binding({'line':'{session.custom.demo.scadaLine}','metric':'{session.custom.demo.scadaMetric}','tick':'now(1000)'},'\treturn application.demo.scadaTrend(value["line"], value["metric"])'),
- 'custom.state':{'binding':{'type':'tag','config':{'mode':'indirect','tagPath':'[default]OatmakersDemo/Line{line}/State','references':{'line':'{session.custom.demo.scadaLine}'}}}}})
-# This page uses the canvas height, not an outer page scrollbar.
-p=V/'Demo/SCADA/view.json';d=json.loads(p.read_text());d['root']['props']['style']['classes']='Demo/Page Demo/ScadaPage';write(p,d)
+from build_separator import build_separator, SEPARATOR_CSS
+build_separator()
 
 popup_history=embed('History','Demo/HistoryChart',{'showSelectors':False},basis='0px',grow=1);popup_history['position']['shrink']=1;popup_history['propConfig']={'props.params.lineNumber':prop('view.params.lineNumber'),'props.params.metric':prop('view.params.metric')}
 view('Demo/TagHistory',flex('root',[bound_label('Title','view.params.title','Demo/SectionTitle'),bound_label('Tag','view.params.tagPath','Demo/Muted'),popup_history],classes='Demo/PopupRoot'),params={'lineNumber':1,'metric':'temperature','title':'Temperature','tagPath':''},height=560)
@@ -264,6 +163,12 @@ config=json.loads((P/'page-config/config.json').read_text());config['pages'].pop
 for route,title,path in routes:config['pages'][route]={'title':title,'viewPath':path}
 config['pages']['/process']={'title':'SCADA','viewPath':'Demo/SCADA'};config['pages']['/demo/health']={'title':'Demo health','viewPath':'Demo/Health'}
 config['pages']['/oee']={'title':'Performance','viewPath':'Demo/Performance'};config['pages']['/demo/input-fields']={'title':'Operator workflow','viewPath':'Demo/Operator'}
+nav_docks=config.get('sharedDocks', {})
+if not nav_docks.get('left'):
+    nav_docks=next((p.get('docks') for p in config['pages'].values() if p.get('docks',{}).get('left')), {})
+for route,definition in config['pages'].items():
+    definition['docks']=copy.deepcopy(nav_docks) if route not in ('/scada','/process') else {}
+config['sharedDocks']={'cornerPriority':'top-bottom'}
 write(P/'page-config/config.json',config)
 write(P/'session-props/props.json',{'custom':{'demo':{'scadaLine':1,'scadaArea':'peeling','scadaMetric':'temperature'}},'props':{'theme':'light'}});resource(P/'session-props',['props.json'])
 for old in ['Demo/ComponentsGallery','Demo/Process']:
@@ -339,5 +244,5 @@ css='''
 @container demo (max-width:900px) { .psc-Demo\\/Workspace { flex-wrap:wrap !important; } .psc-Demo\\/Workspace > * { flex-basis:100% !important; } .psc-Demo\\/PageHeader { flex-wrap:wrap !important; } }
 @media(max-width:650px) { .psc-Demo\\/Page { padding:14px; } .psc-Demo\\/PageTitle { font-size:24px; } .psc-Demo\\/Filters { flex-wrap:wrap !important; } }
 '''
-p=P/'stylesheet';(p/'stylesheet.css').write_text(css);resource(p,['stylesheet.css'])
+p=P/'stylesheet';(p/'stylesheet.css').write_text(css+SEPARATOR_CSS);resource(p,['stylesheet.css'])
 print('Built operational screens with Mustry UI, SCADA and range-controlled history.')

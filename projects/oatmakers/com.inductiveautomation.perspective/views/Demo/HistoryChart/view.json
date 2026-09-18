@@ -4,18 +4,24 @@
       "start": 0,
       "end": 0,
       "valid": false,
-      "realtime": true
+      "realtime": false
     },
     "history": {
       "points": [],
-      "message": "Select a recorded range."
+      "count": 0,
+      "message": "Loading recorded history..."
     }
   },
   "params": {
     "lineNumber": 0,
     "metric": "rate",
     "showSelectors": true,
-    "range": {}
+    "range": {
+      "start": 0,
+      "end": 0,
+      "valid": false,
+      "realtime": false
+    }
   },
   "propConfig": {
     "custom.range": {
@@ -24,13 +30,14 @@
         "config": {
           "waitOnAll": true,
           "struct": {
-            "start": "{/root/Controls/DateRange.props.output.startEpochMs}",
-            "end": "{/root/Controls/DateRange.props.output.endEpochMs}",
-            "valid": "{/root/Controls/DateRange.props.output.isValid}",
-            "realtime": "{/root/Controls/DateRange.props.output.isRealtime}"
+            "start": "try({/root/Controls/DateRange.props.output.startEpochMs}, 0)",
+            "end": "try({/root/Controls/DateRange.props.output.endEpochMs}, 0)",
+            "valid": "try({/root/Controls/DateRange.props.output.isValid}, false)",
+            "realtime": "try({/root/Controls/DateRange.props.output.isRealtime}, false)"
           }
         }
-      }
+      },
+      "persistent": true
     },
     "params.lineNumber": {
       "paramDirection": "inout",
@@ -47,7 +54,8 @@
           "path": "view.custom.range"
         }
       },
-      "paramDirection": "output"
+      "paramDirection": "output",
+      "persistent": true
     },
     "custom.history": {
       "binding": {
@@ -64,10 +72,11 @@
         "transforms": [
           {
             "type": "script",
-            "code": "\treturn application.demo.history(value[\"range\"][\"start\"], value[\"range\"][\"end\"], value[\"line\"], value[\"metric\"])"
+            "code": "\tvalue = value or {}\n\trange_value = value.get(\"range\") or {}\n\tif not range_value.get(\"valid\", False):\n\t\treturn {\"points\": [], \"count\": 0, \"message\": \"Loading recorded history...\"}\n\treturn application.demo.history(range_value.get(\"start\", 0), range_value.get(\"end\", 0), value.get(\"line\", 0), value.get(\"metric\", \"rate\"))"
           }
         ]
-      }
+      },
+      "persistent": true
     },
     "params.showSelectors": {
       "paramDirection": "input",
@@ -190,6 +199,17 @@
               "style": {
                 "overflow": "visible",
                 "classes": "Demo/DateRange"
+              },
+              "output": {
+                "startDateTime": "",
+                "endDateTime": "",
+                "startEpochMs": 0,
+                "endEpochMs": 0,
+                "durationDays": 0,
+                "durationHours": 0,
+                "durationLabel": "",
+                "isValid": false,
+                "isRealtime": false
               }
             },
             "position": {
@@ -197,6 +217,9 @@
               "basis": "390px"
             },
             "propConfig": {
+              "props.output": {
+                "persistent": true
+              },
               "props.config.dateBounds.earliest": {
                 "binding": {
                   "type": "expr",
@@ -1382,7 +1405,7 @@
               "transforms": [
                 {
                   "type": "script",
-                  "code": "\treturn application.demo.METRICS[value][2]"
+                  "code": "\treturn application.demo.METRICS.get(value or \"rate\", application.demo.METRICS[\"rate\"])[2]"
                 }
               ]
             }

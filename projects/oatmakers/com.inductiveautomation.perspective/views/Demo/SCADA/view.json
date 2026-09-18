@@ -1,75 +1,41 @@
 {
   "custom": {
-    "live": {
-      "ready": false,
-      "metrics": [],
-      "lines": [],
-      "trend": [],
-      "updatedEpochMs": 0,
-      "updatedAt": "",
-      "shiftStart": ""
-    },
-    "trend": {
-      "points": [],
-      "message": "Loading recorded values..."
-    },
-    "state": "Starting"
+    "data": {
+      "pressure": 0,
+      "temperature": 0,
+      "level": 0,
+      "interface": 0,
+      "gas": 0,
+      "suction": 0,
+      "discharge": 0,
+      "exportPressure": 0,
+      "flow": 0,
+      "drain": 0,
+      "iop": 0
+    }
   },
   "params": {},
   "propConfig": {
-    "custom.live": {
+    "custom.data": {
       "binding": {
-        "type": "expr-struct",
+        "type": "expr",
         "config": {
-          "waitOnAll": true,
-          "struct": {
-            "tick": "now(1000)"
-          }
+          "expression": "now(1000)"
         },
         "transforms": [
           {
             "type": "script",
-            "code": "\treturn application.demo.live()"
+            "code": "\treturn application.demo.separatorData()"
           }
         ]
-      }
-    },
-    "custom.trend": {
-      "binding": {
-        "type": "expr-struct",
-        "config": {
-          "waitOnAll": true,
-          "struct": {
-            "line": "{session.custom.demo.scadaLine}",
-            "metric": "{session.custom.demo.scadaMetric}",
-            "tick": "now(1000)"
-          }
-        },
-        "transforms": [
-          {
-            "type": "script",
-            "code": "\treturn application.demo.scadaTrend(value[\"line\"], value[\"metric\"])"
-          }
-        ]
-      }
-    },
-    "custom.state": {
-      "binding": {
-        "type": "tag",
-        "config": {
-          "mode": "indirect",
-          "tagPath": "[default]OatmakersDemo/Line{line}/State",
-          "references": {
-            "line": "{session.custom.demo.scadaLine}"
-          }
-        }
-      }
+      },
+      "persistent": true
     }
   },
   "props": {
     "defaultSize": {
       "width": 1280,
-      "height": 1000
+      "height": 939
     }
   },
   "root": {
@@ -80,397 +46,420 @@
     "props": {
       "direction": "column",
       "style": {
-        "classes": "Demo/Page Demo/ScadaPage"
+        "classes": "Separator/Page"
       }
     },
     "children": [
       {
         "type": "ia.container.flex",
         "meta": {
-          "name": "Header"
+          "name": "ProcessNavigation"
         },
         "props": {
           "direction": "row",
-          "wrap": "wrap",
           "style": {
-            "classes": "Demo/PageHeader"
+            "classes": "Separator/Tabs"
           }
         },
         "children": [
           {
-            "type": "ia.container.flex",
+            "type": "ia.input.button",
             "meta": {
-              "name": "Identity"
+              "name": "Tab0"
             },
             "props": {
-              "direction": "column"
+              "text": "Overview",
+              "style": {
+                "classes": "Separator/Tab"
+              }
             },
-            "children": [
-              {
-                "type": "ia.display.label",
-                "meta": {
-                  "name": "Eyebrow"
-                },
-                "props": {
-                  "text": "OATMAKERS / LIVE OPERATIONS",
-                  "style": {
-                    "classes": "Demo/Eyebrow"
+            "position": {
+              "basis": "0px",
+              "grow": 1,
+              "shrink": 1
+            },
+            "events": {
+              "dom": {
+                "onClick": {
+                  "type": "nav",
+                  "scope": "C",
+                  "config": {
+                    "page": "/"
                   }
-                },
-                "position": {
-                  "shrink": 0,
-                  "basis": "auto"
-                }
-              },
-              {
-                "type": "ia.display.label",
-                "meta": {
-                  "name": "Title"
-                },
-                "props": {
-                  "text": "SCADA",
-                  "style": {
-                    "classes": "Demo/PageTitle"
-                  }
-                },
-                "position": {
-                  "shrink": 0,
-                  "basis": "auto"
-                }
-              },
-              {
-                "type": "ia.display.label",
-                "meta": {
-                  "name": "Subtitle"
-                },
-                "props": {
-                  "text": "Process overview and live measurements.",
-                  "style": {
-                    "classes": "Demo/Subtitle"
-                  }
-                },
-                "position": {
-                  "shrink": 0,
-                  "basis": "auto"
                 }
               }
-            ],
-            "position": {
-              "shrink": 0,
-              "grow": 1
             }
           },
           {
-            "type": "ia.display.label",
+            "type": "ia.input.button",
             "meta": {
-              "name": "Mode"
+              "name": "Tab1"
             },
             "props": {
-              "text": "SIMULATED FACTORY",
+              "text": "Crude Inlet A B C",
               "style": {
-                "classes": "Demo/DemoBadge"
+                "classes": "Separator/Tab"
               }
             },
             "position": {
-              "shrink": 0,
-              "basis": "auto"
+              "basis": "0px",
+              "grow": 1,
+              "shrink": 1
+            },
+            "events": {
+              "component": {
+                "onActionPerformed": {
+                  "type": "script",
+                  "scope": "G",
+                  "config": {
+                    "script": "\tapplication.demo.showSeparatorDetail(\"Crude Inlet A B C\", \"pressure\")"
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "ia.input.button",
+            "meta": {
+              "name": "Tab2"
+            },
+            "props": {
+              "text": "Crude Inlet D EF",
+              "style": {
+                "classes": "Separator/Tab"
+              }
+            },
+            "position": {
+              "basis": "0px",
+              "grow": 1,
+              "shrink": 1
+            },
+            "events": {
+              "component": {
+                "onActionPerformed": {
+                  "type": "script",
+                  "scope": "G",
+                  "config": {
+                    "script": "\tapplication.demo.showSeparatorDetail(\"Crude Inlet D EF\", \"pressure\")"
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "ia.input.button",
+            "meta": {
+              "name": "Tab3"
+            },
+            "props": {
+              "text": "Crude Inlet GH NT",
+              "style": {
+                "classes": "Separator/Tab"
+              }
+            },
+            "position": {
+              "basis": "0px",
+              "grow": 1,
+              "shrink": 1
+            },
+            "events": {
+              "component": {
+                "onActionPerformed": {
+                  "type": "script",
+                  "scope": "G",
+                  "config": {
+                    "script": "\tapplication.demo.showSeparatorDetail(\"Crude Inlet GH NT\", \"pressure\")"
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "ia.input.button",
+            "meta": {
+              "name": "Tab4"
+            },
+            "props": {
+              "text": "Separator A",
+              "style": {
+                "classes": "Separator/Tab Separator/SelectedTab"
+              }
+            },
+            "position": {
+              "basis": "0px",
+              "grow": 1,
+              "shrink": 1
+            }
+          },
+          {
+            "type": "ia.input.button",
+            "meta": {
+              "name": "Tab5"
+            },
+            "props": {
+              "text": "Separator B",
+              "style": {
+                "classes": "Separator/Tab"
+              }
+            },
+            "position": {
+              "basis": "0px",
+              "grow": 1,
+              "shrink": 1
+            },
+            "events": {
+              "component": {
+                "onActionPerformed": {
+                  "type": "script",
+                  "scope": "G",
+                  "config": {
+                    "script": "\tapplication.demo.showSeparatorDetail(\"Separator B\", \"pressure\")"
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "ia.input.button",
+            "meta": {
+              "name": "Tab6"
+            },
+            "props": {
+              "text": "Booster Pump C",
+              "style": {
+                "classes": "Separator/Tab"
+              }
+            },
+            "position": {
+              "basis": "0px",
+              "grow": 1,
+              "shrink": 1
+            },
+            "events": {
+              "component": {
+                "onActionPerformed": {
+                  "type": "script",
+                  "scope": "G",
+                  "config": {
+                    "script": "\tapplication.demo.showSeparatorDetail(\"Booster Pump C\", \"pressure\")"
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "ia.input.button",
+            "meta": {
+              "name": "Tab7"
+            },
+            "props": {
+              "text": "Crude Export",
+              "style": {
+                "classes": "Separator/Tab"
+              }
+            },
+            "position": {
+              "basis": "0px",
+              "grow": 1,
+              "shrink": 1
+            },
+            "events": {
+              "component": {
+                "onActionPerformed": {
+                  "type": "script",
+                  "scope": "G",
+                  "config": {
+                    "script": "\tapplication.demo.showSeparatorDetail(\"Crude Export\", \"pressure\")"
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "ia.input.button",
+            "meta": {
+              "name": "Tab8"
+            },
+            "props": {
+              "text": "Gas Scrubber",
+              "style": {
+                "classes": "Separator/Tab"
+              }
+            },
+            "position": {
+              "basis": "0px",
+              "grow": 1,
+              "shrink": 1
+            },
+            "events": {
+              "component": {
+                "onActionPerformed": {
+                  "type": "script",
+                  "scope": "G",
+                  "config": {
+                    "script": "\tapplication.demo.showSeparatorDetail(\"Gas Scrubber\", \"pressure\")"
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "ia.input.button",
+            "meta": {
+              "name": "Tab9"
+            },
+            "props": {
+              "text": "Knockout Drum",
+              "style": {
+                "classes": "Separator/Tab"
+              }
+            },
+            "position": {
+              "basis": "0px",
+              "grow": 1,
+              "shrink": 1
+            },
+            "events": {
+              "component": {
+                "onActionPerformed": {
+                  "type": "script",
+                  "scope": "G",
+                  "config": {
+                    "script": "\tapplication.demo.showSeparatorDetail(\"Knockout Drum\", \"pressure\")"
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "ia.input.button",
+            "meta": {
+              "name": "Tab10"
+            },
+            "props": {
+              "text": "Drain System",
+              "style": {
+                "classes": "Separator/Tab"
+              }
+            },
+            "position": {
+              "basis": "0px",
+              "grow": 1,
+              "shrink": 1
+            },
+            "events": {
+              "component": {
+                "onActionPerformed": {
+                  "type": "script",
+                  "scope": "G",
+                  "config": {
+                    "script": "\tapplication.demo.showSeparatorDetail(\"Drain System\", \"pressure\")"
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "ia.input.button",
+            "meta": {
+              "name": "Tab11"
+            },
+            "props": {
+              "text": "Water Injection",
+              "style": {
+                "classes": "Separator/Tab"
+              }
+            },
+            "position": {
+              "basis": "0px",
+              "grow": 1,
+              "shrink": 1
+            },
+            "events": {
+              "component": {
+                "onActionPerformed": {
+                  "type": "script",
+                  "scope": "G",
+                  "config": {
+                    "script": "\tapplication.demo.showSeparatorDetail(\"Water Injection\", \"pressure\")"
+                  }
+                }
+              }
             }
           }
         ],
-        "position": {
-          "shrink": 0
-        }
-      },
-      {
-        "type": "ia.display.label",
-        "meta": {
-          "name": "LiveStatus"
-        },
-        "props": {
-          "text": "",
-          "style": {
-            "classes": "Demo/LiveStatus"
-          }
-        },
         "position": {
           "shrink": 0,
-          "basis": "auto"
-        },
-        "propConfig": {
-          "props.text": {
-            "binding": {
-              "type": "expr",
-              "config": {
-                "expression": "if({view.custom.live.ready}, \"Live \u00b7 recorded at \" + {view.custom.live.updatedAt} + \" \u00b7 updates every second\", \"Live telemetry is unavailable\")"
-              }
-            }
-          },
-          "props.style.color": {
-            "binding": {
-              "type": "expr",
-              "config": {
-                "expression": "if({view.custom.live.ready}, \"#6d757c\", \"#b57a17\")"
-              }
-            }
-          }
+          "basis": "29px"
         }
       },
       {
-        "type": "ia.container.flex",
+        "type": "ia.container.coord",
         "meta": {
-          "name": "Controls"
+          "name": "Process"
         },
         "props": {
-          "direction": "row",
-          "wrap": "wrap",
+          "mode": "percent",
+          "aspectRatio": "1740:910",
           "style": {
-            "classes": "Demo/Filters"
+            "backgroundColor": "#e6e6e6",
+            "overflow": "hidden",
+            "containerType": "inline-size"
           }
         },
         "children": [
           {
-            "type": "ia.input.dropdown",
+            "type": "ia.display.image",
             "meta": {
-              "name": "Line"
+              "name": "Piping"
             },
             "props": {
-              "options": [
-                {
-                  "value": 1,
-                  "label": "Rolling line 01"
-                },
-                {
-                  "value": 2,
-                  "label": "Cutting line 02"
-                },
-                {
-                  "value": 3,
-                  "label": "Milling line 03"
-                }
-              ],
-              "value": 1,
-              "search": {
-                "enabled": false
+              "source": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNzQwIiBoZWlnaHQ9IjkxMCIgdmlld0JveD0iMCAwIDE3NDAgOTEwIj48cGF0aCBkPSJNMTY2IDEyMiBIMTg5IFExOTQgMTIyIDE5NCAxMjggVjIwMCBINTE4IFE1MjQgMjAwIDUyNCAyMDYgVjI0MiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNTY1OTU3IiBzdHJva2Utd2lkdGg9IjEuOCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgLz48cGF0aCBkPSJNMTY2IDIwMCBIMjc3IFY4MTggUTI3NyA4MjIgMjgyIDgyMiBIMTQyMCBWNjI2IEgxNTIwIiBmaWxsPSJub25lIiBzdHJva2U9IiM1NjU5NTciIHN0cm9rZS13aWR0aD0iMS44IiBzdHJva2UtbGluZWpvaW49InJvdW5kIiAvPjxwYXRoIGQ9Ik0xNjYgMzU4IEgyNzciIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzU2NTk1NyIgc3Ryb2tlLXdpZHRoPSIxLjgiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIC8+PHBhdGggZD0iTTE2NiA0NDggSDI3NyIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNTY1OTU3IiBzdHJva2Utd2lkdGg9IjEuOCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgLz48cGF0aCBkPSJNMTY2IDUzOCBIMjcwIiBmaWxsPSJub25lIiBzdHJva2U9IiM1NjU5NTciIHN0cm9rZS13aWR0aD0iMS44IiBzdHJva2UtbGluZWpvaW49InJvdW5kIiAvPjxwYXRoIGQ9Ik0yODYgNTM4IEg1NDAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzU2NTk1NyIgc3Ryb2tlLXdpZHRoPSIxLjgiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIC8+PHBhdGggZD0iTTU1NSA1MzggSDgzOSBWNDk0IiBmaWxsPSJub25lIiBzdHJva2U9IiM1NjU5NTciIHN0cm9rZS13aWR0aD0iMS44IiBzdHJva2UtbGluZWpvaW49InJvdW5kIiAvPjxwYXRoIGQ9Ik04MzkgNDk0IFY3MTAgUTgzOSA3MTYgODQ1IDcxNiBIMTUyMCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNTY1OTU3IiBzdHJva2Utd2lkdGg9IjEuOCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgLz48cGF0aCBkPSJNODM5IDY0MSBIOTEzIiBmaWxsPSJub25lIiBzdHJva2U9IiM1NjU5NTciIHN0cm9rZS13aWR0aD0iMS44IiBzdHJva2UtbGluZWpvaW49InJvdW5kIiAvPjxwYXRoIGQ9Ik05NTAgNjEzIEgxMDQwIiBmaWxsPSJub25lIiBzdHJva2U9IiM1NjU5NTciIHN0cm9rZS13aWR0aD0iMS44IiBzdHJva2UtbGluZWpvaW49InJvdW5kIiAvPjxwYXRoIGQ9Ik0xMDgwIDYxMyBIMTUyMCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNTY1OTU3IiBzdHJva2Utd2lkdGg9IjEuOCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgLz48cGF0aCBkPSJNMTI4MCA0NzAgSDEzMzAgUTEzMzYgNDcwIDEzMzYgNDc2IFY2MTMiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzU2NTk1NyIgc3Ryb2tlLXdpZHRoPSIxLjgiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIC8+PHBhdGggZD0iTTEwNTggMzY4IFY0ODIgUTEwNTggNDg4IDEwNTIgNDg4IEg5NzAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzU2NTk1NyIgc3Ryb2tlLXdpZHRoPSIxLjgiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIC8+PHBhdGggZD0iTTM2OSA0MjEgVjU3NiBRMzY5IDU4MSAzNzUgNTgxIEg3MDAgVjc0MiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNTY1OTU3IiBzdHJva2Utd2lkdGg9IjEiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIHN0cm9rZS1kYXNoYXJyYXk9IjQgMyIvPjxwYXRoIGQ9Ik0xMDU4IDM2MSBIMTQ2OSBWNTg1IiBmaWxsPSJub25lIiBzdHJva2U9IiM1NjU5NTciIHN0cm9rZS13aWR0aD0iMSIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgc3Ryb2tlLWRhc2hhcnJheT0iNCAzIi8+PHBhdGggZD0iTTEyNjUgNzM1IFY2ODMgUTEyNjUgNjc3IDEyNzEgNjc3IEgxMzkwIFY2MTEiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzU2NTk1NyIgc3Ryb2tlLXdpZHRoPSIxIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBzdHJva2UtZGFzaGFycmF5PSI0IDMiLz48cGF0aCBkPSJNODk4IDI0MiBWMTk3IFE4OTggMTkzIDkwNCAxOTMgSDE1MjAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2QxYzM4OSIgc3Ryb2tlLXdpZHRoPSIxLjciIHN0cm9rZS1saW5lam9pbj0icm91bmQiIC8+PHBhdGggZD0iTTExOTAgMTkzIFYxMjIgUTExOTAgMTE3IDExOTYgMTE3IEgxNTIwIiBmaWxsPSJub25lIiBzdHJva2U9IiNkMWMzODkiIHN0cm9rZS13aWR0aD0iMS43IiBzdHJva2UtbGluZWpvaW49InJvdW5kIiAvPjxwYXRoIGQ9Ik01NDkgNDk2IFY3NjMgUTU0OSA3NjggNTU1IDc2OCBIMTUzMCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjOTNiY2QxIiBzdHJva2Utd2lkdGg9IjEuNyIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgLz48cGF0aCBkPSJNMTQyMCA3MTggVjc2MyIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNTY1OTU3IiBzdHJva2Utd2lkdGg9IjEuNyIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgLz48cGF0aCBkPSJNNTU5IDI0MiBWMTkzIiBmaWxsPSJub25lIiBzdHJva2U9IiM1NjU5NTciIHN0cm9rZS13aWR0aD0iMSIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgLz48cGF0aCBkPSJNNjQxIDI0MiBWMTU3IiBmaWxsPSJub25lIiBzdHJva2U9IiM1NjU5NTciIHN0cm9rZS13aWR0aD0iMSIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgLz48cGF0aCBkPSJNNzY2IDI0MiBWMTk2IiBmaWxsPSJub25lIiBzdHJva2U9IiM1NjU5NTciIHN0cm9rZS13aWR0aD0iMSIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgLz48cGF0aCBkPSJNODY1IDI0MiBWMTYwIiBmaWxsPSJub25lIiBzdHJva2U9IiM1NjU5NTciIHN0cm9rZS13aWR0aD0iMSIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgLz48cGF0aCBkPSJNOTk4IDI0NCBWMjYwIFE5OTggMjY1IDk4OSAyNjUgSDk3MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNTY1OTU3IiBzdHJva2Utd2lkdGg9IjEiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIC8+PHBhdGggZD0iTTMyMCA0MjAgVjM3NCBRMzIwIDM2NiAzMzAgMzY2IEg0MTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzU2NTk1NyIgc3Ryb2tlLXdpZHRoPSIxIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiAvPjxwYXRoIGQ9Ik0zMjAgNDI2IFY0NzAgUTMyMCA0NzcgMzMwIDQ3NyBINDM4IiBmaWxsPSJub25lIiBzdHJva2U9IiM1NjU5NTciIHN0cm9rZS13aWR0aD0iMSIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgLz48cGF0aCBkPSJNOTgzIDYxMyBWNTgzIiBmaWxsPSJub25lIiBzdHJva2U9IiM1NjU5NTciIHN0cm9rZS13aWR0aD0iMSIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgLz48cGF0aCBkPSJNMTEzMyA2MTMgVjU1NSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNTY1OTU3IiBzdHJva2Utd2lkdGg9IjEiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIC8+PHBhdGggZD0iTTEyMjQgNjEzIFY1MjciIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzU2NTk1NyIgc3Ryb2tlLXdpZHRoPSIxIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiAvPjxwYXRoIGQ9Ik0xMzkyIDYxMyBWNTUwIiBmaWxsPSJub25lIiBzdHJva2U9IiM1NjU5NTciIHN0cm9rZS13aWR0aD0iMSIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgLz48cGF0aCBkPSJNMTExNCAxOTIgVjE1OCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNTY1OTU3IiBzdHJva2Utd2lkdGg9IjEiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIC8+PHBhdGggZD0iTTYyMyA3NjggVjczNiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNTY1OTU3IiBzdHJva2Utd2lkdGg9IjEiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIC8+PHBhdGggZD0iTTkxOCA2OCBWMjEgUTkxOCAxNyA5MjQgMTcgSDEzODggVjE3NiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNTY1OTU3IiBzdHJva2Utd2lkdGg9IjEiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIHN0cm9rZS1kYXNoYXJyYXk9IjMgMyIvPjxwYXRoIGQ9Ik0xMDc1IDUxIEgxMjc1IFYxMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzU2NTk1NyIgc3Ryb2tlLXdpZHRoPSIxLjQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIC8+PGcgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNzc3Ij48cmVjdCB4PSIxMDYwIiB5PSI0MCIgd2lkdGg9IjMxIiBoZWlnaHQ9IjIxIi8+PHJlY3QgeD0iMTI2MCIgeT0iNDAiIHdpZHRoPSIzMSIgaGVpZ2h0PSIyMSIvPjxwYXRoIGQ9Ik0xMTQ1IDQ2IEwxMTcwIDU3IFY0NiBMMTE0NSA1NyBaIi8+PHJlY3QgeD0iMTE1MCIgeT0iMjciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNCIvPjwvZz48ZyBmb250LWZhbWlseT0iQXJpYWwiIGZpbGw9IiM1NTUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtc2l6ZT0iMTIiPjx0ZXh0IHg9IjEwNzUiIHk9IjU1Ij5BUzwvdGV4dD48dGV4dCB4PSIxMjc1IiB5PSI1NSI+SS9QPC90ZXh0Pjx0ZXh0IHg9IjExNTgiIHk9IjM4Ij5TPC90ZXh0Pjx0ZXh0IHg9IjExNTgiIHk9IjcxIj5TT1YxNTFBMjwvdGV4dD48L2c+PC9zdmc+",
+              "fit": {
+                "mode": "contain"
               },
               "style": {
-                "classes": "Demo/Select",
-                "overflow": "visible"
+                "pointerEvents": "none"
               }
             },
             "position": {
-              "shrink": 0,
-              "basis": "200px"
-            },
-            "propConfig": {
-              "props.value": {
-                "binding": {
-                  "type": "property",
-                  "config": {
-                    "path": "session.custom.demo.scadaLine",
-                    "bidirectional": true
-                  }
-                }
-              }
+              "x": 0.0,
+              "y": 0.0,
+              "width": 1.0,
+              "height": 1.0
             }
           },
           {
-            "type": "ia.input.dropdown",
+            "type": "ia.display.image",
             "meta": {
-              "name": "Area"
+              "name": "Vessel"
             },
             "props": {
-              "options": [
-                {
-                  "value": "peeling",
-                  "label": "Peeling & conveying"
-                },
-                {
-                  "value": "heating",
-                  "label": "Heat treatment"
-                }
-              ],
-              "value": "peeling",
-              "search": {
-                "enabled": false
+              "source": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MTAiIGhlaWdodD0iMjYwIiB2aWV3Qm94PSIwIDAgNjEwIDI2MCI+PC9zdmc+",
+              "fit": {
+                "mode": "contain"
               },
               "style": {
-                "classes": "Demo/Select",
-                "overflow": "visible"
+                "pointerEvents": "none"
               }
             },
             "position": {
-              "shrink": 0,
-              "basis": "200px"
+              "x": 0.23563218390804597,
+              "y": 0.26373626373626374,
+              "width": 0.3505747126436782,
+              "height": 0.2857142857142857
             },
             "propConfig": {
-              "props.value": {
-                "binding": {
-                  "type": "property",
-                  "config": {
-                    "path": "session.custom.demo.scadaArea",
-                    "bidirectional": true
-                  }
-                }
-              }
-            }
-          },
-          {
-            "type": "ia.display.label",
-            "meta": {
-              "name": "Hint"
-            },
-            "props": {
-              "text": "Drag to pan, wheel to zoom. Select a PV to trend it.",
-              "style": {
-                "classes": "Demo/Muted"
-              }
-            },
-            "position": {
-              "shrink": 0,
-              "basis": "auto"
-            }
-          },
-          {
-            "type": "ia.display.label",
-            "meta": {
-              "name": "LineState"
-            },
-            "props": {
-              "text": "",
-              "style": {
-                "classes": "Demo/ScadaState"
-              }
-            },
-            "position": {
-              "shrink": 0,
-              "basis": "auto"
-            },
-            "propConfig": {
-              "props.text": {
+              "props.source": {
                 "binding": {
                   "type": "expr",
                   "config": {
-                    "expression": "\"LINE STATE: \" + {view.custom.state}"
-                  }
-                }
-              },
-              "props.style.color": {
-                "binding": {
-                  "type": "expr",
-                  "config": {
-                    "expression": "if({view.custom.state} = \"Stopped\", \"#a52b24\", if({view.custom.state} = \"Quality hold\", \"#865900\", \"#343b40\"))"
-                  }
-                }
-              }
-            }
-          }
-        ],
-        "position": {
-          "shrink": 0
-        }
-      },
-      {
-        "type": "ia.container.flex",
-        "meta": {
-          "name": "ScadaWorkspace"
-        },
-        "props": {
-          "direction": "column",
-          "style": {
-            "classes": "Demo/ScadaWorkspace"
-          }
-        },
-        "children": [
-          {
-            "type": "mustrysolutions.perspective.display.panzoomview",
-            "meta": {
-              "name": "ScadaMap"
-            },
-            "props": {
-              "config": {
-                "viewPath": "Demo/ScadaViews/Peeling",
-                "viewParams": [
-                  {
-                    "name": "lineNumber",
-                    "value": 1
-                  }
-                ],
-                "contentWidth": 1205,
-                "contentHeight": 1020,
-                "minZoom": 0.25,
-                "maxZoom": 4,
-                "showControls": true,
-                "showMinimap": true,
-                "showPoiList": true,
-                "wheelZoom": true,
-                "doubleClickZoom": true,
-                "flyToMs": 350,
-                "home": {
-                  "x": -1,
-                  "y": -1,
-                  "zoom": 0
-                }
-              },
-              "data": {
-                "pois": []
-              },
-              "style": {
-                "classes": "Demo/ScadaMap",
-                "minHeight": "360px"
-              }
-            },
-            "position": {
-              "shrink": 1,
-              "basis": "0px",
-              "grow": 1
-            },
-            "propConfig": {
-              "props.config.contentWidth": {
-                "binding": {
-                  "type": "expr",
-                  "config": {
-                    "expression": "if({session.custom.demo.scadaArea} = \"heating\", 1626, 1205)"
-                  }
-                }
-              },
-              "props.config.contentHeight": {
-                "binding": {
-                  "type": "expr",
-                  "config": {
-                    "expression": "if({session.custom.demo.scadaArea} = \"heating\", 1592, 1020)"
-                  }
-                },
-                "onChange": {
-                  "enabled": true,
-                  "script": "\tif currentValue.value != previousValue.value:\n\t\tself.props.state.zoom = 0"
-                }
-              },
-              "props.config.viewPath": {
-                "binding": {
-                  "type": "expr",
-                  "config": {
-                    "expression": "if({session.custom.demo.scadaArea} = \"heating\", \"Demo/ScadaViews/Heating\", \"Demo/ScadaViews/Peeling\")"
-                  }
-                }
-              },
-              "props.config.viewParams[0].value": {
-                "binding": {
-                  "type": "property",
-                  "config": {
-                    "path": "session.custom.demo.scadaLine"
-                  }
-                }
-              },
-              "props.data.pois": {
-                "binding": {
-                  "type": "property",
-                  "config": {
-                    "path": "session.custom.demo.scadaArea"
+                    "expression": "now(1000)"
                   },
                   "transforms": [
                     {
                       "type": "script",
-                      "code": "\tif value == \"heating\":\n\t\treturn [{\"name\":\"Heater\", \"x\":500,\"y\":600,\"zoom\":1.1},{\"name\":\"Heat exchanger\",\"x\":850,\"y\":900,\"zoom\":1.4}]\n\treturn [{\"name\":\"Infeed\", \"x\":300,\"y\":150,\"zoom\":1.5},{\"name\":\"Peeling\", \"x\":580,\"y\":490,\"zoom\":1.3},\n\t\t{\"name\":\"Discharge\", \"x\":850,\"y\":710,\"zoom\":1.4}]"
+                      "code": "\treturn application.demo.separatorVesselSvg()"
                     }
                   ]
                 }
@@ -478,1506 +467,1189 @@
             }
           },
           {
-            "type": "ia.container.flex",
+            "type": "ia.display.view",
             "meta": {
-              "name": "TrendPanel"
+              "name": "PressureTrend"
             },
             "props": {
-              "direction": "column",
+              "path": "Demo/Separator/Trend",
+              "params": {
+                "signal": "pressure",
+                "colour": "#d2ab53",
+                "sp": 3.88
+              },
+              "useDefaultViewWidth": false,
+              "useDefaultViewHeight": false
+            },
+            "position": {
+              "x": 0.24367816091954023,
+              "y": 0.3120879120879121,
+              "width": 0.3275862068965517,
+              "height": 0.06813186813186813
+            }
+          },
+          {
+            "type": "ia.display.view",
+            "meta": {
+              "name": "LevelTrend"
+            },
+            "props": {
+              "path": "Demo/Separator/Trend",
+              "params": {
+                "signal": "level",
+                "colour": "#7c8185",
+                "sp": 47.33
+              },
+              "useDefaultViewWidth": false,
+              "useDefaultViewHeight": false
+            },
+            "position": {
+              "x": 0.41379310344827586,
+              "y": 0.37362637362637363,
+              "width": 0.1557471264367816,
+              "height": 0.06813186813186813
+            }
+          },
+          {
+            "type": "ia.display.view",
+            "meta": {
+              "name": "InterfaceTrend"
+            },
+            "props": {
+              "path": "Demo/Separator/Trend",
+              "params": {
+                "signal": "interface",
+                "colour": "#789cad",
+                "sp": 21.51
+              },
+              "useDefaultViewWidth": false,
+              "useDefaultViewHeight": false
+            },
+            "position": {
+              "x": 0.25517241379310346,
+              "y": 0.4714285714285714,
+              "width": 0.15402298850574714,
+              "height": 0.07142857142857142
+            }
+          },
+          {
+            "type": "ia.display.view",
+            "meta": {
+              "name": "PI153A"
+            },
+            "props": {
+              "path": "Demo/Separator/Instrument",
+              "params": {
+                "tag": "PI153A",
+                "kind": "PI",
+                "signal": "pressure",
+                "colour": "#f7f7f7",
+                "value": "--"
+              },
+              "useDefaultViewWidth": false,
+              "useDefaultViewHeight": false
+            },
+            "position": {
+              "x": 0.3103448275862069,
+              "y": 0.18021978021978022,
+              "width": 0.07471264367816093,
+              "height": 0.056043956043956046
+            },
+            "propConfig": {
+              "props.params.value": {
+                "binding": {
+                  "type": "expr",
+                  "config": {
+                    "expression": "try({view.custom.data.pressure}, 0)"
+                  },
+                  "transforms": [
+                    {
+                      "type": "script",
+                      "code": "\treturn u\"{0:.2f} bar\".format(value or 0)"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "type": "ia.display.view",
+            "meta": {
+              "name": "PI152A"
+            },
+            "props": {
+              "path": "Demo/Separator/Instrument",
+              "params": {
+                "tag": "PI152A",
+                "kind": "PI",
+                "signal": "pressure",
+                "colour": "#f7f7f7",
+                "value": "--"
+              },
+              "useDefaultViewWidth": false,
+              "useDefaultViewHeight": false
+            },
+            "position": {
+              "x": 0.3649425287356322,
+              "y": 0.13956043956043956,
+              "width": 0.07471264367816093,
+              "height": 0.056043956043956046
+            },
+            "propConfig": {
+              "props.params.value": {
+                "binding": {
+                  "type": "expr",
+                  "config": {
+                    "expression": "try({view.custom.data.pressure}, 0)"
+                  },
+                  "transforms": [
+                    {
+                      "type": "script",
+                      "code": "\treturn u\"{0:.2f} bar\".format(value or 0)"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "type": "ia.display.view",
+            "meta": {
+              "name": "PIC151A"
+            },
+            "props": {
+              "path": "Demo/Separator/Instrument",
+              "params": {
+                "tag": "PIC151A",
+                "kind": "PI",
+                "signal": "pressure",
+                "colour": "#f7f7f7",
+                "value": "--"
+              },
+              "useDefaultViewWidth": false,
+              "useDefaultViewHeight": false
+            },
+            "position": {
+              "x": 0.48563218390804597,
+              "y": 0.14175824175824175,
+              "width": 0.07471264367816093,
+              "height": 0.056043956043956046
+            },
+            "propConfig": {
+              "props.params.value": {
+                "binding": {
+                  "type": "expr",
+                  "config": {
+                    "expression": "try({view.custom.data.pressure}, 0)"
+                  },
+                  "transforms": [
+                    {
+                      "type": "script",
+                      "code": "\treturn u\"{0:.2f} bar\".format(value or 0)"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "type": "ia.display.view",
+            "meta": {
+              "name": "TI151A"
+            },
+            "props": {
+              "path": "Demo/Separator/Instrument",
+              "params": {
+                "tag": "TI151A",
+                "kind": "TI",
+                "signal": "temperature",
+                "colour": "#f7f7f7",
+                "value": "--"
+              },
+              "useDefaultViewWidth": false,
+              "useDefaultViewHeight": false
+            },
+            "position": {
+              "x": 0.432183908045977,
+              "y": 0.1813186813186813,
+              "width": 0.07471264367816093,
+              "height": 0.056043956043956046
+            },
+            "propConfig": {
+              "props.params.value": {
+                "binding": {
+                  "type": "expr",
+                  "config": {
+                    "expression": "try({view.custom.data.temperature}, 0)"
+                  },
+                  "transforms": [
+                    {
+                      "type": "script",
+                      "code": "\treturn u\"{0:.2f} \u00b0C\".format(value or 0)"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "type": "ia.display.view",
+            "meta": {
+              "name": "LI156A"
+            },
+            "props": {
+              "path": "Demo/Separator/Instrument",
+              "params": {
+                "tag": "LI156A",
+                "kind": "LI",
+                "signal": "iop",
+                "colour": "#f7f7f7",
+                "value": "--"
+              },
+              "useDefaultViewWidth": false,
+              "useDefaultViewHeight": false
+            },
+            "position": {
+              "x": 0.5689655172413793,
+              "y": 0.23736263736263735,
+              "width": 0.07471264367816093,
+              "height": 0.056043956043956046
+            },
+            "propConfig": {
+              "props.params.value": {
+                "binding": {
+                  "type": "expr",
+                  "config": {
+                    "expression": "try({view.custom.data.iop}, 0)"
+                  },
+                  "transforms": [
+                    {
+                      "type": "script",
+                      "code": "\treturn \"IOP\""
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "type": "ia.display.view",
+            "meta": {
+              "name": "LIC152A"
+            },
+            "props": {
+              "path": "Demo/Separator/Instrument",
+              "params": {
+                "tag": "LIC152A",
+                "kind": "LI",
+                "signal": "level",
+                "colour": "#a7eef0",
+                "value": "--"
+              },
+              "useDefaultViewWidth": false,
+              "useDefaultViewHeight": false
+            },
+            "position": {
+              "x": 0.6040229885057471,
+              "y": 0.3659340659340659,
+              "width": 0.07471264367816093,
+              "height": 0.056043956043956046
+            },
+            "propConfig": {
+              "props.params.value": {
+                "binding": {
+                  "type": "expr",
+                  "config": {
+                    "expression": "try({view.custom.data.level}, 0)"
+                  },
+                  "transforms": [
+                    {
+                      "type": "script",
+                      "code": "\treturn u\"{0:.2f} %\".format(value or 0)"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "type": "ia.display.view",
+            "meta": {
+              "name": "LIC151A"
+            },
+            "props": {
+              "path": "Demo/Separator/Instrument",
+              "params": {
+                "tag": "LIC151A",
+                "kind": "LI",
+                "signal": "interface",
+                "colour": "#ffe044",
+                "value": "--"
+              },
+              "useDefaultViewWidth": false,
+              "useDefaultViewHeight": false
+            },
+            "position": {
+              "x": 0.1781609195402299,
+              "y": 0.42857142857142855,
+              "width": 0.07471264367816093,
+              "height": 0.056043956043956046
+            },
+            "propConfig": {
+              "props.params.value": {
+                "binding": {
+                  "type": "expr",
+                  "config": {
+                    "expression": "try({view.custom.data.interface}, 0)"
+                  },
+                  "transforms": [
+                    {
+                      "type": "script",
+                      "code": "\treturn u\"{0:.2f} %\".format(value or 0)"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "type": "ia.display.view",
+            "meta": {
+              "name": "LI157A"
+            },
+            "props": {
+              "path": "Demo/Separator/Instrument",
+              "params": {
+                "tag": "LI157A",
+                "kind": "LI",
+                "signal": "drain",
+                "colour": "#f7f7f7",
+                "value": "--"
+              },
+              "useDefaultViewWidth": false,
+              "useDefaultViewHeight": false
+            },
+            "position": {
+              "x": 0.22528735632183908,
+              "y": 0.5340659340659341,
+              "width": 0.07471264367816093,
+              "height": 0.056043956043956046
+            },
+            "propConfig": {
+              "props.params.value": {
+                "binding": {
+                  "type": "expr",
+                  "config": {
+                    "expression": "try({view.custom.data.drain}, 0)"
+                  },
+                  "transforms": [
+                    {
+                      "type": "script",
+                      "code": "\treturn u\"{0:.0f} %\".format(value or 0)"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "type": "ia.display.view",
+            "meta": {
+              "name": "LI153A"
+            },
+            "props": {
+              "path": "Demo/Separator/Instrument",
+              "params": {
+                "tag": "LI153A",
+                "kind": "LI",
+                "signal": "level",
+                "colour": "#f7f7f7",
+                "value": "--"
+              },
+              "useDefaultViewWidth": false,
+              "useDefaultViewHeight": false
+            },
+            "position": {
+              "x": 0.5735632183908046,
+              "y": 0.5230769230769231,
+              "width": 0.07471264367816093,
+              "height": 0.056043956043956046
+            },
+            "propConfig": {
+              "props.params.value": {
+                "binding": {
+                  "type": "expr",
+                  "config": {
+                    "expression": "try({view.custom.data.level}, 0)"
+                  },
+                  "transforms": [
+                    {
+                      "type": "script",
+                      "code": "\treturn u\"{0:.2f} %\".format(value or 0)"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "type": "ia.display.view",
+            "meta": {
+              "name": "FIC151A"
+            },
+            "props": {
+              "path": "Demo/Separator/Instrument",
+              "params": {
+                "tag": "FIC151A",
+                "kind": "FI",
+                "signal": "gas",
+                "colour": "#f7f7f7",
+                "value": "--"
+              },
+              "useDefaultViewWidth": false,
+              "useDefaultViewHeight": false
+            },
+            "position": {
+              "x": 0.6149425287356322,
+              "y": 0.13296703296703297,
+              "width": 0.07471264367816093,
+              "height": 0.056043956043956046
+            },
+            "propConfig": {
+              "props.params.value": {
+                "binding": {
+                  "type": "expr",
+                  "config": {
+                    "expression": "try({view.custom.data.gas}, 0)"
+                  },
+                  "transforms": [
+                    {
+                      "type": "script",
+                      "code": "\treturn u\"{0:.1f} MMSCF/D\".format(value or 0)"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "type": "ia.display.view",
+            "meta": {
+              "name": "PI162A"
+            },
+            "props": {
+              "path": "Demo/Separator/Instrument",
+              "params": {
+                "tag": "PI162A",
+                "kind": "PI",
+                "signal": "suction",
+                "colour": "#f7f7f7",
+                "value": "--"
+              },
+              "useDefaultViewWidth": false,
+              "useDefaultViewHeight": false
+            },
+            "position": {
+              "x": 0.539080459770115,
+              "y": 0.6208791208791209,
+              "width": 0.07471264367816093,
+              "height": 0.056043956043956046
+            },
+            "propConfig": {
+              "props.params.value": {
+                "binding": {
+                  "type": "expr",
+                  "config": {
+                    "expression": "try({view.custom.data.suction}, 0)"
+                  },
+                  "transforms": [
+                    {
+                      "type": "script",
+                      "code": "\treturn u\"{0:.1f} bar\".format(value or 0)"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "type": "ia.display.view",
+            "meta": {
+              "name": "PI165A"
+            },
+            "props": {
+              "path": "Demo/Separator/Instrument",
+              "params": {
+                "tag": "PI165A",
+                "kind": "PI",
+                "signal": "discharge",
+                "colour": "#f7f7f7",
+                "value": "--"
+              },
+              "useDefaultViewWidth": false,
+              "useDefaultViewHeight": false
+            },
+            "position": {
+              "x": 0.6264367816091954,
+              "y": 0.5912087912087912,
+              "width": 0.07471264367816093,
+              "height": 0.056043956043956046
+            },
+            "propConfig": {
+              "props.params.value": {
+                "binding": {
+                  "type": "expr",
+                  "config": {
+                    "expression": "try({view.custom.data.discharge}, 0)"
+                  },
+                  "transforms": [
+                    {
+                      "type": "script",
+                      "code": "\treturn u\"{0:.1f} bar\".format(value or 0)"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "type": "ia.display.view",
+            "meta": {
+              "name": "PI164A"
+            },
+            "props": {
+              "path": "Demo/Separator/Instrument",
+              "params": {
+                "tag": "PI164A",
+                "kind": "PI",
+                "signal": "exportPressure",
+                "colour": "#f7f7f7",
+                "value": "--"
+              },
+              "useDefaultViewWidth": false,
+              "useDefaultViewHeight": false
+            },
+            "position": {
+              "x": 0.6781609195402298,
+              "y": 0.5604395604395604,
+              "width": 0.07471264367816093,
+              "height": 0.056043956043956046
+            },
+            "propConfig": {
+              "props.params.value": {
+                "binding": {
+                  "type": "expr",
+                  "config": {
+                    "expression": "try({view.custom.data.exportPressure}, 0)"
+                  },
+                  "transforms": [
+                    {
+                      "type": "script",
+                      "code": "\treturn u\"{0:.1f} bar\".format(value or 0)"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "type": "ia.display.view",
+            "meta": {
+              "name": "FIC161A"
+            },
+            "props": {
+              "path": "Demo/Separator/Instrument",
+              "params": {
+                "tag": "FIC161A",
+                "kind": "FI",
+                "signal": "flow",
+                "colour": "#f7f7f7",
+                "value": "--"
+              },
+              "useDefaultViewWidth": false,
+              "useDefaultViewHeight": false
+            },
+            "position": {
+              "x": 0.7741379310344828,
+              "y": 0.5901098901098901,
+              "width": 0.07471264367816093,
+              "height": 0.056043956043956046
+            },
+            "propConfig": {
+              "props.params.value": {
+                "binding": {
+                  "type": "expr",
+                  "config": {
+                    "expression": "try({view.custom.data.flow}, 0)"
+                  },
+                  "transforms": [
+                    {
+                      "type": "script",
+                      "code": "\treturn u\"{0:.1f} M3/h\".format(value or 0)"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "type": "ia.display.view",
+            "meta": {
+              "name": "FIC152A"
+            },
+            "props": {
+              "path": "Demo/Separator/Instrument",
+              "params": {
+                "tag": "FIC152A",
+                "kind": "FI",
+                "signal": "iop",
+                "colour": "#f7f7f7",
+                "value": "--"
+              },
+              "useDefaultViewWidth": false,
+              "useDefaultViewHeight": false
+            },
+            "position": {
+              "x": 0.332183908045977,
+              "y": 0.7571428571428571,
+              "width": 0.07471264367816093,
+              "height": 0.056043956043956046
+            },
+            "propConfig": {
+              "props.params.value": {
+                "binding": {
+                  "type": "expr",
+                  "config": {
+                    "expression": "try({view.custom.data.iop}, 0)"
+                  },
+                  "transforms": [
+                    {
+                      "type": "script",
+                      "code": "\treturn \"IOP\""
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "type": "ia.display.view",
+            "meta": {
+              "name": "SDV151A"
+            },
+            "props": {
+              "path": "Demo/Separator/Device",
+              "params": {
+                "tag": "SDV151A",
+                "source": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI3OCIgaGVpZ2h0PSI3NSIgdmlld0JveD0iMCAwIDc4IDc1Ij48ZyBmb250LWZhbWlseT0iQXJpYWwiIGZpbGw9IiM1NTUiPjxwYXRoIGQ9Ik0yMCA0MyBMNTYgNTkgTDU2IDQzIEwyMCA1OSBaIiBmaWxsPSIjYTdkZmE1IiBzdHJva2U9IiM1NTUiIHN0cm9rZS13aWR0aD0iMS42Ii8+PHBhdGggZD0iTTM4IDI5IFY1MSIgc3Ryb2tlPSIjNTU1IiBzdHJva2Utd2lkdGg9IjEuNCIvPjxyZWN0IHg9IjI5IiB5PSIxNyIgd2lkdGg9IjIwIiBoZWlnaHQ9IjEyIiBmaWxsPSIjYTdkZmE1IiBzdHJva2U9IiM1NTUiIHN0cm9rZS13aWR0aD0iMS40Ii8+PHBhdGggZD0iTTI5IDIzIEg0OSBNMzkgMTcgVjI5IiBzdHJva2U9IiM1NTUiLz48L2c+PC9zdmc+",
+                "highlight": true,
+                "signal": "pressure"
+              },
+              "useDefaultViewWidth": false,
+              "useDefaultViewHeight": false
+            },
+            "position": {
+              "x": 0.11494252873563218,
+              "y": 0.17472527472527472,
+              "width": 0.03735632183908046,
+              "height": 0.08901098901098901
+            }
+          },
+          {
+            "type": "ia.display.view",
+            "meta": {
+              "name": "PCV151A2"
+            },
+            "props": {
+              "path": "Demo/Separator/Device",
+              "params": {
+                "tag": "PCV151A2",
+                "source": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI3OCIgaGVpZ2h0PSI3NSIgdmlld0JveD0iMCAwIDc4IDc1Ij48ZyBmb250LWZhbWlseT0iQXJpYWwiIGZpbGw9IiM1NTUiPjxwYXRoIGQ9Ik0yMCA0MyBMNTYgNTkgTDU2IDQzIEwyMCA1OSBaIiBmaWxsPSIjYTdkZmE1IiBzdHJva2U9IiM1NTUiIHN0cm9rZS13aWR0aD0iMS42Ii8+PHBhdGggZD0iTTM4IDI5IFY1MSIgc3Ryb2tlPSIjNTU1IiBzdHJva2Utd2lkdGg9IjEuNCIvPjxwYXRoIGQ9Ik0yNCAyOSBBMTQgMTIgMCAwIDEgNTIgMjkgWiIgZmlsbD0iI2E3ZGZhNSIgc3Ryb2tlPSIjNTU1IiBzdHJva2Utd2lkdGg9IjEuNCIvPjx0ZXh0IHg9IjU5IiB5PSIzMCIgZm9udC1zaXplPSIxMiI+QTwvdGV4dD48L2c+PC9zdmc+",
+                "highlight": true,
+                "signal": "gas"
+              },
+              "useDefaultViewWidth": false,
+              "useDefaultViewHeight": false
+            },
+            "position": {
+              "x": 0.7080459770114943,
+              "y": 0.08021978021978023,
+              "width": 0.04482758620689655,
+              "height": 0.09230769230769231
+            }
+          },
+          {
+            "type": "ia.display.view",
+            "meta": {
+              "name": "PCV151A1"
+            },
+            "props": {
+              "path": "Demo/Separator/Device",
+              "params": {
+                "tag": "PCV151A1",
+                "source": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI3OCIgaGVpZ2h0PSI3NSIgdmlld0JveD0iMCAwIDc4IDc1Ij48ZyBmb250LWZhbWlseT0iQXJpYWwiIGZpbGw9IiM1NTUiPjxwYXRoIGQ9Ik0yMCA0MyBMNTYgNTkgTDU2IDQzIEwyMCA1OSBaIiBmaWxsPSIjYTdkZmE1IiBzdHJva2U9IiM1NTUiIHN0cm9rZS13aWR0aD0iMS42Ii8+PHBhdGggZD0iTTM4IDI5IFY1MSIgc3Ryb2tlPSIjNTU1IiBzdHJva2Utd2lkdGg9IjEuNCIvPjxwYXRoIGQ9Ik0yNCAyOSBBMTQgMTIgMCAwIDEgNTIgMjkgWiIgZmlsbD0iI2E3ZGZhNSIgc3Ryb2tlPSIjNTU1IiBzdHJva2Utd2lkdGg9IjEuNCIvPjx0ZXh0IHg9IjU5IiB5PSIzMCIgZm9udC1zaXplPSIxMiI+QTwvdGV4dD48L2c+PC9zdmc+",
+                "highlight": false,
+                "signal": "gas"
+              },
+              "useDefaultViewWidth": false,
+              "useDefaultViewHeight": false
+            },
+            "position": {
+              "x": 0.7758620689655172,
+              "y": 0.1813186813186813,
+              "width": 0.044252873563218394,
+              "height": 0.09010989010989011
+            }
+          },
+          {
+            "type": "ia.display.view",
+            "meta": {
+              "name": "SDV161A"
+            },
+            "props": {
+              "path": "Demo/Separator/Device",
+              "params": {
+                "tag": "SDV161A",
+                "source": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI3OCIgaGVpZ2h0PSI3NSIgdmlld0JveD0iMCAwIDc4IDc1Ij48ZyBmb250LWZhbWlseT0iQXJpYWwiIGZpbGw9IiM1NTUiPjxwYXRoIGQ9Ik0yMCA0MyBMNTYgNTkgTDU2IDQzIEwyMCA1OSBaIiBmaWxsPSIjYTdkZmE1IiBzdHJva2U9IiM1NTUiIHN0cm9rZS13aWR0aD0iMS42Ii8+PHBhdGggZD0iTTM4IDI5IFY1MSIgc3Ryb2tlPSIjNTU1IiBzdHJva2Utd2lkdGg9IjEuNCIvPjxyZWN0IHg9IjI5IiB5PSIxNyIgd2lkdGg9IjIwIiBoZWlnaHQ9IjEyIiBmaWxsPSIjYTdkZmE1IiBzdHJva2U9IiM1NTUiIHN0cm9rZS13aWR0aD0iMS40Ii8+PHBhdGggZD0iTTI5IDIzIEg0OSBNMzkgMTcgVjI5IiBzdHJva2U9IiM1NTUiLz48L2c+PC9zdmc+",
+                "highlight": true,
+                "signal": "suction"
+              },
+              "useDefaultViewWidth": false,
+              "useDefaultViewHeight": false
+            },
+            "position": {
+              "x": 0.5028735632183908,
+              "y": 0.6527472527472528,
+              "width": 0.04367816091954023,
+              "height": 0.08681318681318681
+            }
+          },
+          {
+            "type": "ia.display.view",
+            "meta": {
+              "name": "P01A"
+            },
+            "props": {
+              "path": "Demo/Separator/Device",
+              "params": {
+                "tag": "P01A",
+                "source": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI3OCIgaGVpZ2h0PSI3NSIgdmlld0JveD0iMCAwIDc4IDc1Ij48ZyBmb250LWZhbWlseT0iQXJpYWwiIGZpbGw9IiM1NTUiPjxjaXJjbGUgY3g9IjM5IiBjeT0iMzYiIHI9IjIzIiBmaWxsPSIjYzBkZmI4IiBzdHJva2U9IiM1NTUiIHN0cm9rZS13aWR0aD0iMiIvPjxwYXRoIGQ9Ik0zOSAzNiBRMTYgMTUgMzAgMTcgUTQ1IDE0IDQzIDMxIFoiIHRyYW5zZm9ybT0icm90YXRlKDAgMzkgMzYpIiBmaWxsPSIjNTQ4NDU1Ii8+PHBhdGggZD0iTTM5IDM2IFExNiAxNSAzMCAxNyBRNDUgMTQgNDMgMzEgWiIgdHJhbnNmb3JtPSJyb3RhdGUoOTAgMzkgMzYpIiBmaWxsPSIjNTQ4NDU1Ii8+PHBhdGggZD0iTTM5IDM2IFExNiAxNSAzMCAxNyBRNDUgMTQgNDMgMzEgWiIgdHJhbnNmb3JtPSJyb3RhdGUoMTgwIDM5IDM2KSIgZmlsbD0iIzU0ODQ1NSIvPjxwYXRoIGQ9Ik0zOSAzNiBRMTYgMTUgMzAgMTcgUTQ1IDE0IDQzIDMxIFoiIHRyYW5zZm9ybT0icm90YXRlKDI3MCAzOSAzNikiIGZpbGw9IiM1NDg0NTUiLz48Y2lyY2xlIGN4PSIzOSIgY3k9IjM2IiByPSI2IiBmaWxsPSIjNTU1Ii8+PHRleHQgeD0iNjAiIHk9IjEyIiBmb250LXNpemU9IjEyIj5NPC90ZXh0Pjx0ZXh0IHg9IjYwIiB5PSI2NCIgZm9udC1zaXplPSIxMSI+UjwvdGV4dD48L2c+PC9zdmc+",
+                "highlight": true,
+                "signal": "flow"
+              },
+              "useDefaultViewWidth": false,
+              "useDefaultViewHeight": false
+            },
+            "position": {
+              "x": 0.5890804597701149,
+              "y": 0.6483516483516484,
+              "width": 0.04367816091954023,
+              "height": 0.08901098901098901
+            }
+          },
+          {
+            "type": "ia.display.view",
+            "meta": {
+              "name": "SDV162A"
+            },
+            "props": {
+              "path": "Demo/Separator/Device",
+              "params": {
+                "tag": "SDV162A",
+                "source": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI3OCIgaGVpZ2h0PSI3NSIgdmlld0JveD0iMCAwIDc4IDc1Ij48ZyBmb250LWZhbWlseT0iQXJpYWwiIGZpbGw9IiM1NTUiPjxwYXRoIGQ9Ik0yMCA0MyBMNTYgNTkgTDU2IDQzIEwyMCA1OSBaIiBmaWxsPSIjYTdkZmE1IiBzdHJva2U9IiM1NTUiIHN0cm9rZS13aWR0aD0iMS42Ii8+PHBhdGggZD0iTTM4IDI5IFY1MSIgc3Ryb2tlPSIjNTU1IiBzdHJva2Utd2lkdGg9IjEuNCIvPjxyZWN0IHg9IjI5IiB5PSIxNyIgd2lkdGg9IjIwIiBoZWlnaHQ9IjEyIiBmaWxsPSIjYTdkZmE1IiBzdHJva2U9IiM1NTUiIHN0cm9rZS13aWR0aD0iMS40Ii8+PHBhdGggZD0iTTI5IDIzIEg0OSBNMzkgMTcgVjI5IiBzdHJva2U9IiM1NTUiLz48L2c+PC9zdmc+",
+                "highlight": true,
+                "signal": "exportPressure"
+              },
+              "useDefaultViewWidth": false,
+              "useDefaultViewHeight": false
+            },
+            "position": {
+              "x": 0.7132183908045977,
+              "y": 0.6318681318681318,
+              "width": 0.044252873563218394,
+              "height": 0.08791208791208792
+            }
+          },
+          {
+            "type": "ia.display.view",
+            "meta": {
+              "name": "LCV152A"
+            },
+            "props": {
+              "path": "Demo/Separator/Device",
+              "params": {
+                "tag": "LCV152A",
+                "source": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI3OCIgaGVpZ2h0PSI3NSIgdmlld0JveD0iMCAwIDc4IDc1Ij48ZyBmb250LWZhbWlseT0iQXJpYWwiIGZpbGw9IiM1NTUiPjxwYXRoIGQ9Ik0yMCA0MyBMNTYgNTkgTDU2IDQzIEwyMCA1OSBaIiBmaWxsPSIjYTdkZmE1IiBzdHJva2U9IiM1NTUiIHN0cm9rZS13aWR0aD0iMS42Ii8+PHBhdGggZD0iTTM4IDI5IFY1MSIgc3Ryb2tlPSIjNTU1IiBzdHJva2Utd2lkdGg9IjEuNCIvPjxwYXRoIGQ9Ik0yNCAyOSBBMTQgMTIgMCAwIDEgNTIgMjkgWiIgZmlsbD0iI2E3ZGZhNSIgc3Ryb2tlPSIjNTU1IiBzdHJva2Utd2lkdGg9IjEuNCIvPjx0ZXh0IHg9IjU5IiB5PSIzMCIgZm9udC1zaXplPSIxMiI+QTwvdGV4dD48L2c+PC9zdmc+",
+                "highlight": false,
+                "signal": "flow"
+              },
+              "useDefaultViewWidth": false,
+              "useDefaultViewHeight": false
+            },
+            "position": {
+              "x": 0.8235632183908046,
+              "y": 0.6384615384615384,
+              "width": 0.044252873563218394,
+              "height": 0.08791208791208792
+            }
+          },
+          {
+            "type": "ia.display.view",
+            "meta": {
+              "name": "LCV151A"
+            },
+            "props": {
+              "path": "Demo/Separator/Device",
+              "params": {
+                "tag": "LCV151A",
+                "source": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI3OCIgaGVpZ2h0PSI3NSIgdmlld0JveD0iMCAwIDc4IDc1Ij48ZyBmb250LWZhbWlseT0iQXJpYWwiIGZpbGw9IiM1NTUiPjxwYXRoIGQ9Ik0yMCA0MyBMNTYgNTkgTDU2IDQzIEwyMCA1OSBaIiBmaWxsPSIjYjNiM2IzIiBzdHJva2U9IiM1NTUiIHN0cm9rZS13aWR0aD0iMS42Ii8+PHBhdGggZD0iTTM4IDI5IFY1MSIgc3Ryb2tlPSIjNTU1IiBzdHJva2Utd2lkdGg9IjEuNCIvPjxwYXRoIGQ9Ik0yNCAyOSBBMTQgMTIgMCAwIDEgNTIgMjkgWiIgZmlsbD0iI2IzYjNiMyIgc3Ryb2tlPSIjNTU1IiBzdHJva2Utd2lkdGg9IjEuNCIvPjx0ZXh0IHg9IjU5IiB5PSIzMCIgZm9udC1zaXplPSIxMiI+TTwvdGV4dD48L2c+PC9zdmc+",
+                "highlight": false,
+                "signal": "interface"
+              },
+              "useDefaultViewWidth": false,
+              "useDefaultViewHeight": false
+            },
+            "position": {
+              "x": 0.3775862068965517,
+              "y": 0.8076923076923077,
+              "width": 0.04597701149425287,
+              "height": 0.08241758241758242
+            }
+          },
+          {
+            "type": "ia.display.view",
+            "meta": {
+              "name": "SDV152A"
+            },
+            "props": {
+              "path": "Demo/Separator/Device",
+              "params": {
+                "tag": "SDV152A",
+                "source": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI3OCIgaGVpZ2h0PSI3NSIgdmlld0JveD0iMCAwIDc4IDc1Ij48ZyBmb250LWZhbWlseT0iQXJpYWwiIGZpbGw9IiM1NTUiPjxwYXRoIGQ9Ik0yMCA0MyBMNTYgNTkgTDU2IDQzIEwyMCA1OSBaIiBmaWxsPSIjYjNiM2IzIiBzdHJva2U9IiM1NTUiIHN0cm9rZS13aWR0aD0iMS42Ii8+PHBhdGggZD0iTTM4IDI5IFY1MSIgc3Ryb2tlPSIjNTU1IiBzdHJva2Utd2lkdGg9IjEuNCIvPjxyZWN0IHg9IjI5IiB5PSIxNyIgd2lkdGg9IjIwIiBoZWlnaHQ9IjEyIiBmaWxsPSIjYjNiM2IzIiBzdHJva2U9IiM1NTUiIHN0cm9rZS13aWR0aD0iMS40Ii8+PHBhdGggZD0iTTI5IDIzIEg0OSBNMzkgMTcgVjI5IiBzdHJva2U9IiM1NTUiLz48L2c+PC9zdmc+",
+                "highlight": false,
+                "signal": "interface"
+              },
+              "useDefaultViewWidth": false,
+              "useDefaultViewHeight": false
+            },
+            "position": {
+              "x": 0.4339080459770115,
+              "y": 0.8076923076923077,
+              "width": 0.038505747126436785,
+              "height": 0.08241758241758242
+            }
+          },
+          {
+            "type": "ia.display.view",
+            "meta": {
+              "name": "FCV161A"
+            },
+            "props": {
+              "path": "Demo/Separator/Device",
+              "params": {
+                "tag": "FCV161A",
+                "source": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI3OCIgaGVpZ2h0PSI3NSIgdmlld0JveD0iMCAwIDc4IDc1Ij48ZyBmb250LWZhbWlseT0iQXJpYWwiIGZpbGw9IiM1NTUiPjxwYXRoIGQ9Ik0yMCA0MyBMNTYgNTkgTDU2IDQzIEwyMCA1OSBaIiBmaWxsPSIjYTdkZmE1IiBzdHJva2U9IiM1NTUiIHN0cm9rZS13aWR0aD0iMS42Ii8+PHBhdGggZD0iTTM4IDI5IFY1MSIgc3Ryb2tlPSIjNTU1IiBzdHJva2Utd2lkdGg9IjEuNCIvPjxwYXRoIGQ9Ik0yNCAyOSBBMTQgMTIgMCAwIDEgNTIgMjkgWiIgZmlsbD0iI2E3ZGZhNSIgc3Ryb2tlPSIjNTU1IiBzdHJva2Utd2lkdGg9IjEuNCIvPjx0ZXh0IHg9IjU5IiB5PSIzMCIgZm9udC1zaXplPSIxMiI+QTwvdGV4dD48L2c+PC9zdmc+",
+                "highlight": true,
+                "signal": "flow"
+              },
+              "useDefaultViewWidth": false,
+              "useDefaultViewHeight": false
+            },
+            "position": {
+              "x": 0.7051724137931035,
+              "y": 0.865934065934066,
+              "width": 0.045402298850574715,
+              "height": 0.08681318681318681
+            }
+          },
+          {
+            "type": "ia.display.view",
+            "meta": {
+              "name": "AntiFoamLink"
+            },
+            "props": {
+              "path": "Demo/Separator/Stream",
+              "params": {
+                "text": "AntiFoam"
+              },
+              "useDefaultViewWidth": false,
+              "useDefaultViewHeight": false
+            },
+            "position": {
+              "x": 0.021839080459770115,
+              "y": 0.11978021978021978,
+              "width": 0.07586206896551724,
+              "height": 0.03076923076923077
+            }
+          },
+          {
+            "type": "ia.display.view",
+            "meta": {
+              "name": "FromHeaderALink"
+            },
+            "props": {
+              "path": "Demo/Separator/Stream",
+              "params": {
+                "text": "From Header A"
+              },
+              "useDefaultViewWidth": false,
+              "useDefaultViewHeight": false
+            },
+            "position": {
+              "x": 0.021839080459770115,
+              "y": 0.20549450549450549,
+              "width": 0.07586206896551724,
+              "height": 0.03076923076923077
+            }
+          },
+          {
+            "type": "ia.display.view",
+            "meta": {
+              "name": "FromClosedDrainLink"
+            },
+            "props": {
+              "path": "Demo/Separator/Stream",
+              "params": {
+                "text": "From Closed Drain"
+              },
+              "useDefaultViewWidth": false,
+              "useDefaultViewHeight": false
+            },
+            "position": {
+              "x": 0.021839080459770115,
+              "y": 0.3791208791208791,
+              "width": 0.07586206896551724,
+              "height": 0.03076923076923077
+            }
+          },
+          {
+            "type": "ia.display.view",
+            "meta": {
+              "name": "FromOpenDrainLink"
+            },
+            "props": {
+              "path": "Demo/Separator/Stream",
+              "params": {
+                "text": "From Open Drain"
+              },
+              "useDefaultViewWidth": false,
+              "useDefaultViewHeight": false
+            },
+            "position": {
+              "x": 0.021839080459770115,
+              "y": 0.47802197802197804,
+              "width": 0.07586206896551724,
+              "height": 0.03076923076923077
+            }
+          },
+          {
+            "type": "ia.display.view",
+            "meta": {
+              "name": "CorrosionInhibitorLink"
+            },
+            "props": {
+              "path": "Demo/Separator/Stream",
+              "params": {
+                "text": "Corrosion Inhibitor"
+              },
+              "useDefaultViewWidth": false,
+              "useDefaultViewHeight": false
+            },
+            "position": {
+              "x": 0.021839080459770115,
+              "y": 0.5769230769230769,
+              "width": 0.07586206896551724,
+              "height": 0.03076923076923077
+            }
+          },
+          {
+            "type": "ia.display.view",
+            "meta": {
+              "name": "ToFlareLink"
+            },
+            "props": {
+              "path": "Demo/Separator/Stream",
+              "params": {
+                "text": "To Flare"
+              },
+              "useDefaultViewWidth": false,
+              "useDefaultViewHeight": false
+            },
+            "position": {
+              "x": 0.8735632183908046,
+              "y": 0.11538461538461539,
+              "width": 0.07586206896551724,
+              "height": 0.03076923076923077
+            }
+          },
+          {
+            "type": "ia.display.view",
+            "meta": {
+              "name": "ToGasScrubberLink"
+            },
+            "props": {
+              "path": "Demo/Separator/Stream",
+              "params": {
+                "text": "To Gas Scrubber"
+              },
+              "useDefaultViewWidth": false,
+              "useDefaultViewHeight": false
+            },
+            "position": {
+              "x": 0.8735632183908046,
+              "y": 0.2010989010989011,
+              "width": 0.07586206896551724,
+              "height": 0.03076923076923077
+            }
+          },
+          {
+            "type": "ia.display.view",
+            "meta": {
+              "name": "FromBoosterPumpCLink"
+            },
+            "props": {
+              "path": "Demo/Separator/Stream",
+              "params": {
+                "text": "From Booster Pump C"
+              },
+              "useDefaultViewWidth": false,
+              "useDefaultViewHeight": false
+            },
+            "position": {
+              "x": 0.6735632183908046,
+              "y": 0.5021978021978022,
+              "width": 0.06436781609195402,
+              "height": 0.03076923076923077
+            }
+          },
+          {
+            "type": "ia.display.view",
+            "meta": {
+              "name": "ToCrudeExportLink"
+            },
+            "props": {
+              "path": "Demo/Separator/Stream",
+              "params": {
+                "text": "To Crude Export"
+              },
+              "useDefaultViewWidth": false,
+              "useDefaultViewHeight": false
+            },
+            "position": {
+              "x": 0.8735632183908046,
+              "y": 0.6593406593406593,
+              "width": 0.07586206896551724,
+              "height": 0.03076923076923077
+            }
+          },
+          {
+            "type": "ia.display.view",
+            "meta": {
+              "name": "ToBoosterPumpCLink"
+            },
+            "props": {
+              "path": "Demo/Separator/Stream",
+              "params": {
+                "text": "To Booster Pump C"
+              },
+              "useDefaultViewWidth": false,
+              "useDefaultViewHeight": false
+            },
+            "position": {
+              "x": 0.8735632183908046,
+              "y": 0.7725274725274726,
+              "width": 0.07586206896551724,
+              "height": 0.03076923076923077
+            }
+          },
+          {
+            "type": "ia.display.label",
+            "meta": {
+              "name": "VesselTag"
+            },
+            "props": {
+              "text": "PP-V-01A",
               "style": {
-                "classes": "Demo/ScadaTrendPanel"
+                "classes": "Separator/VesselTag"
               }
             },
-            "children": [
-              {
-                "type": "ia.container.flex",
-                "meta": {
-                  "name": "TrendControls"
-                },
-                "props": {
-                  "direction": "row",
-                  "wrap": "wrap",
-                  "style": {
-                    "classes": "Demo/Filters"
-                  }
-                },
-                "children": [
-                  {
-                    "type": "ia.display.label",
-                    "meta": {
-                      "name": "TrendTitle"
-                    },
-                    "props": {
-                      "text": "",
-                      "style": {
-                        "classes": "Demo/SectionTitle"
-                      }
-                    },
-                    "position": {
-                      "shrink": 0,
-                      "basis": "auto"
-                    },
-                    "propConfig": {
-                      "props.text": {
-                        "binding": {
-                          "type": "property",
-                          "config": {
-                            "path": "session.custom.demo.scadaMetric"
-                          },
-                          "transforms": [
-                            {
-                              "type": "script",
-                              "code": "\treturn application.demo.METRICS[value][1] + \" trend\""
-                            }
-                          ]
-                        }
-                      }
-                    }
-                  },
-                  {
-                    "type": "ia.input.dropdown",
-                    "meta": {
-                      "name": "Measurement"
-                    },
-                    "props": {
-                      "options": [
-                        {
-                          "value": "rate",
-                          "label": "Throughput"
-                        },
-                        {
-                          "value": "temperature",
-                          "label": "Temperature"
-                        },
-                        {
-                          "value": "moisture",
-                          "label": "Moisture"
-                        },
-                        {
-                          "value": "pressure",
-                          "label": "Pressure"
-                        },
-                        {
-                          "value": "power",
-                          "label": "Power"
-                        }
-                      ],
-                      "value": "rate",
-                      "search": {
-                        "enabled": false
-                      },
-                      "style": {
-                        "classes": "Demo/Select",
-                        "overflow": "visible"
-                      }
-                    },
-                    "position": {
-                      "shrink": 0,
-                      "basis": "180px"
-                    },
-                    "propConfig": {
-                      "props.value": {
-                        "binding": {
-                          "type": "property",
-                          "config": {
-                            "path": "session.custom.demo.scadaMetric",
-                            "bidirectional": true
-                          }
-                        }
-                      }
-                    }
-                  },
-                  {
-                    "type": "ia.display.label",
-                    "meta": {
-                      "name": "TrendUnit"
-                    },
-                    "props": {
-                      "text": "",
-                      "style": {
-                        "classes": "Demo/Muted"
-                      }
-                    },
-                    "position": {
-                      "shrink": 0,
-                      "basis": "auto"
-                    },
-                    "propConfig": {
-                      "props.text": {
-                        "binding": {
-                          "type": "property",
-                          "config": {
-                            "path": "session.custom.demo.scadaMetric"
-                          },
-                          "transforms": [
-                            {
-                              "type": "script",
-                              "code": "\treturn application.demo.METRICS[value][2] + \" | last 15 minutes\""
-                            }
-                          ]
-                        }
-                      }
-                    }
-                  },
-                  {
-                    "type": "ia.display.label",
-                    "meta": {
-                      "name": "Convention"
-                    },
-                    "props": {
-                      "text": "PV measured | SP simulation target",
-                      "style": {
-                        "classes": "Demo/Muted"
-                      }
-                    },
-                    "position": {
-                      "shrink": 0,
-                      "basis": "auto"
-                    }
-                  }
-                ],
-                "position": {
-                  "shrink": 0
-                }
-              },
-              {
-                "type": "ia.chart.xy",
-                "meta": {
-                  "name": "ScadaTrend"
-                },
-                "props": {
-                  "dataSources": {
-                    "history": []
-                  },
-                  "series": [
-                    {
-                      "candlestick": {
-                        "appearance": {
-                          "deriveFieldsFromData": {
-                            "fill": {
-                              "color": "",
-                              "opacity": ""
-                            },
-                            "stroke": {
-                              "color": "",
-                              "opacity": "",
-                              "width": ""
-                            }
-                          },
-                          "fill": {
-                            "color": "",
-                            "opacity": 1
-                          },
-                          "heatRules": {
-                            "dataField": "",
-                            "enabled": false,
-                            "max": "",
-                            "min": ""
-                          },
-                          "stacked": false,
-                          "stroke": {
-                            "color": "",
-                            "opacity": 1,
-                            "width": 1
-                          }
-                        },
-                        "high": {
-                          "x": "",
-                          "y": ""
-                        },
-                        "low": {
-                          "x": "",
-                          "y": ""
-                        },
-                        "open": {
-                          "x": "",
-                          "y": ""
-                        }
-                      },
-                      "column": {
-                        "appearance": {
-                          "deriveFieldsFromData": {
-                            "fill": {
-                              "color": "",
-                              "opacity": ""
-                            },
-                            "stroke": {
-                              "color": "",
-                              "opacity": "",
-                              "width": ""
-                            }
-                          },
-                          "fill": {
-                            "color": "",
-                            "opacity": 1
-                          },
-                          "heatRules": {
-                            "dataField": "",
-                            "enabled": false,
-                            "max": "",
-                            "min": ""
-                          },
-                          "height": null,
-                          "stacked": false,
-                          "stroke": {
-                            "color": "",
-                            "opacity": 1,
-                            "width": 1
-                          },
-                          "width": null
-                        },
-                        "open": {
-                          "x": "",
-                          "y": ""
-                        }
-                      },
-                      "data": {
-                        "source": "history",
-                        "x": "ts",
-                        "y": "pv"
-                      },
-                      "defaultState": {
-                        "visible": true
-                      },
-                      "hiddenInLegend": false,
-                      "label": {},
-                      "line": {
-                        "appearance": {
-                          "bullets": [
-                            {
-                              "deriveFieldsFromData": {
-                                "fill": {
-                                  "color": "",
-                                  "opacity": ""
-                                },
-                                "rotation": "",
-                                "stroke": {
-                                  "color": "",
-                                  "opacity": "",
-                                  "width": ""
-                                }
-                              },
-                              "enabled": false,
-                              "fill": {
-                                "color": "",
-                                "opacity": 1
-                              },
-                              "heatRules": {
-                                "dataField": "",
-                                "enabled": false,
-                                "max": 100,
-                                "min": 2
-                              },
-                              "height": 10,
-                              "label": {
-                                "position": {
-                                  "dx": 0,
-                                  "dy": 0
-                                },
-                                "text": "{value}"
-                              },
-                              "render": "circle",
-                              "rotation": 0,
-                              "stroke": {
-                                "color": "",
-                                "opacity": 1,
-                                "width": 1
-                              },
-                              "tooltip": {
-                                "background": {
-                                  "color": "",
-                                  "opacity": 1
-                                },
-                                "cornerRadius": 3,
-                                "enabled": true,
-                                "pointerLength": 4,
-                                "text": "{name}: [bold]{valueY}[/]"
-                              },
-                              "width": 10
-                            }
-                          ],
-                          "connect": true,
-                          "fill": {
-                            "color": "#333399",
-                            "opacity": 0
-                          },
-                          "minDistance": 0.5,
-                          "stroke": {
-                            "color": "#333399",
-                            "dashArray": "",
-                            "opacity": 1,
-                            "width": 2
-                          },
-                          "tensionX": 1,
-                          "tensionY": 1
-                        },
-                        "open": {
-                          "x": "",
-                          "y": ""
-                        }
-                      },
-                      "name": "PV",
-                      "render": "line",
-                      "stepLine": {
-                        "appearance": {
-                          "bullets": [
-                            {
-                              "deriveFieldsFromData": {
-                                "fill": {
-                                  "color": "",
-                                  "opacity": ""
-                                },
-                                "rotation": "",
-                                "stroke": {
-                                  "color": "",
-                                  "opacity": "",
-                                  "width": ""
-                                }
-                              },
-                              "enabled": true,
-                              "fill": {
-                                "color": "",
-                                "opacity": 1
-                              },
-                              "heatRules": {
-                                "dataField": "",
-                                "enabled": false,
-                                "max": 100,
-                                "min": 2
-                              },
-                              "height": 10,
-                              "label": {
-                                "position": {
-                                  "dx": 0,
-                                  "dy": 0
-                                },
-                                "text": "{value}"
-                              },
-                              "render": "circle",
-                              "rotation": 0,
-                              "stroke": {
-                                "color": "",
-                                "opacity": 1,
-                                "width": 1
-                              },
-                              "tooltip": {
-                                "background": {
-                                  "color": "",
-                                  "opacity": 1
-                                },
-                                "cornerRadius": 3,
-                                "enabled": true,
-                                "pointerLength": 4,
-                                "text": "{name}: [bold]{valueY}[/]"
-                              },
-                              "width": 10
-                            }
-                          ],
-                          "connect": true,
-                          "fill": {
-                            "color": "",
-                            "opacity": 0
-                          },
-                          "minDistance": 0.5,
-                          "stroke": {
-                            "color": "",
-                            "dashArray": "",
-                            "opacity": 1,
-                            "width": 3
-                          },
-                          "tensionX": 1,
-                          "tensionY": 1
-                        },
-                        "open": {
-                          "x": "",
-                          "y": ""
-                        }
-                      },
-                      "tooltip": {
-                        "background": {
-                          "color": "",
-                          "opacity": 1
-                        },
-                        "cornerRadius": 3,
-                        "enabled": true,
-                        "pointerLength": 4,
-                        "text": "{name}: [bold]{valueY}[/]"
-                      },
-                      "visible": true,
-                      "xAxis": "time",
-                      "yAxis": "value",
-                      "zIndex": 0
-                    },
-                    {
-                      "candlestick": {
-                        "appearance": {
-                          "deriveFieldsFromData": {
-                            "fill": {
-                              "color": "",
-                              "opacity": ""
-                            },
-                            "stroke": {
-                              "color": "",
-                              "opacity": "",
-                              "width": ""
-                            }
-                          },
-                          "fill": {
-                            "color": "",
-                            "opacity": 1
-                          },
-                          "heatRules": {
-                            "dataField": "",
-                            "enabled": false,
-                            "max": "",
-                            "min": ""
-                          },
-                          "stacked": false,
-                          "stroke": {
-                            "color": "",
-                            "opacity": 1,
-                            "width": 1
-                          }
-                        },
-                        "high": {
-                          "x": "",
-                          "y": ""
-                        },
-                        "low": {
-                          "x": "",
-                          "y": ""
-                        },
-                        "open": {
-                          "x": "",
-                          "y": ""
-                        }
-                      },
-                      "column": {
-                        "appearance": {
-                          "deriveFieldsFromData": {
-                            "fill": {
-                              "color": "",
-                              "opacity": ""
-                            },
-                            "stroke": {
-                              "color": "",
-                              "opacity": "",
-                              "width": ""
-                            }
-                          },
-                          "fill": {
-                            "color": "",
-                            "opacity": 1
-                          },
-                          "heatRules": {
-                            "dataField": "",
-                            "enabled": false,
-                            "max": "",
-                            "min": ""
-                          },
-                          "height": null,
-                          "stacked": false,
-                          "stroke": {
-                            "color": "",
-                            "opacity": 1,
-                            "width": 1
-                          },
-                          "width": null
-                        },
-                        "open": {
-                          "x": "",
-                          "y": ""
-                        }
-                      },
-                      "data": {
-                        "source": "history",
-                        "x": "ts",
-                        "y": "sp"
-                      },
-                      "defaultState": {
-                        "visible": true
-                      },
-                      "hiddenInLegend": false,
-                      "label": {},
-                      "line": {
-                        "appearance": {
-                          "bullets": [
-                            {
-                              "deriveFieldsFromData": {
-                                "fill": {
-                                  "color": "",
-                                  "opacity": ""
-                                },
-                                "rotation": "",
-                                "stroke": {
-                                  "color": "",
-                                  "opacity": "",
-                                  "width": ""
-                                }
-                              },
-                              "enabled": false,
-                              "fill": {
-                                "color": "",
-                                "opacity": 1
-                              },
-                              "heatRules": {
-                                "dataField": "",
-                                "enabled": false,
-                                "max": 100,
-                                "min": 2
-                              },
-                              "height": 10,
-                              "label": {
-                                "position": {
-                                  "dx": 0,
-                                  "dy": 0
-                                },
-                                "text": "{value}"
-                              },
-                              "render": "circle",
-                              "rotation": 0,
-                              "stroke": {
-                                "color": "",
-                                "opacity": 1,
-                                "width": 1
-                              },
-                              "tooltip": {
-                                "background": {
-                                  "color": "",
-                                  "opacity": 1
-                                },
-                                "cornerRadius": 3,
-                                "enabled": true,
-                                "pointerLength": 4,
-                                "text": "{name}: [bold]{valueY}[/]"
-                              },
-                              "width": 10
-                            }
-                          ],
-                          "connect": true,
-                          "fill": {
-                            "color": "#006400",
-                            "opacity": 0
-                          },
-                          "minDistance": 0.5,
-                          "stroke": {
-                            "color": "#006400",
-                            "dashArray": "6,4",
-                            "opacity": 1,
-                            "width": 1
-                          },
-                          "tensionX": 1,
-                          "tensionY": 1
-                        },
-                        "open": {
-                          "x": "",
-                          "y": ""
-                        }
-                      },
-                      "name": "SP",
-                      "render": "line",
-                      "stepLine": {
-                        "appearance": {
-                          "bullets": [
-                            {
-                              "deriveFieldsFromData": {
-                                "fill": {
-                                  "color": "",
-                                  "opacity": ""
-                                },
-                                "rotation": "",
-                                "stroke": {
-                                  "color": "",
-                                  "opacity": "",
-                                  "width": ""
-                                }
-                              },
-                              "enabled": true,
-                              "fill": {
-                                "color": "",
-                                "opacity": 1
-                              },
-                              "heatRules": {
-                                "dataField": "",
-                                "enabled": false,
-                                "max": 100,
-                                "min": 2
-                              },
-                              "height": 10,
-                              "label": {
-                                "position": {
-                                  "dx": 0,
-                                  "dy": 0
-                                },
-                                "text": "{value}"
-                              },
-                              "render": "circle",
-                              "rotation": 0,
-                              "stroke": {
-                                "color": "",
-                                "opacity": 1,
-                                "width": 1
-                              },
-                              "tooltip": {
-                                "background": {
-                                  "color": "",
-                                  "opacity": 1
-                                },
-                                "cornerRadius": 3,
-                                "enabled": true,
-                                "pointerLength": 4,
-                                "text": "{name}: [bold]{valueY}[/]"
-                              },
-                              "width": 10
-                            }
-                          ],
-                          "connect": true,
-                          "fill": {
-                            "color": "",
-                            "opacity": 0
-                          },
-                          "minDistance": 0.5,
-                          "stroke": {
-                            "color": "",
-                            "dashArray": "",
-                            "opacity": 1,
-                            "width": 3
-                          },
-                          "tensionX": 1,
-                          "tensionY": 1
-                        },
-                        "open": {
-                          "x": "",
-                          "y": ""
-                        }
-                      },
-                      "tooltip": {
-                        "background": {
-                          "color": "",
-                          "opacity": 1
-                        },
-                        "cornerRadius": 3,
-                        "enabled": true,
-                        "pointerLength": 4,
-                        "text": "{name}: [bold]{valueY}[/]"
-                      },
-                      "visible": true,
-                      "xAxis": "time",
-                      "yAxis": "value",
-                      "zIndex": 0
-                    },
-                    {
-                      "candlestick": {
-                        "appearance": {
-                          "deriveFieldsFromData": {
-                            "fill": {
-                              "color": "",
-                              "opacity": ""
-                            },
-                            "stroke": {
-                              "color": "",
-                              "opacity": "",
-                              "width": ""
-                            }
-                          },
-                          "fill": {
-                            "color": "",
-                            "opacity": 1
-                          },
-                          "heatRules": {
-                            "dataField": "",
-                            "enabled": false,
-                            "max": "",
-                            "min": ""
-                          },
-                          "stacked": false,
-                          "stroke": {
-                            "color": "",
-                            "opacity": 1,
-                            "width": 1
-                          }
-                        },
-                        "high": {
-                          "x": "",
-                          "y": ""
-                        },
-                        "low": {
-                          "x": "",
-                          "y": ""
-                        },
-                        "open": {
-                          "x": "",
-                          "y": ""
-                        }
-                      },
-                      "column": {
-                        "appearance": {
-                          "deriveFieldsFromData": {
-                            "fill": {
-                              "color": "",
-                              "opacity": ""
-                            },
-                            "stroke": {
-                              "color": "",
-                              "opacity": "",
-                              "width": ""
-                            }
-                          },
-                          "fill": {
-                            "color": "",
-                            "opacity": 1
-                          },
-                          "heatRules": {
-                            "dataField": "",
-                            "enabled": false,
-                            "max": "",
-                            "min": ""
-                          },
-                          "height": null,
-                          "stacked": false,
-                          "stroke": {
-                            "color": "",
-                            "opacity": 1,
-                            "width": 1
-                          },
-                          "width": null
-                        },
-                        "open": {
-                          "x": "",
-                          "y": ""
-                        }
-                      },
-                      "data": {
-                        "source": "history",
-                        "x": "ts",
-                        "y": "low"
-                      },
-                      "defaultState": {
-                        "visible": true
-                      },
-                      "hiddenInLegend": false,
-                      "label": {},
-                      "line": {
-                        "appearance": {
-                          "bullets": [
-                            {
-                              "deriveFieldsFromData": {
-                                "fill": {
-                                  "color": "",
-                                  "opacity": ""
-                                },
-                                "rotation": "",
-                                "stroke": {
-                                  "color": "",
-                                  "opacity": "",
-                                  "width": ""
-                                }
-                              },
-                              "enabled": false,
-                              "fill": {
-                                "color": "",
-                                "opacity": 1
-                              },
-                              "heatRules": {
-                                "dataField": "",
-                                "enabled": false,
-                                "max": 100,
-                                "min": 2
-                              },
-                              "height": 10,
-                              "label": {
-                                "position": {
-                                  "dx": 0,
-                                  "dy": 0
-                                },
-                                "text": "{value}"
-                              },
-                              "render": "circle",
-                              "rotation": 0,
-                              "stroke": {
-                                "color": "",
-                                "opacity": 1,
-                                "width": 1
-                              },
-                              "tooltip": {
-                                "background": {
-                                  "color": "",
-                                  "opacity": 1
-                                },
-                                "cornerRadius": 3,
-                                "enabled": true,
-                                "pointerLength": 4,
-                                "text": "{name}: [bold]{valueY}[/]"
-                              },
-                              "width": 10
-                            }
-                          ],
-                          "connect": true,
-                          "fill": {
-                            "color": "#555b60",
-                            "opacity": 0
-                          },
-                          "minDistance": 0.5,
-                          "stroke": {
-                            "color": "#555b60",
-                            "dashArray": "6,4",
-                            "opacity": 1,
-                            "width": 1
-                          },
-                          "tensionX": 1,
-                          "tensionY": 1
-                        },
-                        "open": {
-                          "x": "",
-                          "y": ""
-                        }
-                      },
-                      "name": "Low limit",
-                      "render": "line",
-                      "stepLine": {
-                        "appearance": {
-                          "bullets": [
-                            {
-                              "deriveFieldsFromData": {
-                                "fill": {
-                                  "color": "",
-                                  "opacity": ""
-                                },
-                                "rotation": "",
-                                "stroke": {
-                                  "color": "",
-                                  "opacity": "",
-                                  "width": ""
-                                }
-                              },
-                              "enabled": true,
-                              "fill": {
-                                "color": "",
-                                "opacity": 1
-                              },
-                              "heatRules": {
-                                "dataField": "",
-                                "enabled": false,
-                                "max": 100,
-                                "min": 2
-                              },
-                              "height": 10,
-                              "label": {
-                                "position": {
-                                  "dx": 0,
-                                  "dy": 0
-                                },
-                                "text": "{value}"
-                              },
-                              "render": "circle",
-                              "rotation": 0,
-                              "stroke": {
-                                "color": "",
-                                "opacity": 1,
-                                "width": 1
-                              },
-                              "tooltip": {
-                                "background": {
-                                  "color": "",
-                                  "opacity": 1
-                                },
-                                "cornerRadius": 3,
-                                "enabled": true,
-                                "pointerLength": 4,
-                                "text": "{name}: [bold]{valueY}[/]"
-                              },
-                              "width": 10
-                            }
-                          ],
-                          "connect": true,
-                          "fill": {
-                            "color": "",
-                            "opacity": 0
-                          },
-                          "minDistance": 0.5,
-                          "stroke": {
-                            "color": "",
-                            "dashArray": "",
-                            "opacity": 1,
-                            "width": 3
-                          },
-                          "tensionX": 1,
-                          "tensionY": 1
-                        },
-                        "open": {
-                          "x": "",
-                          "y": ""
-                        }
-                      },
-                      "tooltip": {
-                        "background": {
-                          "color": "",
-                          "opacity": 1
-                        },
-                        "cornerRadius": 3,
-                        "enabled": true,
-                        "pointerLength": 4,
-                        "text": "{name}: [bold]{valueY}[/]"
-                      },
-                      "visible": true,
-                      "xAxis": "time",
-                      "yAxis": "value",
-                      "zIndex": 0
-                    },
-                    {
-                      "candlestick": {
-                        "appearance": {
-                          "deriveFieldsFromData": {
-                            "fill": {
-                              "color": "",
-                              "opacity": ""
-                            },
-                            "stroke": {
-                              "color": "",
-                              "opacity": "",
-                              "width": ""
-                            }
-                          },
-                          "fill": {
-                            "color": "",
-                            "opacity": 1
-                          },
-                          "heatRules": {
-                            "dataField": "",
-                            "enabled": false,
-                            "max": "",
-                            "min": ""
-                          },
-                          "stacked": false,
-                          "stroke": {
-                            "color": "",
-                            "opacity": 1,
-                            "width": 1
-                          }
-                        },
-                        "high": {
-                          "x": "",
-                          "y": ""
-                        },
-                        "low": {
-                          "x": "",
-                          "y": ""
-                        },
-                        "open": {
-                          "x": "",
-                          "y": ""
-                        }
-                      },
-                      "column": {
-                        "appearance": {
-                          "deriveFieldsFromData": {
-                            "fill": {
-                              "color": "",
-                              "opacity": ""
-                            },
-                            "stroke": {
-                              "color": "",
-                              "opacity": "",
-                              "width": ""
-                            }
-                          },
-                          "fill": {
-                            "color": "",
-                            "opacity": 1
-                          },
-                          "heatRules": {
-                            "dataField": "",
-                            "enabled": false,
-                            "max": "",
-                            "min": ""
-                          },
-                          "height": null,
-                          "stacked": false,
-                          "stroke": {
-                            "color": "",
-                            "opacity": 1,
-                            "width": 1
-                          },
-                          "width": null
-                        },
-                        "open": {
-                          "x": "",
-                          "y": ""
-                        }
-                      },
-                      "data": {
-                        "source": "history",
-                        "x": "ts",
-                        "y": "high"
-                      },
-                      "defaultState": {
-                        "visible": true
-                      },
-                      "hiddenInLegend": false,
-                      "label": {},
-                      "line": {
-                        "appearance": {
-                          "bullets": [
-                            {
-                              "deriveFieldsFromData": {
-                                "fill": {
-                                  "color": "",
-                                  "opacity": ""
-                                },
-                                "rotation": "",
-                                "stroke": {
-                                  "color": "",
-                                  "opacity": "",
-                                  "width": ""
-                                }
-                              },
-                              "enabled": false,
-                              "fill": {
-                                "color": "",
-                                "opacity": 1
-                              },
-                              "heatRules": {
-                                "dataField": "",
-                                "enabled": false,
-                                "max": 100,
-                                "min": 2
-                              },
-                              "height": 10,
-                              "label": {
-                                "position": {
-                                  "dx": 0,
-                                  "dy": 0
-                                },
-                                "text": "{value}"
-                              },
-                              "render": "circle",
-                              "rotation": 0,
-                              "stroke": {
-                                "color": "",
-                                "opacity": 1,
-                                "width": 1
-                              },
-                              "tooltip": {
-                                "background": {
-                                  "color": "",
-                                  "opacity": 1
-                                },
-                                "cornerRadius": 3,
-                                "enabled": true,
-                                "pointerLength": 4,
-                                "text": "{name}: [bold]{valueY}[/]"
-                              },
-                              "width": 10
-                            }
-                          ],
-                          "connect": true,
-                          "fill": {
-                            "color": "#555b60",
-                            "opacity": 0
-                          },
-                          "minDistance": 0.5,
-                          "stroke": {
-                            "color": "#555b60",
-                            "dashArray": "6,4",
-                            "opacity": 1,
-                            "width": 1
-                          },
-                          "tensionX": 1,
-                          "tensionY": 1
-                        },
-                        "open": {
-                          "x": "",
-                          "y": ""
-                        }
-                      },
-                      "name": "High limit",
-                      "render": "line",
-                      "stepLine": {
-                        "appearance": {
-                          "bullets": [
-                            {
-                              "deriveFieldsFromData": {
-                                "fill": {
-                                  "color": "",
-                                  "opacity": ""
-                                },
-                                "rotation": "",
-                                "stroke": {
-                                  "color": "",
-                                  "opacity": "",
-                                  "width": ""
-                                }
-                              },
-                              "enabled": true,
-                              "fill": {
-                                "color": "",
-                                "opacity": 1
-                              },
-                              "heatRules": {
-                                "dataField": "",
-                                "enabled": false,
-                                "max": 100,
-                                "min": 2
-                              },
-                              "height": 10,
-                              "label": {
-                                "position": {
-                                  "dx": 0,
-                                  "dy": 0
-                                },
-                                "text": "{value}"
-                              },
-                              "render": "circle",
-                              "rotation": 0,
-                              "stroke": {
-                                "color": "",
-                                "opacity": 1,
-                                "width": 1
-                              },
-                              "tooltip": {
-                                "background": {
-                                  "color": "",
-                                  "opacity": 1
-                                },
-                                "cornerRadius": 3,
-                                "enabled": true,
-                                "pointerLength": 4,
-                                "text": "{name}: [bold]{valueY}[/]"
-                              },
-                              "width": 10
-                            }
-                          ],
-                          "connect": true,
-                          "fill": {
-                            "color": "",
-                            "opacity": 0
-                          },
-                          "minDistance": 0.5,
-                          "stroke": {
-                            "color": "",
-                            "dashArray": "",
-                            "opacity": 1,
-                            "width": 3
-                          },
-                          "tensionX": 1,
-                          "tensionY": 1
-                        },
-                        "open": {
-                          "x": "",
-                          "y": ""
-                        }
-                      },
-                      "tooltip": {
-                        "background": {
-                          "color": "",
-                          "opacity": 1
-                        },
-                        "cornerRadius": 3,
-                        "enabled": true,
-                        "pointerLength": 4,
-                        "text": "{name}: [bold]{valueY}[/]"
-                      },
-                      "visible": true,
-                      "xAxis": "time",
-                      "yAxis": "value",
-                      "zIndex": 0
-                    }
-                  ],
-                  "xAxes": [
-                    {
-                      "appearance": {
-                        "font": {
-                          "size": "",
-                          "weight": 500
-                        },
-                        "grid": {
-                          "color": "",
-                          "dashArray": "",
-                          "minDistance": 75,
-                          "opacity": 0.08,
-                          "position": 0.5
-                        },
-                        "inside": false,
-                        "labels": {
-                          "color": "#63766d",
-                          "horizontalCenter": "middle",
-                          "opacity": 1,
-                          "rotation": 0,
-                          "verticalCenter": "middle"
-                        },
-                        "opposite": false
-                      },
-                      "category": {
-                        "break": {
-                          "enabled": false,
-                          "endCategory": "",
-                          "size": 0.05,
-                          "startCategory": ""
-                        }
-                      },
-                      "date": {
-                        "baseInterval": {
-                          "count": 1,
-                          "enabled": false,
-                          "skipEmptyPeriods": false,
-                          "timeUnit": "hour"
-                        },
-                        "break": {
-                          "enabled": false,
-                          "endDate": "",
-                          "size": 0.05,
-                          "startDate": ""
-                        },
-                        "format": "HH:mm",
-                        "inputFormat": "x",
-                        "range": {
-                          "max": "",
-                          "min": "",
-                          "useStrict": false
-                        }
-                      },
-                      "inversed": false,
-                      "label": {
-                        "color": "",
-                        "enabled": false,
-                        "text": "Tijd"
-                      },
-                      "name": "time",
-                      "render": "date",
-                      "tooltip": {
-                        "background": {
-                          "color": "",
-                          "opacity": 1
-                        },
-                        "cornerRadius": 3,
-                        "enabled": true,
-                        "pointerLength": 4,
-                        "text": ""
-                      },
-                      "value": {
-                        "break": {
-                          "enabled": false,
-                          "endValue": 100,
-                          "size": 0.05,
-                          "startValue": 0
-                        },
-                        "format": "#,###.##",
-                        "logarithmic": false,
-                        "range": {
-                          "max": "",
-                          "min": "",
-                          "useStrict": false
-                        }
-                      },
-                      "visible": true
-                    }
-                  ],
-                  "yAxes": [
-                    {
-                      "appearance": {
-                        "font": {
-                          "size": "",
-                          "weight": 500
-                        },
-                        "grid": {
-                          "color": "",
-                          "dashArray": "",
-                          "minDistance": null,
-                          "opacity": 0.08,
-                          "position": 0.5
-                        },
-                        "inside": false,
-                        "labels": {
-                          "color": "#63766d",
-                          "horizontalCenter": "middle",
-                          "opacity": 1,
-                          "rotation": 0,
-                          "verticalCenter": "middle"
-                        },
-                        "opposite": false
-                      },
-                      "category": {
-                        "break": {
-                          "enabled": false,
-                          "endCategory": "",
-                          "size": 0.05,
-                          "startCategory": ""
-                        }
-                      },
-                      "date": {
-                        "baseInterval": {
-                          "count": 1,
-                          "enabled": false,
-                          "skipEmptyPeriods": false,
-                          "timeUnit": "hour"
-                        },
-                        "break": {
-                          "enabled": false,
-                          "endDate": "",
-                          "size": 0.05,
-                          "startDate": ""
-                        },
-                        "format": "M/d/yyyy HH:mm:ss",
-                        "inputFormat": "yyyy-MM-dd kk:mm:ss",
-                        "range": {
-                          "max": "",
-                          "min": "",
-                          "useStrict": false
-                        }
-                      },
-                      "inversed": false,
-                      "label": {
-                        "color": "",
-                        "enabled": false
-                      },
-                      "name": "value",
-                      "render": "value",
-                      "tooltip": {
-                        "background": {
-                          "color": "",
-                          "opacity": 1
-                        },
-                        "cornerRadius": 3,
-                        "enabled": true,
-                        "pointerLength": 4,
-                        "text": ""
-                      },
-                      "value": {
-                        "break": {
-                          "enabled": false,
-                          "endValue": 100,
-                          "size": 0.05,
-                          "startValue": 0
-                        },
-                        "format": "#,###.##",
-                        "logarithmic": false,
-                        "range": {
-                          "max": "",
-                          "min": "",
-                          "useStrict": false
-                        }
-                      },
-                      "visible": true
-                    }
-                  ],
-                  "legend": {
-                    "enabled": true,
-                    "position": "bottom"
-                  },
-                  "title": {
-                    "text": ""
-                  },
-                  "cursor": {
-                    "enabled": true,
-                    "behavior": "none"
-                  },
-                  "style": {
-                    "classes": "Demo/Chart",
-                    "minHeight": "180px",
-                    "backgroundColor": "#c5c7c9"
-                  },
-                  "background": {
-                    "render": "color",
-                    "color": "#c5c7c9",
-                    "opacity": 1
-                  }
-                },
-                "position": {
-                  "basis": "0px",
-                  "grow": 1,
-                  "shrink": 1
-                },
-                "propConfig": {
-                  "props.dataSources.history": {
-                    "binding": {
-                      "type": "property",
-                      "config": {
-                        "path": "view.custom.trend.points"
-                      }
-                    }
-                  },
-                  "props.yAxes[0].value.range.min": {
-                    "binding": {
-                      "type": "property",
-                      "config": {
-                        "path": "session.custom.demo.scadaMetric"
-                      },
-                      "transforms": [
-                        {
-                          "type": "script",
-                          "code": "\treturn {\"temperature\": 50, \"moisture\": 10}.get(value, 0)"
-                        }
-                      ]
-                    }
-                  },
-                  "props.yAxes[0].value.range.max": {
-                    "binding": {
-                      "type": "property",
-                      "config": {
-                        "path": "session.custom.demo.scadaMetric"
-                      },
-                      "transforms": [
-                        {
-                          "type": "script",
-                          "code": "\treturn {\"temperature\": 90, \"moisture\": 15, \"pressure\": 3, \"rate\": 2300, \"power\": 80}[value]"
-                        }
-                      ]
-                    }
-                  },
-                  "props.series[1].visible": {
-                    "binding": {
-                      "type": "expr",
-                      "config": {
-                        "expression": "{session.custom.demo.scadaMetric} != \"power\""
-                      }
-                    }
-                  },
-                  "props.series[1].hiddenInLegend": {
-                    "binding": {
-                      "type": "expr",
-                      "config": {
-                        "expression": "{session.custom.demo.scadaMetric} = \"power\""
-                      }
-                    }
-                  },
-                  "props.series[2].visible": {
-                    "binding": {
-                      "type": "expr",
-                      "config": {
-                        "expression": "{session.custom.demo.scadaMetric} = \"temperature\" || {session.custom.demo.scadaMetric} = \"moisture\""
-                      }
-                    }
-                  },
-                  "props.series[3].visible": {
-                    "binding": {
-                      "type": "expr",
-                      "config": {
-                        "expression": "{session.custom.demo.scadaMetric} = \"temperature\" || {session.custom.demo.scadaMetric} = \"moisture\""
-                      }
-                    }
-                  },
-                  "props.series[2].hiddenInLegend": {
-                    "binding": {
-                      "type": "expr",
-                      "config": {
-                        "expression": "{session.custom.demo.scadaMetric} != \"temperature\" && {session.custom.demo.scadaMetric} != \"moisture\""
-                      }
-                    }
-                  },
-                  "props.series[3].hiddenInLegend": {
-                    "binding": {
-                      "type": "expr",
-                      "config": {
-                        "expression": "{session.custom.demo.scadaMetric} != \"temperature\" && {session.custom.demo.scadaMetric} != \"moisture\""
-                      }
-                    }
-                  }
-                }
-              }
-            ],
             "position": {
-              "shrink": 0,
-              "basis": "270px"
+              "x": 0.3718390804597701,
+              "y": 0.29120879120879123,
+              "width": 0.08908045977011494,
+              "height": 0.027472527472527472
+            }
+          },
+          {
+            "type": "ia.display.label",
+            "meta": {
+              "name": "HistoryCaption"
+            },
+            "props": {
+              "text": "-1 hr  \u21b6",
+              "style": {
+                "classes": "Separator/Small"
+              }
+            },
+            "position": {
+              "x": 0.2833333333333333,
+              "y": 0.5208791208791209,
+              "width": 0.05747126436781609,
+              "height": 0.027472527472527472
+            }
+          },
+          {
+            "type": "ia.display.label",
+            "meta": {
+              "name": "Sea"
+            },
+            "props": {
+              "text": "Dump To Sea",
+              "style": {
+                "classes": "Separator/Small"
+              }
+            },
+            "position": {
+              "x": 0.8839080459770114,
+              "y": 0.832967032967033,
+              "width": 0.07471264367816093,
+              "height": 0.027472527472527472
+            }
+          },
+          {
+            "type": "ia.display.label",
+            "meta": {
+              "name": "Title"
+            },
+            "props": {
+              "text": "Separator A",
+              "style": {
+                "classes": "Separator/Title"
+              }
+            },
+            "position": {
+              "x": 0.43103448275862066,
+              "y": 0.954945054945055,
+              "width": 0.14367816091954022,
+              "height": 0.041758241758241756
+            }
+          },
+          {
+            "type": "ia.display.label",
+            "meta": {
+              "name": "Simulation"
+            },
+            "props": {
+              "text": "SIMULATION",
+              "style": {
+                "classes": "Separator/Simulation"
+              }
+            },
+            "position": {
+              "x": 0.896551724137931,
+              "y": 0.9659340659340659,
+              "width": 0.07586206896551724,
+              "height": 0.02197802197802198
             }
           }
         ],

@@ -1,0 +1,90 @@
+{
+  "custom": {},
+  "params": {
+    "text": "From Header A"
+  },
+  "propConfig": {
+    "params.text": {
+      "paramDirection": "input",
+      "persistent": true
+    }
+  },
+  "props": {
+    "defaultSize": {
+      "width": 1280,
+      "height": 28
+    }
+  },
+  "root": {
+    "type": "ia.container.flex",
+    "meta": {
+      "name": "root"
+    },
+    "props": {
+      "direction": "row",
+      "style": {
+        "classes": "Separator/Stream"
+      }
+    },
+    "children": [
+      {
+        "type": "ia.display.label",
+        "meta": {
+          "name": "Text"
+        },
+        "props": {
+          "text": "",
+          "style": {
+            "classes": "Separator/StreamText"
+          }
+        },
+        "position": {
+          "basis": "0px",
+          "grow": 1,
+          "shrink": 1
+        },
+        "propConfig": {
+          "props.text": {
+            "binding": {
+              "type": "property",
+              "config": {
+                "path": "view.params.text"
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "ia.display.label",
+        "meta": {
+          "name": "Arrow"
+        },
+        "props": {
+          "text": "\u25b6",
+          "style": {
+            "classes": "Separator/StreamArrow"
+          }
+        },
+        "position": {
+          "basis": "18px",
+          "grow": 0,
+          "shrink": 0
+        }
+      }
+    ],
+    "position": {
+      "shrink": 0
+    },
+    "events": {
+      "dom": {
+        "onClick": {
+          "type": "script",
+          "scope": "G",
+          "config": {
+            "script": "\tapplication.demo.showSeparatorDetail(self.view.params.text, \"pressure\")"
+          }
+        }
+      }
+    }
+  }
+}
