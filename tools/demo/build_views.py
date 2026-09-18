@@ -129,7 +129,7 @@ view('Demo/BatchDetails',batch_root,params={'reference':''},custom={'batch':{'av
 
 # Record actual output against an existing completed batch.
 reference=node('ia.input.dropdown','Reference',{'options':[],'value':'','placeholder':'Select a completed batch','search':{'enabled':True},'style':{'classes':'Demo/Select'}},basis='42px')
-reference['propConfig']={'props.options':bind_script('view.custom.batches','\treturn [{"label": row["reference"] + " | " + row["product"] + (" (recorded)" if row["recorded"] else ""), "value": row["reference"]} for row in (value or [])]')}
+reference['propConfig']={'props.options':bind_script('view.custom.batches','\toptions = []\n\tfor row in value or []:\n\t\tlabel = row["reference"] + " | " + row["product"]\n\t\tif row["recorded"]:\n\t\t\tlabel += " (recorded)"\n\t\toptions.append({"label": label, "value": row["reference"]})\n\treturn options')}
 context=label('BatchContext','','Demo/Muted')
 context['propConfig']={'props.text':bind_script('view.custom.selected','\tif not value or not value.get("reference"):\n\t\treturn ""\n\treturn value["product"] + " | " + value["line"] + " | Completed " + value["completed"]')}
 fields=[label('BatchLabel','Completed batch','Demo/Body'),reference,context]

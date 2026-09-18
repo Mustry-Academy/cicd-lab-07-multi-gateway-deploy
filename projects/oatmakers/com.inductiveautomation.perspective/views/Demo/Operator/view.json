@@ -389,7 +389,7 @@
                       "transforms": [
                         {
                           "type": "script",
-                          "code": "\treturn [{\"label\": row[\"reference\"] + \" | \" + row[\"product\"] + (\" (recorded)\" if row[\"recorded\"] else \"\"), \"value\": row[\"reference\"]} for row in (value or [])]"
+                          "code": "\toptions = []\n\tfor row in value or []:\n\t\tlabel = row[\"reference\"] + \" | \" + row[\"product\"]\n\t\tif row[\"recorded\"]:\n\t\t\tlabel += \" (recorded)\"\n\t\toptions.append({\"label\": label, \"value\": row[\"reference\"]})\n\treturn options"
                         }
                       ]
                     }
