@@ -27,7 +27,8 @@ if [ "$first_boot" = true ]; then
 import json, subprocess
 from pathlib import Path
 path=Path('services/config/resources/core/ignition/security-properties/config.json')
-original=json.loads(subprocess.check_output(['git','show','HEAD:'+str(path)]))
+prefix=subprocess.check_output(['git','rev-parse','--show-prefix'],text=True).strip()
+original=json.loads(subprocess.check_output(['git','show','HEAD:'+prefix+str(path)]))
 current=json.loads(path.read_text())
 for key in ('readPermissions','writePermissions'):
     current[key]=original[key]
