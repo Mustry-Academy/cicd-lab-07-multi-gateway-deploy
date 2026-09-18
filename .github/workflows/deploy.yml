@@ -251,6 +251,13 @@ jobs:
           done
           [ "$shipped" -gt 0 ] || echo "No secret values configured — nothing shipped."
 
+      - name: Resolve and verify managed demo database credentials
+        if: env.DEMO_SCOPED_DEPLOY == 'true'
+        env:
+          POSTGRES_CONTAINER: ${{ vars.POSTGRES_CONTAINER || 'cicd-capstone-postgres' }}
+          POSTGRES_DB: ${{ vars.POSTGRES_DB || 'ignition' }}
+        run: tools/demo/database-credentials.sh
+
       - name: Materialize durable demo database credentials
         # Ignition accepts a referenced password but requires a scalar username.
         # Keep the actual deployment username out of the public project files.
@@ -259,6 +266,8 @@ jobs:
           POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
         run: |
           set -euo pipefail
+          export POSTGRES_USERNAME="${DEMO_POSTGRES_USERNAME:-$POSTGRES_USERNAME}"
+          export POSTGRES_PASSWORD="${DEMO_POSTGRES_PASSWORD:-$POSTGRES_PASSWORD}"
           config=payload/services/config/resources/core/ignition/database-connection/OatmakersDemo/config.json
           if [ -f "$config" ]; then
             test -n "$POSTGRES_USERNAME" || { echo "POSTGRES_USERNAME is missing" >&2; exit 1; }
@@ -287,6 +296,10 @@ jobs:
           MIGRATE_IMAGE: migrate/migrate:v4.17.1
         run: |
           set -euo pipefail
+          if [ "${DEMO_SCOPED_DEPLOY:-false}" = true ]; then
+            POSTGRES_USERNAME="${DEMO_POSTGRES_USERNAME:?verified demo username required}"
+            POSTGRES_PASSWORD="${DEMO_POSTGRES_PASSWORD:?verified demo password required}"
+          fi
           dir="payload/db-migration/migrate"
           if [ -z "$(find "$dir" -name '*.sql' -print -quit 2>/dev/null)" ]; then
             echo "No migrations in the payload — skipping."

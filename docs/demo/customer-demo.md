@@ -70,7 +70,7 @@ Release through the repository's existing project tag and `release.yaml` pin. A 
 
 - Check existing scan authorization before shipping.
 - Apply the demo's schema migrations before the new project, using the separate `oat_demo_schema_migrations` ledger.
-- Materialize the deployment username and password from Actions secrets. The password lives under the gateway's persistent data volume with owner-only access, so container recreation does not lose it.
+- Verify the running PostgreSQL service's managed credentials over TCP, then materialize that username and password for the demo. This avoids depending on stale copies of the credentials in Actions secrets. The password lives under the gateway's persistent data volume with owner-only access, so container recreation does not lose it.
 - Back up the previous Oatmakers project and its two owned configuration resources.
 - Replace only the Oatmakers project, `database-connection/OatmakersDemo` and `secret-provider/DemoRuntime`.
 - Scan configuration and projects without restarting the shared gateway or changing modules, identity providers, other projects or unrelated connections.
