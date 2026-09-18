@@ -114,6 +114,8 @@ quality_picker=picker('QualityRange')
 quality_picker['props']['selection']['rollingAmount']=24
 qgrid=grid('BatchGrid','view.custom.batches',[('reference','Batch',190),('product','Product',160),('line','Line',170),('good_kg','Good output kg',150),('quality','Quality decision',170)],height='480px',selectable=True)
 inspect=button('InspectBatch','Inspect selected batch',script='\tapplication.demo.showBatch(self.view.custom.selected)',classes='Demo/Button');inspect['propConfig']={'props.enabled':expr('len({view.custom.selected}) > 0')}
+inspect['position']={'basis':'auto','grow':0,'shrink':0}
+inspect['props']['style'].update({'height':'40px','minWidth':'180px','whiteSpace':'nowrap'})
 page('Demo/Quality','Quality & traceability','Find a production batch and inspect its measurements.',[
  flex('QualityFilters',[quality_picker,inspect],'row','Demo/Filters'),qgrid],custom={'batches':[],'selected':''},config={'custom.batches':struct_binding({'start':'{/root/QualityFilters/QualityRange.props.output.startEpochMs}','end':'{/root/QualityFilters/QualityRange.props.output.endEpochMs}','refresh':'now(10000)'},'\treturn application.demo.batches(value["start"], value["end"])'),'custom.selected':bind_script('/root/BatchGrid.props.state.selection','\treturn str(value[0]) if value else ""')},live_header=False)
 
