@@ -5,7 +5,7 @@ from java.lang import Exception as JavaException
 from java.util.concurrent.locks import ReentrantLock
 
 DATABASE = 'OatmakersDemo'
-REVISION = 'showroom-4.4.0'
+REVISION = 'showroom-4.4.1'
 _cache = {}
 _lock = ReentrantLock()
 
@@ -386,3 +386,53 @@ def separatorInstrumentSvg(tag, kind, value, colour):
 	pill_width = min(102, max(64, len(unicode(value))*6 + 14))
 	body += u'<rect x="26" y="22" width="{2}" height="20" rx="10" fill="{0}"/><text x="{3}" y="36" text-anchor="middle" font-size="11.5">{1}</text></g>'.format(escape(colour), escape(value), pill_width, 26 + pill_width/2.0)
 	return _separatorSvg(body, 130, 51)
+
+
+def completedOutputBatches():
+	return _queryJson("""SELECT coalesce(jsonb_agg(to_jsonb(x)), '[]') FROM (
+		SELECT b.reference,l.product,l.name AS line,
+		to_char(b.ends AT TIME ZONE 'Europe/Brussels','DD Mon HH24:MI') AS completed,
+		EXISTS(SELECT 1 FROM oat_demo.batch_output o WHERE o.batch_reference=b.reference) AS recorded
+		FROM oat_demo.plan_batches(now()-interval '90 days',now(),0) b
+		JOIN oat_demo.line l ON l.id=b.line_id
+		WHERE b.ends<=now()
+		AND EXISTS(SELECT 1 FROM oat_demo.sample s WHERE s.line_id=b.line_id AND s.at>=b.starts AND s.at<b.ends)
+		ORDER BY b.ends DESC LIMIT 200) x""")
+
+
+def recentBatchOutputs():
+	return _queryJson("""SELECT coalesce(jsonb_agg(to_jsonb(x)), '[]') FROM (
+		SELECT o.batch_reference AS reference,o.product,l.name AS line,o.quantity_kg,o.bags,
+		to_char(o.completed_at AT TIME ZONE 'Europe/Brussels','DD Mon HH24:MI') AS completed,
+		to_char(o.recorded_at AT TIME ZONE 'Europe/Brussels','DD Mon HH24:MI') AS recorded
+		FROM oat_demo.batch_output o JOIN oat_demo.line l ON l.id=o.line_id
+		ORDER BY o.recorded_at DESC LIMIT 100) x""")
+
+
+def validateBatchOutput(values):
+	values = values or {}
+	checks = {
+		'quantity': common.validation.input.validateNumericInput(values.get('quantity'), negativeAllowed=False, decimalAllowed=True, required=True),
+		'bags': common.validation.input.validateNumericInput(values.get('bags'), negativeAllowed=False, decimalAllowed=False, required=True)
+	}
+	errors = []
+	if not values.get('reference'):
+		errors.append('Select a completed batch.')
+	quantity = checks['quantity']['validatedOutput']
+	bags = checks['bags']['validatedOutput']
+	if checks['quantity']['errorMessage'] or quantity is None or not 0 <= quantity <= 100000:
+		errors.append('Enter a valid output quantity in kg, from 0 to 100,000.' if values.get('quantity') else 'Enter the actual output quantity.')
+	if checks['bags']['errorMessage'] or bags is None or not 0 <= bags <= 10000:
+		errors.append('Enter a whole bag count from 0 to 10,000.')
+	return {'valid': not errors, 'message': ' '.join(errors),
+		'values': {'reference': values.get('reference'), 'quantity': quantity, 'bags': bags}}
+
+
+def recordBatchOutput(values, requestId):
+	validation = validateBatchOutput(values)
+	if not validation['valid']:
+		raise ValueError(validation['message'])
+	v = validation['values']
+	result = _queryJson('SELECT oat_demo.record_batch_output(CAST(? AS uuid), ?, CAST(? AS numeric), CAST(? AS integer))',
+		[str(UUID.fromString(str(requestId))),str(v['reference']),v['quantity'],v['bags']])
+	return 'Output recorded for batch {0}.'.format(result['reference']) if result['created'] else 'Output was already recorded for batch {0}.'.format(result['reference'])

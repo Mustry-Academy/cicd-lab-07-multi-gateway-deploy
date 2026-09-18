@@ -13,10 +13,10 @@ All measurements and orders are simulated. Writes are confined to the `oat_demo`
 | `/production` | Mustry Resource Timeline with shift, day, hour and week navigation; click a batch for details |
 | `/performance` | Mustry Date Time Range Picker controlling historical charts and aggregate metrics |
 | `/quality` | Mustry Data Grid for batches in the selected dates, with measurement and inspection details |
-| `/operator` | Production-order entry form alongside an independently scrolling Mustry Data Grid |
+| `/operator` | Completed-batch output entry alongside an independently scrolling Mustry Data Grid |
 | `/demo/health` | Telemetry age, retained history and continuity status |
 
-Legacy `/process`, `/oee` and `/demo/input-fields` links open SCADA, Performance and Production orders. The course observatory remains at `/observatory`. The component library is removed from the customer navigation and routes.
+Legacy `/process`, `/oee` and `/demo/input-fields` links open SCADA, Performance and Batch output. The course observatory remains at `/observatory`. The component library is removed from the customer navigation and routes.
 
 ## Demonstration walkthrough
 
@@ -25,7 +25,7 @@ Legacy `/process`, `/oee` and `/demo/input-fields` links open SCADA, Performance
 3. On Performance, choose a live preset or exact calendar dates and times. The selected range controls the database query. Manual selections stop following the clock.
 4. Open Production planning, change between shift and week scales, and inspect a batch.
 5. In Quality, choose older dates, select a batch, inspect its measurements and record a demo inspection.
-6. In Production orders, create a production order. It appears in the grid and remains after reloading. The form has no internal scrollbar.
+6. In Batch output, select a completed batch and record its actual output and bag count. The record appears in the grid and remains after reloading. The form has no internal scrollbar.
 
 ## Data lifecycle
 
@@ -117,5 +117,17 @@ Wheel zoom, drag-to-pan, zoom buttons, reset, fit and the minimap are enabled.
 The sidebar and page header stay outside the zoom transform. The view and
 module content are transparent on the same grey background.
 
-The order-entry page uses Production orders, Order number, Planned quantity,
-Planned bags and Create order. It saves the same order records as before.
+
+
+## Recording completed-batch output
+
+The Batch output page lists completed batches with recorded production history.
+Product, line and completion time come from the selected batch. The operator
+enters actual output in kg and a bag count; bulk output uses zero bags.
+
+Migration 000006 stores these records in `oat_demo.batch_output`, separately from
+planned orders and simulated telemetry. Database validation rejects unfinished
+or unknown batches and invalid quantities. A batch can be recorded once;
+retried submissions return the existing record instead of duplicating it.
+The continuity timer prunes output records using the existing 90-day or
+three-calendar-month retention window. Existing order records are preserved.

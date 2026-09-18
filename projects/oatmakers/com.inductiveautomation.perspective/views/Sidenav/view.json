@@ -262,7 +262,7 @@
           "name": "Nav5"
         },
         "props": {
-          "text": "Production orders",
+          "text": "Batch output",
           "style": {
             "classes": "Demo/NavButton"
           }
