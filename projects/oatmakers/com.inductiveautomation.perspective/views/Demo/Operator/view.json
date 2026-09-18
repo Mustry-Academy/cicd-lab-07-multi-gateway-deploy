@@ -12,12 +12,21 @@
     "values": {},
     "validation": {
       "valid": false,
-      "message": ""
+      "message": "Select a completed batch and enter its output."
     },
     "requestId": "",
     "busy": false,
+    "saved": false,
     "result": "",
-    "requests": []
+    "batches": [],
+    "records": [],
+    "selected": {
+      "reference": "",
+      "product": "",
+      "line": "",
+      "completed": "",
+      "recorded": false
+    }
   },
   "params": {},
   "propConfig": {
@@ -44,11 +53,9 @@
         "config": {
           "waitOnAll": true,
           "struct": {
-            "reference": "{/root/Workspace/Form/Reference.props.params.value}",
-            "product": "{/root/Workspace/Form/Product.props.params.value}",
-            "quantity": "{/root/Workspace/Form/Quantity.props.params.value}",
-            "bags": "{/root/Workspace/Form/Bags.props.params.value}",
-            "mode": "{/root/Workspace/Form/Mode.props.params.value}"
+            "reference": "{/root/Workspace/Form/Reference.props.value}",
+            "quantity": "{/root/Workspace/Form/Quantity.props.text}",
+            "bags": "{/root/Workspace/Form/Bags.props.text}"
           }
         },
         "transforms": [
@@ -60,7 +67,7 @@
       },
       "onChange": {
         "enabled": true,
-        "script": "\tself.custom.requestId = \"\""
+        "script": "\tself.custom.requestId = \"\"\n\tself.custom.saved = False\n\tself.custom.result = \"\""
       }
     },
     "custom.validation": {
@@ -72,12 +79,30 @@
         "transforms": [
           {
             "type": "script",
-            "code": "\treturn application.demo.validateOrder(value)"
+            "code": "\treturn application.demo.validateBatchOutput(value)"
           }
         ]
       }
     },
-    "custom.requests": {
+    "custom.batches": {
+      "binding": {
+        "type": "expr-struct",
+        "config": {
+          "waitOnAll": true,
+          "struct": {
+            "refresh": "now(10000)"
+          }
+        },
+        "transforms": [
+          {
+            "type": "script",
+            "code": "\treturn application.demo.completedOutputBatches()"
+          }
+        ]
+      },
+      "persistent": true
+    },
+    "custom.records": {
       "binding": {
         "type": "expr-struct",
         "config": {
@@ -89,15 +114,38 @@
         "transforms": [
           {
             "type": "script",
-            "code": "\treturn application.demo.recentOrders()"
+            "code": "\treturn application.demo.recentBatchOutputs()"
           }
         ]
-      }
+      },
+      "persistent": true
+    },
+    "custom.selected": {
+      "binding": {
+        "type": "expr-struct",
+        "config": {
+          "waitOnAll": true,
+          "struct": {
+            "reference": "try({/root/Workspace/Form/Reference.props.value}, \"\")",
+            "batches": "{view.custom.batches}"
+          }
+        },
+        "transforms": [
+          {
+            "type": "script",
+            "code": "\tfor row in value[\"batches\"] or []:\n\t\tif row[\"reference\"] == value[\"reference\"]:\n\t\t\treturn row\n\treturn {\"reference\": \"\", \"product\": \"\", \"line\": \"\", \"completed\": \"\", \"recorded\": False}"
+          }
+        ]
+      },
+      "persistent": true
     },
     "custom.requestId": {
       "persistent": true
     },
     "custom.busy": {
+      "persistent": true
+    },
+    "custom.saved": {
       "persistent": true
     },
     "custom.result": {
@@ -166,7 +214,7 @@
                   "name": "Title"
                 },
                 "props": {
-                  "text": "Operator workflow",
+                  "text": "Batch output",
                   "style": {
                     "classes": "Demo/PageTitle"
                   }
@@ -182,7 +230,7 @@
                   "name": "Subtitle"
                 },
                 "props": {
-                  "text": "Create a request while the production list stays in view.",
+                  "text": "Record actual production for a completed batch.",
                   "style": {
                     "classes": "Demo/Subtitle"
                   }
@@ -285,7 +333,7 @@
                   "name": "FormTitle"
                 },
                 "props": {
-                  "text": "Create a production request",
+                  "text": "Record batch output",
                   "style": {
                     "classes": "Demo/SectionTitle"
                   }
@@ -298,10 +346,165 @@
               {
                 "type": "ia.display.label",
                 "meta": {
-                  "name": "FormSubtitle"
+                  "name": "BatchLabel"
                 },
                 "props": {
-                  "text": "Demonstration records only.",
+                  "text": "Completed batch",
+                  "style": {
+                    "classes": "Demo/Body"
+                  }
+                },
+                "position": {
+                  "shrink": 0,
+                  "basis": "auto"
+                }
+              },
+              {
+                "type": "ia.input.dropdown",
+                "meta": {
+                  "name": "Reference"
+                },
+                "props": {
+                  "options": [],
+                  "value": "",
+                  "placeholder": "Select a completed batch",
+                  "search": {
+                    "enabled": true
+                  },
+                  "style": {
+                    "classes": "Demo/Select"
+                  }
+                },
+                "position": {
+                  "shrink": 0,
+                  "basis": "42px"
+                },
+                "propConfig": {
+                  "props.options": {
+                    "binding": {
+                      "type": "property",
+                      "config": {
+                        "path": "view.custom.batches"
+                      },
+                      "transforms": [
+                        {
+                          "type": "script",
+                          "code": "\toptions = []\n\tfor row in value or []:\n\t\tlabel = row[\"reference\"] + \" | \" + row[\"product\"]\n\t\tif row[\"recorded\"]:\n\t\t\tlabel += \" (recorded)\"\n\t\toptions.append({\"label\": label, \"value\": row[\"reference\"]})\n\treturn options"
+                        }
+                      ]
+                    }
+                  }
+                }
+              },
+              {
+                "type": "ia.display.label",
+                "meta": {
+                  "name": "BatchContext"
+                },
+                "props": {
+                  "text": "",
+                  "style": {
+                    "classes": "Demo/Muted"
+                  }
+                },
+                "position": {
+                  "shrink": 0,
+                  "basis": "auto"
+                },
+                "propConfig": {
+                  "props.text": {
+                    "binding": {
+                      "type": "property",
+                      "config": {
+                        "path": "view.custom.selected"
+                      },
+                      "transforms": [
+                        {
+                          "type": "script",
+                          "code": "\tif not value or not value.get(\"reference\"):\n\t\treturn \"\"\n\treturn value[\"product\"] + \" | \" + value[\"line\"] + \" | Completed \" + value[\"completed\"]"
+                        }
+                      ]
+                    }
+                  }
+                }
+              },
+              {
+                "type": "ia.display.label",
+                "meta": {
+                  "name": "QuantityLabel"
+                },
+                "props": {
+                  "text": "Output quantity (kg)",
+                  "style": {
+                    "classes": "Demo/Body"
+                  }
+                },
+                "position": {
+                  "shrink": 0,
+                  "basis": "auto"
+                }
+              },
+              {
+                "type": "ia.input.text-field",
+                "meta": {
+                  "name": "Quantity"
+                },
+                "props": {
+                  "text": "",
+                  "deferUpdates": false,
+                  "placeholder": "Enter actual quantity",
+                  "style": {
+                    "classes": "Demo/Select",
+                    "padding": "8px"
+                  }
+                },
+                "position": {
+                  "shrink": 0,
+                  "basis": "42px"
+                }
+              },
+              {
+                "type": "ia.display.label",
+                "meta": {
+                  "name": "BagsLabel"
+                },
+                "props": {
+                  "text": "Number of bags",
+                  "style": {
+                    "classes": "Demo/Body"
+                  }
+                },
+                "position": {
+                  "shrink": 0,
+                  "basis": "auto"
+                }
+              },
+              {
+                "type": "ia.input.text-field",
+                "meta": {
+                  "name": "Bags"
+                },
+                "props": {
+                  "text": "0",
+                  "deferUpdates": false,
+                  "placeholder": "0 for bulk output",
+                  "style": {
+                    "classes": "Demo/Select",
+                    "padding": "8px"
+                  }
+                },
+                "position": {
+                  "shrink": 0,
+                  "basis": "42px"
+                }
+              },
+              {
+                "type": "ia.display.label",
+                "meta": {
+                  "name": "BulkHint"
+                },
+                "props": {
+                  "text": "For bulk output, enter 0 bags.",
                   "style": {
                     "classes": "Demo/Muted"
                   }
@@ -312,198 +515,29 @@
                 }
               },
               {
-                "type": "ia.display.view",
+                "type": "ia.display.label",
                 "meta": {
-                  "name": "Reference"
+                  "name": "RecordedNotice"
                 },
                 "props": {
-                  "path": "Templates/InputFields/TextInputField",
-                  "params": {
-                    "label": "Batch reference",
-                    "labelFieldWidth": "130px",
-                    "inputFieldWidth": "220px",
-                    "input": "DEMO-001",
-                    "value": "DEMO-001",
-                    "validatedInput": "DEMO-001",
-                    "required": true,
-                    "enabled": true,
-                    "placeholder": "Enter a value..."
-                  },
-                  "useDefaultViewWidth": false,
-                  "useDefaultViewHeight": false,
+                  "text": "",
                   "style": {
-                    "overflow": "visible"
+                    "classes": "Demo/Status"
                   }
                 },
                 "position": {
                   "shrink": 0,
-                  "basis": "66px"
-                }
-              },
-              {
-                "type": "ia.display.view",
-                "meta": {
-                  "name": "Product"
+                  "basis": "auto"
                 },
-                "props": {
-                  "path": "Templates/InputFields/DropdownInputField",
-                  "params": {
-                    "label": "Product",
-                    "labelFieldWidth": "130px",
-                    "inputFieldWidth": "220px",
-                    "input": "Rolled oats",
-                    "value": "Rolled oats",
-                    "validatedInput": "Rolled oats",
-                    "required": true,
-                    "enabled": true,
-                    "placeholder": "Enter a value...",
-                    "options": [
-                      {
-                        "label": "Rolled oats",
-                        "value": "Rolled oats"
-                      },
-                      {
-                        "label": "Steel-cut oats",
-                        "value": "Steel-cut oats"
-                      },
-                      {
-                        "label": "Oat flour",
-                        "value": "Oat flour"
+                "propConfig": {
+                  "props.text": {
+                    "binding": {
+                      "type": "expr",
+                      "config": {
+                        "expression": "if({view.custom.selected.recorded} && !{view.custom.saved}, \"Output has already been recorded for this batch.\", \"\")"
                       }
-                    ]
-                  },
-                  "useDefaultViewWidth": false,
-                  "useDefaultViewHeight": false,
-                  "style": {
-                    "overflow": "visible"
+                    }
                   }
-                },
-                "position": {
-                  "shrink": 0,
-                  "basis": "66px"
-                }
-              },
-              {
-                "type": "ia.display.view",
-                "meta": {
-                  "name": "Quantity"
-                },
-                "props": {
-                  "path": "Templates/InputFields/NumericInputField",
-                  "params": {
-                    "label": "Weight (kg)",
-                    "labelFieldWidth": "130px",
-                    "inputFieldWidth": "220px",
-                    "input": "1250.5",
-                    "value": "1250.5",
-                    "validatedInput": "1250.5",
-                    "required": true,
-                    "enabled": true,
-                    "placeholder": "Enter a value...",
-                    "decimalAllowed": true,
-                    "negativeAllowed": false
-                  },
-                  "useDefaultViewWidth": false,
-                  "useDefaultViewHeight": false,
-                  "style": {
-                    "overflow": "visible"
-                  }
-                },
-                "position": {
-                  "shrink": 0,
-                  "basis": "66px"
-                }
-              },
-              {
-                "type": "ia.display.view",
-                "meta": {
-                  "name": "Bags"
-                },
-                "props": {
-                  "path": "Templates/InputFields/NumericInputField",
-                  "params": {
-                    "label": "Bags",
-                    "labelFieldWidth": "130px",
-                    "inputFieldWidth": "220px",
-                    "input": "50",
-                    "value": "50",
-                    "validatedInput": "50",
-                    "required": true,
-                    "enabled": true,
-                    "placeholder": "Enter a value...",
-                    "decimalAllowed": false,
-                    "negativeAllowed": false
-                  },
-                  "useDefaultViewWidth": false,
-                  "useDefaultViewHeight": false,
-                  "style": {
-                    "overflow": "visible"
-                  }
-                },
-                "position": {
-                  "shrink": 0,
-                  "basis": "66px"
-                }
-              },
-              {
-                "type": "ia.display.view",
-                "meta": {
-                  "name": "Mode"
-                },
-                "props": {
-                  "path": "Templates/InputFields/MultiStateInputField",
-                  "params": {
-                    "label": "Run mode",
-                    "labelFieldWidth": "130px",
-                    "inputFieldWidth": "220px",
-                    "input": "Trial",
-                    "value": "Trial",
-                    "validatedInput": "Trial",
-                    "required": true,
-                    "enabled": true,
-                    "placeholder": "Enter a value...",
-                    "states": [
-                      {
-                        "value": "Trial",
-                        "text": "Trial",
-                        "selectedStyle": {
-                          "classes": ""
-                        },
-                        "unselectedStyle": {
-                          "classes": ""
-                        }
-                      },
-                      {
-                        "value": "Production",
-                        "text": "Production",
-                        "selectedStyle": {
-                          "classes": ""
-                        },
-                        "unselectedStyle": {
-                          "classes": ""
-                        }
-                      },
-                      {
-                        "value": "Hold",
-                        "text": "Hold",
-                        "selectedStyle": {
-                          "classes": ""
-                        },
-                        "unselectedStyle": {
-                          "classes": ""
-                        }
-                      }
-                    ]
-                  },
-                  "useDefaultViewWidth": false,
-                  "useDefaultViewHeight": false,
-                  "style": {
-                    "overflow": "visible"
-                  }
-                },
-                "position": {
-                  "shrink": 0,
-                  "basis": "66px"
                 }
               },
               {
@@ -538,7 +572,7 @@
                   "name": "Submit"
                 },
                 "props": {
-                  "text": "Create demo request",
+                  "text": "Record output",
                   "style": {
                     "classes": "Demo/Button"
                   }
@@ -553,7 +587,7 @@
                       "type": "script",
                       "scope": "G",
                       "config": {
-                        "script": "\tif self.view.custom.busy:\n\t\treturn\n\tself.view.custom.busy = True\n\ttry:\n\t\tif not self.view.custom.requestId:\n\t\t\tself.view.custom.requestId = application.demo.newRequestId()\n\t\tself.view.custom.result = application.demo.createOrder(dict(self.view.custom.values),self.view.custom.requestId)\n\t\tself.view.refreshBinding(\"custom.requests\")\n\texcept (Exception, application.demo.JavaException):\n\t\tself.view.custom.result = \"Could not create the request. Review the inputs and connection.\"\n\tfinally:\n\t\tself.view.custom.busy = False"
+                        "script": "\tif self.view.custom.busy:\n\t\treturn\n\tself.view.custom.busy = True\n\ttry:\n\t\tif not self.view.custom.requestId:\n\t\t\tself.view.custom.requestId = application.demo.newRequestId()\n\t\tself.view.custom.result = application.demo.recordBatchOutput(dict(self.view.custom.values),self.view.custom.requestId)\n\t\tself.view.custom.saved = True\n\t\tself.view.refreshBinding(\"custom.records\")\n\t\tself.view.refreshBinding(\"custom.batches\")\n\texcept (Exception, application.demo.JavaException):\n\t\tself.view.custom.result = \"Output could not be recorded. Verify the batch and quantities, then try again.\"\n\tfinally:\n\t\tself.view.custom.busy = False"
                       }
                     }
                   }
@@ -563,7 +597,7 @@
                     "binding": {
                       "type": "expr",
                       "config": {
-                        "expression": "{view.custom.validation.valid} && !{view.custom.busy} && {view.custom.live.ready}"
+                        "expression": "{view.custom.validation.valid} && !{view.custom.busy} && !{view.custom.saved} && !{view.custom.selected.recorded}"
                       }
                     }
                   }
@@ -605,7 +639,7 @@
           {
             "type": "ia.container.flex",
             "meta": {
-              "name": "RequestList"
+              "name": "OutputList"
             },
             "props": {
               "direction": "column",
@@ -620,10 +654,10 @@
               {
                 "type": "ia.display.label",
                 "meta": {
-                  "name": "RequestListTitle"
+                  "name": "OutputListTitle"
                 },
                 "props": {
-                  "text": "Production requests",
+                  "text": "Recorded output",
                   "style": {
                     "classes": "Demo/SectionTitle"
                   }
@@ -634,43 +668,32 @@
                 }
               },
               {
-                "type": "ia.display.label",
-                "meta": {
-                  "name": "RequestListSubtitle"
-                },
-                "props": {
-                  "text": "Your saved requests remain available after reloading.",
-                  "style": {
-                    "classes": "Demo/Muted"
-                  }
-                },
-                "position": {
-                  "shrink": 0,
-                  "basis": "auto"
-                }
-              },
-              {
                 "type": "mustrysolutions.perspective.input.datagrid",
                 "meta": {
-                  "name": "Requests"
+                  "name": "Outputs"
                 },
                 "props": {
                   "config": {
                     "columns": [
                       {
                         "field": "reference",
-                        "header": "Reference",
+                        "header": "Batch",
                         "width": 190
                       },
                       {
                         "field": "product",
                         "header": "Product",
-                        "width": 160
+                        "width": 150
+                      },
+                      {
+                        "field": "line",
+                        "header": "Line",
+                        "width": 150
                       },
                       {
                         "field": "quantity_kg",
-                        "header": "Weight kg",
-                        "width": 120,
+                        "header": "Output (kg)",
+                        "width": 130,
                         "type": "number",
                         "align": "right",
                         "decimals": 1
@@ -684,13 +707,8 @@
                         "decimals": 0
                       },
                       {
-                        "field": "mode",
-                        "header": "Mode",
-                        "width": 110
-                      },
-                      {
-                        "field": "submitted",
-                        "header": "Created",
+                        "field": "recorded",
+                        "header": "Recorded at",
                         "width": 140
                       }
                     ],
@@ -701,7 +719,7 @@
                     "showToolbar": true,
                     "showExport": true,
                     "editable": false,
-                    "emptyMessage": "No records for the selected range."
+                    "emptyMessage": "No batch output recorded yet."
                   },
                   "data": {
                     "rows": []
@@ -723,7 +741,7 @@
                     "binding": {
                       "type": "property",
                       "config": {
-                        "path": "view.custom.requests"
+                        "path": "view.custom.records"
                       }
                     }
                   }

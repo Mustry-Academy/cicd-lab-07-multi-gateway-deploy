@@ -149,12 +149,28 @@ def build_separator():
         canvas.append(xy(n,x,y,w,28))
     for name,text,x,y,w,h,cls in [('VesselTag','PP-V-01A',647,265,155,25,'Separator/VesselTag'),('HistoryCaption','-1 hr  ↶',493,474,100,25,'Separator/Small'),('Sea','Dump To Sea',1538,758,130,25,'Separator/Small'),('Title','Separator A',750,869,250,38,'Separator/Title'),('Simulation','SIMULATION',1560,879,132,20,'Separator/Simulation')]:
         canvas.append(xy(label(name,text,cls),x,y,w,h))
-    scene=node('ia.container.coord','Process',{'mode':'percent','aspectRatio':'1740:910','style':{'backgroundColor':BG,'overflow':'hidden','containerType':'inline-size'}},canvas,basis='0px',grow=1)
-    scene['position']['shrink']=1
-    header=flex('Header',[flex('Identity',[label('Eyebrow','OATMAKERS / LIVE OPERATIONS','Demo/Eyebrow'),label('Title','SCADA','Demo/PageTitle'),label('Subtitle','Separator A','Demo/Subtitle')],grow=1),label('Mode','SIMULATED FACTORY','Demo/DemoBadge')],'row','Demo/PageHeader')
+    # The module transforms one fixed-size view, including every graphic and label.
+    for child in canvas:
+        pos=child['position']
+        pos.update(x=pos['x']*W,y=pos['y']*H,width=pos['width']*W,height=pos['height']*H)
+    scene=node('ia.container.coord','root',{'mode':'fixed','style':{'backgroundColor':'transparent','overflow':'visible','containerType':'inline-size'}},canvas)
+    scene.pop('position',None)
     data={key:0 for key in ['pressure','temperature','level','interface','gas','suction','discharge','exportPressure','flow','drain','iop']}
-    root=flex('root',[header,scene],classes='Demo/Page Separator/Page')
-    view('Demo/SCADA',root,custom={'data':data},config={'custom.data':dict(script_expr('now(1000)','\treturn application.demo.separatorData()'),persistent=True)},height=939)
+    process=view('Demo/Separator/Process',scene,custom={'data':data},config={'custom.data':dict(script_expr('now(1000)','\treturn application.demo.separatorData()'),persistent=True)},height=H)
+    process['props']['defaultSize']['width']=W
+    write(V/'Demo/Separator/Process/view.json',process)
+    pan=node('mustrysolutions.perspective.display.panzoomview','ProcessViewport',{
+        'config':{'viewPath':'Demo/Separator/Process','viewParams':[],
+                  'contentWidth':W,'contentHeight':H,'minZoom':0.2,'maxZoom':4,
+                  'zoomStep':1.25,'wheelZoom':True,'doubleClickZoom':True,
+                  'showControls':True,'showMinimap':True,'showPoiList':False,
+                  'flyToMs':250,'home':{'x':-1,'y':-1,'zoom':0}},
+        'state':{'zoom':0,'center':{'x':0,'y':0},'target':''},
+        'data':{'pois':[]},'style':{'classes':'Separator/PanZoom','minHeight':'0px'}},basis='0px',grow=1)
+    pan['position']['shrink']=1
+    header=flex('Header',[flex('Identity',[label('Eyebrow','OATMAKERS / LIVE OPERATIONS','Demo/Eyebrow'),label('Title','SCADA','Demo/PageTitle'),label('Subtitle','Separator A. Drag to pan, scroll to zoom.','Demo/Subtitle')],grow=1),label('Mode','SIMULATED FACTORY','Demo/DemoBadge')],'row','Demo/PageHeader')
+    root=flex('root',[header,pan],classes='Demo/Page Separator/Page')
+    view('Demo/SCADA',root,height=939)
     # A reusable read-only detail view for instruments and connected streams.
     detail_value=label('Value','','Separator/DetailValue')
     detail_value['propConfig']={'props.text':{'binding':{'type':'expr-struct','config':{'waitOnAll':True,'struct':{'tick':'now(1000)','signal':'{view.params.signal}'}},'transforms':[{'type':'script','code':'\treturn application.demo.separatorDetailValue(value["signal"])'}]}}}
@@ -165,6 +181,8 @@ def build_separator():
 
 SEPARATOR_CSS='''
 .psc-Separator\\/Page { background:#e6e6e6; color:#565957; overflow:hidden; width:100%; height:100%; font-family:Arial,sans-serif; }
+.psc-Separator\\/PanZoom.mustry-panzoom { border:0; border-radius:0; --pz-canvas:#e6e6e6; --pz-bg:#e6e6e6; --pz-accent:#565957; }
+.psc-Separator\\/PanZoom .mustry-pz-content { background:transparent; box-shadow:none; border:0; }
 .psc-Separator\\/VesselTag { text-align:center; font-size:0.76cqw; font-weight:600; color:#666; }
 .psc-Separator\\/Small { font-size:0.74cqw; color:#727777; }
 .psc-Separator\\/Title { text-align:center; font-size:1.4cqw; font-family:'Arial Narrow',Arial,sans-serif; font-weight:600; color:#5a5e5c; }

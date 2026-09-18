@@ -99,6 +99,19 @@ try:
     check(sql('SELECT oat_demo.timeline_range(1,9999999999999,0)',expected=False)!=0,'an unbounded planning window is rejected')
     detail=value("SELECT oat_demo.batch_detail('%s')"%plan[0]['reference'])
     check(detail['available'],'a batch from the varied plan still resolves to a popup record')
+    completed=sql("SELECT reference FROM oat_demo.plan_batches(now()-interval '2 days',now(),0) WHERE ends<=now() ORDER BY ends DESC LIMIT 1")
+    unfinished=sql("SELECT reference FROM oat_demo.plan_batches(now(),now()+interval '1 day',0) WHERE ends>now() LIMIT 1")
+    call="SELECT oat_demo.record_batch_output('11111111-1111-1111-1111-111111111111','%s',1250.5,50)"%completed
+    output=value(call)
+    check(output['created'] and float(output['quantity_kg'])==1250.5 and output['bags']==50,'completed batch output is saved with actual quantities')
+    check(output['product'] in ('Rolled oats','Steel-cut oats','Oat flour'),'output product comes from the selected batch')
+    check(not value(call)['created'] and sql('SELECT count(*) FROM oat_demo.batch_output')=='1','repeated submission records output once')
+    check(sql("SELECT oat_demo.record_batch_output('22222222-2222-2222-2222-222222222222','%s',1400,50)"%completed,expected=False)!=0,'a second quantity cannot overwrite recorded batch output')
+    check(sql("SELECT oat_demo.record_batch_output('22222222-2222-2222-2222-222222222222','%s',100,4)"%unfinished,expected=False)!=0,'unfinished batches cannot receive a completed-output record')
+    check(sql("SELECT oat_demo.record_batch_output('22222222-2222-2222-2222-222222222222','missing',100,4)",expected=False)!=0,'unknown batch references are rejected')
+    check(sql("SELECT oat_demo.record_batch_output('22222222-2222-2222-2222-222222222222','%s',-1,4)"%completed,expected=False)!=0,'negative output is rejected by the database')
+    bulk=sql("SELECT reference FROM oat_demo.plan_batches(now()-interval '2 days',now(),0) WHERE ends<=now() AND reference<>'%s' ORDER BY ends DESC LIMIT 1"%completed)
+    check(value("SELECT oat_demo.record_batch_output('33333333-3333-3333-3333-333333333333','%s',800,0)"%bulk)['created'],'bulk output can be recorded with zero bags')
     # Keep one minute absent to test a real outage catch-up from a committed watermark.
     count=int(sql('SELECT count(*) FROM oat_demo.sample'))
     future="(SELECT last_tick+interval '21 days' FROM oat_demo.runtime)"
@@ -114,6 +127,7 @@ try:
     sql("SELECT oat_demo.tick((SELECT last_tick+interval '121 days' FROM oat_demo.runtime))")
     check(sql("SELECT count(*) FROM oat_demo.operator_order WHERE reference='OLD'")=='0','retention also prunes old operator demo requests')
     check(sql("SELECT count(*) FROM oat_demo.inspection WHERE batch_reference='OLD'")=='0','retention prunes old inspections')
+    check(sql('SELECT count(*) FROM oat_demo.batch_output')=='0','retention prunes recorded output after a four-month outage')
     h=value('SELECT oat_demo.health((SELECT last_tick FROM oat_demo.runtime))')
     check(h['ok'] and h['sampleCount']<=388803,'four-month outage regenerates only the retained history')
     sql('SELECT oat_demo.tick_live((SELECT last_tick FROM oat_demo.runtime))')

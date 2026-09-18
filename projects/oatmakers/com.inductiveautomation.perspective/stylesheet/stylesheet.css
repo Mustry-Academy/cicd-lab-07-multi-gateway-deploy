@@ -69,6 +69,8 @@
 @media(max-width:650px) { .psc-Demo\/Page { padding:14px; } .psc-Demo\/PageTitle { font-size:24px; } .psc-Demo\/Filters { flex-wrap:wrap !important; } }
 
 .psc-Separator\/Page { background:#e6e6e6; color:#565957; overflow:hidden; width:100%; height:100%; font-family:Arial,sans-serif; }
+.psc-Separator\/PanZoom.mustry-panzoom { border:0; border-radius:0; --pz-canvas:#e6e6e6; --pz-bg:#e6e6e6; --pz-accent:#565957; }
+.psc-Separator\/PanZoom .mustry-pz-content { background:transparent; box-shadow:none; border:0; }
 .psc-Separator\/VesselTag { text-align:center; font-size:0.76cqw; font-weight:600; color:#666; }
 .psc-Separator\/Small { font-size:0.74cqw; color:#727777; }
 .psc-Separator\/Title { text-align:center; font-size:1.4cqw; font-family:'Arial Narrow',Arial,sans-serif; font-weight:600; color:#5a5e5c; }

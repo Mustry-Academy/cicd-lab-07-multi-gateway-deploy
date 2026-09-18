@@ -127,19 +127,44 @@ for name,title,key,unit in [('Output','GOOD OUTPUT','good_kg','kg'),('Moisture',
 batch_root=flex('root',[bound_label('BatchTitle','view.params.reference','Demo/SectionTitle'),bound_label('Product','view.custom.batch.product','Demo/Subtitle'),bound_label('Status','view.custom.batch.status','Demo/Badge'),flex('Measurements',batch_cards,'row','Demo/Wrap'),qc,bound_label('Result','view.custom.result','Demo/Muted')],classes='Demo/PopupRoot')
 view('Demo/BatchDetails',batch_root,params={'reference':''},custom={'batch':{'available':False,'product':'','status':'Loading'},'result':''},config={'custom.batch':bind_script('view.params.reference','\treturn application.demo.batchDetails(value)')},height=400)
 
-# The request form never gets its own scroll container. The grid owns its scroll.
-fields=[]
-spec=[('Reference','TextInputField','Batch reference','DEMO-001',{}),('Product','DropdownInputField','Product','Rolled oats',{'options':[{'label':v,'value':v} for v in ['Rolled oats','Steel-cut oats','Oat flour']]}),('Quantity','NumericInputField','Weight (kg)','1250.5',{'decimalAllowed':True,'negativeAllowed':False}),('Bags','NumericInputField','Bags','50',{'decimalAllowed':False,'negativeAllowed':False}),('Mode','MultiStateInputField','Run mode','Trial',{'states':[{'value':v,'text':v,'selectedStyle':{'classes':''},'unselectedStyle':{'classes':''}} for v in ['Trial','Production','Hold']]})]
-for name,kind,title,initial,extra in spec:
-    field=embed(name,'Templates/InputFields/'+kind,{'label':title,'labelFieldWidth':'130px','inputFieldWidth':'220px','input':initial,'value':initial,'validatedInput':initial,'required':True,'enabled':True,'placeholder':'Enter a value...'}|extra,basis='66px')
-    field['props']['style']={'overflow':'visible'};fields.append(field)
-submit=button('Submit','Create demo request',script='\tif self.view.custom.busy:\n\t\treturn\n\tself.view.custom.busy = True\n\ttry:\n\t\tif not self.view.custom.requestId:\n\t\t\tself.view.custom.requestId = application.demo.newRequestId()\n\t\tself.view.custom.result = application.demo.createOrder(dict(self.view.custom.values),self.view.custom.requestId)\n\t\tself.view.refreshBinding("custom.requests")\n\texcept (Exception, application.demo.JavaException):\n\t\tself.view.custom.result = "Could not create the request. Review the inputs and connection."\n\tfinally:\n\t\tself.view.custom.busy = False')
-submit['propConfig']={'props.enabled':expr('{view.custom.validation.valid} && !{view.custom.busy} && {view.custom.live.ready}')}
-form=panel('Form','Create a production request','Demonstration records only.',fields+[bound_label('Validation','view.custom.validation.message','Demo/Muted'),submit,bound_label('Result','view.custom.result','Demo/Status')],basis='450px',grow=0);form['props']['style'].update({'overflow':'visible','alignSelf':'flex-start'})
-request_grid=grid('Requests','view.custom.requests',[('reference','Reference',190),('product','Product',160),('quantity_kg','Weight kg',120),('bags','Bags',80),('mode','Mode',110),('submitted','Created',140)],height='0px');request_grid['position']={'basis':'0px','grow':1,'shrink':1}
-request_panel=panel('RequestList','Production requests','Your saved requests remain available after reloading.',[request_grid],basis='560px',grow=1);request_panel['props']['style'].update({'height':'calc(100vh - 215px)','minHeight':'400px','overflow':'hidden'})
-workspace=flex('Workspace',[form,request_panel],'row','Demo/Workspace')
-page('Demo/Operator','Operator workflow','Create a request while the production list stays in view.',[workspace],custom={'values':{},'validation':{'valid':False,'message':''},'requestId':'','busy':False,'result':'','requests':[]},config={'custom.values':dict(struct_binding({name.lower():'{/root/Workspace/Form/'+name+'.props.params.value}' for name,*_ in spec},'\treturn value'),onChange={'enabled':True,'script':'\tself.custom.requestId = ""'}),'custom.validation':bind_script('view.custom.values','\treturn application.demo.validateOrder(value)'),'custom.requests':struct_binding({'refresh':'now(5000)'},'\treturn application.demo.recentOrders()')})
+# Record actual output against an existing completed batch.
+reference=node('ia.input.dropdown','Reference',{'options':[],'value':'','placeholder':'Select a completed batch','search':{'enabled':True},'style':{'classes':'Demo/Select'}},basis='42px')
+reference['propConfig']={'props.options':bind_script('view.custom.batches','\toptions = []\n\tfor row in value or []:\n\t\tlabel = row["reference"] + " | " + row["product"]\n\t\tif row["recorded"]:\n\t\t\tlabel += " (recorded)"\n\t\toptions.append({"label": label, "value": row["reference"]})\n\treturn options')}
+context=label('BatchContext','','Demo/Muted')
+context['propConfig']={'props.text':bind_script('view.custom.selected','\tif not value or not value.get("reference"):\n\t\treturn ""\n\treturn value["product"] + " | " + value["line"] + " | Completed " + value["completed"]')}
+fields=[label('BatchLabel','Completed batch','Demo/Body'),reference,context]
+for name,title,initial,decimal in [('Quantity','Output quantity (kg)','',True),('Bags','Number of bags','0',False)]:
+    fields.append(label(name+'Label',title,'Demo/Body'))
+    field=node('ia.input.text-field',name,{'text':initial,'deferUpdates':False,'placeholder':'Enter actual quantity' if decimal else '0 for bulk output','style':{'classes':'Demo/Select','padding':'8px'}},basis='42px')
+    fields.append(field)
+fields.append(label('BulkHint','For bulk output, enter 0 bags.','Demo/Muted'))
+notice=label('RecordedNotice','','Demo/Status');notice['propConfig']={'props.text':expr('if({view.custom.selected.recorded} && !{view.custom.saved}, "Output has already been recorded for this batch.", "")')}
+submit=button('Submit','Record output',script='\tif self.view.custom.busy:\n\t\treturn\n\tself.view.custom.busy = True\n\ttry:\n\t\tif not self.view.custom.requestId:\n\t\t\tself.view.custom.requestId = application.demo.newRequestId()\n\t\tself.view.custom.result = application.demo.recordBatchOutput(dict(self.view.custom.values),self.view.custom.requestId)\n\t\tself.view.custom.saved = True\n\t\tself.view.refreshBinding("custom.records")\n\t\tself.view.refreshBinding("custom.batches")\n\texcept (Exception, application.demo.JavaException):\n\t\tself.view.custom.result = "Output could not be recorded. Verify the batch and quantities, then try again."\n\tfinally:\n\t\tself.view.custom.busy = False')
+submit['propConfig']={'props.enabled':expr('{view.custom.validation.valid} && !{view.custom.busy} && !{view.custom.saved} && !{view.custom.selected.recorded}')}
+form=panel('Form','Record batch output','',fields+[notice,bound_label('Validation','view.custom.validation.message','Demo/Muted'),submit,bound_label('Result','view.custom.result','Demo/Status')],basis='450px',grow=0)
+form['props']['style'].update({'overflow':'visible','alignSelf':'flex-start'})
+output_grid=grid('Outputs','view.custom.records',[('reference','Batch',190),('product','Product',150),('line','Line',150),('quantity_kg','Output (kg)',130),('bags','Bags',80),('recorded','Recorded at',140)],height='0px')
+output_grid['props']['config']['emptyMessage']='No batch output recorded yet.'
+output_grid['position']={'basis':'0px','grow':1,'shrink':1}
+output_panel=panel('OutputList','Recorded output','',[output_grid],basis='560px',grow=1)
+output_panel['props']['style'].update({'height':'calc(100vh - 215px)','minHeight':'400px','overflow':'hidden'})
+workspace=flex('Workspace',[form,output_panel],'row','Demo/Workspace')
+page('Demo/Operator','Batch output','Record actual production for a completed batch.',[workspace],custom={'values':{},'validation':{'valid':False,'message':'Select a completed batch and enter its output.'},'requestId':'','busy':False,'saved':False,'result':'','batches':[],'records':[],'selected':{'reference':'','product':'','line':'','completed':'','recorded':False}},config={
+ 'custom.values':dict(struct_binding({'reference':'{/root/Workspace/Form/Reference.props.value}','quantity':'{/root/Workspace/Form/Quantity.props.text}','bags':'{/root/Workspace/Form/Bags.props.text}'},'\treturn value'),onChange={'enabled':True,'script':'\tself.custom.requestId = ""\n\tself.custom.saved = False\n\tself.custom.result = ""'}),
+ 'custom.validation':bind_script('view.custom.values','\treturn application.demo.validateBatchOutput(value)'),
+ 'custom.batches':struct_binding({'refresh':'now(10000)'},'\treturn application.demo.completedOutputBatches()'),
+ 'custom.records':struct_binding({'refresh':'now(5000)'},'\treturn application.demo.recentBatchOutputs()'),
+ 'custom.selected':struct_binding({'reference':'try({/root/Workspace/Form/Reference.props.value}, "")','batches':'{view.custom.batches}'},'\tfor row in value["batches"] or []:\n\t\tif row["reference"] == value["reference"]:\n\t\t\treturn row\n\treturn {"reference": "", "product": "", "line": "", "completed": "", "recorded": False}')})
+operator_file=V/'Demo/Operator/view.json'
+operator=json.loads(operator_file.read_text())
+def trim_empty_captions(component):
+    if 'children' in component:
+        component['children']=[c for c in component['children'] if not (c.get('type')=='ia.display.label' and c.get('props',{}).get('text')=='' and not c.get('propConfig'))]
+        for child in component['children']:trim_empty_captions(child)
+trim_empty_captions(operator['root'])
+for key in ('custom.batches','custom.records','custom.selected'):
+    operator['propConfig'][key]['persistent']=True
+write(operator_file,operator)
 
 from build_separator import build_separator, SEPARATOR_CSS
 build_separator()
@@ -150,9 +175,9 @@ view('Demo/TagHistory',flex('root',[bound_label('Title','view.params.title','Dem
 health_cards=[]
 for name,title,key,unit,hint in [('Age','LIVE DATA AGE','liveAgeSeconds','sec','One-second recorded telemetry'),('History','HISTORY','coverageDays','days','Minute history, capped at three months'),('Lines','LINES','lineCount','','Three simulated production lines')]:
     card=embed(name,'Demo/Components/Metric',{'title':title,'unit':unit,'hint':hint},basis='240px',grow=1);card['propConfig']={'props.params.value':prop('view.custom.health.'+key)};health_cards.append(card)
-page('Demo/Health','Demo health','Data freshness and automatic retention.',[flex('Metrics',health_cards,'row','Demo/Wrap'),label('Policy','One-second telemetry is retained for 6 hours. Minute history, demo requests and inspections are retained for at most 90 days or three calendar months.','Demo/Body')],custom={'health':{'liveAgeSeconds':'n/a','coverageDays':'n/a','lineCount':'n/a'}},config={'custom.health':struct_binding({'refresh':'now(5000)'},'\treturn application.demo.health()')})
+page('Demo/Health','Demo health','Data freshness and automatic retention.',[flex('Metrics',health_cards,'row','Demo/Wrap'),label('Policy','One-second telemetry is retained for 6 hours. Minute history, recorded batch output and inspections are retained for at most 90 days or three calendar months.','Demo/Body')],custom={'health':{'liveAgeSeconds':'n/a','coverageDays':'n/a','lineCount':'n/a'}},config={'custom.health':struct_binding({'refresh':'now(5000)'},'\treturn application.demo.health()')})
 
-routes=[('/','Factory overview','Demo/Overview'),('/scada','SCADA','Demo/SCADA'),('/production','Production planning','Demo/Production'),('/performance','Performance','Demo/Performance'),('/quality','Quality & traceability','Demo/Quality'),('/operator','Operator workflow','Demo/Operator')]
+routes=[('/','Factory overview','Demo/Overview'),('/scada','SCADA','Demo/SCADA'),('/production','Production planning','Demo/Production'),('/performance','Performance','Demo/Performance'),('/quality','Quality & traceability','Demo/Quality'),('/operator','Batch output','Demo/Operator')]
 logo=base64.b64encode((ROOT/'tools/demo/scada-assets/oatmakers-logo.svg').read_bytes()).decode()
 nav=[node('ia.display.image','Brand',{'source':'data:image/svg+xml;base64,'+logo,'fit':{'mode':'contain'},'style':{'classes':'Demo/BrandLogo'}},basis='74px'),label('BrandDetail','CONNECTED OPERATIONS','Demo/NavEyebrow'),label('DemoLabel','LIVE SIMULATION','Demo/NavBadge')]
 for i,(path,title,_) in enumerate(routes):
@@ -162,7 +187,7 @@ view('Sidenav',flex('root',nav,classes='Demo/Navigation'),height=900)
 config=json.loads((P/'page-config/config.json').read_text());config['pages'].pop('/components',None)
 for route,title,path in routes:config['pages'][route]={'title':title,'viewPath':path}
 config['pages']['/process']={'title':'SCADA','viewPath':'Demo/SCADA'};config['pages']['/demo/health']={'title':'Demo health','viewPath':'Demo/Health'}
-config['pages']['/oee']={'title':'Performance','viewPath':'Demo/Performance'};config['pages']['/demo/input-fields']={'title':'Operator workflow','viewPath':'Demo/Operator'}
+config['pages']['/oee']={'title':'Performance','viewPath':'Demo/Performance'};config['pages']['/demo/input-fields']={'title':'Batch output','viewPath':'Demo/Operator'}
 nav_docks=config.get('sharedDocks', {})
 if not nav_docks.get('left'):
     nav_docks=next((p.get('docks') for p in config['pages'].values() if p.get('docks',{}).get('left')), {})

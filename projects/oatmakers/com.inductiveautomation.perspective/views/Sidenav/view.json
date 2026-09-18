@@ -262,7 +262,7 @@
           "name": "Nav5"
         },
         "props": {
-          "text": "Operator workflow",
+          "text": "Batch output",
           "style": {
             "classes": "Demo/NavButton"
           }

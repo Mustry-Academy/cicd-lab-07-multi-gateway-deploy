@@ -21,7 +21,7 @@ for attempt in range(args.attempts):
                 health=json.load(response)
         assert health.get('ok'), 'Demo data is not ready: '+json.dumps(health)
         if not args.health_file:
-            assert health.get('appRevision')=='showroom-4.3.2', 'Unexpected demo application revision'
+            assert health.get('appRevision')=='showroom-4.4.2', 'Unexpected demo application revision'
         assert health['liveAgeSeconds']<=15, 'Fine telemetry stopped advancing'
         assert health['liveRetentionHours']==6, 'Wrong fine telemetry retention'
         assert health['ageSeconds']<=180, 'History stopped advancing'
