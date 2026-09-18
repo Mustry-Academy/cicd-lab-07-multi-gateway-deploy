@@ -13,8 +13,8 @@
         "config": {
           "waitOnAll": true,
           "struct": {
-            "start": "{/root/History.props.params.range.start}",
-            "end": "{/root/History.props.params.range.end}",
+            "start": "try({/root/History.props.params.range.start}, 0)",
+            "end": "try({/root/History.props.params.range.end}, 0)",
             "line": "{/root/History.props.params.lineNumber}",
             "refresh": "now(10000)"
           }
@@ -153,7 +153,13 @@
           "params": {
             "lineNumber": 0,
             "metric": "rate",
-            "showSelectors": true
+            "showSelectors": true,
+            "range": {
+              "start": 0,
+              "end": 0,
+              "valid": false,
+              "realtime": false
+            }
           },
           "useDefaultViewWidth": false,
           "useDefaultViewHeight": false

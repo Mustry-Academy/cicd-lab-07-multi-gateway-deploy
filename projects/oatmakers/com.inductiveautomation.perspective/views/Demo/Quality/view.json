@@ -252,6 +252,17 @@
               "style": {
                 "overflow": "visible",
                 "classes": "Demo/DateRange"
+              },
+              "output": {
+                "startDateTime": "",
+                "endDateTime": "",
+                "startEpochMs": 0,
+                "endEpochMs": 0,
+                "durationDays": 0,
+                "durationHours": 0,
+                "durationLabel": "",
+                "isValid": false,
+                "isRealtime": false
               }
             },
             "position": {
@@ -259,6 +270,9 @@
               "basis": "390px"
             },
             "propConfig": {
+              "props.output": {
+                "persistent": true
+              },
               "props.config.dateBounds.earliest": {
                 "binding": {
                   "type": "expr",

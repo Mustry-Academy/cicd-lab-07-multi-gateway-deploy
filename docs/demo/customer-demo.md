@@ -8,8 +8,8 @@ All measurements and requests are simulated. Writes are confined to the `oat_dem
 
 | Route | Purpose |
 |---|---|
-| `/` | Five-second throughput, current shift output, line conditions and alerts |
-| `/scada` | Original peeling and heating drawings in Mustry Pan Zoom View; click measurements for history |
+| `/` | One-second throughput, current shift output, line conditions and alerts |
+| `/scada` | Separator A process drawing with live instruments, embedded vessel trends and read-only detail popups |
 | `/production` | Mustry Resource Timeline with shift, day, hour and week navigation; click a batch for details |
 | `/performance` | Mustry Date Time Range Picker controlling historical charts and aggregate metrics |
 | `/quality` | Mustry Data Grid for batches in the selected dates, with measurement and inspection details |
@@ -20,32 +20,32 @@ Legacy `/process`, `/oee` and `/demo/input-fields` links open SCADA, Performance
 
 ## Demonstration walkthrough
 
-1. Watch the factory throughput and line readings change every five seconds.
-2. Open SCADA. Pan, zoom or use a point of interest. Switch between peeling and heating, then click a temperature or pressure reading.
-3. In the history popup, choose a live preset or exact calendar dates and times. The selected range controls the database query. Manual selections stop following the clock.
+1. Watch the factory throughput and line readings change every second.
+2. Open SCADA. Inspect the complete Separator A process and its vessel trends, then click an instrument for its live detail popup.
+3. On Performance, choose a live preset or exact calendar dates and times. The selected range controls the database query. Manual selections stop following the clock.
 4. Open Production planning, change between shift and week scales, and inspect a batch.
 5. In Quality, choose older dates, select a batch, inspect its measurements and record a demo inspection.
 6. In Operator workflow, create a request. It appears in the grid and remains after reloading. The form has no internal scrollbar.
 
 ## Data lifecycle
 
-The dedicated gateway timer runs every five seconds even without a browser. It records deterministic, changing measurements for three lines and writes their latest values to the SCADA memory tags. Tag-history popups query the same recorded source. A disconnected source shows unavailable readings rather than invented browser values.
+The dedicated gateway timer runs every second even without a browser. It records deterministic, changing measurements for three lines and writes their latest values to the OatMakers memory tags. Tag-history popups query the same recorded source. A disconnected source shows unavailable readings rather than invented browser values.
 
-Fine telemetry is retained for 48 hours. Minute history, requests and inspections are retained for the shorter of 90 days and three calendar months. First deployment seeds the retained history. Watermarks fill gaps after downtime, bounded by those retention windows. Database advisory locks prevent overlapping generators and repeated timestamps insert nothing.
+Fine telemetry is retained for six hours. Minute history, requests and inspections are retained for the shorter of 90 days and three calendar months. First deployment seeds the retained history. Watermarks fill gaps after downtime, bounded by those retention windows. Database advisory locks prevent overlapping generators and repeated timestamps insert nothing.
 
-Five-second production quantities sum to their minute totals. Charts use fine data for recent ranges and minute data for older ranges, with at most approximately 900 plotted points. Line filters and explicit start/end timestamps are applied in SQL. Throughput and power are normalized by the represented duration. The overview emphasizes current operation; slower aggregate efficiency metrics are on Performance.
+One-second production quantities sum to their minute totals. Charts use fine data for recent ranges and minute data for older ranges, with at most approximately 900 plotted points. Line filters and explicit start/end timestamps are applied in SQL. Throughput and power are normalized by the represented duration. The overview emphasizes current operation; slower aggregate efficiency metrics are on Performance.
 
-Batch output and quality are derived from six-hour recorded groups. A peak moisture excursion can require review despite an acceptable average. Requests and inspections are persistent demo records; repeated submission IDs cannot create duplicates.
+Batch output and quality are derived from the line-specific recorded production plan. A peak moisture excursion can require review despite an acceptable average. Requests and inspections are persistent demo records; repeated submission IDs cannot create duplicates.
 
 ## Mustry UI module
 
 The pinned signed `Mustry_UI-0.5.2.modl` is built from the source commit and Actions run recorded in `tools/demo/mustry-ui-version.json`. The signed module and signature-verification build steps passed. The dry-run workflow subsequently failed in its unrelated PDF documentation footer step; no public module release was published by this change. The module manifest marks it as free, so it does not rely on a trial license.
 
-Screens use the module's Date Time Range Picker, Resource Timeline, Data Grid and Pan Zoom View. The module has no chart renderer; the shared history view pairs its range picker with a styled native Perspective XY chart. The picker output, not a separate preset dropdown, defines the queried range.
+Screens use the module's Date Time Range Picker, Resource Timeline, Data Grid. The module has no chart renderer; the shared history view pairs its range picker with a styled native Perspective XY chart. The picker output, not a separate preset dropdown, defines the queried range.
 
 ## Local development
 
-`compose.demo.yml` isolates Ignition 8.3.8 and PostgreSQL 17.5 at http://localhost:18096, with local gateway credentials `admin` / `password`. Run `tools/demo/start-local.sh`. Other local gateways are not stopped or reused. The module initializer seeds the native 8.3.8 module registry and the signed UI module on a fresh volume.
+`compose.demo.yml` isolates Ignition 8.3.8 and PostgreSQL 17.5 at http://localhost:18096, with local gateway credentials `admin` / `password`. Run `tools/demo/start-local.sh`. The named lab gateway is reconciled with the current checkout; unrelated gateways are not stopped. The module initializer seeds the native 8.3.8 module registry and the signed UI module on a fresh volume.
 
 After changing resources:
 
@@ -59,7 +59,7 @@ python3 tests/demo/test_database.py
 python3 tests/demo/test_deploy.py
 ```
 
-Database tests use a disposable `_test` database. They check real SQL, exact history ranges, line filters, moving fine telemetry, quantity reconciliation, retention, idempotency and recovery after weeks or months offline. Deployment tests preserve unrelated resources and verify idempotent module installation. `build_views.py` regenerates the Perspective resources. The SCADA SVG assets are committed geometry; rebuilding the views requires no external project checkout.
+Database tests use a disposable `_test` database. They check real SQL, exact history ranges, line filters, moving fine telemetry, quantity reconciliation, retention, idempotency and recovery after weeks or months offline. Deployment tests preserve unrelated resources and verify idempotent module installation. `build_views.py` regenerates the Perspective resources. The separator geometry is generated by `build_separator.py`; rebuilding requires no external project checkout.
 
 ## Cloud deployment and recovery
 
@@ -67,7 +67,7 @@ Release through an immutable project tag and the `release.yaml` pin. The scoped 
 
 The installer verifies the module checksum and manifest, backs up the existing module registry and binary, then merges only the Mustry UI entry. Other registrations are preserved. A changed module requires one controlled gateway restart; an unchanged install does not restart. If startup fails, the prior registry and binary are restored. Project-only changes continue to use hot scans.
 
-The deployment backs up and replaces only the Oatmakers project and its `OatmakersDemo` connection and `DemoRuntime` secret provider. It verifies that the five-second heartbeat advances, retained history is populated and all seven public routes respond. A failed app verification restores the previous project and owned configuration without deleting database records. The additive free UI module can remain loaded with the previous project.
+The deployment backs up and replaces only the Oatmakers project and its `OatmakersDemo` connection and `DemoRuntime` secret provider. It verifies that the one-second heartbeat advances, retained history is populated and all seven public routes respond. A failed app verification restores the previous project and owned configuration without deleting database records. The additive free UI module can remain loaded with the previous project.
 
 The Deploy workflow's readiness job runs every six hours. It reads database health directly and checks public routes, so it does not require a Web Dev license. The optional `/system/webdev/oatmakers/api/demo-health` endpoint also returns health where Web Dev is available. An HTTP route check alone does not validate rendering; release review additionally exercises the real screens in a browser.
 
@@ -85,22 +85,22 @@ To use port 8088, stop any other gateway using that port, then run
 `DEMO_HTTP_PORT=8088 tools/demo/start-local.sh`. The root demo-oatmakers project
 is a separate application with different pages and backend dependencies.
 
-## SCADA presentation
+## Separator reference screen
 
-The SCADA design follows the level-2 example on slide 38 of Graham Nasby's
-[2017 ISA-101 and high-performance HMI presentation](https://www.grahamnasby.com/files_publications/NasbyG_2017_HighPerformanceHMIs_IntelligentWastewaterSeminar_WEAO_sept14-2017_slides-public.pdf):
-blue PV, green SP, grey process equipment and an always-visible trend. Colour
-is accompanied by explicit labels and abnormal-condition text.
+SCADA uses a complete Separator A process layout based on the supplied reference:
+a horizontal vessel, connected inlet/export/drain piping, instrument badges,
+valve and pump symbols, and three trends inside the vessel. The scene preserves
+its 1740:910 aspect ratio. SCADA has full-width process tabs; other pages retain
+the normal application sidebar.
 
-The drawing and pan/zoom content are transparent on one grey background.
-The embedded trend stays outside the zoom transform. Selecting a measurement
-changes the trend; changing the process area resets the drawing to fit.
+Instrument, device, stream, trend and detail elements are reusable embedded
+Perspective views under `Demo/Separator/`. Readings and the one-hour trend are
+from a deterministic, read-only separator simulation, separate from the
+OatMakers production database. Instrument and connected-equipment clicks open
+a detail popup. The other process tabs provide context popups, not separate
+process screens or plant controls.
 
-SP values are read-only nominal simulation targets, not plant control writes.
-Power is consumption and has no SP. The temperature and moisture trend limits
-come from the demo's existing quality specifications. The OatMakers SVG logo
-is embedded in the project so deployment does not depend on a gateway image.
-
-Local verification covers both process areas, zoom out to 46%, zoom in to
-141%, automatic fit on area changes, PV selection, live chart data and the
-seven-page runtime readiness check.
+Performance initializes its picker outputs and embedded range parameters before
+bindings evaluate. Null or pending ranges return a valid empty chart. Error
+overlays remain enabled. `tests/demo/test_view_startup.py` verifies startup states
+and the transition to a valid history query.

@@ -5,7 +5,7 @@ from java.lang import Exception as JavaException
 from java.util.concurrent.locks import ReentrantLock
 
 DATABASE = 'OatmakersDemo'
-REVISION = 'showroom-4.2.0'
+REVISION = 'showroom-4.3.0'
 _cache = {}
 _lock = ReentrantLock()
 
@@ -301,3 +301,77 @@ def _writeLiveTags(data):
 	qualities = system.tag.writeBlocking(paths, values)
 	if any(not quality.isGood() for quality in qualities):
 		raise ValueError('A demo tag write failed')
+
+
+# The separator is a separate, deterministic process simulation for the reference HMI.
+# It never writes plant tags or control setpoints.
+def _separatorValue(signal, seconds):
+	import math
+	base, amplitude, period = {
+		'pressure': (3.88, 0.025, 31.0), 'temperature': (25.95, 0.12, 67.0),
+		'level': (47.33, 0.9, 43.0), 'interface': (21.51, 0.65, 59.0),
+		'gas': (9.4, 0.07, 47.0), 'suction': (4.6, 0.04, 41.0),
+		'discharge': (23.4, 0.09, 39.0), 'exportPressure': (23.1, 0.08, 37.0),
+		'flow': (164.3, 1.3, 53.0), 'drain': (85.0, 0.15, 71.0), 'iop': (0.0, 0.0, 1.0)
+	}.get(signal, (0.0, 0.0, 1.0))
+	return base + amplitude * math.sin(seconds / period) + amplitude * 0.2 * math.sin(seconds / 3.1)
+
+
+def separatorData():
+	seconds = system.date.toMillis(system.date.now()) / 1000.0
+	return dict((key, _separatorValue(key, seconds)) for key in
+		('pressure', 'temperature', 'level', 'interface', 'gas', 'suction', 'discharge', 'exportPressure', 'flow', 'drain', 'iop'))
+
+
+def _separatorSvg(content, width, height):
+	import base64
+	markup = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {0} {1}" preserveAspectRatio="none" width="{0}" height="{1}">{2}</svg>'.format(width, height, content)
+	return 'data:image/svg+xml;base64,' + base64.b64encode(markup.encode('utf-8'))
+
+
+def separatorVesselSvg():
+	data = separatorData()
+	level_y = 260.0 * (1 - data['level'] / 100.0)
+	interface_y = 260.0 * (1 - data['interface'] / 100.0)
+	body = '<defs><clipPath id="vessel"><rect x="2" y="2" width="606" height="256" rx="128"/></clipPath><linearGradient id="gas" x2="0" y2="1"><stop stop-color="#f4ecd4"/><stop offset="1" stop-color="#e6e6df"/></linearGradient></defs>'
+	body += '<g clip-path="url(#vessel)"><rect width="610" height="260" fill="url(#gas)"/>'
+	body += '<rect y="{0:.2f}" width="610" height="260" fill="#99a6b1"/>'.format(level_y)
+	body += '<rect y="{0:.2f}" width="302" height="260" fill="#9dbccd"/>'.format(interface_y)
+	body += '<path d="M303 {0:.2f} V259" stroke="#59605f" stroke-width="5"/></g>'.format(level_y)
+	body += '<rect x="2" y="2" width="606" height="256" rx="128" fill="none" stroke="#616461" stroke-width="3"/>'
+	for i, caption in enumerate(('10','7.5','5','2.5','0')):
+		y = 13 + 29*i
+		body += '<path d="M192 {0} h12" stroke="#d9ba66"/><text x="178" y="{1}" font-family="Arial" font-size="10" fill="#747873" text-anchor="end">{2}</text>'.format(y,y+3,caption)
+	return _separatorSvg(body, 610, 260)
+
+
+def separatorTrendSvg(signal, colour, setpoint):
+	seconds = system.date.toMillis(system.date.now()) / 1000.0
+	values = [_separatorValue(signal, seconds - 3600 + i*30) for i in range(121)]
+	span = {'pressure': (0.0,10.0), 'level': (40.0,55.0), 'interface': (15.0,30.0)}.get(signal)
+	if span is None:
+		spread = max(max(values)-min(values), 1.0)
+		span = (min(values)-spread, max(values)+spread)
+	low, high = span
+	points = [(3+i*274.0/120, 65-(value-low)/(high-low)*60) for i,value in enumerate(values)]
+	body = ''
+	if setpoint:
+		y = 65-(float(setpoint)-low)/(high-low)*60
+		body += '<path d="M3 {0:.2f} H277" stroke="#73c9d9" stroke-width="1" stroke-dasharray="4 4" fill="none"/>'.format(y)
+	body += '<polyline points="{0}" stroke="{1}" stroke-width="1" fill="none"/>'.format(' '.join('{0:.2f},{1:.2f}'.format(x,y) for x,y in points), colour)
+	body += '<circle cx="277" cy="{0:.2f}" r="2.2" fill="#df8074"/>'.format(points[-1][1])
+	return _separatorSvg(body, 280, 70)
+
+
+def separatorDetailValue(signal):
+	if signal == 'iop':
+		return 'IOP'
+	units = {'pressure':'bar','temperature':u'\u00b0C','level':'%','interface':'%',
+		'gas':'MMSCF/D','suction':'bar','discharge':'bar','exportPressure':'bar','flow':'M3/h','drain':'%'}
+	return u'{0:.2f} {1}'.format(separatorData().get(signal, 0), units.get(signal, ''))
+
+
+def showSeparatorDetail(tag, signal):
+	system.perspective.openPopup('separator-detail', 'Demo/Separator/Detail',
+		params={'tag':tag,'signal':signal}, title=tag,
+		position={'width':520,'height':340}, modal=False, draggable=True, resizable=True)
