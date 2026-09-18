@@ -3,7 +3,7 @@
   "params": {
     "tag": "PI152A",
     "kind": "PI",
-    "value": "--",
+    "value": "n/a",
     "colour": "#f7f7f7",
     "signal": "pressure"
   },
@@ -32,122 +32,62 @@
   "props": {
     "defaultSize": {
       "width": 1280,
-      "height": 50
+      "height": 51
     }
   },
   "root": {
-    "type": "ia.container.flex",
+    "type": "ia.container.coord",
     "meta": {
       "name": "root"
     },
     "props": {
-      "direction": "column",
+      "mode": "percent",
       "style": {
-        "classes": "Separator/Instrument"
+        "cursor": "pointer"
       }
     },
     "children": [
       {
-        "type": "ia.display.label",
+        "type": "ia.display.image",
         "meta": {
-          "name": "Tag"
+          "name": "Graphic"
         },
         "props": {
-          "text": "",
+          "source": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMzAiIGhlaWdodD0iNTEiIHZpZXdCb3g9IjAgMCAxMzAgNTEiPjwvc3ZnPg==",
+          "fit": {
+            "mode": "fill"
+          },
           "style": {
-            "classes": "Separator/InstrumentTag"
+            "pointerEvents": "none"
           }
         },
         "position": {
-          "shrink": 0,
-          "basis": "auto"
+          "x": 0,
+          "y": 0,
+          "width": 1,
+          "height": 1
         },
         "propConfig": {
-          "props.text": {
+          "props.source": {
             "binding": {
-              "type": "property",
+              "type": "expr-struct",
               "config": {
-                "path": "view.params.tag"
-              }
-            }
-          }
-        }
-      },
-      {
-        "type": "ia.container.flex",
-        "meta": {
-          "name": "Reading"
-        },
-        "props": {
-          "direction": "row",
-          "style": {
-            "classes": "Separator/InstrumentReading"
-          }
-        },
-        "children": [
-          {
-            "type": "ia.display.label",
-            "meta": {
-              "name": "Type"
-            },
-            "props": {
-              "text": "",
-              "style": {
-                "classes": "Separator/InstrumentType"
-              }
-            },
-            "position": {
-              "shrink": 0,
-              "basis": "auto"
-            },
-            "propConfig": {
-              "props.text": {
-                "binding": {
-                  "type": "property",
-                  "config": {
-                    "path": "view.params.kind"
-                  }
-                }
-              }
-            }
-          },
-          {
-            "type": "ia.display.label",
-            "meta": {
-              "name": "Value"
-            },
-            "props": {
-              "text": "",
-              "style": {
-                "classes": "Separator/InstrumentValue"
-              }
-            },
-            "position": {
-              "shrink": 0,
-              "basis": "auto"
-            },
-            "propConfig": {
-              "props.text": {
-                "binding": {
-                  "type": "property",
-                  "config": {
-                    "path": "view.params.value"
-                  }
+                "waitOnAll": true,
+                "struct": {
+                  "tag": "{view.params.tag}",
+                  "kind": "{view.params.kind}",
+                  "value": "{view.params.value}",
+                  "colour": "{view.params.colour}"
                 }
               },
-              "props.style.backgroundColor": {
-                "binding": {
-                  "type": "property",
-                  "config": {
-                    "path": "view.params.colour"
-                  }
+              "transforms": [
+                {
+                  "type": "script",
+                  "code": "\treturn application.demo.separatorInstrumentSvg(value[\"tag\"], value[\"kind\"], value[\"value\"], value[\"colour\"])"
                 }
-              }
+              ]
             }
           }
-        ],
-        "position": {
-          "shrink": 0
         }
       }
     ],

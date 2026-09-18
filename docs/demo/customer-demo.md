@@ -90,17 +90,21 @@ is a separate application with different pages and backend dependencies.
 SCADA uses a complete Separator A process layout based on the supplied reference:
 a horizontal vessel, connected inlet/export/drain piping, instrument badges,
 valve and pump symbols, and three trends inside the vessel. The scene preserves
-its 1740:910 aspect ratio. SCADA has full-width process tabs; other pages retain
-the normal application sidebar.
+its 1740:910 aspect ratio. SCADA keeps the normal application sidebar, logo and page header. The separator
+is one view inside the application, with no separate process navigation bar.
 
 Instrument, device, stream, trend and detail elements are reusable embedded
 Perspective views under `Demo/Separator/`. Readings and the one-hour trend are
 from a deterministic, read-only separator simulation, separate from the
-OatMakers production database. Instrument and connected-equipment clicks open
-a detail popup. The other process tabs provide context popups, not separate
-process screens or plant controls.
+OatMakers production database. Instrument and connected-equipment clicks open a detail popup. No view writes
+to plant controls.
 
 Performance initializes its picker outputs and embedded range parameters before
 bindings evaluate. Null or pending ranges return a valid empty chart. Error
 overlays remain enabled. `tests/demo/test_view_startup.py` verifies startup states
 and the transition to a valid history query.
+
+Geometry uses a common design coordinate system for piping, instrument circles,
+value badges, valve bodies and highlighted frames. Device flow ports share the
+same axis as their connected pipes. Instrument leads stop at circle boundaries,
+and pneumatic lines stop at the AS/I-P enclosures instead of crossing their text.

@@ -3,7 +3,6 @@
   "params": {
     "tag": "PCV151A2",
     "source": "",
-    "highlight": false,
     "signal": "pressure"
   },
   "propConfig": {
@@ -15,10 +14,6 @@
       "paramDirection": "input",
       "persistent": true
     },
-    "params.highlight": {
-      "paramDirection": "input",
-      "persistent": true
-    },
     "params.signal": {
       "paramDirection": "input",
       "persistent": true
@@ -27,39 +22,40 @@
   "props": {
     "defaultSize": {
       "width": 1280,
-      "height": 95
+      "height": 88
     }
   },
   "root": {
-    "type": "ia.container.flex",
+    "type": "ia.container.coord",
     "meta": {
       "name": "root"
     },
     "props": {
-      "direction": "column",
+      "mode": "percent",
       "style": {
-        "classes": "Separator/Device"
+        "cursor": "pointer"
       }
     },
     "children": [
       {
         "type": "ia.display.image",
         "meta": {
-          "name": "Symbol"
+          "name": "Graphic"
         },
         "props": {
-          "source": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI3OCIgaGVpZ2h0PSI3NSIgdmlld0JveD0iMCAwIDc4IDc1Ij48ZyBmb250LWZhbWlseT0iQXJpYWwiIGZpbGw9IiM1NTUiPjxwYXRoIGQ9Ik0yMCA0MyBMNTYgNTkgTDU2IDQzIEwyMCA1OSBaIiBmaWxsPSIjYTdkZmE1IiBzdHJva2U9IiM1NTUiIHN0cm9rZS13aWR0aD0iMS42Ii8+PHBhdGggZD0iTTM4IDI5IFY1MSIgc3Ryb2tlPSIjNTU1IiBzdHJva2Utd2lkdGg9IjEuNCIvPjxwYXRoIGQ9Ik0yNCAyOSBBMTQgMTIgMCAwIDEgNTIgMjkgWiIgZmlsbD0iI2E3ZGZhNSIgc3Ryb2tlPSIjNTU1IiBzdHJva2Utd2lkdGg9IjEuNCIvPjx0ZXh0IHg9IjU5IiB5PSIzMCIgZm9udC1zaXplPSIxMiI+QTwvdGV4dD48L2c+PC9zdmc+",
+          "source": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI3OCIgaGVpZ2h0PSI4OCIgdmlld0JveD0iMCAwIDc4IDg4Ij48L3N2Zz4=",
           "fit": {
-            "mode": "contain"
+            "mode": "fill"
           },
           "style": {
             "pointerEvents": "none"
           }
         },
         "position": {
-          "basis": "0px",
-          "grow": 1,
-          "shrink": 1
+          "x": 0,
+          "y": 0,
+          "width": 1,
+          "height": 1
         },
         "propConfig": {
           "props.source": {
@@ -71,46 +67,10 @@
             }
           }
         }
-      },
-      {
-        "type": "ia.display.label",
-        "meta": {
-          "name": "Tag"
-        },
-        "props": {
-          "text": "",
-          "style": {
-            "classes": "Separator/DeviceTag"
-          }
-        },
-        "position": {
-          "shrink": 0,
-          "basis": "auto"
-        },
-        "propConfig": {
-          "props.text": {
-            "binding": {
-              "type": "property",
-              "config": {
-                "path": "view.params.tag"
-              }
-            }
-          }
-        }
       }
     ],
     "position": {
       "shrink": 0
-    },
-    "propConfig": {
-      "props.style.borderColor": {
-        "binding": {
-          "type": "expr",
-          "config": {
-            "expression": "if({view.params.highlight}, \"#f0a128\", \"transparent\")"
-          }
-        }
-      }
     },
     "events": {
       "dom": {
