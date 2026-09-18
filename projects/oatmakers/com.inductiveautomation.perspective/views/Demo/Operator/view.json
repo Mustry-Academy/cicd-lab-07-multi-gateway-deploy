@@ -27,7 +27,7 @@
         "config": {
           "waitOnAll": true,
           "struct": {
-            "tick": "now(5000)"
+            "tick": "now(1000)"
           }
         },
         "transforms": [
@@ -239,7 +239,7 @@
             "binding": {
               "type": "expr",
               "config": {
-                "expression": "if({view.custom.live.ready}, \"Live \u00b7 recorded at \" + {view.custom.live.updatedAt} + \" \u00b7 updates every 5 seconds\", \"Live telemetry is unavailable\")"
+                "expression": "if({view.custom.live.ready}, \"Live \u00b7 recorded at \" + {view.custom.live.updatedAt} + \" \u00b7 updates every second\", \"Live telemetry is unavailable\")"
               }
             }
           },
@@ -247,7 +247,7 @@
             "binding": {
               "type": "expr",
               "config": {
-                "expression": "if({view.custom.live.ready}, \"#277b57\", \"#b66622\")"
+                "expression": "if({view.custom.live.ready}, \"#6d757c\", \"#b57a17\")"
               }
             }
           }

@@ -5,7 +5,7 @@ from java.lang import Exception as JavaException
 from java.util.concurrent.locks import ReentrantLock
 
 DATABASE = 'OatmakersDemo'
-REVISION = 'showroom-4.0.1'
+REVISION = 'showroom-4.1.0'
 _cache = {}
 _lock = ReentrantLock()
 
@@ -176,7 +176,7 @@ def _cachedQuery(key, ttl, sql, args):
 
 def live(line=0):
 	try:
-		return _cachedQuery(('live4', int(line or 0)), 2, 'SELECT oat_demo.live_overview(?)', [int(line or 0)])
+		return _cachedQuery(('live5', int(line or 0)), 0.4, 'SELECT oat_demo.live_overview(?)', [int(line or 0)])
 	except (Exception, JavaException):
 		return {'ready': False, 'updatedEpochMs': 0, 'updatedAt': 'Unavailable',
 			'lines': [], 'metrics': [], 'trend': [], 'shiftStart': ''}
@@ -217,8 +217,16 @@ def batches(start, end, line=0):
 
 
 def timeline(start, end):
-	rows = batches(start, end)
-	return [dict(row, id=row['reference'], description='{0} / {1}'.format(row['line'],row['status'])) for row in rows]
+	if not start or not end or long(end) <= long(start):
+		return []
+	try:
+		rows = _cachedQuery(('timeline5',long(start),long(end)), 5,
+			'SELECT oat_demo.timeline_range(CAST(? AS bigint), CAST(? AS bigint), ?)', [long(start),long(end),0])
+	except (Exception, JavaException):
+		return []
+	return [dict(row, id=row['reference'],
+		description='{0} / {1}'.format(row['line'], row.get('status') or row.get('title')))
+		for row in rows]
 
 
 def batchDetails(reference):
@@ -231,6 +239,8 @@ def batchDetails(reference):
 
 
 def showBatch(reference):
+	if not str(reference).startswith('OM-'):
+		return   # a stop or changeover bar carries no batch record
 	system.perspective.openPopup('batch-details', 'Demo/BatchDetails',
 		params={'reference': str(reference)}, title='Batch details',
 		position={'width': 920, 'height': 400}, modal=False, draggable=True, resizable=True)

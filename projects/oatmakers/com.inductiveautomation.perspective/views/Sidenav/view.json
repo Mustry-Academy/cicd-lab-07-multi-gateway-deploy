@@ -99,7 +99,7 @@
             "binding": {
               "type": "expr",
               "config": {
-                "expression": "if({page.props.path} = \"/\", \"#315844\", \"transparent\")"
+                "expression": "if({page.props.path} = \"/\", \"#3d474f\", \"transparent\")"
               }
             }
           }
@@ -136,7 +136,7 @@
             "binding": {
               "type": "expr",
               "config": {
-                "expression": "if({page.props.path} = \"/scada\", \"#315844\", \"transparent\")"
+                "expression": "if({page.props.path} = \"/scada\", \"#3d474f\", \"transparent\")"
               }
             }
           }
@@ -173,7 +173,7 @@
             "binding": {
               "type": "expr",
               "config": {
-                "expression": "if({page.props.path} = \"/production\", \"#315844\", \"transparent\")"
+                "expression": "if({page.props.path} = \"/production\", \"#3d474f\", \"transparent\")"
               }
             }
           }
@@ -210,7 +210,7 @@
             "binding": {
               "type": "expr",
               "config": {
-                "expression": "if({page.props.path} = \"/performance\", \"#315844\", \"transparent\")"
+                "expression": "if({page.props.path} = \"/performance\", \"#3d474f\", \"transparent\")"
               }
             }
           }
@@ -247,7 +247,7 @@
             "binding": {
               "type": "expr",
               "config": {
-                "expression": "if({page.props.path} = \"/quality\", \"#315844\", \"transparent\")"
+                "expression": "if({page.props.path} = \"/quality\", \"#3d474f\", \"transparent\")"
               }
             }
           }
@@ -284,7 +284,7 @@
             "binding": {
               "type": "expr",
               "config": {
-                "expression": "if({page.props.path} = \"/operator\", \"#315844\", \"transparent\")"
+                "expression": "if({page.props.path} = \"/operator\", \"#3d474f\", \"transparent\")"
               }
             }
           }

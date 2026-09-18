@@ -8,63 +8,136 @@
         "y": 121.69,
         "width": 150,
         "height": 60,
-        "metric": "rate"
-      },
-      {
-        "x": 433.77,
-        "y": 334.92,
-        "width": 337.0,
-        "height": 60,
-        "metric": "pressure"
+        "metric": "rate",
+        "tag": "[oatmakers]gu01/l01/pe/conveyor/conveyerin/tail section/speed sensor/value.value"
       },
       {
         "x": 164.9,
         "y": 34.2,
         "width": 150,
         "height": 60,
-        "metric": "rate"
-      },
-      {
-        "x": 435.75,
-        "y": 474.01,
-        "width": 336.0,
-        "height": 60,
-        "metric": "temperature"
+        "metric": "rate",
+        "tag": "[oatmakers]gu01/l01/pe/conveyor/conveyerin/tail section/speed sensor/value.value"
       },
       {
         "x": 557.93,
         "y": 643.16,
         "width": 150,
         "height": 60,
-        "metric": "rate"
-      },
-      {
-        "x": 5.482084,
-        "y": 721.1837805175782,
-        "width": 335.0,
-        "height": 60,
-        "metric": "rate"
-      },
-      {
-        "x": 39.638343505859375,
-        "y": 111.61749999999995,
-        "width": 335.0,
-        "height": 60,
-        "metric": "rate"
+        "metric": "rate",
+        "tag": "[oatmakers]gu01/l01/pe/conveyor/conveyerout/tail section/speed sensor/value.value"
       },
       {
         "x": 206.85,
         "y": 316.09,
         "width": 150,
         "height": 60,
-        "metric": "rate"
+        "metric": "rate",
+        "tag": "[oatmakers]gu01/l01/pe/conveyor/conveyerwaste/tail section/speed sensor/value"
+      }
+    ],
+    "occupied": [
+      {
+        "x": 148.8,
+        "y": 165.8,
+        "width": 569.4,
+        "height": 555.6
       },
       {
-        "x": 420.0328146972656,
-        "y": 707.6058359985352,
-        "width": 335.0,
-        "height": 60,
-        "metric": "rate"
+        "x": 570.0,
+        "y": 31.3,
+        "width": 9.0,
+        "height": 237.0
+      },
+      {
+        "x": 376.1,
+        "y": -346.0,
+        "width": 22.0,
+        "height": 775.0
+      },
+      {
+        "x": 493.0,
+        "y": 201.2,
+        "width": 9.0,
+        "height": 134.0
+      },
+      {
+        "x": 591.5,
+        "y": 402.7,
+        "width": 33.0,
+        "height": 75.0
+      },
+      {
+        "x": 519.1,
+        "y": 468.1,
+        "width": 31.0,
+        "height": 74.0
+      },
+      {
+        "x": 511.4,
+        "y": 330.8,
+        "width": 32.0,
+        "height": 69.0
+      },
+      {
+        "x": 301.5,
+        "y": -4.0,
+        "width": 196.0,
+        "height": 205.0
+      },
+      {
+        "x": 743.4,
+        "y": -6.8,
+        "width": 108.0,
+        "height": 89.0
+      },
+      {
+        "x": 383.1,
+        "y": 682.0,
+        "width": 79.0,
+        "height": 52.0
+      },
+      {
+        "x": 433.2,
+        "y": 671.0,
+        "width": 320.0,
+        "height": 37.0
+      },
+      {
+        "x": 755.2,
+        "y": 523.1,
+        "width": 387.0,
+        "height": 199.0
+      },
+      {
+        "x": 56.7,
+        "y": 44.7,
+        "width": 330.0,
+        "height": 74.0
+      },
+      {
+        "x": 198.7,
+        "y": 328.6,
+        "width": 176.0,
+        "height": 74.0
+      },
+      {
+        "x": 57.0,
+        "y": 281.1,
+        "width": 196.0,
+        "height": 205.0
+      },
+      {
+        "x": 47.1,
+        "y": 453.0,
+        "width": 217.0,
+        "height": 218.0
+      },
+      {
+        "x": 45.8,
+        "y": 453.1,
+        "width": 218.0,
+        "height": 109.0
       }
     ]
   },
@@ -73,81 +146,170 @@
     "height": 1472,
     "instruments": [
       {
-        "x": 163.55,
-        "y": 695.0,
-        "width": 352.0,
-        "height": 60,
-        "metric": "temperature"
-      },
-      {
         "x": 76.55,
         "y": 820.0,
         "width": 171.0,
         "height": 60,
-        "metric": "temperature"
+        "metric": "pressure",
+        "tag": "[oatmakers]gu01/l01/ht/heater/pressure_pv/value"
       },
       {
         "x": 456.05,
         "y": 810.0,
         "width": 172.0,
         "height": 60,
-        "metric": "temperature"
+        "metric": "temperature",
+        "tag": "[oatmakers]gu01/l01/ht/heater/temperature_pv/value"
       },
       {
         "x": 710.05,
         "y": 719.984375,
         "width": 172.0,
         "height": 60,
-        "metric": "temperature"
+        "metric": "temperature",
+        "tag": "[oatmakers]gu01/l01/ht/heater/heatexchangertempin_pv/value"
       },
       {
         "x": 801.0,
         "y": 601.984375,
         "width": 332.0,
         "height": 60,
-        "metric": "temperature"
+        "metric": "temperature",
+        "tag": "[oatmakers]gu01/l01/ht/heater/heatexchangertempin_pv/value"
+      }
+    ],
+    "occupied": [
+      {
+        "x": 194.0,
+        "y": 294.0,
+        "width": 738.0,
+        "height": 493.0
       },
       {
-        "x": 642.662,
-        "y": 348.837,
+        "x": 16.0,
+        "y": 601.5,
+        "width": 332.0,
+        "height": 320.0
+      },
+      {
+        "x": 204.0,
+        "y": 833.0,
+        "width": 263.0,
+        "height": 257.0
+      },
+      {
+        "x": 6.1,
+        "y": 839.5,
+        "width": 332.0,
+        "height": 17.0
+      },
+      {
+        "x": 163.5,
+        "y": 682.0,
         "width": 172.0,
-        "height": 60,
-        "metric": "temperature"
+        "height": 15.0
       },
       {
-        "x": 279.44,
-        "y": 44.4452,
-        "width": 172.0,
-        "height": 60,
-        "metric": "temperature"
+        "x": 163.0,
+        "y": 1013.0,
+        "width": 124.0,
+        "height": 10.0
       },
       {
-        "x": 710.11225,
-        "y": 1122.98,
-        "width": 172.0,
-        "height": 60,
-        "metric": "temperature"
+        "x": 394.0,
+        "y": 1013.0,
+        "width": 124.0,
+        "height": 10.0
       },
       {
-        "x": 362.59,
-        "y": 101.34,
-        "width": 343.0,
-        "height": 60,
-        "metric": "temperature"
+        "x": 367.1,
+        "y": 845.5,
+        "width": 320.0,
+        "height": 17.0
       },
       {
-        "x": 112.52,
-        "y": 584.17,
-        "width": 186.0,
-        "height": 60,
-        "metric": "temperature"
+        "x": 289.5,
+        "y": 1071.0,
+        "width": 101.0,
+        "height": 17.0
       },
       {
-        "x": 931.52,
-        "y": 590.66,
-        "width": 298.0,
-        "height": 60,
-        "metric": "temperature"
+        "x": -1.5,
+        "y": 1128.0,
+        "width": 334.0,
+        "height": 10.0
+      },
+      {
+        "x": 652.6,
+        "y": 757.4,
+        "width": 82.0,
+        "height": 89.0
+      },
+      {
+        "x": 706.7,
+        "y": 760.9,
+        "width": 147.0,
+        "height": 17.0
+      },
+      {
+        "x": 541.3,
+        "y": 779.0,
+        "width": 190.0,
+        "height": 17.0
+      },
+      {
+        "x": 629.0,
+        "y": 881.0,
+        "width": 100.0,
+        "height": 10.0
+      },
+      {
+        "x": 658.3,
+        "y": 1034.8,
+        "width": 245.0,
+        "height": 17.0
+      },
+      {
+        "x": -4.1,
+        "y": 1165.5,
+        "width": 777.0,
+        "height": 10.0
+      },
+      {
+        "x": 620.8,
+        "y": 41.7,
+        "width": 103.0,
+        "height": 89.0
+      },
+      {
+        "x": 562.9,
+        "y": 244.3,
+        "width": 302.0,
+        "height": 17.0
+      },
+      {
+        "x": 347.0,
+        "y": -346.2,
+        "width": 15.0,
+        "height": 704.0
+      },
+      {
+        "x": 693.8,
+        "y": 23.4,
+        "width": 40.0,
+        "height": 17.0
+      },
+      {
+        "x": 521.3,
+        "y": -85.6,
+        "width": 15.0,
+        "height": 307.0
+      },
+      {
+        "x": 212.8,
+        "y": 231.8,
+        "width": 326.0,
+        "height": 17.0
       }
     ]
   }

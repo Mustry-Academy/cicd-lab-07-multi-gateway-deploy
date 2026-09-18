@@ -488,12 +488,12 @@
                   ],
                   "connect": true,
                   "fill": {
-                    "color": "#2d8962",
+                    "color": "#39444f",
                     "opacity": 0
                   },
                   "minDistance": 0.5,
                   "stroke": {
-                    "color": "#2d8962",
+                    "color": "#39444f",
                     "dashArray": "",
                     "opacity": 1,
                     "width": 2
@@ -746,12 +746,12 @@
                   ],
                   "connect": true,
                   "fill": {
-                    "color": "#428ac3",
+                    "color": "#77889a",
                     "opacity": 0
                   },
                   "minDistance": 0.5,
                   "stroke": {
-                    "color": "#428ac3",
+                    "color": "#77889a",
                     "dashArray": "",
                     "opacity": 1,
                     "width": 2
@@ -1004,12 +1004,12 @@
                   ],
                   "connect": true,
                   "fill": {
-                    "color": "#c59139",
+                    "color": "#aeb8c0",
                     "opacity": 0
                   },
                   "minDistance": 0.5,
                   "stroke": {
-                    "color": "#c59139",
+                    "color": "#aeb8c0",
                     "dashArray": "",
                     "opacity": 1,
                     "width": 2
