@@ -42,15 +42,22 @@
 .psc-Demo\/Chart { font-size:11px; min-width:0; }
 .psc-Demo\/DataGrid { --dg-accent:var(--demo-accent); --dg-bg:#fff; --dg-header-bg:#eceff1; --dg-border:var(--demo-line); --dg-text:var(--demo-ink); --dg-muted:var(--demo-muted); border:1px solid var(--demo-line); border-radius:4px; min-height:180px; }
 .psc-Demo\/PlanningTimeline { --tml-accent:var(--demo-accent); --tml-bg:#fff; --tml-group-bg:#eceff1; --tml-border:var(--demo-line); --tml-line:#e4e8ea; --tml-text:var(--demo-ink); border:1px solid var(--demo-line); border-radius:6px; background:#fff; }
-.psc-Demo\/ScadaPage { overflow:hidden; }
-/* The pan/zoom canvas and the drawing sit on the same grey, so no bright panel
-   outlines the process. */
-.psc-Demo\/ScadaMap { border:1px solid var(--demo-line); border-radius:6px; --pz-canvas:#e4e7ea; --pz-bg:#eff1f3; --pz-accent:var(--demo-accent); --pz-alert:var(--demo-alarm); }
-.psc-Demo\/TagFace { background:#fbfbfce6; border:1px solid #c6ccd1; border-radius:4px; padding:6px 10px; gap:3px; cursor:pointer; box-sizing:border-box; overflow:visible; }
-.psc-Demo\/TagFace:hover { border-color:var(--demo-accent); box-shadow:0 2px 8px rgba(35,40,45,0.14); }
-.psc-Demo\/TagName { font-size:14px; font-weight:600; color:var(--demo-muted); }
-.psc-Demo\/TagValue { font-size:24px; font-weight:700; font-variant-numeric:tabular-nums; color:var(--demo-ink); }
-.psc-Demo\/TagUnit { font-size:14px; color:var(--demo-muted); }
+.psc-Demo\/ScadaPage { overflow:hidden; background:#c5c7c9; }
+.psc-Demo\/ScadaWorkspace { gap:12px; min-height:0; align-items:stretch; }
+.psc-Demo\/ScadaMap.mustry-panzoom { border:0; border-radius:0; --pz-canvas:#c5c7c9; --pz-bg:#c5c7c9; --pz-accent:#343b40; --pz-alert:var(--demo-alarm); }
+.psc-Demo\/ScadaMap .mustry-pz-content { background:transparent; box-shadow:none; border:0; }
+.psc-Demo\/ScadaTrendPanel { gap:4px; padding:8px 0 0; border-top:1px solid #a8aeb3; min-width:0; min-height:250px; }
+.psc-Demo\/ScadaState { font-size:12px; font-weight:700; margin-left:auto; }
+.psc-Demo\/TagFace { background:transparent; border:0; border-radius:0; padding:3px 6px; gap:2px; cursor:pointer; box-sizing:border-box; overflow:visible; }
+.psc-Demo\/TagFace:hover { outline:1px solid #8d979f; outline-offset:2px; }
+.psc-Demo\/TagName { font-size:15px; font-weight:600; color:#434b51; }
+.psc-Demo\/TagValue { font-size:26px; font-weight:700; font-variant-numeric:tabular-nums; color:#333399; }
+.psc-Demo\/PvLabel { font-size:12px; font-weight:700; color:#333399; }
+.psc-Demo\/SpLabel,.psc-Demo\/SpValue { font-size:15px; color:#006400; font-variant-numeric:tabular-nums; }
+.psc-Demo\/TagUnit { font-size:13px; color:#515b63; }
+.psc-Demo\/TagCondition { font-size:12px; font-weight:700; color:#865900; }
+.psc-Demo\/BrandLogo { background:#f2f3f1; padding:8px; margin-bottom:8px; }
+@container demo (max-width:1000px) { .psc-Demo\/ScadaPage { overflow:auto; } .psc-Demo\/ScadaWorkspace { flex-wrap:wrap !important; flex-shrink:0 !important; } .psc-Demo\/ScadaMap { flex-basis:100% !important; min-height:500px !important; } .psc-Demo\/ScadaTrendPanel { flex-basis:300px !important; min-height:300px; } }
 .psc-Demo\/Navigation { background:#2b3238; padding:28px 16px 20px; gap:9px; color:#dde1e4; height:100%; box-sizing:border-box; font-family:Arial,sans-serif; }
 .psc-Demo\/Brand { font-size:24px; font-weight:800; letter-spacing:1.2px; color:#f2f4f5; padding:0 9px; }
 .psc-Demo\/NavEyebrow { font-size:9px; letter-spacing:1.3px; color:#a6aeb4; padding:0 9px; }

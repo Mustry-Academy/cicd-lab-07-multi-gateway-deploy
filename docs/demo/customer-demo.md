@@ -84,3 +84,23 @@ gateway and database volumes are retained. The default URL is
 To use port 8088, stop any other gateway using that port, then run
 `DEMO_HTTP_PORT=8088 tools/demo/start-local.sh`. The root demo-oatmakers project
 is a separate application with different pages and backend dependencies.
+
+## SCADA presentation
+
+The SCADA design follows the level-2 example on slide 38 of Graham Nasby's
+[2017 ISA-101 and high-performance HMI presentation](https://www.grahamnasby.com/files_publications/NasbyG_2017_HighPerformanceHMIs_IntelligentWastewaterSeminar_WEAO_sept14-2017_slides-public.pdf):
+blue PV, green SP, grey process equipment and an always-visible trend. Colour
+is accompanied by explicit labels and abnormal-condition text.
+
+The drawing and pan/zoom content are transparent on one grey background.
+The embedded trend stays outside the zoom transform. Selecting a measurement
+changes the trend; changing the process area resets the drawing to fit.
+
+SP values are read-only nominal simulation targets, not plant control writes.
+Power is consumption and has no SP. The temperature and moisture trend limits
+come from the demo's existing quality specifications. The OatMakers SVG logo
+is embedded in the project so deployment does not depend on a gateway image.
+
+Local verification covers both process areas, zoom out to 46%, zoom in to
+141%, automatic fit on area changes, PV selection, live chart data and the
+seven-page runtime readiness check.

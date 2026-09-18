@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 200" width="720" height="200" role="img" aria-label="OatMakers">
+  <defs>
+    <linearGradient id="grain" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#EBBE58"/>
+      <stop offset="1" stop-color="#C8902F"/>
+    </linearGradient>
+    <clipPath id="ring">
+      <circle cx="100" cy="100" r="82"/>
+    </clipPath>
+    <g id="oatgrain">
+      <path d="M0,-13 C5.5,-7 5.5,7 0,13 C-5.5,7 -5.5,-7 0,-13 Z" fill="url(#grain)"/>
+      <path d="M0,-13 C2,-7 2,7 0,13" fill="none" stroke="#A87724" stroke-width="1" opacity="0.55"/>
+    </g>
+  </defs>
+
+  <!-- mark -->
+  <circle cx="100" cy="100" r="86" fill="none" stroke="#24382B" stroke-width="6"/>
+  <g clip-path="url(#ring)">
+    <path d="M4,148 Q78,112 196,156 L196,200 L4,200 Z" fill="#7E9461"/>
+    <path d="M4,166 Q96,132 196,176 L196,200 L4,200 Z" fill="#24382B"/>
+  </g>
+  <path d="M100,148 Q103,104 100,50" fill="none" stroke="#24382B" stroke-width="4" stroke-linecap="round"/>
+  <use href="#oatgrain" transform="translate(100,44)"/>
+  <use href="#oatgrain" transform="translate(87,70) rotate(-30)"/>
+  <use href="#oatgrain" transform="translate(113,70) rotate(30)"/>
+  <use href="#oatgrain" transform="translate(84,96) rotate(-36)"/>
+  <use href="#oatgrain" transform="translate(116,96) rotate(36)"/>
+  <use href="#oatgrain" transform="translate(86,122) rotate(-42)"/>
+  <use href="#oatgrain" transform="translate(114,122) rotate(42)"/>
+
+  <!-- wordmark -->
+  <text x="225" y="127" font-family="'Nunito Sans','Segoe UI','Helvetica Neue',Arial,sans-serif"
+        font-size="76" font-weight="700" letter-spacing="-1">
+    <tspan fill="#C8902F">Oat</tspan><tspan fill="#24382B">Makers</tspan>
+  </text>
+  <text x="228" y="156" font-family="'Nunito Sans','Segoe UI','Helvetica Neue',Arial,sans-serif"
+        font-size="21" font-weight="600" letter-spacing="10.5" fill="#7E9461">ROLLED &#183; OATS</text>
+</svg>

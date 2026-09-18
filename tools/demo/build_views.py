@@ -133,13 +133,20 @@ request_panel=panel('RequestList','Production requests','Your saved requests rem
 workspace=flex('Workspace',[form,request_panel],'row','Demo/Workspace')
 page('Demo/Operator','Operator workflow','Create a request while the production list stays in view.',[workspace],custom={'values':{},'validation':{'valid':False,'message':''},'requestId':'','busy':False,'result':'','requests':[]},config={'custom.values':dict(struct_binding({name.lower():'{/root/Workspace/Form/'+name+'.props.params.value}' for name,*_ in spec},'\treturn value'),onChange={'enabled':True,'script':'\tself.custom.requestId = ""'}),'custom.validation':bind_script('view.custom.values','\treturn application.demo.validateOrder(value)'),'custom.requests':struct_binding({'refresh':'now(5000)'},'\treturn application.demo.recentOrders()')})
 
-# Generic tag faceplate: live tag subscriptions, not per-view random values.
-inst_root=flex('root',[bound_label('Name','view.params.label','Demo/TagName'),flex('Reading',[label('Value','','Demo/TagValue'),bound_label('Unit','view.params.unit','Demo/TagUnit')],'row','Demo/MetricReading')],classes='Demo/TagFace')
-inst_root['children'][1]['children'][0]['propConfig']={'props.text':expr('if({view.custom.fresh}, numberFormat({view.custom.value}, "#,##0.0"), "n/a")')}
-inst_root['events']={'dom':{'onClick':{'type':'script','scope':'G','config':{'script':'\tapplication.demo.showHistory(self.view.params.lineNumber, self.view.params.metric)'}}}}
-view('Demo/ScadaViews/Instrument',inst_root,params={'lineNumber':1,'metric':'temperature','tag':'Temperature','label':'Temperature','unit':'°C'},custom={'value':0,'lastUpdate':0,'fresh':False},config={'custom.value':{'binding':{'type':'tag','config':{'mode':'indirect','tagPath':'[default]OatmakersDemo/Line{line}/{tag}','references':{'line':'{view.params.lineNumber}','tag':'{view.params.tag}'}}}},'custom.lastUpdate':{'binding':{'type':'tag','config':{'mode':'indirect','tagPath':'[default]OatmakersDemo/Line{line}/LastUpdate','references':{'line':'{view.params.lineNumber}'}}}},'custom.fresh':expr('dateDiff({view.custom.lastUpdate}, now(1000), "second") < 30')},height=60)
+# Live readings use explicit PV/SP labels. Setpoints are read-only simulation targets.
+inst_root=flex('root',[
+ bound_label('Name','view.params.label','Demo/TagName'),
+ flex('Reading',[label('PV','PV','Demo/PvLabel'),label('Value','','Demo/TagValue'),bound_label('Unit','view.params.unit','Demo/TagUnit')],'row','Demo/MetricReading'),
+ flex('Target',[label('SP','SP','Demo/SpLabel'),label('Setpoint','','Demo/SpValue'),bound_label('Unit','view.params.unit','Demo/TagUnit')],'row','Demo/MetricReading'),
+ label('Condition','','Demo/TagCondition')],classes='Demo/TagFace')
+inst_root['children'][1]['children'][1]['propConfig']={'props.text':expr('if({view.custom.fresh}, numberFormat({view.custom.value}, "#,##0.0"), "n/a")')}
+inst_root['children'][2]['propConfig']={'position.display':expr('{view.params.metric} != "power"')}
+inst_root['children'][2]['children'][1]['propConfig']={'props.text':expr('numberFormat({view.custom.setpoint}, "#,##0.0")')}
+inst_root['children'][3]['propConfig']={'props.text':expr('if(!{view.custom.fresh}, "! STALE DATA", if({view.params.metric} = "moisture" && {view.custom.value} > 13, "! HIGH MOISTURE", if({view.params.metric} = "temperature" && {view.custom.value} > 86, "! HIGH TEMPERATURE", "")))'),'position.display':expr('!{view.custom.fresh} || ({view.params.metric} = "moisture" && {view.custom.value} > 13) || ({view.params.metric} = "temperature" && {view.custom.value} > 86)')}
+inst_root['events']={'dom':{'onClick':{'type':'script','scope':'G','config':{'script':'\tself.session.custom.demo.scadaMetric = self.view.params.metric'}}}}
+view('Demo/ScadaViews/Instrument',inst_root,params={'lineNumber':1,'metric':'temperature','tag':'Temperature','label':'Temperature','unit':'°C'},custom={'value':0,'lastUpdate':0,'fresh':False,'setpoint':0},config={'custom.value':{'binding':{'type':'tag','config':{'mode':'indirect','tagPath':'[default]OatmakersDemo/Line{line}/{tag}','references':{'line':'{view.params.lineNumber}','tag':'{view.params.tag}'}}}},'custom.lastUpdate':{'binding':{'type':'tag','config':{'mode':'indirect','tagPath':'[default]OatmakersDemo/Line{line}/LastUpdate','references':{'line':'{view.params.lineNumber}'}}}},'custom.fresh':expr('dateDiff({view.custom.lastUpdate}, now(1000), "second") < 15'),'custom.setpoint':struct_binding({'line':'{view.params.lineNumber}','metric':'{view.params.metric}'},'\treturn application.demo.scadaSetpoint(value["line"], value["metric"])')},height=100)
 layouts=json.loads((ROOT/'tools/demo/scada-assets/layout.json').read_text())
-FACE_W,FACE_H=230,72
+FACE_W,FACE_H=230,110
 # Faceplates start from the positions the original drawing gave them, then move
 # to the nearest spot that clears the equipment. Hand-picked coordinates, and the
 # original positions taken literally, are both how cards ended up sitting on top
@@ -190,11 +197,11 @@ for area,cfg in layouts.items():
         e=embed('Measurement'+str(index),'Demo/ScadaViews/Instrument',{'metric':metric,'tag':tag,'label':title,'unit':unit})
         e['position']={'x':instrument['x']+60,'y':instrument['y']+60,'width':instrument['width'],'height':instrument['height']}
         e['propConfig']={'props.params.lineNumber':prop('view.params.lineNumber')};nodes.append(e)
-    root=node('ia.container.coord','root',{'mode':'fixed','style':{'backgroundColor':'#f7faf7','overflow':'visible'}},nodes)
+    root=node('ia.container.coord','root',{'mode':'fixed','style':{'backgroundColor':'transparent','overflow':'visible'}},nodes)
     d=view('Demo/ScadaViews/'+area.title(),root,params={'lineNumber':1},height=height);d['props']['defaultSize']['width']=width;write(V/('Demo/ScadaViews/'+area.title())/'view.json',d)
-scada_controls=flex('Controls',[select('Line',LINES[1:],'session.custom.demo.scadaLine'),select('Area',[('peeling','Peeling & conveying'),('heating','Heat treatment')],'session.custom.demo.scadaArea'),label('Hint','Drag to pan, wheel to zoom. Click a measurement for its history.','Demo/Muted')],'row','Demo/Filters')
+scada_controls=flex('Controls',[select('Line',LINES[1:],'session.custom.demo.scadaLine'),select('Area',[('peeling','Peeling & conveying'),('heating','Heat treatment')],'session.custom.demo.scadaArea'),label('Hint','Drag to pan, wheel to zoom. Select a PV to trend it.','Demo/Muted')],'row','Demo/Filters')
 pan=node(M+'display.panzoomview','ScadaMap',{'config':{'viewPath':'Demo/ScadaViews/Peeling','viewParams':[{'name':'lineNumber','value':1}],'contentWidth':layouts['peeling']['width']+120,'contentHeight':layouts['peeling']['height']+120,'minZoom':0.25,'maxZoom':4,'showControls':True,'showMinimap':True,'showPoiList':True,'wheelZoom':True,'doubleClickZoom':True,'flyToMs':350,'home':{'x':-1,'y':-1,'zoom':0}},'data':{'pois':[]},'style':{'classes':'Demo/ScadaMap'}},basis='0px',grow=1)
-pan['position']['shrink']=1;pan['props']['style']['minHeight']='480px'
+pan['position']['shrink']=1;pan['props']['style']['minHeight']='360px'
 # Tell the pan/zoom the real canvas size for the area on screen. Left at 0 it has
 # to wait for the embedded view to report one, and until it does it frames the
 # drawing inside a stock 1600x1200 box -- the empty rectangle around the SCADA.
@@ -203,7 +210,38 @@ def area_expr(field):
         layouts['heating'][field]+120,layouts['peeling'][field]+120))
 pan['propConfig']={'props.config.contentWidth':area_expr('width'),'props.config.contentHeight':area_expr('height'),
  'props.config.viewPath':expr('if({session.custom.demo.scadaArea} = "heating", "Demo/ScadaViews/Heating", "Demo/ScadaViews/Peeling")'),'props.config.viewParams[0].value':prop('session.custom.demo.scadaLine'),'props.data.pois':bind_script('session.custom.demo.scadaArea','\tif value == "heating":\n\t\treturn [{"name":"Heater", "x":500,"y":600,"zoom":1.1},{"name":"Heat exchanger","x":850,"y":900,"zoom":1.4}]\n\treturn [{"name":"Infeed", "x":300,"y":150,"zoom":1.5},{"name":"Peeling", "x":580,"y":490,"zoom":1.3},\n\t\t{"name":"Discharge", "x":850,"y":710,"zoom":1.4}]')}
-page('Demo/SCADA','SCADA','Live process drawings with smooth navigation and tag history.',[scada_controls,pan])
+pan['propConfig']['props.config.contentHeight']['onChange']={'enabled':True,'script':'\tif currentValue.value != previousValue.value:\n\t\tself.props.state.zoom = 0'}
+trend_plot=chart('ScadaTrend',[('pv','PV','#333399'),('sp','SP','#006400'),('low','Low limit','#555b60'),('high','High limit','#555b60')],source='view.custom.trend.points',height='260px')
+trend_plot['position']={'basis':'0px','grow':1,'shrink':1}
+trend_plot['props']['style']['minHeight']='180px'
+trend_plot['props']['cursor']['behavior']='none'
+trend_plot['props']['background']={'render':'color','color':'#c5c7c9','opacity':1}
+trend_plot['props']['style']['backgroundColor']='#c5c7c9'
+trend_plot['props']['xAxes'][0]['date']['format']='HH:mm'
+trend_plot['props']['xAxes'][0]['appearance']['grid']['minDistance']=75
+trend_plot['props']['yAxes'][0]['value']['range']['min']=''
+trend_plot['propConfig']['props.yAxes[0].value.range.min']=bind_script('session.custom.demo.scadaMetric','\treturn {"temperature": 50, "moisture": 10}.get(value, 0)')
+trend_plot['propConfig']['props.yAxes[0].value.range.max']=bind_script('session.custom.demo.scadaMetric','\treturn {"temperature": 90, "moisture": 15, "pressure": 3, "rate": 2300, "power": 80}[value]')
+for series in trend_plot['props']['series']:
+    series['line']['appearance']['fill']['opacity']=0
+    series['line']['appearance']['stroke']['width']=2
+for index in (1,2,3):
+    trend_plot['props']['series'][index]['line']['appearance']['stroke']['dashArray']='6,4'
+    trend_plot['props']['series'][index]['line']['appearance']['stroke']['width']=1
+trend_plot['propConfig'].update({'props.series[1].visible':expr('{session.custom.demo.scadaMetric} != "power"'),'props.series[1].hiddenInLegend':expr('{session.custom.demo.scadaMetric} = "power"'), 'props.series[2].visible':expr('{session.custom.demo.scadaMetric} = "temperature" || {session.custom.demo.scadaMetric} = "moisture"'), 'props.series[3].visible':expr('{session.custom.demo.scadaMetric} = "temperature" || {session.custom.demo.scadaMetric} = "moisture"'), 'props.series[2].hiddenInLegend':expr('{session.custom.demo.scadaMetric} != "temperature" && {session.custom.demo.scadaMetric} != "moisture"'), 'props.series[3].hiddenInLegend':expr('{session.custom.demo.scadaMetric} != "temperature" && {session.custom.demo.scadaMetric} != "moisture"')})
+trend_title=label('TrendTitle','','Demo/SectionTitle')
+trend_title['propConfig']={'props.text':bind_script('session.custom.demo.scadaMetric','\treturn application.demo.METRICS[value][1] + " trend"')}
+trend_unit=label('TrendUnit','','Demo/Muted')
+trend_unit['propConfig']={'props.text':bind_script('session.custom.demo.scadaMetric','\treturn application.demo.METRICS[value][2] + " | last 15 minutes"')}
+trend_panel=flex('TrendPanel',[flex('TrendControls',[trend_title,select('Measurement',[(k,v[1]) for k,v in METRICS.items()],'session.custom.demo.scadaMetric',width='180px'),trend_unit,label('Convention','PV measured | SP simulation target','Demo/Muted')],'row','Demo/Filters'),trend_plot],classes='Demo/ScadaTrendPanel',basis='270px')
+status=label('LineState','','Demo/ScadaState')
+status['propConfig']={'props.text':expr('"LINE STATE: " + {view.custom.state}'),'props.style.color':expr('if({view.custom.state} = "Stopped", "#a52b24", if({view.custom.state} = "Quality hold", "#865900", "#343b40"))')}
+scada_controls['children'].append(status)
+workspace=flex('ScadaWorkspace',[pan,trend_panel],'column','Demo/ScadaWorkspace',basis='0px',grow=1)
+workspace['position']['shrink']=1
+page('Demo/SCADA','SCADA','Process overview and live measurements.',[scada_controls,workspace],custom={'trend':{'points':[],'message':'Loading recorded values...'},'state':'Starting'},config={
+ 'custom.trend':struct_binding({'line':'{session.custom.demo.scadaLine}','metric':'{session.custom.demo.scadaMetric}','tick':'now(1000)'},'\treturn application.demo.scadaTrend(value["line"], value["metric"])'),
+ 'custom.state':{'binding':{'type':'tag','config':{'mode':'indirect','tagPath':'[default]OatmakersDemo/Line{line}/State','references':{'line':'{session.custom.demo.scadaLine}'}}}}})
 # This page uses the canvas height, not an outer page scrollbar.
 p=V/'Demo/SCADA/view.json';d=json.loads(p.read_text());d['root']['props']['style']['classes']='Demo/Page Demo/ScadaPage';write(p,d)
 
@@ -213,10 +251,11 @@ view('Demo/TagHistory',flex('root',[bound_label('Title','view.params.title','Dem
 health_cards=[]
 for name,title,key,unit,hint in [('Age','LIVE DATA AGE','liveAgeSeconds','sec','One-second recorded telemetry'),('History','HISTORY','coverageDays','days','Minute history, capped at three months'),('Lines','LINES','lineCount','','Three simulated production lines')]:
     card=embed(name,'Demo/Components/Metric',{'title':title,'unit':unit,'hint':hint},basis='240px',grow=1);card['propConfig']={'props.params.value':prop('view.custom.health.'+key)};health_cards.append(card)
-page('Demo/Health','Demo health','Data freshness and automatic retention.',[flex('Metrics',health_cards,'row','Demo/Wrap'),label('Policy','One-second telemetry is retained for 6 hours, five-second telemetry for 48 hours. Minute history, demo requests and inspections are retained for at most 90 days or three calendar months.','Demo/Body')],custom={'health':{'liveAgeSeconds':'n/a','coverageDays':'n/a','lineCount':'n/a'}},config={'custom.health':struct_binding({'refresh':'now(5000)'},'\treturn application.demo.health()')})
+page('Demo/Health','Demo health','Data freshness and automatic retention.',[flex('Metrics',health_cards,'row','Demo/Wrap'),label('Policy','One-second telemetry is retained for 6 hours. Minute history, demo requests and inspections are retained for at most 90 days or three calendar months.','Demo/Body')],custom={'health':{'liveAgeSeconds':'n/a','coverageDays':'n/a','lineCount':'n/a'}},config={'custom.health':struct_binding({'refresh':'now(5000)'},'\treturn application.demo.health()')})
 
 routes=[('/','Factory overview','Demo/Overview'),('/scada','SCADA','Demo/SCADA'),('/production','Production planning','Demo/Production'),('/performance','Performance','Demo/Performance'),('/quality','Quality & traceability','Demo/Quality'),('/operator','Operator workflow','Demo/Operator')]
-nav=[label('Brand','OATMAKERS','Demo/Brand'),label('BrandDetail','CONNECTED OPERATIONS','Demo/NavEyebrow'),label('DemoLabel','LIVE SIMULATION','Demo/NavBadge')]
+logo=base64.b64encode((ROOT/'tools/demo/scada-assets/oatmakers-logo.svg').read_bytes()).decode()
+nav=[node('ia.display.image','Brand',{'source':'data:image/svg+xml;base64,'+logo,'fit':{'mode':'contain'},'style':{'classes':'Demo/BrandLogo'}},basis='74px'),label('BrandDetail','CONNECTED OPERATIONS','Demo/NavEyebrow'),label('DemoLabel','LIVE SIMULATION','Demo/NavBadge')]
 for i,(path,title,_) in enumerate(routes):
     b=button('Nav'+str(i),title,page=path,classes='Demo/NavButton');b['position']['basis']='45px';b['propConfig']={'props.style.backgroundColor':expr('if({page.props.path} = '+json.dumps(path)+', "#3d474f", "transparent")')};nav.append(b)
 nav += [flex('Spacer',[],grow=1),button('Health','Demo health',page='/demo/health',classes='Demo/NavButton'),label('Footer','Mustry Solutions','Demo/NavFooter')]
@@ -226,7 +265,7 @@ for route,title,path in routes:config['pages'][route]={'title':title,'viewPath':
 config['pages']['/process']={'title':'SCADA','viewPath':'Demo/SCADA'};config['pages']['/demo/health']={'title':'Demo health','viewPath':'Demo/Health'}
 config['pages']['/oee']={'title':'Performance','viewPath':'Demo/Performance'};config['pages']['/demo/input-fields']={'title':'Operator workflow','viewPath':'Demo/Operator'}
 write(P/'page-config/config.json',config)
-write(P/'session-props/props.json',{'custom':{'demo':{'scadaLine':1,'scadaArea':'peeling'}},'props':{'theme':'light'}});resource(P/'session-props',['props.json'])
+write(P/'session-props/props.json',{'custom':{'demo':{'scadaLine':1,'scadaArea':'peeling','scadaMetric':'temperature'}},'props':{'theme':'light'}});resource(P/'session-props',['props.json'])
 for old in ['Demo/ComponentsGallery','Demo/Process']:
     if (V/old).exists():shutil.rmtree(V/old)
 
@@ -274,15 +313,22 @@ css='''
 .psc-Demo\\/Chart { font-size:11px; min-width:0; }
 .psc-Demo\\/DataGrid { --dg-accent:var(--demo-accent); --dg-bg:#fff; --dg-header-bg:#eceff1; --dg-border:var(--demo-line); --dg-text:var(--demo-ink); --dg-muted:var(--demo-muted); border:1px solid var(--demo-line); border-radius:4px; min-height:180px; }
 .psc-Demo\\/PlanningTimeline { --tml-accent:var(--demo-accent); --tml-bg:#fff; --tml-group-bg:#eceff1; --tml-border:var(--demo-line); --tml-line:#e4e8ea; --tml-text:var(--demo-ink); border:1px solid var(--demo-line); border-radius:6px; background:#fff; }
-.psc-Demo\\/ScadaPage { overflow:hidden; }
-/* The pan/zoom canvas and the drawing sit on the same grey, so no bright panel
-   outlines the process. */
-.psc-Demo\\/ScadaMap { border:1px solid var(--demo-line); border-radius:6px; --pz-canvas:#e4e7ea; --pz-bg:#eff1f3; --pz-accent:var(--demo-accent); --pz-alert:var(--demo-alarm); }
-.psc-Demo\\/TagFace { background:#fbfbfce6; border:1px solid #c6ccd1; border-radius:4px; padding:6px 10px; gap:3px; cursor:pointer; box-sizing:border-box; overflow:visible; }
-.psc-Demo\\/TagFace:hover { border-color:var(--demo-accent); box-shadow:0 2px 8px rgba(35,40,45,0.14); }
-.psc-Demo\\/TagName { font-size:14px; font-weight:600; color:var(--demo-muted); }
-.psc-Demo\\/TagValue { font-size:24px; font-weight:700; font-variant-numeric:tabular-nums; color:var(--demo-ink); }
-.psc-Demo\\/TagUnit { font-size:14px; color:var(--demo-muted); }
+.psc-Demo\\/ScadaPage { overflow:hidden; background:#c5c7c9; }
+.psc-Demo\\/ScadaWorkspace { gap:12px; min-height:0; align-items:stretch; }
+.psc-Demo\\/ScadaMap.mustry-panzoom { border:0; border-radius:0; --pz-canvas:#c5c7c9; --pz-bg:#c5c7c9; --pz-accent:#343b40; --pz-alert:var(--demo-alarm); }
+.psc-Demo\\/ScadaMap .mustry-pz-content { background:transparent; box-shadow:none; border:0; }
+.psc-Demo\\/ScadaTrendPanel { gap:4px; padding:8px 0 0; border-top:1px solid #a8aeb3; min-width:0; min-height:250px; }
+.psc-Demo\\/ScadaState { font-size:12px; font-weight:700; margin-left:auto; }
+.psc-Demo\\/TagFace { background:transparent; border:0; border-radius:0; padding:3px 6px; gap:2px; cursor:pointer; box-sizing:border-box; overflow:visible; }
+.psc-Demo\\/TagFace:hover { outline:1px solid #8d979f; outline-offset:2px; }
+.psc-Demo\\/TagName { font-size:15px; font-weight:600; color:#434b51; }
+.psc-Demo\\/TagValue { font-size:26px; font-weight:700; font-variant-numeric:tabular-nums; color:#333399; }
+.psc-Demo\\/PvLabel { font-size:12px; font-weight:700; color:#333399; }
+.psc-Demo\\/SpLabel,.psc-Demo\\/SpValue { font-size:15px; color:#006400; font-variant-numeric:tabular-nums; }
+.psc-Demo\\/TagUnit { font-size:13px; color:#515b63; }
+.psc-Demo\\/TagCondition { font-size:12px; font-weight:700; color:#865900; }
+.psc-Demo\\/BrandLogo { background:#f2f3f1; padding:8px; margin-bottom:8px; }
+@container demo (max-width:1000px) { .psc-Demo\\/ScadaPage { overflow:auto; } .psc-Demo\\/ScadaWorkspace { flex-wrap:wrap !important; flex-shrink:0 !important; } .psc-Demo\\/ScadaMap { flex-basis:100% !important; min-height:500px !important; } .psc-Demo\\/ScadaTrendPanel { flex-basis:300px !important; min-height:300px; } }
 .psc-Demo\\/Navigation { background:#2b3238; padding:28px 16px 20px; gap:9px; color:#dde1e4; height:100%; box-sizing:border-box; font-family:Arial,sans-serif; }
 .psc-Demo\\/Brand { font-size:24px; font-weight:800; letter-spacing:1.2px; color:#f2f4f5; padding:0 9px; }
 .psc-Demo\\/NavEyebrow { font-size:9px; letter-spacing:1.3px; color:#a6aeb4; padding:0 9px; }

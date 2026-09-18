@@ -318,7 +318,7 @@
           "name": "Policy"
         },
         "props": {
-          "text": "One-second telemetry is retained for 6 hours, five-second telemetry for 48 hours. Minute history, demo requests and inspections are retained for at most 90 days or three calendar months.",
+          "text": "One-second telemetry is retained for 6 hours. Minute history, demo requests and inspections are retained for at most 90 days or three calendar months.",
           "style": {
             "classes": "Demo/Body"
           }

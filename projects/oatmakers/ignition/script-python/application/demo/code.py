@@ -5,7 +5,7 @@ from java.lang import Exception as JavaException
 from java.util.concurrent.locks import ReentrantLock
 
 DATABASE = 'OatmakersDemo'
-REVISION = 'showroom-4.1.0'
+REVISION = 'showroom-4.2.0'
 _cache = {}
 _lock = ReentrantLock()
 
@@ -151,7 +151,7 @@ def newRequestId():
 TAG_ROOT = '[default]OatmakersDemo'
 METRICS = {
 	'rate': ('Throughput', 'Throughput', 'kg/h'),
-	'temperature': ('Temperature', 'Temperature', 'C'),
+	'temperature': ('Temperature', 'Temperature', u'\u00b0C'),
 	'moisture': ('Moisture', 'Moisture', '%'),
 	'pressure': ('Pressure', 'Pressure', 'bar'),
 	'power': ('Power', 'Power', 'kW')
@@ -193,6 +193,25 @@ def history(start, end, line=0, metric='rate'):
 	except (Exception, JavaException) as exc:
 		system.util.getLogger('Oatmakers.Demo').warn('History query failed: {0}'.format(exc))
 		return {'points': [], 'count': 0, 'message': 'History unavailable. Choose a recorded range within 90 days.'}
+
+
+def scadaSetpoint(line, metric):
+	# These are the nominal operating targets used by the demonstration model.
+	# Power is consumption, so it deliberately has no control setpoint.
+	if metric == 'rate':
+		return (32.0, 25.0, 21.0)[int(line)-1] * 60
+	return {'temperature': 82.0, 'moisture': 11.4, 'pressure': 2.4}.get(metric)
+
+
+def scadaTrend(line, metric):
+	end = system.date.toMillis(system.date.now())
+	result = history(end - 15*60*1000, end, int(line), metric)
+	points = []
+	setpoint = scadaSetpoint(line, metric)
+	limits = {'temperature': (55.0, 86.0), 'moisture': (10.5, 13.0)}.get(metric, (None, None))
+	for point in result.get('points', []):
+		points.append({'ts': point['ts'], 'pv': point.get('line' + str(int(line))), 'sp': setpoint, 'low': limits[0], 'high': limits[1]})
+	return {'points': points, 'message': result.get('message', '')}
 
 
 def rangeSnapshot(start, end, line=0):

@@ -23,7 +23,7 @@
     "props": {
       "mode": "fixed",
       "style": {
-        "backgroundColor": "#f7faf7",
+        "backgroundColor": "transparent",
         "overflow": "visible"
       }
     },
@@ -69,7 +69,7 @@
           "x": 104.9,
           "y": 214.2,
           "width": 230,
-          "height": 72
+          "height": 110
         },
         "propConfig": {
           "props.params.lineNumber": {
@@ -102,7 +102,7 @@
           "x": 653.1600000000001,
           "y": 181.69,
           "width": 230,
-          "height": 72
+          "height": 110
         },
         "propConfig": {
           "props.params.lineNumber": {
@@ -132,10 +132,10 @@
           "useDefaultViewHeight": false
         },
         "position": {
-          "x": 506.85,
-          "y": 616.0899999999999,
+          "x": 64,
+          "y": 756.0899999999999,
           "width": 230,
-          "height": 72
+          "height": 110
         },
         "propConfig": {
           "props.params.lineNumber": {
@@ -168,7 +168,7 @@
           "x": 537.93,
           "y": 783.16,
           "width": 230,
-          "height": 72
+          "height": 110
         },
         "propConfig": {
           "props.params.lineNumber": {
