@@ -72,3 +72,15 @@ The deployment backs up and replaces only the Oatmakers project and its `Oatmake
 The Deploy workflow's readiness job runs every six hours. It reads database health directly and checks public routes, so it does not require a Web Dev license. The optional `/system/webdev/oatmakers/api/demo-health` endpoint also returns health where Web Dev is available. An HTTP route check alone does not validate rendering; release review additionally exercises the real screens in a browser.
 
 For failures, inspect Actions, Demo health, database connection `OatmakersDemo`, secret provider `DemoRuntime` and gateway logger `Oatmakers.Demo`. Restoring the connection lets the timer catch up automatically. Scoped project backups expire after 90 days; the server's broader backup policy is managed independently.
+
+## Local startup
+
+Run `tools/demo/start-local.sh` from this lab checkout. It reconciles the local
+database, applies migrations, recreates the gateway to load the current project
+and pinned module, scans resources and resets the development trial. Existing
+gateway and database volumes are retained. The default URL is
+`http://localhost:18096/data/perspective/client/oatmakers/`.
+
+To use port 8088, stop any other gateway using that port, then run
+`DEMO_HTTP_PORT=8088 tools/demo/start-local.sh`. The root demo-oatmakers project
+is a separate application with different pages and backend dependencies.

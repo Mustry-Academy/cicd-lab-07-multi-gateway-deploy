@@ -30,7 +30,7 @@ services:
   gateway:
     image: inductiveautomation/ignition:8.3.8
     restart: unless-stopped
-    ports: ['127.0.0.1:18096:8088']
+    ports: ['127.0.0.1:${DEMO_HTTP_PORT:-18096}:8088']
     volumes:
       - demo-gateway:/usr/local/bin/ignition/data
       - ./third-party-modules:/module-source:ro
