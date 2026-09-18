@@ -1,5 +1,5 @@
 """Build the supplied Separator A reference as a complete, scalable process view."""
-import base64
+import base64,json
 from view_primitives import *
 
 W,H=1740,910
@@ -125,7 +125,7 @@ def build_separator():
     tabs=[]
     names=['Overview','Crude Inlet A B C','Crude Inlet D EF','Crude Inlet GH NT','Separator A','Separator B','Booster Pump C','Crude Export','Gas Scrubber','Knockout Drum','Drain System','Water Injection']
     for i,name in enumerate(names):
-        n=button('Tab'+str(i),name,page='/' if i==0 else None,script=None if i in (0,4) else '\tapplication.demo.showSeparatorDetail('+repr(name)+', "pressure")',classes='Separator/Tab'+(' Separator/SelectedTab' if i==4 else ''))
+        n=button('Tab'+str(i),name,page='/' if i==0 else None,script=None if i in (0,4) else '\tapplication.demo.showSeparatorDetail('+json.dumps(name)+', "pressure")',classes='Separator/Tab'+(' Separator/SelectedTab' if i==4 else ''))
         n['position']={'basis':'0px','grow':1,'shrink':1};tabs.append(n)
     nav=flex('ProcessNavigation',tabs,'row','Separator/Tabs',basis='29px')
     data={key:0 for key in ['pressure','temperature','level','interface','gas','suction','discharge','exportPressure','flow','drain','iop']}

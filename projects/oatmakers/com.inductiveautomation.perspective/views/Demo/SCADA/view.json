@@ -112,7 +112,7 @@
                   "type": "script",
                   "scope": "G",
                   "config": {
-                    "script": "\tapplication.demo.showSeparatorDetail('Crude Inlet A B C', \"pressure\")"
+                    "script": "\tapplication.demo.showSeparatorDetail(\"Crude Inlet A B C\", \"pressure\")"
                   }
                 }
               }
@@ -140,7 +140,7 @@
                   "type": "script",
                   "scope": "G",
                   "config": {
-                    "script": "\tapplication.demo.showSeparatorDetail('Crude Inlet D EF', \"pressure\")"
+                    "script": "\tapplication.demo.showSeparatorDetail(\"Crude Inlet D EF\", \"pressure\")"
                   }
                 }
               }
@@ -168,7 +168,7 @@
                   "type": "script",
                   "scope": "G",
                   "config": {
-                    "script": "\tapplication.demo.showSeparatorDetail('Crude Inlet GH NT', \"pressure\")"
+                    "script": "\tapplication.demo.showSeparatorDetail(\"Crude Inlet GH NT\", \"pressure\")"
                   }
                 }
               }
@@ -213,7 +213,7 @@
                   "type": "script",
                   "scope": "G",
                   "config": {
-                    "script": "\tapplication.demo.showSeparatorDetail('Separator B', \"pressure\")"
+                    "script": "\tapplication.demo.showSeparatorDetail(\"Separator B\", \"pressure\")"
                   }
                 }
               }
@@ -241,7 +241,7 @@
                   "type": "script",
                   "scope": "G",
                   "config": {
-                    "script": "\tapplication.demo.showSeparatorDetail('Booster Pump C', \"pressure\")"
+                    "script": "\tapplication.demo.showSeparatorDetail(\"Booster Pump C\", \"pressure\")"
                   }
                 }
               }
@@ -269,7 +269,7 @@
                   "type": "script",
                   "scope": "G",
                   "config": {
-                    "script": "\tapplication.demo.showSeparatorDetail('Crude Export', \"pressure\")"
+                    "script": "\tapplication.demo.showSeparatorDetail(\"Crude Export\", \"pressure\")"
                   }
                 }
               }
@@ -297,7 +297,7 @@
                   "type": "script",
                   "scope": "G",
                   "config": {
-                    "script": "\tapplication.demo.showSeparatorDetail('Gas Scrubber', \"pressure\")"
+                    "script": "\tapplication.demo.showSeparatorDetail(\"Gas Scrubber\", \"pressure\")"
                   }
                 }
               }
@@ -325,7 +325,7 @@
                   "type": "script",
                   "scope": "G",
                   "config": {
-                    "script": "\tapplication.demo.showSeparatorDetail('Knockout Drum', \"pressure\")"
+                    "script": "\tapplication.demo.showSeparatorDetail(\"Knockout Drum\", \"pressure\")"
                   }
                 }
               }
@@ -353,7 +353,7 @@
                   "type": "script",
                   "scope": "G",
                   "config": {
-                    "script": "\tapplication.demo.showSeparatorDetail('Drain System', \"pressure\")"
+                    "script": "\tapplication.demo.showSeparatorDetail(\"Drain System\", \"pressure\")"
                   }
                 }
               }
@@ -381,7 +381,7 @@
                   "type": "script",
                   "scope": "G",
                   "config": {
-                    "script": "\tapplication.demo.showSeparatorDetail('Water Injection', \"pressure\")"
+                    "script": "\tapplication.demo.showSeparatorDetail(\"Water Injection\", \"pressure\")"
                   }
                 }
               }

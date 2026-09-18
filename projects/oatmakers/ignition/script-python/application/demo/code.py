@@ -5,7 +5,7 @@ from java.lang import Exception as JavaException
 from java.util.concurrent.locks import ReentrantLock
 
 DATABASE = 'OatmakersDemo'
-REVISION = 'showroom-4.3.0'
+REVISION = 'showroom-4.3.1'
 _cache = {}
 _lock = ReentrantLock()
 
