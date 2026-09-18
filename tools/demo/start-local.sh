@@ -3,7 +3,6 @@
 set -euo pipefail
 cd "$(dirname "$0")/../.."
 scripts/generate-api-key.sh
-url="http://localhost:${DEMO_HTTP_PORT:-18096}"
 first_boot=false
 if ! docker inspect oatmakers-ui-local-gateway-1 >/dev/null 2>&1; then first_boot=true; fi
 docker compose -f compose.demo.yml up -d database
@@ -16,6 +15,7 @@ docker run --rm --network oatmakers-ui-local_default \
   -path=/migrations -database 'postgres://ignition:lab07-postgres-pw@postgres:5432/ignition?sslmode=disable&x-migrations-table=oat_demo_schema_migrations' up
 # Recreate the local gateway so changed mounts and module binaries are loaded.
 docker compose -f compose.demo.yml up -d --force-recreate gateway
+url="http://$(docker compose -f compose.demo.yml port gateway 8088)"
 for _ in $(seq 1 45); do
   if curl -fsS --max-time 3 "$url/StatusPing" 2>/dev/null | grep -q RUNNING; then break; fi
   sleep 2
