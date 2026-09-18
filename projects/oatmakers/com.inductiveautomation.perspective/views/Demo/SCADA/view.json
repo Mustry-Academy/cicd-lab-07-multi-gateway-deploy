@@ -8,11 +8,6 @@
       "updatedEpochMs": 0,
       "updatedAt": "",
       "shiftStart": ""
-    },
-    "health": {
-      "liveAgeSeconds": "n/a",
-      "coverageDays": "n/a",
-      "lineCount": "n/a"
     }
   },
   "params": {},
@@ -33,23 +28,6 @@
           }
         ]
       }
-    },
-    "custom.health": {
-      "binding": {
-        "type": "expr-struct",
-        "config": {
-          "waitOnAll": true,
-          "struct": {
-            "refresh": "now(5000)"
-          }
-        },
-        "transforms": [
-          {
-            "type": "script",
-            "code": "\treturn application.demo.health()"
-          }
-        ]
-      }
     }
   },
   "props": {
@@ -66,7 +44,7 @@
     "props": {
       "direction": "column",
       "style": {
-        "classes": "Demo/Page"
+        "classes": "Demo/Page Demo/ScadaPage"
       }
     },
     "children": [
@@ -114,7 +92,7 @@
                   "name": "Title"
                 },
                 "props": {
-                  "text": "Demo health",
+                  "text": "SCADA",
                   "style": {
                     "classes": "Demo/PageTitle"
                   }
@@ -130,7 +108,7 @@
                   "name": "Subtitle"
                 },
                 "props": {
-                  "text": "Data freshness and automatic retention.",
+                  "text": "Live process drawings with smooth navigation and tag history.",
                   "style": {
                     "classes": "Demo/Subtitle"
                   }
@@ -204,107 +182,116 @@
       {
         "type": "ia.container.flex",
         "meta": {
-          "name": "Metrics"
+          "name": "Controls"
         },
         "props": {
           "direction": "row",
           "wrap": "wrap",
           "style": {
-            "classes": "Demo/Wrap"
+            "classes": "Demo/Filters"
           }
         },
         "children": [
           {
-            "type": "ia.display.view",
+            "type": "ia.input.dropdown",
             "meta": {
-              "name": "Age"
+              "name": "Line"
             },
             "props": {
-              "path": "Demo/Components/Metric",
-              "params": {
-                "title": "LIVE DATA AGE",
-                "unit": "sec",
-                "hint": "Five-second recorded telemetry"
+              "options": [
+                {
+                  "value": 1,
+                  "label": "Rolling line 01"
+                },
+                {
+                  "value": 2,
+                  "label": "Cutting line 02"
+                },
+                {
+                  "value": 3,
+                  "label": "Milling line 03"
+                }
+              ],
+              "value": 1,
+              "search": {
+                "enabled": false
               },
-              "useDefaultViewWidth": false,
-              "useDefaultViewHeight": false
+              "style": {
+                "classes": "Demo/Select",
+                "overflow": "visible"
+              }
             },
             "position": {
               "shrink": 0,
-              "basis": "240px",
-              "grow": 1
+              "basis": "200px"
             },
             "propConfig": {
-              "props.params.value": {
+              "props.value": {
                 "binding": {
                   "type": "property",
                   "config": {
-                    "path": "view.custom.health.liveAgeSeconds"
+                    "path": "session.custom.demo.scadaLine",
+                    "bidirectional": true
                   }
                 }
               }
             }
           },
           {
-            "type": "ia.display.view",
+            "type": "ia.input.dropdown",
             "meta": {
-              "name": "History"
+              "name": "Area"
             },
             "props": {
-              "path": "Demo/Components/Metric",
-              "params": {
-                "title": "HISTORY",
-                "unit": "days",
-                "hint": "Minute history, capped at three months"
+              "options": [
+                {
+                  "value": "peeling",
+                  "label": "Peeling & conveying"
+                },
+                {
+                  "value": "heating",
+                  "label": "Heat treatment"
+                }
+              ],
+              "value": "peeling",
+              "search": {
+                "enabled": false
               },
-              "useDefaultViewWidth": false,
-              "useDefaultViewHeight": false
+              "style": {
+                "classes": "Demo/Select",
+                "overflow": "visible"
+              }
             },
             "position": {
               "shrink": 0,
-              "basis": "240px",
-              "grow": 1
+              "basis": "200px"
             },
             "propConfig": {
-              "props.params.value": {
+              "props.value": {
                 "binding": {
                   "type": "property",
                   "config": {
-                    "path": "view.custom.health.coverageDays"
+                    "path": "session.custom.demo.scadaArea",
+                    "bidirectional": true
                   }
                 }
               }
             }
           },
           {
-            "type": "ia.display.view",
+            "type": "ia.display.label",
             "meta": {
-              "name": "Lines"
+              "name": "Hint"
             },
             "props": {
-              "path": "Demo/Components/Metric",
-              "params": {
-                "title": "LINES",
-                "unit": "",
-                "hint": "Three simulated production lines"
-              },
-              "useDefaultViewWidth": false,
-              "useDefaultViewHeight": false
+              "text": "Drag to pan, wheel to zoom. Click a measurement for its history.",
+              "style": {
+                "classes": "Demo/Muted"
+              }
             },
             "position": {
               "shrink": 0,
-              "basis": "240px",
-              "grow": 1
-            },
-            "propConfig": {
-              "props.params.value": {
-                "binding": {
-                  "type": "property",
-                  "config": {
-                    "path": "view.custom.health.lineCount"
-                  }
-                }
-              }
+              "basis": "auto"
             }
           }
         ],
@@ -313,19 +300,79 @@
         }
       },
       {
-        "type": "ia.display.label",
+        "type": "mustrysolutions.perspective.display.panzoomview",
         "meta": {
-          "name": "Policy"
+          "name": "ScadaMap"
         },
         "props": {
-          "text": "Five-second telemetry is retained for 48 hours. Minute history, demo requests and inspections are retained for at most 90 days or three calendar months.",
+          "config": {
+            "viewPath": "Demo/ScadaViews/Peeling",
+            "viewParams": [
+              {
+                "name": "lineNumber",
+                "value": 1
+              }
+            ],
+            "contentWidth": 0,
+            "contentHeight": 0,
+            "minZoom": 0.25,
+            "maxZoom": 4,
+            "showControls": true,
+            "showMinimap": true,
+            "showPoiList": true,
+            "wheelZoom": true,
+            "doubleClickZoom": true,
+            "flyToMs": 350,
+            "home": {
+              "x": -1,
+              "y": -1,
+              "zoom": 0
+            }
+          },
+          "data": {
+            "pois": []
+          },
           "style": {
-            "classes": "Demo/Body"
+            "classes": "Demo/ScadaMap",
+            "minHeight": "480px"
           }
         },
         "position": {
-          "shrink": 0,
-          "basis": "auto"
+          "shrink": 1,
+          "basis": "0px",
+          "grow": 1
+        },
+        "propConfig": {
+          "props.config.viewPath": {
+            "binding": {
+              "type": "expr",
+              "config": {
+                "expression": "if({session.custom.demo.scadaArea} = \"heating\", \"Demo/ScadaViews/Heating\", \"Demo/ScadaViews/Peeling\")"
+              }
+            }
+          },
+          "props.config.viewParams[0].value": {
+            "binding": {
+              "type": "property",
+              "config": {
+                "path": "session.custom.demo.scadaLine"
+              }
+            }
+          },
+          "props.data.pois": {
+            "binding": {
+              "type": "property",
+              "config": {
+                "path": "session.custom.demo.scadaArea"
+              },
+              "transforms": [
+                {
+                  "type": "script",
+                  "code": "\tif value == \"heating\":\n\t\treturn [{\"name\":\"Heater\", \"x\":500,\"y\":600,\"zoom\":1.1},{\"name\":\"Heat exchanger\",\"x\":850,\"y\":900,\"zoom\":1.4}]\n\treturn [{\"name\":\"Infeed\", \"x\":300,\"y\":150,\"zoom\":1.5},{\"name\":\"Peeling\", \"x\":580,\"y\":490,\"zoom\":1.3},\n\t\t{\"name\":\"Discharge\", \"x\":850,\"y\":710,\"zoom\":1.4}]"
+                }
+              ]
+            }
+          }
         }
       }
     ],

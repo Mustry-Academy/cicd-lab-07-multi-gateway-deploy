@@ -12,7 +12,7 @@ read_health() {
   docker exec "$container" sh -c '
     user="${POSTGRES_USER:-}"
     if [ -z "$user" ]; then user="$(cat /run/secrets/postgres_username)"; fi
-    psql -U "$user" -d ignition -X -tA -v ON_ERROR_STOP=1 -c "SELECT oat_demo.health()"
+    psql -U "$user" -d ignition -X -tA -v ON_ERROR_STOP=1 -c "SELECT oat_demo.health_live()"
   ' > "$tmp"
 }
 read_health
@@ -27,5 +27,5 @@ if [ "$mode" = progress ]; then
   done
   test "$advanced" = true || { echo 'The gateway continuity timer did not advance.' >&2; exit 1; }
 fi
-docker exec "$gateway" grep -q "REVISION = 'showroom-3.0.1'" /usr/local/bin/ignition/data/projects/oatmakers/ignition/script-python/application/demo/code.py
+docker exec "$gateway" grep -q "REVISION = 'showroom-4.0.0'" /usr/local/bin/ignition/data/projects/oatmakers/ignition/script-python/application/demo/code.py
 python3 tools/demo/check-live.py "$url" --health-file "$tmp"

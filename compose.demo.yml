@@ -1,4 +1,4 @@
-name: oatmakers-showroom-local
+name: oatmakers-ui-local
 services:
   database:
     image: postgres:17.5
@@ -18,12 +18,22 @@ services:
       interval: 5s
       timeout: 3s
       retries: 20
+  module-init:
+    image: inductiveautomation/ignition:8.3.8
+    user: '0:0'
+    volumes:
+      - demo-gateway:/data
+      - ./third-party-modules:/module-source:ro
+      - ./tools/demo/mustry-ui-registry.json:/registry.json:ro
+    entrypoint: [/bin/sh, -c]
+    command: ['mkdir -p /data/custom-modules /data/projects; cp /module-source/Mustry_UI-0.5.1.modl /data/custom-modules/Mustry_UI.modl; if [ ! -f /data/modules.json ]; then cp /registry.json /data/modules.json; fi; chown -R 2003:0 /data']
   gateway:
     image: inductiveautomation/ignition:8.3.8
     restart: unless-stopped
-    ports: ['127.0.0.1:18094:8088']
+    ports: ['127.0.0.1:18096:8088']
     volumes:
       - demo-gateway:/usr/local/bin/ignition/data
+      - ./third-party-modules:/module-source:ro
       - ./projects:/usr/local/bin/ignition/data/projects
       - ./services/config:/usr/local/bin/ignition/data/config
       - ./local-development/secrets:/run/secrets:ro
@@ -35,8 +45,10 @@ services:
       GATEWAY_ADMIN_USERNAME: admin
       GATEWAY_ADMIN_PASSWORD: password
       TZ: Europe/Brussels
-    command: ['-n', oatmakers-showroom-local, '-m', '1024', '--', 'wrapper.java.initmemory=256']
+    command: ['-n', oatmakers-ui-local, '-m', '1024', '--', 'wrapper.java.initmemory=256']
     depends_on:
+      module-init:
+        condition: service_completed_successfully
       database:
         condition: service_healthy
     healthcheck:

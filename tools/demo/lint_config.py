@@ -20,12 +20,14 @@ for index,line in enumerate(lines):
     if line.startswith('additional-builtins='):
         lines[index]=line+','+','.join(sorted(modules))
     if line.startswith('function-rgx='):
-        lines[index]=line.replace('onShutdown', 'onShutdown|onRowClick|valueChanged')
+        lines[index]=line.replace('onShutdown', 'onShutdown|onRowClick|onEventClick|valueChanged')
     if line.startswith('argument-rgx='):
         lines[index]='argument-rgx=^(?:[a-z_][a-z0-9_]*|previousValue|currentValue|missedEvents)$'
 out=root/'build/lint';out.mkdir(parents=True,exist_ok=True)
 (out/'ignition-pylintrc').write_text('\n'.join(lines)+'\n')
 rules=json.loads((root/'rule_config.json').read_text())
+# These are fixed names in the Mustry component schema, not project identifiers.
+rules['NamePatternRule']['kwargs']['skip_names'] = ['root', 'id', 'idField']
 rules['PylintScriptRule']['kwargs']['pylintrc']=str(out/'ignition-pylintrc')
 (out/'rules.json').write_text(json.dumps(rules,indent=2)+'\n')
 print('Declared Ignition namespaces:', ', '.join(sorted(modules)))

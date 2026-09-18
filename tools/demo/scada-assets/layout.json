@@ -1,0 +1,154 @@
+{
+  "peeling": {
+    "width": 1085,
+    "height": 900,
+    "instruments": [
+      {
+        "x": 433.16,
+        "y": 121.69,
+        "width": 150,
+        "height": 60,
+        "metric": "rate"
+      },
+      {
+        "x": 433.77,
+        "y": 334.92,
+        "width": 337.0,
+        "height": 60,
+        "metric": "pressure"
+      },
+      {
+        "x": 164.9,
+        "y": 34.2,
+        "width": 150,
+        "height": 60,
+        "metric": "rate"
+      },
+      {
+        "x": 435.75,
+        "y": 474.01,
+        "width": 336.0,
+        "height": 60,
+        "metric": "temperature"
+      },
+      {
+        "x": 557.93,
+        "y": 643.16,
+        "width": 150,
+        "height": 60,
+        "metric": "rate"
+      },
+      {
+        "x": 5.482084,
+        "y": 721.1837805175782,
+        "width": 335.0,
+        "height": 60,
+        "metric": "rate"
+      },
+      {
+        "x": 39.638343505859375,
+        "y": 111.61749999999995,
+        "width": 335.0,
+        "height": 60,
+        "metric": "rate"
+      },
+      {
+        "x": 206.85,
+        "y": 316.09,
+        "width": 150,
+        "height": 60,
+        "metric": "rate"
+      },
+      {
+        "x": 420.0328146972656,
+        "y": 707.6058359985352,
+        "width": 335.0,
+        "height": 60,
+        "metric": "rate"
+      }
+    ]
+  },
+  "heating": {
+    "width": 1506,
+    "height": 1472,
+    "instruments": [
+      {
+        "x": 163.55,
+        "y": 695.0,
+        "width": 352.0,
+        "height": 60,
+        "metric": "temperature"
+      },
+      {
+        "x": 76.55,
+        "y": 820.0,
+        "width": 171.0,
+        "height": 60,
+        "metric": "temperature"
+      },
+      {
+        "x": 456.05,
+        "y": 810.0,
+        "width": 172.0,
+        "height": 60,
+        "metric": "temperature"
+      },
+      {
+        "x": 710.05,
+        "y": 719.984375,
+        "width": 172.0,
+        "height": 60,
+        "metric": "temperature"
+      },
+      {
+        "x": 801.0,
+        "y": 601.984375,
+        "width": 332.0,
+        "height": 60,
+        "metric": "temperature"
+      },
+      {
+        "x": 642.662,
+        "y": 348.837,
+        "width": 172.0,
+        "height": 60,
+        "metric": "temperature"
+      },
+      {
+        "x": 279.44,
+        "y": 44.4452,
+        "width": 172.0,
+        "height": 60,
+        "metric": "temperature"
+      },
+      {
+        "x": 710.11225,
+        "y": 1122.98,
+        "width": 172.0,
+        "height": 60,
+        "metric": "temperature"
+      },
+      {
+        "x": 362.59,
+        "y": 101.34,
+        "width": 343.0,
+        "height": 60,
+        "metric": "temperature"
+      },
+      {
+        "x": 112.52,
+        "y": 584.17,
+        "width": 186.0,
+        "height": 60,
+        "metric": "temperature"
+      },
+      {
+        "x": 931.52,
+        "y": 590.66,
+        "width": 298.0,
+        "height": 60,
+        "metric": "temperature"
+      }
+    ]
+  }
+}

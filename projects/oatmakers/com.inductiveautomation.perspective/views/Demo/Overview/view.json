@@ -1,65 +1,33 @@
 {
   "custom": {
-    "data": {
+    "live": {
       "ready": false,
-      "stale": false,
-      "message": "Loading demonstration data...",
       "metrics": [],
       "lines": [],
       "trend": [],
-      "orders": [],
-      "planning": [],
-      "losses": [],
-      "events": [],
-      "quality": [],
-      "batchOptions": [],
-      "selectedBatch": {
-        "reference": "Loading batch",
-        "product": "",
-        "quality": "Awaiting data"
-      },
-      "inspection": {},
-      "submissions": [],
-      "window": "",
-      "clock": "",
-      "health": {
-        "ok": false,
-        "ageSeconds": "n/a",
-        "coverageDays": "n/a",
-        "lineCount": "n/a",
-        "sampleCount": "n/a"
-      },
-      "availability": "n/a",
-      "performance": "n/a",
-      "yield": "n/a"
-    },
-    "selectionNotice": ""
+      "updatedEpochMs": 0,
+      "updatedAt": "",
+      "shiftStart": ""
+    }
   },
   "params": {},
   "propConfig": {
-    "custom.data": {
+    "custom.live": {
       "binding": {
         "type": "expr-struct",
         "config": {
           "waitOnAll": true,
           "struct": {
-            "tick": "now(10000)",
-            "scene": "{session.custom.demo.scene}",
-            "period": "{session.custom.demo.period}",
-            "line": "{session.custom.demo.line}",
-            "batch": "{session.custom.demo.batch}"
+            "tick": "now(5000)"
           }
         },
         "transforms": [
           {
             "type": "script",
-            "code": "\treturn application.demo.snapshot(value[\"scene\"], value[\"period\"], value[\"line\"], value[\"batch\"])"
+            "code": "\treturn application.demo.live()"
           }
         ]
       }
-    },
-    "custom.selectionNotice": {
-      "persistent": true
     }
   },
   "props": {
@@ -83,7 +51,7 @@
       {
         "type": "ia.container.flex",
         "meta": {
-          "name": "Heading"
+          "name": "Header"
         },
         "props": {
           "direction": "row",
@@ -99,10 +67,7 @@
               "name": "Identity"
             },
             "props": {
-              "direction": "column",
-              "style": {
-                "minWidth": "0"
-              }
+              "direction": "column"
             },
             "children": [
               {
@@ -111,7 +76,7 @@
                   "name": "Eyebrow"
                 },
                 "props": {
-                  "text": "OATMAKERS / CUSTOMER DEMO",
+                  "text": "OATMAKERS / LIVE OPERATIONS",
                   "style": {
                     "classes": "Demo/Eyebrow"
                   }
@@ -127,7 +92,7 @@
                   "name": "Title"
                 },
                 "props": {
-                  "text": "The factory at a glance",
+                  "text": "What is happening now",
                   "style": {
                     "classes": "Demo/PageTitle"
                   }
@@ -143,7 +108,7 @@
                   "name": "Subtitle"
                 },
                 "props": {
-                  "text": "Production, quality and energy. One connected view of the shift.",
+                  "text": "Live production rates, shift output and process alerts.",
                   "style": {
                     "classes": "Demo/Subtitle"
                   }
@@ -155,225 +120,24 @@
               }
             ],
             "position": {
-              "shrink": 1,
-              "grow": 1,
-              "basis": "260px"
-            }
-          },
-          {
-            "type": "ia.input.button",
-            "meta": {
-              "name": "ResetScenario"
-            },
-            "props": {
-              "text": "Reset demo filters",
-              "style": {
-                "classes": "Demo/QuietButton",
-                "height": "40px"
-              }
-            },
-            "position": {
               "shrink": 0,
-              "basis": "150px"
-            },
-            "events": {
-              "component": {
-                "onActionPerformed": {
-                  "type": "script",
-                  "scope": "G",
-                  "config": {
-                    "script": "\tself.session.custom.demo.scene = \"live\"\n\tself.session.custom.demo.period = \"day\"\n\tself.session.custom.demo.line = 0\n\tself.session.custom.demo.batch = \"\""
-                  }
-                }
-              }
-            }
-          }
-        ],
-        "position": {
-          "shrink": 0
-        }
-      },
-      {
-        "type": "ia.container.flex",
-        "meta": {
-          "name": "Filters"
-        },
-        "props": {
-          "direction": "row",
-          "wrap": "wrap",
-          "style": {
-            "classes": "Demo/Filters"
-          }
-        },
-        "children": [
-          {
-            "type": "ia.input.dropdown",
-            "meta": {
-              "name": "Scene"
-            },
-            "props": {
-              "options": [
-                {
-                  "value": "live",
-                  "label": "Live production"
-                },
-                {
-                  "value": "stoppage",
-                  "label": "Replay: line stoppage"
-                },
-                {
-                  "value": "quality",
-                  "label": "Replay: quality deviation"
-                },
-                {
-                  "value": "recovery",
-                  "label": "Replay: recovery"
-                }
-              ],
-              "value": "live",
-              "search": {
-                "enabled": false
-              },
-              "style": {
-                "classes": "Demo/Select"
-              }
-            },
-            "position": {
-              "shrink": 0,
-              "basis": "190px"
-            },
-            "propConfig": {
-              "props.value": {
-                "binding": {
-                  "type": "property",
-                  "config": {
-                    "path": "session.custom.demo.scene",
-                    "bidirectional": true
-                  }
-                }
-              }
-            }
-          },
-          {
-            "type": "ia.input.dropdown",
-            "meta": {
-              "name": "Period"
-            },
-            "props": {
-              "options": [
-                {
-                  "value": "shift",
-                  "label": "Last 8 hours"
-                },
-                {
-                  "value": "day",
-                  "label": "Last 24 hours"
-                },
-                {
-                  "value": "week",
-                  "label": "Last 7 days"
-                },
-                {
-                  "value": "month",
-                  "label": "Last 30 days"
-                }
-              ],
-              "value": "shift",
-              "search": {
-                "enabled": false
-              },
-              "style": {
-                "classes": "Demo/Select"
-              }
-            },
-            "position": {
-              "shrink": 0,
-              "basis": "190px"
-            },
-            "propConfig": {
-              "props.value": {
-                "binding": {
-                  "type": "property",
-                  "config": {
-                    "path": "session.custom.demo.period",
-                    "bidirectional": true
-                  }
-                }
-              }
-            }
-          },
-          {
-            "type": "ia.input.dropdown",
-            "meta": {
-              "name": "Line"
-            },
-            "props": {
-              "options": [
-                {
-                  "value": 0,
-                  "label": "All production lines"
-                },
-                {
-                  "value": 1,
-                  "label": "Rolling line 01"
-                },
-                {
-                  "value": 2,
-                  "label": "Cutting line 02"
-                },
-                {
-                  "value": 3,
-                  "label": "Milling line 03"
-                }
-              ],
-              "value": 0,
-              "search": {
-                "enabled": false
-              },
-              "style": {
-                "classes": "Demo/Select"
-              }
-            },
-            "position": {
-              "shrink": 0,
-              "basis": "190px"
-            },
-            "propConfig": {
-              "props.value": {
-                "binding": {
-                  "type": "property",
-                  "config": {
-                    "path": "session.custom.demo.line",
-                    "bidirectional": true
-                  }
-                }
-              }
+              "grow": 1
             }
           },
           {
             "type": "ia.display.label",
             "meta": {
-              "name": "Clock"
+              "name": "Mode"
             },
             "props": {
-              "text": "",
+              "text": "SIMULATED FACTORY",
               "style": {
-                "classes": "Demo/Clock"
+                "classes": "Demo/DemoBadge"
               }
             },
             "position": {
               "shrink": 0,
               "basis": "auto"
-            },
-            "propConfig": {
-              "props.text": {
-                "binding": {
-                  "type": "property",
-                  "config": {
-                    "path": "view.custom.data.clock"
-                  }
-                }
-              }
             }
           }
         ],
@@ -384,12 +148,12 @@
       {
         "type": "ia.display.label",
         "meta": {
-          "name": "Status"
+          "name": "LiveStatus"
         },
         "props": {
           "text": "",
           "style": {
-            "classes": "Demo/Status"
+            "classes": "Demo/LiveStatus"
           }
         },
         "position": {
@@ -398,70 +162,18 @@
         },
         "propConfig": {
           "props.text": {
-            "binding": {
-              "type": "property",
-              "config": {
-                "path": "view.custom.data.message"
-              }
-            }
-          },
-          "props.style.backgroundColor": {
             "binding": {
               "type": "expr",
               "config": {
-                "expression": "if({view.custom.data.stale}, \"#fff1d9\", \"#e8f1ea\")"
+                "expression": "if({view.custom.live.ready}, \"Live \u00b7 recorded at \" + {view.custom.live.updatedAt} + \" \u00b7 updates every 5 seconds\", \"Live telemetry is unavailable\")"
               }
             }
-          }
-        }
-      },
-      {
-        "type": "ia.display.label",
-        "meta": {
-          "name": "Window"
-        },
-        "props": {
-          "text": "",
-          "style": {
-            "classes": "Demo/Muted"
-          }
-        },
-        "position": {
-          "shrink": 0,
-          "basis": "auto"
-        },
-        "propConfig": {
-          "props.text": {
+          },
+          "props.style.color": {
             "binding": {
-              "type": "property",
+              "type": "expr",
               "config": {
-                "path": "view.custom.data.window"
-              }
-            }
-          }
-        }
-      },
-      {
-        "type": "ia.display.label",
-        "meta": {
-          "name": "SelectionNotice"
-        },
-        "props": {
-          "text": "",
-          "style": {
-            "classes": "Demo/Muted"
-          }
-        },
-        "position": {
-          "shrink": 0,
-          "basis": "auto"
-        },
-        "propConfig": {
-          "props.text": {
-            "binding": {
-              "type": "property",
-              "config": {
-                "path": "view.custom.selectionNotice"
+                "expression": "if({view.custom.live.ready}, \"#277b57\", \"#b66622\")"
               }
             }
           }
@@ -470,7 +182,7 @@
       {
         "type": "ia.display.flex-repeater",
         "meta": {
-          "name": "Metrics"
+          "name": "LiveMetrics"
         },
         "props": {
           "path": "Demo/Components/Metric",
@@ -497,922 +209,10 @@
             "binding": {
               "type": "property",
               "config": {
-                "path": "view.custom.data.metrics"
+                "path": "view.custom.live.metrics"
               }
             }
           }
-        }
-      },
-      {
-        "type": "ia.container.flex",
-        "meta": {
-          "name": "OverviewCharts"
-        },
-        "props": {
-          "direction": "row",
-          "wrap": "wrap",
-          "style": {
-            "classes": "Demo/Wrap"
-          }
-        },
-        "children": [
-          {
-            "type": "ia.container.flex",
-            "meta": {
-              "name": "Output"
-            },
-            "props": {
-              "direction": "column",
-              "style": {
-                "classes": "Demo/Panel"
-              }
-            },
-            "children": [
-              {
-                "type": "ia.display.label",
-                "meta": {
-                  "name": "OutputTitle"
-                },
-                "props": {
-                  "text": "Production rate through the period",
-                  "style": {
-                    "classes": "Demo/SectionTitle"
-                  }
-                },
-                "position": {
-                  "shrink": 0,
-                  "basis": "auto"
-                }
-              },
-              {
-                "type": "ia.display.label",
-                "meta": {
-                  "name": "OutputSubtitle"
-                },
-                "props": {
-                  "text": "Tonnes per hour, calculated from recorded minute samples.",
-                  "style": {
-                    "classes": "Demo/Muted"
-                  }
-                },
-                "position": {
-                  "shrink": 0,
-                  "basis": "auto"
-                }
-              },
-              {
-                "type": "ia.chart.xy",
-                "meta": {
-                  "name": "OutputTrend"
-                },
-                "props": {
-                  "dataSources": {
-                    "history": []
-                  },
-                  "series": [
-                    {
-                      "candlestick": {
-                        "appearance": {
-                          "deriveFieldsFromData": {
-                            "fill": {
-                              "color": "",
-                              "opacity": ""
-                            },
-                            "stroke": {
-                              "color": "",
-                              "opacity": "",
-                              "width": ""
-                            }
-                          },
-                          "fill": {
-                            "color": "",
-                            "opacity": 1
-                          },
-                          "heatRules": {
-                            "dataField": "",
-                            "enabled": false,
-                            "max": "",
-                            "min": ""
-                          },
-                          "stacked": false,
-                          "stroke": {
-                            "color": "",
-                            "opacity": 1,
-                            "width": 1
-                          }
-                        },
-                        "high": {
-                          "x": "",
-                          "y": ""
-                        },
-                        "low": {
-                          "x": "",
-                          "y": ""
-                        },
-                        "open": {
-                          "x": "",
-                          "y": ""
-                        }
-                      },
-                      "column": {
-                        "appearance": {
-                          "deriveFieldsFromData": {
-                            "fill": {
-                              "color": "",
-                              "opacity": ""
-                            },
-                            "stroke": {
-                              "color": "",
-                              "opacity": "",
-                              "width": ""
-                            }
-                          },
-                          "fill": {
-                            "color": "",
-                            "opacity": 1
-                          },
-                          "heatRules": {
-                            "dataField": "",
-                            "enabled": false,
-                            "max": "",
-                            "min": ""
-                          },
-                          "height": null,
-                          "stacked": false,
-                          "stroke": {
-                            "color": "",
-                            "opacity": 1,
-                            "width": 1
-                          },
-                          "width": null
-                        },
-                        "open": {
-                          "x": "",
-                          "y": ""
-                        }
-                      },
-                      "data": {
-                        "source": "history",
-                        "x": "ts",
-                        "y": "total"
-                      },
-                      "defaultState": {
-                        "visible": true
-                      },
-                      "hiddenInLegend": false,
-                      "label": {},
-                      "line": {
-                        "appearance": {
-                          "bullets": [
-                            {
-                              "deriveFieldsFromData": {
-                                "fill": {
-                                  "color": "",
-                                  "opacity": ""
-                                },
-                                "rotation": "",
-                                "stroke": {
-                                  "color": "",
-                                  "opacity": "",
-                                  "width": ""
-                                }
-                              },
-                              "enabled": false,
-                              "fill": {
-                                "color": "",
-                                "opacity": 1
-                              },
-                              "heatRules": {
-                                "dataField": "",
-                                "enabled": false,
-                                "max": 100,
-                                "min": 2
-                              },
-                              "height": 10,
-                              "label": {
-                                "position": {
-                                  "dx": 0,
-                                  "dy": 0
-                                },
-                                "text": "{value}"
-                              },
-                              "render": "circle",
-                              "rotation": 0,
-                              "stroke": {
-                                "color": "",
-                                "opacity": 1,
-                                "width": 1
-                              },
-                              "tooltip": {
-                                "background": {
-                                  "color": "",
-                                  "opacity": 1
-                                },
-                                "cornerRadius": 3,
-                                "enabled": true,
-                                "pointerLength": 4,
-                                "text": "{name}: [bold]{valueY}[/]"
-                              },
-                              "width": 10
-                            }
-                          ],
-                          "connect": true,
-                          "fill": {
-                            "color": "#9baf9b",
-                            "opacity": 0.07
-                          },
-                          "minDistance": 0.5,
-                          "stroke": {
-                            "color": "#9baf9b",
-                            "dashArray": "",
-                            "opacity": 1,
-                            "width": 3
-                          },
-                          "tensionX": 1,
-                          "tensionY": 1
-                        },
-                        "open": {
-                          "x": "",
-                          "y": ""
-                        }
-                      },
-                      "name": "Total rate (t/h)",
-                      "render": "line",
-                      "stepLine": {
-                        "appearance": {
-                          "bullets": [
-                            {
-                              "deriveFieldsFromData": {
-                                "fill": {
-                                  "color": "",
-                                  "opacity": ""
-                                },
-                                "rotation": "",
-                                "stroke": {
-                                  "color": "",
-                                  "opacity": "",
-                                  "width": ""
-                                }
-                              },
-                              "enabled": true,
-                              "fill": {
-                                "color": "",
-                                "opacity": 1
-                              },
-                              "heatRules": {
-                                "dataField": "",
-                                "enabled": false,
-                                "max": 100,
-                                "min": 2
-                              },
-                              "height": 10,
-                              "label": {
-                                "position": {
-                                  "dx": 0,
-                                  "dy": 0
-                                },
-                                "text": "{value}"
-                              },
-                              "render": "circle",
-                              "rotation": 0,
-                              "stroke": {
-                                "color": "",
-                                "opacity": 1,
-                                "width": 1
-                              },
-                              "tooltip": {
-                                "background": {
-                                  "color": "",
-                                  "opacity": 1
-                                },
-                                "cornerRadius": 3,
-                                "enabled": true,
-                                "pointerLength": 4,
-                                "text": "{name}: [bold]{valueY}[/]"
-                              },
-                              "width": 10
-                            }
-                          ],
-                          "connect": true,
-                          "fill": {
-                            "color": "",
-                            "opacity": 0
-                          },
-                          "minDistance": 0.5,
-                          "stroke": {
-                            "color": "",
-                            "dashArray": "",
-                            "opacity": 1,
-                            "width": 3
-                          },
-                          "tensionX": 1,
-                          "tensionY": 1
-                        },
-                        "open": {
-                          "x": "",
-                          "y": ""
-                        }
-                      },
-                      "tooltip": {
-                        "background": {
-                          "color": "",
-                          "opacity": 1
-                        },
-                        "cornerRadius": 3,
-                        "enabled": true,
-                        "pointerLength": 4,
-                        "text": "{name}: [bold]{valueY}[/]"
-                      },
-                      "visible": true,
-                      "xAxis": "time",
-                      "yAxis": "value",
-                      "zIndex": 0
-                    },
-                    {
-                      "candlestick": {
-                        "appearance": {
-                          "deriveFieldsFromData": {
-                            "fill": {
-                              "color": "",
-                              "opacity": ""
-                            },
-                            "stroke": {
-                              "color": "",
-                              "opacity": "",
-                              "width": ""
-                            }
-                          },
-                          "fill": {
-                            "color": "",
-                            "opacity": 1
-                          },
-                          "heatRules": {
-                            "dataField": "",
-                            "enabled": false,
-                            "max": "",
-                            "min": ""
-                          },
-                          "stacked": false,
-                          "stroke": {
-                            "color": "",
-                            "opacity": 1,
-                            "width": 1
-                          }
-                        },
-                        "high": {
-                          "x": "",
-                          "y": ""
-                        },
-                        "low": {
-                          "x": "",
-                          "y": ""
-                        },
-                        "open": {
-                          "x": "",
-                          "y": ""
-                        }
-                      },
-                      "column": {
-                        "appearance": {
-                          "deriveFieldsFromData": {
-                            "fill": {
-                              "color": "",
-                              "opacity": ""
-                            },
-                            "stroke": {
-                              "color": "",
-                              "opacity": "",
-                              "width": ""
-                            }
-                          },
-                          "fill": {
-                            "color": "",
-                            "opacity": 1
-                          },
-                          "heatRules": {
-                            "dataField": "",
-                            "enabled": false,
-                            "max": "",
-                            "min": ""
-                          },
-                          "height": null,
-                          "stacked": false,
-                          "stroke": {
-                            "color": "",
-                            "opacity": 1,
-                            "width": 1
-                          },
-                          "width": null
-                        },
-                        "open": {
-                          "x": "",
-                          "y": ""
-                        }
-                      },
-                      "data": {
-                        "source": "history",
-                        "x": "ts",
-                        "y": "good"
-                      },
-                      "defaultState": {
-                        "visible": true
-                      },
-                      "hiddenInLegend": false,
-                      "label": {},
-                      "line": {
-                        "appearance": {
-                          "bullets": [
-                            {
-                              "deriveFieldsFromData": {
-                                "fill": {
-                                  "color": "",
-                                  "opacity": ""
-                                },
-                                "rotation": "",
-                                "stroke": {
-                                  "color": "",
-                                  "opacity": "",
-                                  "width": ""
-                                }
-                              },
-                              "enabled": false,
-                              "fill": {
-                                "color": "",
-                                "opacity": 1
-                              },
-                              "heatRules": {
-                                "dataField": "",
-                                "enabled": false,
-                                "max": 100,
-                                "min": 2
-                              },
-                              "height": 10,
-                              "label": {
-                                "position": {
-                                  "dx": 0,
-                                  "dy": 0
-                                },
-                                "text": "{value}"
-                              },
-                              "render": "circle",
-                              "rotation": 0,
-                              "stroke": {
-                                "color": "",
-                                "opacity": 1,
-                                "width": 1
-                              },
-                              "tooltip": {
-                                "background": {
-                                  "color": "",
-                                  "opacity": 1
-                                },
-                                "cornerRadius": 3,
-                                "enabled": true,
-                                "pointerLength": 4,
-                                "text": "{name}: [bold]{valueY}[/]"
-                              },
-                              "width": 10
-                            }
-                          ],
-                          "connect": true,
-                          "fill": {
-                            "color": "#327656",
-                            "opacity": 0.07
-                          },
-                          "minDistance": 0.5,
-                          "stroke": {
-                            "color": "#327656",
-                            "dashArray": "",
-                            "opacity": 1,
-                            "width": 3
-                          },
-                          "tensionX": 1,
-                          "tensionY": 1
-                        },
-                        "open": {
-                          "x": "",
-                          "y": ""
-                        }
-                      },
-                      "name": "Good rate (t/h)",
-                      "render": "line",
-                      "stepLine": {
-                        "appearance": {
-                          "bullets": [
-                            {
-                              "deriveFieldsFromData": {
-                                "fill": {
-                                  "color": "",
-                                  "opacity": ""
-                                },
-                                "rotation": "",
-                                "stroke": {
-                                  "color": "",
-                                  "opacity": "",
-                                  "width": ""
-                                }
-                              },
-                              "enabled": true,
-                              "fill": {
-                                "color": "",
-                                "opacity": 1
-                              },
-                              "heatRules": {
-                                "dataField": "",
-                                "enabled": false,
-                                "max": 100,
-                                "min": 2
-                              },
-                              "height": 10,
-                              "label": {
-                                "position": {
-                                  "dx": 0,
-                                  "dy": 0
-                                },
-                                "text": "{value}"
-                              },
-                              "render": "circle",
-                              "rotation": 0,
-                              "stroke": {
-                                "color": "",
-                                "opacity": 1,
-                                "width": 1
-                              },
-                              "tooltip": {
-                                "background": {
-                                  "color": "",
-                                  "opacity": 1
-                                },
-                                "cornerRadius": 3,
-                                "enabled": true,
-                                "pointerLength": 4,
-                                "text": "{name}: [bold]{valueY}[/]"
-                              },
-                              "width": 10
-                            }
-                          ],
-                          "connect": true,
-                          "fill": {
-                            "color": "",
-                            "opacity": 0
-                          },
-                          "minDistance": 0.5,
-                          "stroke": {
-                            "color": "",
-                            "dashArray": "",
-                            "opacity": 1,
-                            "width": 3
-                          },
-                          "tensionX": 1,
-                          "tensionY": 1
-                        },
-                        "open": {
-                          "x": "",
-                          "y": ""
-                        }
-                      },
-                      "tooltip": {
-                        "background": {
-                          "color": "",
-                          "opacity": 1
-                        },
-                        "cornerRadius": 3,
-                        "enabled": true,
-                        "pointerLength": 4,
-                        "text": "{name}: [bold]{valueY}[/]"
-                      },
-                      "visible": true,
-                      "xAxis": "time",
-                      "yAxis": "value",
-                      "zIndex": 0
-                    }
-                  ],
-                  "xAxes": [
-                    {
-                      "appearance": {
-                        "font": {
-                          "size": "",
-                          "weight": 500
-                        },
-                        "grid": {
-                          "color": "",
-                          "dashArray": "",
-                          "minDistance": 120,
-                          "opacity": 0.08,
-                          "position": 0.5
-                        },
-                        "inside": false,
-                        "labels": {
-                          "color": "#63766d",
-                          "horizontalCenter": "middle",
-                          "opacity": 1,
-                          "rotation": 0,
-                          "verticalCenter": "middle"
-                        },
-                        "opposite": false
-                      },
-                      "category": {
-                        "break": {
-                          "enabled": false,
-                          "endCategory": "",
-                          "size": 0.05,
-                          "startCategory": ""
-                        }
-                      },
-                      "date": {
-                        "baseInterval": {
-                          "count": 1,
-                          "enabled": false,
-                          "skipEmptyPeriods": false,
-                          "timeUnit": "hour"
-                        },
-                        "break": {
-                          "enabled": false,
-                          "endDate": "",
-                          "size": 0.05,
-                          "startDate": ""
-                        },
-                        "format": "dd MMM HH:mm",
-                        "inputFormat": "x",
-                        "range": {
-                          "max": "",
-                          "min": "",
-                          "useStrict": false
-                        }
-                      },
-                      "inversed": false,
-                      "label": {
-                        "color": "",
-                        "enabled": false,
-                        "text": "Tijd"
-                      },
-                      "name": "time",
-                      "render": "date",
-                      "tooltip": {
-                        "background": {
-                          "color": "",
-                          "opacity": 1
-                        },
-                        "cornerRadius": 3,
-                        "enabled": true,
-                        "pointerLength": 4,
-                        "text": ""
-                      },
-                      "value": {
-                        "break": {
-                          "enabled": false,
-                          "endValue": 100,
-                          "size": 0.05,
-                          "startValue": 0
-                        },
-                        "format": "#,###.##",
-                        "logarithmic": false,
-                        "range": {
-                          "max": "",
-                          "min": "",
-                          "useStrict": false
-                        }
-                      },
-                      "visible": true
-                    }
-                  ],
-                  "yAxes": [
-                    {
-                      "appearance": {
-                        "font": {
-                          "size": "",
-                          "weight": 500
-                        },
-                        "grid": {
-                          "color": "",
-                          "dashArray": "",
-                          "minDistance": null,
-                          "opacity": 0.08,
-                          "position": 0.5
-                        },
-                        "inside": false,
-                        "labels": {
-                          "color": "#63766d",
-                          "horizontalCenter": "middle",
-                          "opacity": 1,
-                          "rotation": 0,
-                          "verticalCenter": "middle"
-                        },
-                        "opposite": false
-                      },
-                      "category": {
-                        "break": {
-                          "enabled": false,
-                          "endCategory": "",
-                          "size": 0.05,
-                          "startCategory": ""
-                        }
-                      },
-                      "date": {
-                        "baseInterval": {
-                          "count": 1,
-                          "enabled": false,
-                          "skipEmptyPeriods": false,
-                          "timeUnit": "hour"
-                        },
-                        "break": {
-                          "enabled": false,
-                          "endDate": "",
-                          "size": 0.05,
-                          "startDate": ""
-                        },
-                        "format": "M/d/yyyy HH:mm:ss",
-                        "inputFormat": "yyyy-MM-dd kk:mm:ss",
-                        "range": {
-                          "max": "",
-                          "min": "",
-                          "useStrict": false
-                        }
-                      },
-                      "inversed": false,
-                      "label": {
-                        "color": "",
-                        "enabled": false
-                      },
-                      "name": "value",
-                      "render": "value",
-                      "tooltip": {
-                        "background": {
-                          "color": "",
-                          "opacity": 1
-                        },
-                        "cornerRadius": 3,
-                        "enabled": true,
-                        "pointerLength": 4,
-                        "text": ""
-                      },
-                      "value": {
-                        "break": {
-                          "enabled": false,
-                          "endValue": 100,
-                          "size": 0.05,
-                          "startValue": 0
-                        },
-                        "format": "#,###.##",
-                        "logarithmic": false,
-                        "range": {
-                          "max": "",
-                          "min": 0,
-                          "useStrict": false
-                        }
-                      },
-                      "visible": true
-                    }
-                  ],
-                  "legend": {
-                    "enabled": true,
-                    "position": "bottom"
-                  },
-                  "title": {
-                    "text": ""
-                  },
-                  "cursor": {
-                    "enabled": true,
-                    "behavior": "zoomX"
-                  },
-                  "style": {
-                    "classes": "Demo/Chart"
-                  }
-                },
-                "position": {
-                  "shrink": 0,
-                  "basis": "300px"
-                },
-                "propConfig": {
-                  "props.dataSources.history": {
-                    "binding": {
-                      "type": "property",
-                      "config": {
-                        "path": "view.custom.data.trend"
-                      }
-                    }
-                  }
-                }
-              }
-            ],
-            "position": {
-              "shrink": 0,
-              "basis": "600px",
-              "grow": 1
-            }
-          },
-          {
-            "type": "ia.container.flex",
-            "meta": {
-              "name": "Focus"
-            },
-            "props": {
-              "direction": "column",
-              "style": {
-                "classes": "Demo/Panel"
-              }
-            },
-            "children": [
-              {
-                "type": "ia.display.label",
-                "meta": {
-                  "name": "FocusTitle"
-                },
-                "props": {
-                  "text": "What needs attention",
-                  "style": {
-                    "classes": "Demo/SectionTitle"
-                  }
-                },
-                "position": {
-                  "shrink": 0,
-                  "basis": "auto"
-                }
-              },
-              {
-                "type": "ia.display.label",
-                "meta": {
-                  "name": "FocusSubtitle"
-                },
-                "props": {
-                  "text": "Select a replay above to follow a stoppage, quality event or recovery.",
-                  "style": {
-                    "classes": "Demo/Muted"
-                  }
-                },
-                "position": {
-                  "shrink": 0,
-                  "basis": "auto"
-                }
-              },
-              {
-                "type": "ia.display.flex-repeater",
-                "meta": {
-                  "name": "Attention"
-                },
-                "props": {
-                  "path": "Demo/Components/Event",
-                  "direction": "column",
-                  "wrap": "nowrap",
-                  "useDefaultViewWidth": false,
-                  "useDefaultViewHeight": true,
-                  "elementPosition": {
-                    "basis": "82px",
-                    "grow": 0,
-                    "shrink": 0
-                  },
-                  "instances": [],
-                  "style": {
-                    "classes": "Demo/Repeater"
-                  }
-                },
-                "position": {
-                  "shrink": 0,
-                  "basis": "auto"
-                },
-                "propConfig": {
-                  "props.instances": {
-                    "binding": {
-                      "type": "property",
-                      "config": {
-                        "path": "view.custom.data.events"
-                      },
-                      "transforms": [
-                        {
-                          "type": "script",
-                          "code": "\treturn list(value)[:3]"
-                        }
-                      ]
-                    }
-                  }
-                }
-              }
-            ],
-            "position": {
-              "shrink": 0,
-              "basis": "410px",
-              "grow": 1
-            }
-          }
-        ],
-        "position": {
-          "shrink": 0
-        }
-      },
-      {
-        "type": "ia.display.label",
-        "meta": {
-          "name": "LineTitle"
-        },
-        "props": {
-          "text": "Explore the production lines",
-          "style": {
-            "classes": "Demo/SectionTitle"
-          }
-        },
-        "position": {
-          "shrink": 0,
-          "basis": "auto"
         }
       },
       {
@@ -1445,7 +245,7 @@
             "binding": {
               "type": "property",
               "config": {
-                "path": "view.custom.data.lines"
+                "path": "view.custom.live.lines"
               }
             }
           }
@@ -1454,7 +254,7 @@
       {
         "type": "ia.container.flex",
         "meta": {
-          "name": "Recent"
+          "name": "LiveTrendPanel"
         },
         "props": {
           "direction": "column",
@@ -1466,10 +266,10 @@
           {
             "type": "ia.display.label",
             "meta": {
-              "name": "RecentTitle"
+              "name": "LiveTrendPanelTitle"
             },
             "props": {
-              "text": "Latest production batches",
+              "text": "Factory throughput",
               "style": {
                 "classes": "Demo/SectionTitle"
               }
@@ -1482,10 +282,10 @@
           {
             "type": "ia.display.label",
             "meta": {
-              "name": "RecentSubtitle"
+              "name": "LiveTrendPanelSubtitle"
             },
             "props": {
-              "text": "Select a batch to inspect its quality and traceability.",
+              "text": "The latest ten minutes of recorded five-second telemetry.",
               "style": {
                 "classes": "Demo/Muted"
               }
@@ -1496,146 +296,503 @@
             }
           },
           {
-            "type": "ia.display.table",
+            "type": "ia.chart.xy",
             "meta": {
-              "name": "RecentOrders"
+              "name": "LiveTrend"
             },
             "props": {
-              "data": [],
-              "columns": [
+              "dataSources": {
+                "history": []
+              },
+              "series": [
                 {
-                  "field": "reference",
-                  "visible": true,
-                  "editable": false,
-                  "render": "auto",
-                  "header": {
-                    "title": "Batch"
+                  "candlestick": {
+                    "appearance": {
+                      "deriveFieldsFromData": {
+                        "fill": {
+                          "color": "",
+                          "opacity": ""
+                        },
+                        "stroke": {
+                          "color": "",
+                          "opacity": "",
+                          "width": ""
+                        }
+                      },
+                      "fill": {
+                        "color": "",
+                        "opacity": 1
+                      },
+                      "heatRules": {
+                        "dataField": "",
+                        "enabled": false,
+                        "max": "",
+                        "min": ""
+                      },
+                      "stacked": false,
+                      "stroke": {
+                        "color": "",
+                        "opacity": 1,
+                        "width": 1
+                      }
+                    },
+                    "high": {
+                      "x": "",
+                      "y": ""
+                    },
+                    "low": {
+                      "x": "",
+                      "y": ""
+                    },
+                    "open": {
+                      "x": "",
+                      "y": ""
+                    }
                   },
-                  "width": 190,
-                  "strictWidth": false
-                },
-                {
-                  "field": "line",
-                  "visible": true,
-                  "editable": false,
-                  "render": "auto",
-                  "header": {
-                    "title": "Production line"
+                  "column": {
+                    "appearance": {
+                      "deriveFieldsFromData": {
+                        "fill": {
+                          "color": "",
+                          "opacity": ""
+                        },
+                        "stroke": {
+                          "color": "",
+                          "opacity": "",
+                          "width": ""
+                        }
+                      },
+                      "fill": {
+                        "color": "",
+                        "opacity": 1
+                      },
+                      "heatRules": {
+                        "dataField": "",
+                        "enabled": false,
+                        "max": "",
+                        "min": ""
+                      },
+                      "height": null,
+                      "stacked": false,
+                      "stroke": {
+                        "color": "",
+                        "opacity": 1,
+                        "width": 1
+                      },
+                      "width": null
+                    },
+                    "open": {
+                      "x": "",
+                      "y": ""
+                    }
                   },
-                  "width": 170,
-                  "strictWidth": false
-                },
-                {
-                  "field": "product",
-                  "visible": true,
-                  "editable": false,
-                  "render": "auto",
-                  "header": {
-                    "title": "Product"
+                  "data": {
+                    "source": "history",
+                    "x": "ts",
+                    "y": "rate"
                   },
-                  "width": 150,
-                  "strictWidth": false
-                },
-                {
-                  "field": "started",
-                  "visible": true,
-                  "editable": false,
-                  "render": "auto",
-                  "header": {
-                    "title": "Started"
+                  "defaultState": {
+                    "visible": true
                   },
-                  "width": 140,
-                  "strictWidth": false
-                },
-                {
-                  "field": "produced_kg",
-                  "visible": true,
-                  "editable": false,
-                  "render": "auto",
-                  "header": {
-                    "title": "Output kg"
+                  "hiddenInLegend": false,
+                  "label": {},
+                  "line": {
+                    "appearance": {
+                      "bullets": [
+                        {
+                          "deriveFieldsFromData": {
+                            "fill": {
+                              "color": "",
+                              "opacity": ""
+                            },
+                            "rotation": "",
+                            "stroke": {
+                              "color": "",
+                              "opacity": "",
+                              "width": ""
+                            }
+                          },
+                          "enabled": false,
+                          "fill": {
+                            "color": "",
+                            "opacity": 1
+                          },
+                          "heatRules": {
+                            "dataField": "",
+                            "enabled": false,
+                            "max": 100,
+                            "min": 2
+                          },
+                          "height": 10,
+                          "label": {
+                            "position": {
+                              "dx": 0,
+                              "dy": 0
+                            },
+                            "text": "{value}"
+                          },
+                          "render": "circle",
+                          "rotation": 0,
+                          "stroke": {
+                            "color": "",
+                            "opacity": 1,
+                            "width": 1
+                          },
+                          "tooltip": {
+                            "background": {
+                              "color": "",
+                              "opacity": 1
+                            },
+                            "cornerRadius": 3,
+                            "enabled": true,
+                            "pointerLength": 4,
+                            "text": "{name}: [bold]{valueY}[/]"
+                          },
+                          "width": 10
+                        }
+                      ],
+                      "connect": true,
+                      "fill": {
+                        "color": "#2d8962",
+                        "opacity": 0.07
+                      },
+                      "minDistance": 0.5,
+                      "stroke": {
+                        "color": "#2d8962",
+                        "dashArray": "",
+                        "opacity": 1,
+                        "width": 3
+                      },
+                      "tensionX": 1,
+                      "tensionY": 1
+                    },
+                    "open": {
+                      "x": "",
+                      "y": ""
+                    }
                   },
-                  "width": 115,
-                  "strictWidth": false
-                },
-                {
-                  "field": "target_kg",
-                  "visible": true,
-                  "editable": false,
-                  "render": "auto",
-                  "header": {
-                    "title": "Target kg"
+                  "name": "Throughput (t/h)",
+                  "render": "line",
+                  "stepLine": {
+                    "appearance": {
+                      "bullets": [
+                        {
+                          "deriveFieldsFromData": {
+                            "fill": {
+                              "color": "",
+                              "opacity": ""
+                            },
+                            "rotation": "",
+                            "stroke": {
+                              "color": "",
+                              "opacity": "",
+                              "width": ""
+                            }
+                          },
+                          "enabled": true,
+                          "fill": {
+                            "color": "",
+                            "opacity": 1
+                          },
+                          "heatRules": {
+                            "dataField": "",
+                            "enabled": false,
+                            "max": 100,
+                            "min": 2
+                          },
+                          "height": 10,
+                          "label": {
+                            "position": {
+                              "dx": 0,
+                              "dy": 0
+                            },
+                            "text": "{value}"
+                          },
+                          "render": "circle",
+                          "rotation": 0,
+                          "stroke": {
+                            "color": "",
+                            "opacity": 1,
+                            "width": 1
+                          },
+                          "tooltip": {
+                            "background": {
+                              "color": "",
+                              "opacity": 1
+                            },
+                            "cornerRadius": 3,
+                            "enabled": true,
+                            "pointerLength": 4,
+                            "text": "{name}: [bold]{valueY}[/]"
+                          },
+                          "width": 10
+                        }
+                      ],
+                      "connect": true,
+                      "fill": {
+                        "color": "",
+                        "opacity": 0
+                      },
+                      "minDistance": 0.5,
+                      "stroke": {
+                        "color": "",
+                        "dashArray": "",
+                        "opacity": 1,
+                        "width": 3
+                      },
+                      "tensionX": 1,
+                      "tensionY": 1
+                    },
+                    "open": {
+                      "x": "",
+                      "y": ""
+                    }
                   },
-                  "width": 115,
-                  "strictWidth": false
-                },
-                {
-                  "field": "status",
-                  "visible": true,
-                  "editable": false,
-                  "render": "auto",
-                  "header": {
-                    "title": "Status"
+                  "tooltip": {
+                    "background": {
+                      "color": "",
+                      "opacity": 1
+                    },
+                    "cornerRadius": 3,
+                    "enabled": true,
+                    "pointerLength": 4,
+                    "text": "{name}: [bold]{valueY}[/]"
                   },
-                  "width": 150,
-                  "strictWidth": false
+                  "visible": true,
+                  "xAxis": "time",
+                  "yAxis": "value",
+                  "zIndex": 0
                 }
               ],
-              "pager": {
-                "top": false,
-                "bottom": true,
-                "initialOption": 10,
-                "options": [
-                  10,
-                  20,
-                  50
-                ]
-              },
-              "selection": {
-                "enabled": true,
-                "mode": "row"
-              },
-              "filter": {
-                "enabled": true
-              },
-              "headerStyle": {
-                "backgroundColor": "#edf2e8",
-                "color": "#355541",
-                "fontWeight": "600",
-                "fontSize": 12
-              },
-              "rows": {
-                "height": 36,
-                "striped": {
-                  "enabled": true,
-                  "color": "#f7f9f4"
+              "xAxes": [
+                {
+                  "appearance": {
+                    "font": {
+                      "size": "",
+                      "weight": 500
+                    },
+                    "grid": {
+                      "color": "",
+                      "dashArray": "",
+                      "minDistance": 120,
+                      "opacity": 0.08,
+                      "position": 0.5
+                    },
+                    "inside": false,
+                    "labels": {
+                      "color": "#63766d",
+                      "horizontalCenter": "middle",
+                      "opacity": 1,
+                      "rotation": 0,
+                      "verticalCenter": "middle"
+                    },
+                    "opposite": false
+                  },
+                  "category": {
+                    "break": {
+                      "enabled": false,
+                      "endCategory": "",
+                      "size": 0.05,
+                      "startCategory": ""
+                    }
+                  },
+                  "date": {
+                    "baseInterval": {
+                      "count": 1,
+                      "enabled": false,
+                      "skipEmptyPeriods": false,
+                      "timeUnit": "hour"
+                    },
+                    "break": {
+                      "enabled": false,
+                      "endDate": "",
+                      "size": 0.05,
+                      "startDate": ""
+                    },
+                    "format": "dd MMM HH:mm",
+                    "inputFormat": "x",
+                    "range": {
+                      "max": "",
+                      "min": "",
+                      "useStrict": false
+                    }
+                  },
+                  "inversed": false,
+                  "label": {
+                    "color": "",
+                    "enabled": false,
+                    "text": "Tijd"
+                  },
+                  "name": "time",
+                  "render": "date",
+                  "tooltip": {
+                    "background": {
+                      "color": "",
+                      "opacity": 1
+                    },
+                    "cornerRadius": 3,
+                    "enabled": true,
+                    "pointerLength": 4,
+                    "text": ""
+                  },
+                  "value": {
+                    "break": {
+                      "enabled": false,
+                      "endValue": 100,
+                      "size": 0.05,
+                      "startValue": 0
+                    },
+                    "format": "#,###.##",
+                    "logarithmic": false,
+                    "range": {
+                      "max": "",
+                      "min": "",
+                      "useStrict": false
+                    }
+                  },
+                  "visible": true
                 }
+              ],
+              "yAxes": [
+                {
+                  "appearance": {
+                    "font": {
+                      "size": "",
+                      "weight": 500
+                    },
+                    "grid": {
+                      "color": "",
+                      "dashArray": "",
+                      "minDistance": null,
+                      "opacity": 0.08,
+                      "position": 0.5
+                    },
+                    "inside": false,
+                    "labels": {
+                      "color": "#63766d",
+                      "horizontalCenter": "middle",
+                      "opacity": 1,
+                      "rotation": 0,
+                      "verticalCenter": "middle"
+                    },
+                    "opposite": false
+                  },
+                  "category": {
+                    "break": {
+                      "enabled": false,
+                      "endCategory": "",
+                      "size": 0.05,
+                      "startCategory": ""
+                    }
+                  },
+                  "date": {
+                    "baseInterval": {
+                      "count": 1,
+                      "enabled": false,
+                      "skipEmptyPeriods": false,
+                      "timeUnit": "hour"
+                    },
+                    "break": {
+                      "enabled": false,
+                      "endDate": "",
+                      "size": 0.05,
+                      "startDate": ""
+                    },
+                    "format": "M/d/yyyy HH:mm:ss",
+                    "inputFormat": "yyyy-MM-dd kk:mm:ss",
+                    "range": {
+                      "max": "",
+                      "min": "",
+                      "useStrict": false
+                    }
+                  },
+                  "inversed": false,
+                  "label": {
+                    "color": "",
+                    "enabled": false
+                  },
+                  "name": "value",
+                  "render": "value",
+                  "tooltip": {
+                    "background": {
+                      "color": "",
+                      "opacity": 1
+                    },
+                    "cornerRadius": 3,
+                    "enabled": true,
+                    "pointerLength": 4,
+                    "text": ""
+                  },
+                  "value": {
+                    "break": {
+                      "enabled": false,
+                      "endValue": 100,
+                      "size": 0.05,
+                      "startValue": 0
+                    },
+                    "format": "#,###.##",
+                    "logarithmic": false,
+                    "range": {
+                      "max": "",
+                      "min": 0,
+                      "useStrict": false
+                    }
+                  },
+                  "visible": true
+                }
+              ],
+              "legend": {
+                "enabled": false,
+                "position": "bottom"
+              },
+              "title": {
+                "text": ""
+              },
+              "cursor": {
+                "enabled": true,
+                "behavior": "zoomX"
               },
               "style": {
-                "classes": "Demo/Table"
+                "classes": "Demo/Chart"
               }
             },
             "position": {
               "shrink": 0,
-              "basis": "300px"
+              "basis": "235px"
             },
             "propConfig": {
-              "props.data": {
+              "props.dataSources.history": {
                 "binding": {
                   "type": "property",
                   "config": {
-                    "path": "view.custom.data.orders"
+                    "path": "view.custom.live.trend"
                   }
                 }
               }
+            }
+          },
+          {
+            "type": "ia.input.button",
+            "meta": {
+              "name": "History"
+            },
+            "props": {
+              "text": "Choose a history range",
+              "style": {
+                "classes": "Demo/QuietButton"
+              }
+            },
+            "position": {
+              "shrink": 0,
+              "basis": "40px"
             },
             "events": {
-              "component": {
-                "onRowClick": {
-                  "type": "script",
-                  "scope": "G",
+              "dom": {
+                "onClick": {
+                  "type": "nav",
+                  "scope": "C",
                   "config": {
-                    "script": "\trow = self.props.data[event.row]\n\tif row.get(\"status\") == \"Scheduled\":\n\t\tself.view.custom.selectionNotice = \"This batch is scheduled. Quality measurements become available after production starts.\"\n\t\treturn\n\tself.session.custom.demo.batch = row[\"reference\"]\n\tsystem.perspective.navigate(\"/quality\")"
+                    "page": "/performance"
                   }
                 }
               }

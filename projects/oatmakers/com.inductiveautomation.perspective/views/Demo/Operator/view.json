@@ -1,88 +1,66 @@
 {
   "custom": {
-    "data": {
+    "live": {
       "ready": false,
-      "stale": false,
-      "message": "Loading demonstration data...",
       "metrics": [],
       "lines": [],
       "trend": [],
-      "orders": [],
-      "planning": [],
-      "losses": [],
-      "events": [],
-      "quality": [],
-      "batchOptions": [],
-      "selectedBatch": {
-        "reference": "Loading batch",
-        "product": "",
-        "quality": "Awaiting data"
-      },
-      "inspection": {},
-      "submissions": [],
-      "window": "",
-      "clock": "",
-      "health": {
-        "ok": false,
-        "ageSeconds": "n/a",
-        "coverageDays": "n/a",
-        "lineCount": "n/a",
-        "sampleCount": "n/a"
-      },
-      "availability": "n/a",
-      "performance": "n/a",
-      "yield": "n/a"
+      "updatedEpochMs": 0,
+      "updatedAt": "",
+      "shiftStart": ""
     },
-    "selectionNotice": "",
     "values": {},
     "validation": {
       "valid": false,
-      "message": "Loading form..."
+      "message": ""
     },
-    "busy": false,
     "requestId": "",
-    "result": "No request submitted in this session."
+    "busy": false,
+    "result": "",
+    "requests": []
   },
   "params": {},
   "propConfig": {
-    "custom.data": {
+    "custom.live": {
       "binding": {
         "type": "expr-struct",
         "config": {
           "waitOnAll": true,
           "struct": {
-            "tick": "now(10000)",
-            "scene": "{session.custom.demo.scene}",
-            "period": "{session.custom.demo.period}",
-            "line": "{session.custom.demo.line}",
-            "batch": "{session.custom.demo.batch}"
+            "tick": "now(5000)"
           }
         },
         "transforms": [
           {
             "type": "script",
-            "code": "\treturn application.demo.snapshot(value[\"scene\"], value[\"period\"], value[\"line\"], value[\"batch\"])"
+            "code": "\treturn application.demo.live()"
           }
         ]
       }
     },
     "custom.values": {
-      "onChange": {
-        "enabled": true,
-        "script": "\tself.custom.requestId = \"\""
-      },
       "binding": {
         "type": "expr-struct",
         "config": {
           "waitOnAll": true,
           "struct": {
-            "reference": "{/root/Form/Reference.props.params.value}",
-            "product": "{/root/Form/Product.props.params.value}",
-            "quantity": "{/root/Form/Quantity.props.params.value}",
-            "bags": "{/root/Form/Bags.props.params.value}",
-            "mode": "{/root/Form/Mode.props.params.value}"
+            "reference": "{/root/Workspace/Form/Reference.props.params.value}",
+            "product": "{/root/Workspace/Form/Product.props.params.value}",
+            "quantity": "{/root/Workspace/Form/Quantity.props.params.value}",
+            "bags": "{/root/Workspace/Form/Bags.props.params.value}",
+            "mode": "{/root/Workspace/Form/Mode.props.params.value}"
           }
-        }
+        },
+        "transforms": [
+          {
+            "type": "script",
+            "code": "\treturn value"
+          }
+        ]
+      },
+      "onChange": {
+        "enabled": true,
+        "script": "\tself.custom.requestId = \"\""
       }
     },
     "custom.validation": {
@@ -99,13 +77,27 @@
         ]
       }
     },
-    "custom.selectionNotice": {
+    "custom.requests": {
+      "binding": {
+        "type": "expr-struct",
+        "config": {
+          "waitOnAll": true,
+          "struct": {
+            "refresh": "now(5000)"
+          }
+        },
+        "transforms": [
+          {
+            "type": "script",
+            "code": "\treturn application.demo.recentOrders()"
+          }
+        ]
+      }
+    },
+    "custom.requestId": {
       "persistent": true
     },
     "custom.busy": {
-      "persistent": true
-    },
-    "custom.requestId": {
       "persistent": true
     },
     "custom.result": {
@@ -133,7 +125,7 @@
       {
         "type": "ia.container.flex",
         "meta": {
-          "name": "Heading"
+          "name": "Header"
         },
         "props": {
           "direction": "row",
@@ -149,10 +141,7 @@
               "name": "Identity"
             },
             "props": {
-              "direction": "column",
-              "style": {
-                "minWidth": "0"
-              }
+              "direction": "column"
             },
             "children": [
               {
@@ -161,7 +150,7 @@
                   "name": "Eyebrow"
                 },
                 "props": {
-                  "text": "OATMAKERS / CUSTOMER DEMO",
+                  "text": "OATMAKERS / LIVE OPERATIONS",
                   "style": {
                     "classes": "Demo/Eyebrow"
                   }
@@ -177,7 +166,7 @@
                   "name": "Title"
                 },
                 "props": {
-                  "text": "An operator workflow",
+                  "text": "Operator workflow",
                   "style": {
                     "classes": "Demo/PageTitle"
                   }
@@ -193,7 +182,7 @@
                   "name": "Subtitle"
                 },
                 "props": {
-                  "text": "Enter a batch, see validation, and create a persistent demonstration request.",
+                  "text": "Create a request while the production list stays in view.",
                   "style": {
                     "classes": "Demo/Subtitle"
                   }
@@ -205,864 +194,551 @@
               }
             ],
             "position": {
-              "shrink": 1,
-              "grow": 1,
-              "basis": "260px"
-            }
-          },
-          {
-            "type": "ia.input.button",
-            "meta": {
-              "name": "ResetScenario"
-            },
-            "props": {
-              "text": "Reset demo filters",
-              "style": {
-                "classes": "Demo/QuietButton",
-                "height": "40px"
-              }
-            },
-            "position": {
               "shrink": 0,
-              "basis": "150px"
-            },
-            "events": {
-              "component": {
-                "onActionPerformed": {
-                  "type": "script",
-                  "scope": "G",
-                  "config": {
-                    "script": "\tself.session.custom.demo.scene = \"live\"\n\tself.session.custom.demo.period = \"day\"\n\tself.session.custom.demo.line = 0\n\tself.session.custom.demo.batch = \"\""
-                  }
-                }
-              }
-            }
-          }
-        ],
-        "position": {
-          "shrink": 0
-        }
-      },
-      {
-        "type": "ia.container.flex",
-        "meta": {
-          "name": "Filters"
-        },
-        "props": {
-          "direction": "row",
-          "wrap": "wrap",
-          "style": {
-            "classes": "Demo/Filters"
-          }
-        },
-        "children": [
-          {
-            "type": "ia.input.dropdown",
-            "meta": {
-              "name": "Scene"
-            },
-            "props": {
-              "options": [
-                {
-                  "value": "live",
-                  "label": "Live production"
-                },
-                {
-                  "value": "stoppage",
-                  "label": "Replay: line stoppage"
-                },
-                {
-                  "value": "quality",
-                  "label": "Replay: quality deviation"
-                },
-                {
-                  "value": "recovery",
-                  "label": "Replay: recovery"
-                }
-              ],
-              "value": "live",
-              "search": {
-                "enabled": false
-              },
-              "style": {
-                "classes": "Demo/Select"
-              }
-            },
-            "position": {
-              "shrink": 0,
-              "basis": "190px"
-            },
-            "propConfig": {
-              "props.value": {
-                "binding": {
-                  "type": "property",
-                  "config": {
-                    "path": "session.custom.demo.scene",
-                    "bidirectional": true
-                  }
-                }
-              }
-            }
-          },
-          {
-            "type": "ia.input.dropdown",
-            "meta": {
-              "name": "Period"
-            },
-            "props": {
-              "options": [
-                {
-                  "value": "shift",
-                  "label": "Last 8 hours"
-                },
-                {
-                  "value": "day",
-                  "label": "Last 24 hours"
-                },
-                {
-                  "value": "week",
-                  "label": "Last 7 days"
-                },
-                {
-                  "value": "month",
-                  "label": "Last 30 days"
-                }
-              ],
-              "value": "shift",
-              "search": {
-                "enabled": false
-              },
-              "style": {
-                "classes": "Demo/Select"
-              }
-            },
-            "position": {
-              "shrink": 0,
-              "basis": "190px"
-            },
-            "propConfig": {
-              "props.value": {
-                "binding": {
-                  "type": "property",
-                  "config": {
-                    "path": "session.custom.demo.period",
-                    "bidirectional": true
-                  }
-                }
-              }
-            }
-          },
-          {
-            "type": "ia.input.dropdown",
-            "meta": {
-              "name": "Line"
-            },
-            "props": {
-              "options": [
-                {
-                  "value": 0,
-                  "label": "All production lines"
-                },
-                {
-                  "value": 1,
-                  "label": "Rolling line 01"
-                },
-                {
-                  "value": 2,
-                  "label": "Cutting line 02"
-                },
-                {
-                  "value": 3,
-                  "label": "Milling line 03"
-                }
-              ],
-              "value": 0,
-              "search": {
-                "enabled": false
-              },
-              "style": {
-                "classes": "Demo/Select"
-              }
-            },
-            "position": {
-              "shrink": 0,
-              "basis": "190px"
-            },
-            "propConfig": {
-              "props.value": {
-                "binding": {
-                  "type": "property",
-                  "config": {
-                    "path": "session.custom.demo.line",
-                    "bidirectional": true
-                  }
-                }
-              }
+              "grow": 1
             }
           },
           {
             "type": "ia.display.label",
-            "meta": {
-              "name": "Clock"
-            },
-            "props": {
-              "text": "",
-              "style": {
-                "classes": "Demo/Clock"
-              }
-            },
-            "position": {
-              "shrink": 0,
-              "basis": "auto"
-            },
-            "propConfig": {
-              "props.text": {
-                "binding": {
-                  "type": "property",
-                  "config": {
-                    "path": "view.custom.data.clock"
-                  }
-                }
-              }
-            }
-          }
-        ],
-        "position": {
-          "shrink": 0
-        }
-      },
-      {
-        "type": "ia.display.label",
-        "meta": {
-          "name": "Status"
-        },
-        "props": {
-          "text": "",
-          "style": {
-            "classes": "Demo/Status"
-          }
-        },
-        "position": {
-          "shrink": 0,
-          "basis": "auto"
-        },
-        "propConfig": {
-          "props.text": {
-            "binding": {
-              "type": "property",
-              "config": {
-                "path": "view.custom.data.message"
-              }
-            }
-          },
-          "props.style.backgroundColor": {
-            "binding": {
-              "type": "expr",
-              "config": {
-                "expression": "if({view.custom.data.stale}, \"#fff1d9\", \"#e8f1ea\")"
-              }
-            }
-          }
-        }
-      },
-      {
-        "type": "ia.display.label",
-        "meta": {
-          "name": "Window"
-        },
-        "props": {
-          "text": "",
-          "style": {
-            "classes": "Demo/Muted"
-          }
-        },
-        "position": {
-          "shrink": 0,
-          "basis": "auto"
-        },
-        "propConfig": {
-          "props.text": {
-            "binding": {
-              "type": "property",
-              "config": {
-                "path": "view.custom.data.window"
-              }
-            }
-          }
-        }
-      },
-      {
-        "type": "ia.display.label",
-        "meta": {
-          "name": "SelectionNotice"
-        },
-        "props": {
-          "text": "",
-          "style": {
-            "classes": "Demo/Muted"
-          }
-        },
-        "position": {
-          "shrink": 0,
-          "basis": "auto"
-        },
-        "propConfig": {
-          "props.text": {
-            "binding": {
-              "type": "property",
-              "config": {
-                "path": "view.custom.selectionNotice"
-              }
-            }
-          }
-        }
-      },
-      {
-        "type": "ia.container.flex",
-        "meta": {
-          "name": "Form"
-        },
-        "props": {
-          "direction": "column",
-          "style": {
-            "classes": "Demo/Panel",
-            "maxWidth": "820px"
-          }
-        },
-        "children": [
-          {
-            "type": "ia.display.label",
-            "meta": {
-              "name": "FormTitle"
-            },
-            "props": {
-              "text": "Create a production request",
-              "style": {
-                "classes": "Demo/SectionTitle"
-              }
-            },
-            "position": {
-              "shrink": 0,
-              "basis": "auto"
-            }
-          },
-          {
-            "type": "ia.display.label",
-            "meta": {
-              "name": "FormSubtitle"
-            },
-            "props": {
-              "text": "Demonstration data only. This action never controls equipment.",
-              "style": {
-                "classes": "Demo/Muted"
-              }
-            },
-            "position": {
-              "shrink": 0,
-              "basis": "auto"
-            }
-          },
-          {
-            "type": "ia.display.view",
-            "meta": {
-              "name": "Reference"
-            },
-            "props": {
-              "path": "Templates/InputFields/TextInputField",
-              "params": {
-                "label": "Batch reference",
-                "labelFieldWidth": "180px",
-                "inputFieldWidth": "280px",
-                "required": true,
-                "enabled": true,
-                "input": "DEMO-001",
-                "value": "DEMO-001",
-                "validatedInput": "DEMO-001",
-                "placeholder": "Enter a value..."
-              },
-              "useDefaultViewWidth": false,
-              "useDefaultViewHeight": false,
-              "style": {
-                "classes": "Demo/FormInput"
-              }
-            },
-            "position": {
-              "shrink": 0,
-              "basis": "76px"
-            }
-          },
-          {
-            "type": "ia.display.view",
-            "meta": {
-              "name": "Product"
-            },
-            "props": {
-              "path": "Templates/InputFields/DropdownInputField",
-              "params": {
-                "label": "Product",
-                "labelFieldWidth": "180px",
-                "inputFieldWidth": "280px",
-                "required": true,
-                "enabled": true,
-                "input": "Rolled oats",
-                "value": "Rolled oats",
-                "validatedInput": "Rolled oats",
-                "placeholder": "Enter a value...",
-                "options": [
-                  {
-                    "label": "Rolled oats",
-                    "value": "Rolled oats"
-                  },
-                  {
-                    "label": "Steel-cut oats",
-                    "value": "Steel-cut oats"
-                  },
-                  {
-                    "label": "Oat flour",
-                    "value": "Oat flour"
-                  }
-                ]
-              },
-              "useDefaultViewWidth": false,
-              "useDefaultViewHeight": false,
-              "style": {
-                "classes": "Demo/FormInput"
-              }
-            },
-            "position": {
-              "shrink": 0,
-              "basis": "76px"
-            }
-          },
-          {
-            "type": "ia.display.view",
-            "meta": {
-              "name": "Quantity"
-            },
-            "props": {
-              "path": "Templates/InputFields/NumericInputField",
-              "params": {
-                "label": "Requested weight (kg)",
-                "labelFieldWidth": "180px",
-                "inputFieldWidth": "280px",
-                "required": true,
-                "enabled": true,
-                "input": "1250.5",
-                "value": "1250.5",
-                "validatedInput": "1250.5",
-                "placeholder": "Enter a value...",
-                "decimalAllowed": true,
-                "negativeAllowed": false
-              },
-              "useDefaultViewWidth": false,
-              "useDefaultViewHeight": false,
-              "style": {
-                "classes": "Demo/FormInput"
-              }
-            },
-            "position": {
-              "shrink": 0,
-              "basis": "76px"
-            }
-          },
-          {
-            "type": "ia.display.view",
-            "meta": {
-              "name": "Bags"
-            },
-            "props": {
-              "path": "Templates/InputFields/NumericInputField",
-              "params": {
-                "label": "Number of bags",
-                "labelFieldWidth": "180px",
-                "inputFieldWidth": "280px",
-                "required": true,
-                "enabled": true,
-                "input": "50",
-                "value": "50",
-                "validatedInput": "50",
-                "placeholder": "Enter a value...",
-                "decimalAllowed": false,
-                "negativeAllowed": false
-              },
-              "useDefaultViewWidth": false,
-              "useDefaultViewHeight": false,
-              "style": {
-                "classes": "Demo/FormInput"
-              }
-            },
-            "position": {
-              "shrink": 0,
-              "basis": "76px"
-            }
-          },
-          {
-            "type": "ia.display.view",
             "meta": {
               "name": "Mode"
             },
             "props": {
-              "path": "Templates/InputFields/MultiStateInputField",
-              "params": {
-                "label": "Run mode",
-                "labelFieldWidth": "180px",
-                "inputFieldWidth": "280px",
-                "required": true,
-                "enabled": true,
-                "input": "Trial",
-                "value": "Trial",
-                "validatedInput": "Trial",
-                "placeholder": "Enter a value...",
-                "states": [
-                  {
-                    "value": "Trial",
-                    "text": "Trial",
-                    "selectedStyle": {
-                      "classes": ""
-                    },
-                    "unselectedStyle": {
-                      "classes": ""
-                    }
-                  },
-                  {
-                    "value": "Production",
-                    "text": "Production",
-                    "selectedStyle": {
-                      "classes": ""
-                    },
-                    "unselectedStyle": {
-                      "classes": ""
-                    }
-                  },
-                  {
-                    "value": "Hold",
-                    "text": "Hold",
-                    "selectedStyle": {
-                      "classes": ""
-                    },
-                    "unselectedStyle": {
-                      "classes": ""
-                    }
-                  }
-                ]
-              },
-              "useDefaultViewWidth": false,
-              "useDefaultViewHeight": false,
+              "text": "SIMULATED FACTORY",
               "style": {
-                "classes": "Demo/FormInput"
-              }
-            },
-            "position": {
-              "shrink": 0,
-              "basis": "76px"
-            }
-          },
-          {
-            "type": "ia.display.label",
-            "meta": {
-              "name": "FormValidation"
-            },
-            "props": {
-              "text": "",
-              "style": {
-                "classes": "Demo/Muted"
+                "classes": "Demo/DemoBadge"
               }
             },
             "position": {
               "shrink": 0,
               "basis": "auto"
-            },
-            "propConfig": {
-              "props.text": {
-                "binding": {
-                  "type": "property",
-                  "config": {
-                    "path": "view.custom.validation.message"
-                  }
-                }
-              }
-            }
-          },
-          {
-            "type": "ia.input.button",
-            "meta": {
-              "name": "Submit"
-            },
-            "props": {
-              "text": "Create demo batch",
-              "style": {
-                "classes": "Demo/Button"
-              }
-            },
-            "position": {
-              "shrink": 0,
-              "basis": "40px"
-            },
-            "events": {
-              "component": {
-                "onActionPerformed": {
-                  "type": "script",
-                  "scope": "G",
-                  "config": {
-                    "script": "\tif self.view.custom.busy:\n\t\treturn\n\tself.view.custom.busy = True\n\ttry:\n\t\tif not self.view.custom.requestId:\n\t\t\tself.view.custom.requestId = application.demo.newRequestId()\n\t\tself.view.custom.result = application.demo.createOrder(dict(self.view.custom.values), self.view.custom.requestId)\n\t\tself.view.refreshBinding(\"custom.data\")\n\texcept (Exception, application.demo.JavaException):\n\t\tself.view.custom.result = \"Could not create the demo batch. Check your values or open Demo health.\"\n\tfinally:\n\t\tself.view.custom.busy = False"
-                  }
-                }
-              }
-            },
-            "propConfig": {
-              "props.enabled": {
-                "binding": {
-                  "type": "expr",
-                  "config": {
-                    "expression": "{view.custom.validation.valid} && !{view.custom.busy} && {view.custom.data.ready}"
-                  }
-                }
-              }
-            }
-          },
-          {
-            "type": "ia.input.button",
-            "meta": {
-              "name": "NewRequest"
-            },
-            "props": {
-              "text": "Start another demo request",
-              "style": {
-                "classes": "Demo/QuietButton"
-              }
-            },
-            "position": {
-              "shrink": 0,
-              "basis": "40px"
-            },
-            "events": {
-              "component": {
-                "onActionPerformed": {
-                  "type": "script",
-                  "scope": "G",
-                  "config": {
-                    "script": "\tself.view.custom.requestId = \"\"\n\tself.view.custom.result = \"Edit the fields and create another demo batch.\""
-                  }
-                }
-              }
-            }
-          },
-          {
-            "type": "ia.display.label",
-            "meta": {
-              "name": "SubmitResult"
-            },
-            "props": {
-              "text": "",
-              "style": {
-                "classes": "Demo/Status"
-              }
-            },
-            "position": {
-              "shrink": 0,
-              "basis": "auto"
-            },
-            "propConfig": {
-              "props.text": {
-                "binding": {
-                  "type": "property",
-                  "config": {
-                    "path": "view.custom.result"
-                  }
-                }
-              }
             }
           }
         ],
         "position": {
+          "shrink": 0
+        }
+      },
+      {
+        "type": "ia.display.label",
+        "meta": {
+          "name": "LiveStatus"
+        },
+        "props": {
+          "text": "",
+          "style": {
+            "classes": "Demo/LiveStatus"
+          }
+        },
+        "position": {
           "shrink": 0,
-          "basis": "560px",
-          "grow": 0
+          "basis": "auto"
+        },
+        "propConfig": {
+          "props.text": {
+            "binding": {
+              "type": "expr",
+              "config": {
+                "expression": "if({view.custom.live.ready}, \"Live \u00b7 recorded at \" + {view.custom.live.updatedAt} + \" \u00b7 updates every 5 seconds\", \"Live telemetry is unavailable\")"
+              }
+            }
+          },
+          "props.style.color": {
+            "binding": {
+              "type": "expr",
+              "config": {
+                "expression": "if({view.custom.live.ready}, \"#277b57\", \"#b66622\")"
+              }
+            }
+          }
         }
       },
       {
         "type": "ia.container.flex",
         "meta": {
-          "name": "RecentRequests"
+          "name": "Workspace"
         },
         "props": {
-          "direction": "column",
+          "direction": "row",
           "style": {
-            "classes": "Demo/Panel"
+            "classes": "Demo/Workspace"
           }
         },
         "children": [
           {
-            "type": "ia.display.label",
+            "type": "ia.container.flex",
             "meta": {
-              "name": "RecentRequestsTitle"
+              "name": "Form"
             },
             "props": {
-              "text": "Recent demo requests",
+              "direction": "column",
               "style": {
-                "classes": "Demo/SectionTitle"
+                "classes": "Demo/Panel",
+                "overflow": "visible",
+                "alignSelf": "flex-start"
               }
             },
-            "position": {
-              "shrink": 0,
-              "basis": "auto"
-            }
-          },
-          {
-            "type": "ia.display.label",
-            "meta": {
-              "name": "RecentRequestsSubtitle"
-            },
-            "props": {
-              "text": "Reload the page or open Production planning to see the same submissions.",
-              "style": {
-                "classes": "Demo/Muted"
-              }
-            },
-            "position": {
-              "shrink": 0,
-              "basis": "auto"
-            }
-          },
-          {
-            "type": "ia.display.table",
-            "meta": {
-              "name": "Requests"
-            },
-            "props": {
-              "data": [],
-              "columns": [
-                {
-                  "field": "reference",
-                  "visible": true,
-                  "editable": false,
-                  "render": "auto",
-                  "header": {
-                    "title": "Reference"
-                  },
-                  "width": 180,
-                  "strictWidth": false
+            "children": [
+              {
+                "type": "ia.display.label",
+                "meta": {
+                  "name": "FormTitle"
                 },
-                {
-                  "field": "product",
-                  "visible": true,
-                  "editable": false,
-                  "render": "auto",
-                  "header": {
-                    "title": "Product"
-                  },
-                  "width": 160,
-                  "strictWidth": false
+                "props": {
+                  "text": "Create a production request",
+                  "style": {
+                    "classes": "Demo/SectionTitle"
+                  }
                 },
-                {
-                  "field": "quantity_kg",
-                  "visible": true,
-                  "editable": false,
-                  "render": "auto",
-                  "header": {
-                    "title": "Weight kg"
-                  },
-                  "width": 120,
-                  "strictWidth": false
-                },
-                {
-                  "field": "bags",
-                  "visible": true,
-                  "editable": false,
-                  "render": "auto",
-                  "header": {
-                    "title": "Bags"
-                  },
-                  "width": 100,
-                  "strictWidth": false
-                },
-                {
-                  "field": "mode",
-                  "visible": true,
-                  "editable": false,
-                  "render": "auto",
-                  "header": {
-                    "title": "Mode"
-                  },
-                  "width": 120,
-                  "strictWidth": false
-                },
-                {
-                  "field": "source",
-                  "visible": true,
-                  "editable": false,
-                  "render": "auto",
-                  "header": {
-                    "title": "Source"
-                  },
-                  "width": 150,
-                  "strictWidth": false
-                },
-                {
-                  "field": "submitted",
-                  "visible": true,
-                  "editable": false,
-                  "render": "auto",
-                  "header": {
-                    "title": "Submitted"
-                  },
-                  "width": 160,
-                  "strictWidth": false
-                }
-              ],
-              "pager": {
-                "top": false,
-                "bottom": true,
-                "initialOption": 10,
-                "options": [
-                  10,
-                  20,
-                  50
-                ]
-              },
-              "selection": {
-                "enabled": true,
-                "mode": "row"
-              },
-              "filter": {
-                "enabled": true
-              },
-              "headerStyle": {
-                "backgroundColor": "#edf2e8",
-                "color": "#355541",
-                "fontWeight": "600",
-                "fontSize": 12
-              },
-              "rows": {
-                "height": 36,
-                "striped": {
-                  "enabled": true,
-                  "color": "#f7f9f4"
+                "position": {
+                  "shrink": 0,
+                  "basis": "auto"
                 }
               },
-              "style": {
-                "classes": "Demo/Table"
-              }
-            },
-            "position": {
-              "shrink": 0,
-              "basis": "300px"
-            },
-            "propConfig": {
-              "props.data": {
-                "binding": {
-                  "type": "property",
-                  "config": {
-                    "path": "view.custom.data.submissions"
+              {
+                "type": "ia.display.label",
+                "meta": {
+                  "name": "FormSubtitle"
+                },
+                "props": {
+                  "text": "Demonstration records only.",
+                  "style": {
+                    "classes": "Demo/Muted"
+                  }
+                },
+                "position": {
+                  "shrink": 0,
+                  "basis": "auto"
+                }
+              },
+              {
+                "type": "ia.display.view",
+                "meta": {
+                  "name": "Reference"
+                },
+                "props": {
+                  "path": "Templates/InputFields/TextInputField",
+                  "params": {
+                    "label": "Batch reference",
+                    "labelFieldWidth": "130px",
+                    "inputFieldWidth": "220px",
+                    "input": "DEMO-001",
+                    "value": "DEMO-001",
+                    "validatedInput": "DEMO-001",
+                    "required": true,
+                    "enabled": true,
+                    "placeholder": "Enter a value..."
+                  },
+                  "useDefaultViewWidth": false,
+                  "useDefaultViewHeight": false,
+                  "style": {
+                    "overflow": "visible"
+                  }
+                },
+                "position": {
+                  "shrink": 0,
+                  "basis": "66px"
+                }
+              },
+              {
+                "type": "ia.display.view",
+                "meta": {
+                  "name": "Product"
+                },
+                "props": {
+                  "path": "Templates/InputFields/DropdownInputField",
+                  "params": {
+                    "label": "Product",
+                    "labelFieldWidth": "130px",
+                    "inputFieldWidth": "220px",
+                    "input": "Rolled oats",
+                    "value": "Rolled oats",
+                    "validatedInput": "Rolled oats",
+                    "required": true,
+                    "enabled": true,
+                    "placeholder": "Enter a value...",
+                    "options": [
+                      {
+                        "label": "Rolled oats",
+                        "value": "Rolled oats"
+                      },
+                      {
+                        "label": "Steel-cut oats",
+                        "value": "Steel-cut oats"
+                      },
+                      {
+                        "label": "Oat flour",
+                        "value": "Oat flour"
+                      }
+                    ]
+                  },
+                  "useDefaultViewWidth": false,
+                  "useDefaultViewHeight": false,
+                  "style": {
+                    "overflow": "visible"
+                  }
+                },
+                "position": {
+                  "shrink": 0,
+                  "basis": "66px"
+                }
+              },
+              {
+                "type": "ia.display.view",
+                "meta": {
+                  "name": "Quantity"
+                },
+                "props": {
+                  "path": "Templates/InputFields/NumericInputField",
+                  "params": {
+                    "label": "Weight (kg)",
+                    "labelFieldWidth": "130px",
+                    "inputFieldWidth": "220px",
+                    "input": "1250.5",
+                    "value": "1250.5",
+                    "validatedInput": "1250.5",
+                    "required": true,
+                    "enabled": true,
+                    "placeholder": "Enter a value...",
+                    "decimalAllowed": true,
+                    "negativeAllowed": false
+                  },
+                  "useDefaultViewWidth": false,
+                  "useDefaultViewHeight": false,
+                  "style": {
+                    "overflow": "visible"
+                  }
+                },
+                "position": {
+                  "shrink": 0,
+                  "basis": "66px"
+                }
+              },
+              {
+                "type": "ia.display.view",
+                "meta": {
+                  "name": "Bags"
+                },
+                "props": {
+                  "path": "Templates/InputFields/NumericInputField",
+                  "params": {
+                    "label": "Bags",
+                    "labelFieldWidth": "130px",
+                    "inputFieldWidth": "220px",
+                    "input": "50",
+                    "value": "50",
+                    "validatedInput": "50",
+                    "required": true,
+                    "enabled": true,
+                    "placeholder": "Enter a value...",
+                    "decimalAllowed": false,
+                    "negativeAllowed": false
+                  },
+                  "useDefaultViewWidth": false,
+                  "useDefaultViewHeight": false,
+                  "style": {
+                    "overflow": "visible"
+                  }
+                },
+                "position": {
+                  "shrink": 0,
+                  "basis": "66px"
+                }
+              },
+              {
+                "type": "ia.display.view",
+                "meta": {
+                  "name": "Mode"
+                },
+                "props": {
+                  "path": "Templates/InputFields/MultiStateInputField",
+                  "params": {
+                    "label": "Run mode",
+                    "labelFieldWidth": "130px",
+                    "inputFieldWidth": "220px",
+                    "input": "Trial",
+                    "value": "Trial",
+                    "validatedInput": "Trial",
+                    "required": true,
+                    "enabled": true,
+                    "placeholder": "Enter a value...",
+                    "states": [
+                      {
+                        "value": "Trial",
+                        "text": "Trial",
+                        "selectedStyle": {
+                          "classes": ""
+                        },
+                        "unselectedStyle": {
+                          "classes": ""
+                        }
+                      },
+                      {
+                        "value": "Production",
+                        "text": "Production",
+                        "selectedStyle": {
+                          "classes": ""
+                        },
+                        "unselectedStyle": {
+                          "classes": ""
+                        }
+                      },
+                      {
+                        "value": "Hold",
+                        "text": "Hold",
+                        "selectedStyle": {
+                          "classes": ""
+                        },
+                        "unselectedStyle": {
+                          "classes": ""
+                        }
+                      }
+                    ]
+                  },
+                  "useDefaultViewWidth": false,
+                  "useDefaultViewHeight": false,
+                  "style": {
+                    "overflow": "visible"
+                  }
+                },
+                "position": {
+                  "shrink": 0,
+                  "basis": "66px"
+                }
+              },
+              {
+                "type": "ia.display.label",
+                "meta": {
+                  "name": "Validation"
+                },
+                "props": {
+                  "text": "",
+                  "style": {
+                    "classes": "Demo/Muted"
+                  }
+                },
+                "position": {
+                  "shrink": 0,
+                  "basis": "auto"
+                },
+                "propConfig": {
+                  "props.text": {
+                    "binding": {
+                      "type": "property",
+                      "config": {
+                        "path": "view.custom.validation.message"
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "type": "ia.input.button",
+                "meta": {
+                  "name": "Submit"
+                },
+                "props": {
+                  "text": "Create demo request",
+                  "style": {
+                    "classes": "Demo/Button"
+                  }
+                },
+                "position": {
+                  "shrink": 0,
+                  "basis": "40px"
+                },
+                "events": {
+                  "component": {
+                    "onActionPerformed": {
+                      "type": "script",
+                      "scope": "G",
+                      "config": {
+                        "script": "\tif self.view.custom.busy:\n\t\treturn\n\tself.view.custom.busy = True\n\ttry:\n\t\tif not self.view.custom.requestId:\n\t\t\tself.view.custom.requestId = application.demo.newRequestId()\n\t\tself.view.custom.result = application.demo.createOrder(dict(self.view.custom.values),self.view.custom.requestId)\n\t\tself.view.refreshBinding(\"custom.requests\")\n\texcept (Exception, application.demo.JavaException):\n\t\tself.view.custom.result = \"Could not create the request. Review the inputs and connection.\"\n\tfinally:\n\t\tself.view.custom.busy = False"
+                      }
+                    }
+                  }
+                },
+                "propConfig": {
+                  "props.enabled": {
+                    "binding": {
+                      "type": "expr",
+                      "config": {
+                        "expression": "{view.custom.validation.valid} && !{view.custom.busy} && {view.custom.live.ready}"
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "type": "ia.display.label",
+                "meta": {
+                  "name": "Result"
+                },
+                "props": {
+                  "text": "",
+                  "style": {
+                    "classes": "Demo/Status"
+                  }
+                },
+                "position": {
+                  "shrink": 0,
+                  "basis": "auto"
+                },
+                "propConfig": {
+                  "props.text": {
+                    "binding": {
+                      "type": "property",
+                      "config": {
+                        "path": "view.custom.result"
+                      }
+                    }
                   }
                 }
               }
+            ],
+            "position": {
+              "shrink": 0,
+              "basis": "450px",
+              "grow": 0
+            }
+          },
+          {
+            "type": "ia.container.flex",
+            "meta": {
+              "name": "RequestList"
+            },
+            "props": {
+              "direction": "column",
+              "style": {
+                "classes": "Demo/Panel",
+                "height": "calc(100vh - 215px)",
+                "minHeight": "400px",
+                "overflow": "hidden"
+              }
+            },
+            "children": [
+              {
+                "type": "ia.display.label",
+                "meta": {
+                  "name": "RequestListTitle"
+                },
+                "props": {
+                  "text": "Production requests",
+                  "style": {
+                    "classes": "Demo/SectionTitle"
+                  }
+                },
+                "position": {
+                  "shrink": 0,
+                  "basis": "auto"
+                }
+              },
+              {
+                "type": "ia.display.label",
+                "meta": {
+                  "name": "RequestListSubtitle"
+                },
+                "props": {
+                  "text": "Your saved requests remain available after reloading.",
+                  "style": {
+                    "classes": "Demo/Muted"
+                  }
+                },
+                "position": {
+                  "shrink": 0,
+                  "basis": "auto"
+                }
+              },
+              {
+                "type": "mustrysolutions.perspective.input.datagrid",
+                "meta": {
+                  "name": "Requests"
+                },
+                "props": {
+                  "config": {
+                    "columns": [
+                      {
+                        "field": "reference",
+                        "header": "Reference",
+                        "width": 190
+                      },
+                      {
+                        "field": "product",
+                        "header": "Product",
+                        "width": 160
+                      },
+                      {
+                        "field": "quantity_kg",
+                        "header": "Weight kg",
+                        "width": 120,
+                        "type": "number",
+                        "align": "right",
+                        "decimals": 1
+                      },
+                      {
+                        "field": "bags",
+                        "header": "Bags",
+                        "width": 80,
+                        "type": "number",
+                        "align": "right",
+                        "decimals": 0
+                      },
+                      {
+                        "field": "mode",
+                        "header": "Mode",
+                        "width": 110
+                      },
+                      {
+                        "field": "submitted",
+                        "header": "Created",
+                        "width": 140
+                      }
+                    ],
+                    "idField": "reference",
+                    "rowHeight": 44,
+                    "locale": "en-GB",
+                    "rowSelect": "none",
+                    "showToolbar": true,
+                    "showExport": true,
+                    "editable": false,
+                    "emptyMessage": "No records for the selected range."
+                  },
+                  "data": {
+                    "rows": []
+                  },
+                  "state": {
+                    "selection": []
+                  },
+                  "style": {
+                    "classes": "Demo/DataGrid"
+                  }
+                },
+                "position": {
+                  "basis": "0px",
+                  "grow": 1,
+                  "shrink": 1
+                },
+                "propConfig": {
+                  "props.data.rows": {
+                    "binding": {
+                      "type": "property",
+                      "config": {
+                        "path": "view.custom.requests"
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "position": {
+              "shrink": 0,
+              "basis": "560px",
+              "grow": 1
             }
           }
         ],
         "position": {
-          "shrink": 0,
-          "grow": 0
+          "shrink": 0
         }
       }
     ],

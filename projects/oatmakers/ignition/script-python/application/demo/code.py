@@ -5,26 +5,27 @@ from java.lang import Exception as JavaException
 from java.util.concurrent.locks import ReentrantLock
 
 DATABASE = 'OatmakersDemo'
-REVISION = 'showroom-3.0.1'
+REVISION = 'showroom-4.0.0'
 _cache = {}
 _lock = ReentrantLock()
 
 
 def _queryJson(sql, args=None):
 	rows = system.db.runPrepQuery(sql, args or [], DATABASE)
-	return system.util.jsonDecode(str(rows[0][0]))
+	return system.util.jsonDecode(unicode(rows[0][0]))
 
 
 def tick():
 	try:
-		_queryJson('SELECT oat_demo.tick()')
+		_queryJson('SELECT oat_demo.tick_live()')
+		_writeLiveTags(_queryJson('SELECT oat_demo.live_overview()'))
 	except (Exception, JavaException) as exc:
 		system.util.getLogger('Oatmakers.Demo').error('Demo continuity tick failed: {0}'.format(exc))
 
 
 def health():
 	try:
-		result = _queryJson('SELECT oat_demo.health()')
+		result = _queryJson('SELECT oat_demo.health_live()')
 		result['appRevision'] = REVISION
 		return result
 	except (Exception, JavaException):
@@ -77,7 +78,7 @@ def recentOrders():
 	return _queryJson("""SELECT coalesce(jsonb_agg(to_jsonb(x)), '[]') FROM (
 		SELECT reference,product,quantity_kg,bags,mode,source,
 		to_char(created_at AT TIME ZONE 'Europe/Brussels','DD Mon HH24:MI') AS submitted
-		FROM oat_demo.operator_order ORDER BY created_at DESC LIMIT 12) x""")
+		FROM oat_demo.operator_order ORDER BY created_at DESC LIMIT 100) x""")
 
 
 def validateOrder(values):
@@ -123,14 +124,13 @@ def createOrder(values, requestId):
 		_cache.clear()
 	finally:
 		_lock.unlock()
-	return 'Demo batch {0} created. It appears in the recent submissions below.'.format(v['reference'])
+	return 'Demo batch {0} created. It appears in the production requests list.'.format(v['reference'])
 
 
 def recordInspection(reference):
-	data = _queryJson('SELECT oat_demo.snapshot(?, ?, ?, ?)', ['live', 'day', 0, str(reference)])
-	batch = data.get('selectedBatch', {})
-	if not reference or batch.get('reference') != reference:
-		raise ValueError('Select a recent production batch before recording its check.')
+	batch = batchDetails(reference)
+	if not reference or not batch.get('available') or batch.get('status') == 'Scheduled':
+		raise ValueError('Select a recorded production batch before recording its check.')
 	saved = _queryJson("""WITH saved AS (
 		INSERT INTO oat_demo.inspection(batch_reference,decision,peak_moisture,temperature)
 		VALUES(?,?,?,?) ON CONFLICT(batch_reference) DO NOTHING RETURNING decision
@@ -146,3 +146,129 @@ def recordInspection(reference):
 
 def newRequestId():
 	return str(UUID.randomUUID())
+
+# Live SCADA and explicit range services for the Mustry UI screens.
+TAG_ROOT = '[default]OatmakersDemo'
+METRICS = {
+	'rate': ('Throughput', 'Throughput', 'kg/h'),
+	'temperature': ('Temperature', 'Temperature', 'C'),
+	'moisture': ('Moisture', 'Moisture', '%'),
+	'pressure': ('Pressure', 'Pressure', 'bar'),
+	'power': ('Power', 'Power', 'kW')
+}
+
+
+def _cachedQuery(key, ttl, sql, args):
+	_lock.lock()
+	try:
+		now = time.time()
+		cached = _cache.get(key)
+		if cached and now-cached[0] < ttl:
+			return cached[1]
+		result = _queryJson(sql, args)
+		if len(_cache) > 128:
+			_cache.clear()
+		_cache[key] = (now, result)
+		return result
+	finally:
+		_lock.unlock()
+
+
+def live(line=0):
+	try:
+		return _cachedQuery(('live4', int(line or 0)), 2, 'SELECT oat_demo.live_overview(?)', [int(line or 0)])
+	except (Exception, JavaException):
+		return {'ready': False, 'updatedEpochMs': 0, 'updatedAt': 'Unavailable',
+			'lines': [], 'metrics': [], 'trend': [], 'shiftStart': ''}
+
+
+def history(start, end, line=0, metric='rate'):
+	if not start or not end or long(end) <= long(start):
+		return {'points': [], 'count': 0, 'message': 'Choose a date and time range.'}
+	if metric not in METRICS:
+		raise ValueError('Unknown measurement')
+	try:
+		args = [long(start), long(end), int(line or 0), str(metric)]
+		return _cachedQuery(('history4',)+tuple(args), 5, 'SELECT oat_demo.history_range(CAST(? AS bigint), CAST(? AS bigint), ?, ?)', args)
+	except (Exception, JavaException) as exc:
+		system.util.getLogger('Oatmakers.Demo').warn('History query failed: {0}'.format(exc))
+		return {'points': [], 'count': 0, 'message': 'History unavailable. Choose a recorded range within 90 days.'}
+
+
+def rangeSnapshot(start, end, line=0):
+	if not start or not end or long(end) <= long(start):
+		return _empty('Choose a date and time range.')
+	try:
+		return _cachedQuery(('range4',long(start),long(end),int(line or 0)), 5,
+			'SELECT oat_demo.snapshot_range(CAST(? AS bigint), CAST(? AS bigint), ?)', [long(start),long(end),int(line or 0)])
+	except (Exception, JavaException) as exc:
+		system.util.getLogger('Oatmakers.Demo').warn('Range query failed: {0}'.format(exc))
+		return _empty('Recorded data is unavailable for this range.')
+
+
+def batches(start, end, line=0):
+	if not start or not end or long(end) <= long(start):
+		return []
+	try:
+		return _cachedQuery(('batches4',long(start),long(end),int(line or 0)), 5,
+			'SELECT oat_demo.batches_range(CAST(? AS bigint), CAST(? AS bigint), ?)', [long(start),long(end),int(line or 0)])
+	except (Exception, JavaException):
+		return []
+
+
+def timeline(start, end):
+	rows = batches(start, end)
+	return [dict(row, id=row['reference'], description='{0} / {1}'.format(row['line'],row['status'])) for row in rows]
+
+
+def batchDetails(reference):
+	if not reference:
+		return {'available': False, 'reference': '', 'message': 'Select a batch to inspect its measurements.'}
+	try:
+		return _cachedQuery(('batch4',str(reference)), 5, 'SELECT oat_demo.batch_detail(?)', [str(reference)])
+	except (Exception, JavaException):
+		return {'available': False, 'reference': str(reference), 'message': 'This batch is unavailable.'}
+
+
+def showBatch(reference):
+	system.perspective.openPopup('batch-details', 'Demo/BatchDetails',
+		params={'reference': str(reference)}, title='Batch details',
+		position={'width': 920, 'height': 400}, modal=False, draggable=True, resizable=True)
+
+
+def showHistory(line, metric):
+	line = int(line)
+	if line not in (1,2,3) or metric not in METRICS:
+		raise ValueError('Unknown demonstration tag')
+	name, title, _unit = METRICS[metric]
+	system.perspective.openPopup('history-{0}-{1}'.format(line,metric), 'Demo/TagHistory',
+		params={'lineNumber': line, 'metric': metric, 'title': title,
+			'tagPath': '{0}/Line{1}/{2}'.format(TAG_ROOT,line,name)},
+		title='Line {0} / {1}'.format(line,title), position={'width': 980, 'height': 620},
+		modal=False, draggable=True, resizable=True)
+
+
+def _writeLiveTags(data):
+	if not data.get('ready'):
+		return
+	if not system.tag.exists(TAG_ROOT+'/SchemaVersion'):
+		folders = []
+		for line in (1,2,3):
+			tags = [{'name': values[0], 'tagType': 'AtomicTag', 'valueSource': 'memory', 'dataType': 'Float8', 'value': 0.0} for values in METRICS.values()]
+			tags.extend([{'name': 'State', 'tagType': 'AtomicTag', 'valueSource': 'memory', 'dataType': 'String', 'value': 'Starting'},
+				{'name': 'LastUpdate', 'tagType': 'AtomicTag', 'valueSource': 'memory', 'dataType': 'DateTime', 'value': system.date.fromMillis(0)}])
+			folders.append({'name': 'Line{0}'.format(line), 'tagType': 'Folder', 'tags': tags})
+		folders.append({'name': 'SchemaVersion', 'tagType': 'AtomicTag', 'valueSource': 'memory', 'dataType': 'String', 'value': '4'})
+		qualities = system.tag.configure('[default]', [{'name':'OatmakersDemo','tagType':'Folder','tags':folders}], 'm')
+		if any(not quality.isGood() for quality in qualities):
+			raise ValueError('Could not initialize demo memory tags')
+	paths, values = [], []
+	for line in data['lines']:
+		base = '{0}/Line{1}/'.format(TAG_ROOT,line['lineNumber'])
+		for key, metadata in METRICS.items():
+			paths.append(base+metadata[0]); values.append(float(line[key]))
+		paths.extend([base+'State',base+'LastUpdate'])
+		values.extend([line['state'],system.date.fromMillis(long(line['updatedEpochMs']))])
+	qualities = system.tag.writeBlocking(paths, values)
+	if any(not quality.isGood() for quality in qualities):
+		raise ValueError('A demo tag write failed')

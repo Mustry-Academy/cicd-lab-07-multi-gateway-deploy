@@ -39,6 +39,19 @@ try:
         assert read(DATA+'/projects/unrelated/marker')=='keep'
         assert read(DATA+'/config/resources/core/ignition/database-connection/OtherDb/marker')=='keep'
         assert run(['docker','exec',NAME,'sh','-c',f'test ! -d {DATA}/config/resources/core/ignition/database-connection/OatmakersDemo && echo removed'])=='removed'
+        registry={'unrelated.native':{'filename':'/native.modl','onStartup':'enabled','certFingerprint':'keep'}}
+        registration=pathlib.Path(temporary)/'modules.json'
+        registration.write_text(json.dumps(registry))
+        run(['docker','cp',str(registration),NAME+':'+DATA+'/modules.json'])
+        run(['python3',str(ROOT/'tools/demo/install-module.py'),str(ROOT)],env=env)
+        loaded=json.loads(read(DATA+'/modules.json'))
+        assert loaded['unrelated.native']==registry['unrelated.native']
+        assert loaded['com.mustrysolutions.perspective.components']['onStartup']=='enabled'
+        assert 'DEMO_MODULE_CHANGED=true' in pathlib.Path(env['GITHUB_ENV']).read_text()
+        pathlib.Path(env['GITHUB_ENV']).write_text('')
+        run(['python3',str(ROOT/'tools/demo/install-module.py'),str(ROOT)],env=env)
+        assert pathlib.Path(env['GITHUB_ENV']).read_text()=='DEMO_MODULE_CHANGED=false\n'
+        print('PASS signed module checksum, isolated registry merge and idempotent install')
     print('PASS scoped ship, backup and rollback preserve unrelated projects and connections')
 finally:
     server.shutdown()

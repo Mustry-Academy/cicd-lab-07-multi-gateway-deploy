@@ -1,65 +1,53 @@
 {
   "custom": {
-    "data": {
+    "live": {
       "ready": false,
-      "stale": false,
-      "message": "Loading demonstration data...",
       "metrics": [],
       "lines": [],
       "trend": [],
-      "orders": [],
-      "planning": [],
-      "losses": [],
-      "events": [],
-      "quality": [],
-      "batchOptions": [],
-      "selectedBatch": {
-        "reference": "Loading batch",
-        "product": "",
-        "quality": "Awaiting data"
-      },
-      "inspection": {},
-      "submissions": [],
-      "window": "",
-      "clock": "",
-      "health": {
-        "ok": false,
-        "ageSeconds": "n/a",
-        "coverageDays": "n/a",
-        "lineCount": "n/a",
-        "sampleCount": "n/a"
-      },
-      "availability": "n/a",
-      "performance": "n/a",
-      "yield": "n/a"
+      "updatedEpochMs": 0,
+      "updatedAt": "",
+      "shiftStart": ""
     },
-    "selectionNotice": ""
+    "events": []
   },
   "params": {},
   "propConfig": {
-    "custom.data": {
+    "custom.live": {
       "binding": {
         "type": "expr-struct",
         "config": {
           "waitOnAll": true,
           "struct": {
-            "tick": "now(10000)",
-            "scene": "{session.custom.demo.scene}",
-            "period": "{session.custom.demo.period}",
-            "line": "{session.custom.demo.line}",
-            "batch": "{session.custom.demo.batch}"
+            "tick": "now(5000)"
           }
         },
         "transforms": [
           {
             "type": "script",
-            "code": "\treturn application.demo.snapshot(value[\"scene\"], value[\"period\"], value[\"line\"], value[\"batch\"])"
+            "code": "\treturn application.demo.live()"
           }
         ]
       }
     },
-    "custom.selectionNotice": {
-      "persistent": true
+    "custom.events": {
+      "binding": {
+        "type": "expr-struct",
+        "config": {
+          "waitOnAll": true,
+          "struct": {
+            "start": "{/root/Timeline.props.output.visibleStartMs}",
+            "end": "{/root/Timeline.props.output.visibleEndMs}",
+            "refresh": "now(5000)"
+          }
+        },
+        "transforms": [
+          {
+            "type": "script",
+            "code": "\treturn application.demo.timeline(value[\"start\"], value[\"end\"])"
+          }
+        ]
+      }
     }
   },
   "props": {
@@ -83,7 +71,7 @@
       {
         "type": "ia.container.flex",
         "meta": {
-          "name": "Heading"
+          "name": "Header"
         },
         "props": {
           "direction": "row",
@@ -99,10 +87,7 @@
               "name": "Identity"
             },
             "props": {
-              "direction": "column",
-              "style": {
-                "minWidth": "0"
-              }
+              "direction": "column"
             },
             "children": [
               {
@@ -111,7 +96,7 @@
                   "name": "Eyebrow"
                 },
                 "props": {
-                  "text": "OATMAKERS / CUSTOMER DEMO",
+                  "text": "OATMAKERS / LIVE OPERATIONS",
                   "style": {
                     "classes": "Demo/Eyebrow"
                   }
@@ -143,7 +128,7 @@
                   "name": "Subtitle"
                 },
                 "props": {
-                  "text": "Follow every batch from its production run to quality release.",
+                  "text": "Browse shifts, pan through the schedule and open a batch for details.",
                   "style": {
                     "classes": "Demo/Subtitle"
                   }
@@ -155,225 +140,24 @@
               }
             ],
             "position": {
-              "shrink": 1,
-              "grow": 1,
-              "basis": "260px"
-            }
-          },
-          {
-            "type": "ia.input.button",
-            "meta": {
-              "name": "ResetScenario"
-            },
-            "props": {
-              "text": "Reset demo filters",
-              "style": {
-                "classes": "Demo/QuietButton",
-                "height": "40px"
-              }
-            },
-            "position": {
               "shrink": 0,
-              "basis": "150px"
-            },
-            "events": {
-              "component": {
-                "onActionPerformed": {
-                  "type": "script",
-                  "scope": "G",
-                  "config": {
-                    "script": "\tself.session.custom.demo.scene = \"live\"\n\tself.session.custom.demo.period = \"day\"\n\tself.session.custom.demo.line = 0\n\tself.session.custom.demo.batch = \"\""
-                  }
-                }
-              }
-            }
-          }
-        ],
-        "position": {
-          "shrink": 0
-        }
-      },
-      {
-        "type": "ia.container.flex",
-        "meta": {
-          "name": "Filters"
-        },
-        "props": {
-          "direction": "row",
-          "wrap": "wrap",
-          "style": {
-            "classes": "Demo/Filters"
-          }
-        },
-        "children": [
-          {
-            "type": "ia.input.dropdown",
-            "meta": {
-              "name": "Scene"
-            },
-            "props": {
-              "options": [
-                {
-                  "value": "live",
-                  "label": "Live production"
-                },
-                {
-                  "value": "stoppage",
-                  "label": "Replay: line stoppage"
-                },
-                {
-                  "value": "quality",
-                  "label": "Replay: quality deviation"
-                },
-                {
-                  "value": "recovery",
-                  "label": "Replay: recovery"
-                }
-              ],
-              "value": "live",
-              "search": {
-                "enabled": false
-              },
-              "style": {
-                "classes": "Demo/Select"
-              }
-            },
-            "position": {
-              "shrink": 0,
-              "basis": "190px"
-            },
-            "propConfig": {
-              "props.value": {
-                "binding": {
-                  "type": "property",
-                  "config": {
-                    "path": "session.custom.demo.scene",
-                    "bidirectional": true
-                  }
-                }
-              }
-            }
-          },
-          {
-            "type": "ia.input.dropdown",
-            "meta": {
-              "name": "Period"
-            },
-            "props": {
-              "options": [
-                {
-                  "value": "shift",
-                  "label": "Last 8 hours"
-                },
-                {
-                  "value": "day",
-                  "label": "Last 24 hours"
-                },
-                {
-                  "value": "week",
-                  "label": "Last 7 days"
-                },
-                {
-                  "value": "month",
-                  "label": "Last 30 days"
-                }
-              ],
-              "value": "shift",
-              "search": {
-                "enabled": false
-              },
-              "style": {
-                "classes": "Demo/Select"
-              }
-            },
-            "position": {
-              "shrink": 0,
-              "basis": "190px"
-            },
-            "propConfig": {
-              "props.value": {
-                "binding": {
-                  "type": "property",
-                  "config": {
-                    "path": "session.custom.demo.period",
-                    "bidirectional": true
-                  }
-                }
-              }
-            }
-          },
-          {
-            "type": "ia.input.dropdown",
-            "meta": {
-              "name": "Line"
-            },
-            "props": {
-              "options": [
-                {
-                  "value": 0,
-                  "label": "All production lines"
-                },
-                {
-                  "value": 1,
-                  "label": "Rolling line 01"
-                },
-                {
-                  "value": 2,
-                  "label": "Cutting line 02"
-                },
-                {
-                  "value": 3,
-                  "label": "Milling line 03"
-                }
-              ],
-              "value": 0,
-              "search": {
-                "enabled": false
-              },
-              "style": {
-                "classes": "Demo/Select"
-              }
-            },
-            "position": {
-              "shrink": 0,
-              "basis": "190px"
-            },
-            "propConfig": {
-              "props.value": {
-                "binding": {
-                  "type": "property",
-                  "config": {
-                    "path": "session.custom.demo.line",
-                    "bidirectional": true
-                  }
-                }
-              }
+              "grow": 1
             }
           },
           {
             "type": "ia.display.label",
             "meta": {
-              "name": "Clock"
+              "name": "Mode"
             },
             "props": {
-              "text": "",
+              "text": "SIMULATED FACTORY",
               "style": {
-                "classes": "Demo/Clock"
+                "classes": "Demo/DemoBadge"
               }
             },
             "position": {
               "shrink": 0,
               "basis": "auto"
-            },
-            "propConfig": {
-              "props.text": {
-                "binding": {
-                  "type": "property",
-                  "config": {
-                    "path": "view.custom.data.clock"
-                  }
-                }
-              }
             }
           }
         ],
@@ -384,12 +168,12 @@
       {
         "type": "ia.display.label",
         "meta": {
-          "name": "Status"
+          "name": "LiveStatus"
         },
         "props": {
           "text": "",
           "style": {
-            "classes": "Demo/Status"
+            "classes": "Demo/LiveStatus"
           }
         },
         "position": {
@@ -398,18 +182,130 @@
         },
         "propConfig": {
           "props.text": {
-            "binding": {
-              "type": "property",
-              "config": {
-                "path": "view.custom.data.message"
-              }
-            }
-          },
-          "props.style.backgroundColor": {
             "binding": {
               "type": "expr",
               "config": {
-                "expression": "if({view.custom.data.stale}, \"#fff1d9\", \"#e8f1ea\")"
+                "expression": "if({view.custom.live.ready}, \"Live \u00b7 recorded at \" + {view.custom.live.updatedAt} + \" \u00b7 updates every 5 seconds\", \"Live telemetry is unavailable\")"
+              }
+            }
+          },
+          "props.style.color": {
+            "binding": {
+              "type": "expr",
+              "config": {
+                "expression": "if({view.custom.live.ready}, \"#277b57\", \"#b66622\")"
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "mustrysolutions.perspective.display.resourcetimeline",
+        "meta": {
+          "name": "Timeline"
+        },
+        "props": {
+          "config": {
+            "resources": [
+              {
+                "id": "1",
+                "label": "Rolling line 01",
+                "group": "Oat processing",
+                "color": "#2d8962"
+              },
+              {
+                "id": "2",
+                "label": "Cutting line 02",
+                "group": "Oat processing",
+                "color": "#428ac3"
+              },
+              {
+                "id": "3",
+                "label": "Milling line 03",
+                "group": "Oat processing",
+                "color": "#c59139"
+              }
+            ],
+            "rowHeight": 76,
+            "timezone": "Europe/Brussels",
+            "locale": "en-GB",
+            "showToolbar": true,
+            "showMiniNav": true,
+            "showLegend": true,
+            "refreshSeconds": 5,
+            "editable": false,
+            "selectable": false,
+            "builtInEditor": false,
+            "showExport": true,
+            "categories": [
+              {
+                "id": "planned",
+                "label": "Scheduled",
+                "color": "#7790a7"
+              },
+              {
+                "id": "running",
+                "label": "In production",
+                "color": "#2d8962"
+              },
+              {
+                "id": "quality",
+                "label": "Quality review",
+                "color": "#c89128"
+              },
+              {
+                "id": "complete",
+                "label": "Completed",
+                "color": "#b0bdb4"
+              }
+            ],
+            "shifts": [
+              {
+                "label": "Early",
+                "start": "06:00"
+              },
+              {
+                "label": "Late",
+                "start": "14:00"
+              },
+              {
+                "label": "Night",
+                "start": "22:00"
+              }
+            ]
+          },
+          "data": {
+            "events": []
+          },
+          "state": {
+            "zoom": "shift",
+            "followNow": true
+          },
+          "style": {
+            "classes": "Demo/PlanningTimeline"
+          }
+        },
+        "position": {
+          "shrink": 0,
+          "basis": "480px"
+        },
+        "propConfig": {
+          "props.data.events": {
+            "binding": {
+              "type": "property",
+              "config": {
+                "path": "view.custom.events"
+              }
+            }
+          }
+        },
+        "events": {
+          "component": {
+            "onEventClick": {
+              "type": "script",
+              "scope": "G",
+              "config": {
+                "script": "\tapplication.demo.showBatch(event.id)"
               }
             }
           }
@@ -418,10 +314,10 @@
       {
         "type": "ia.display.label",
         "meta": {
-          "name": "Window"
+          "name": "PlanningHelp"
         },
         "props": {
-          "text": "",
+          "text": "Use Hour, Day, Shift or Week to change the scale. Click a batch to inspect its production and quality record.",
           "style": {
             "classes": "Demo/Muted"
           }
@@ -429,459 +325,6 @@
         "position": {
           "shrink": 0,
           "basis": "auto"
-        },
-        "propConfig": {
-          "props.text": {
-            "binding": {
-              "type": "property",
-              "config": {
-                "path": "view.custom.data.window"
-              }
-            }
-          }
-        }
-      },
-      {
-        "type": "ia.display.label",
-        "meta": {
-          "name": "SelectionNotice"
-        },
-        "props": {
-          "text": "",
-          "style": {
-            "classes": "Demo/Muted"
-          }
-        },
-        "position": {
-          "shrink": 0,
-          "basis": "auto"
-        },
-        "propConfig": {
-          "props.text": {
-            "binding": {
-              "type": "property",
-              "config": {
-                "path": "view.custom.selectionNotice"
-              }
-            }
-          }
-        }
-      },
-      {
-        "type": "ia.display.flex-repeater",
-        "meta": {
-          "name": "Metrics"
-        },
-        "props": {
-          "path": "Demo/Components/Metric",
-          "direction": "row",
-          "wrap": "wrap",
-          "useDefaultViewWidth": false,
-          "useDefaultViewHeight": true,
-          "elementPosition": {
-            "basis": "230px",
-            "grow": 1,
-            "shrink": 0
-          },
-          "instances": [],
-          "style": {
-            "classes": "Demo/Repeater"
-          }
-        },
-        "position": {
-          "shrink": 0,
-          "basis": "auto"
-        },
-        "propConfig": {
-          "props.instances": {
-            "binding": {
-              "type": "property",
-              "config": {
-                "path": "view.custom.data.metrics"
-              }
-            }
-          }
-        }
-      },
-      {
-        "type": "ia.container.flex",
-        "meta": {
-          "name": "Plan"
-        },
-        "props": {
-          "direction": "column",
-          "style": {
-            "classes": "Demo/Panel"
-          }
-        },
-        "children": [
-          {
-            "type": "ia.display.label",
-            "meta": {
-              "name": "PlanTitle"
-            },
-            "props": {
-              "text": "Batch plan and actual production",
-              "style": {
-                "classes": "Demo/SectionTitle"
-              }
-            },
-            "position": {
-              "shrink": 0,
-              "basis": "auto"
-            }
-          },
-          {
-            "type": "ia.display.label",
-            "meta": {
-              "name": "PlanSubtitle"
-            },
-            "props": {
-              "text": "Select a row to open the matching quality record. All quantities are calculated from stored minute samples.",
-              "style": {
-                "classes": "Demo/Muted"
-              }
-            },
-            "position": {
-              "shrink": 0,
-              "basis": "auto"
-            }
-          },
-          {
-            "type": "ia.display.table",
-            "meta": {
-              "name": "Orders"
-            },
-            "props": {
-              "data": [],
-              "columns": [
-                {
-                  "field": "reference",
-                  "visible": true,
-                  "editable": false,
-                  "render": "auto",
-                  "header": {
-                    "title": "Batch"
-                  },
-                  "width": 190,
-                  "strictWidth": false
-                },
-                {
-                  "field": "line",
-                  "visible": true,
-                  "editable": false,
-                  "render": "auto",
-                  "header": {
-                    "title": "Production line"
-                  },
-                  "width": 170,
-                  "strictWidth": false
-                },
-                {
-                  "field": "product",
-                  "visible": true,
-                  "editable": false,
-                  "render": "auto",
-                  "header": {
-                    "title": "Product"
-                  },
-                  "width": 150,
-                  "strictWidth": false
-                },
-                {
-                  "field": "started",
-                  "visible": true,
-                  "editable": false,
-                  "render": "auto",
-                  "header": {
-                    "title": "Started"
-                  },
-                  "width": 140,
-                  "strictWidth": false
-                },
-                {
-                  "field": "produced_kg",
-                  "visible": true,
-                  "editable": false,
-                  "render": "auto",
-                  "header": {
-                    "title": "Output kg"
-                  },
-                  "width": 115,
-                  "strictWidth": false
-                },
-                {
-                  "field": "target_kg",
-                  "visible": true,
-                  "editable": false,
-                  "render": "auto",
-                  "header": {
-                    "title": "Target kg"
-                  },
-                  "width": 115,
-                  "strictWidth": false
-                },
-                {
-                  "field": "status",
-                  "visible": true,
-                  "editable": false,
-                  "render": "auto",
-                  "header": {
-                    "title": "Status"
-                  },
-                  "width": 150,
-                  "strictWidth": false
-                }
-              ],
-              "pager": {
-                "top": false,
-                "bottom": true,
-                "initialOption": 10,
-                "options": [
-                  10,
-                  20,
-                  50
-                ]
-              },
-              "selection": {
-                "enabled": true,
-                "mode": "row"
-              },
-              "filter": {
-                "enabled": true
-              },
-              "headerStyle": {
-                "backgroundColor": "#edf2e8",
-                "color": "#355541",
-                "fontWeight": "600",
-                "fontSize": 12
-              },
-              "rows": {
-                "height": 36,
-                "striped": {
-                  "enabled": true,
-                  "color": "#f7f9f4"
-                }
-              },
-              "style": {
-                "classes": "Demo/Table"
-              }
-            },
-            "position": {
-              "shrink": 0,
-              "basis": "530px"
-            },
-            "propConfig": {
-              "props.data": {
-                "binding": {
-                  "type": "property",
-                  "config": {
-                    "path": "view.custom.data.planning"
-                  }
-                }
-              }
-            },
-            "events": {
-              "component": {
-                "onRowClick": {
-                  "type": "script",
-                  "scope": "G",
-                  "config": {
-                    "script": "\trow = self.props.data[event.row]\n\tif row.get(\"status\") == \"Scheduled\":\n\t\tself.view.custom.selectionNotice = \"This batch is scheduled. Quality measurements become available after production starts.\"\n\t\treturn\n\tself.session.custom.demo.batch = row[\"reference\"]\n\tsystem.perspective.navigate(\"/quality\")"
-                  }
-                }
-              }
-            }
-          }
-        ],
-        "position": {
-          "shrink": 0,
-          "grow": 0
-        }
-      },
-      {
-        "type": "ia.container.flex",
-        "meta": {
-          "name": "Submitted"
-        },
-        "props": {
-          "direction": "column",
-          "style": {
-            "classes": "Demo/Panel"
-          }
-        },
-        "children": [
-          {
-            "type": "ia.display.label",
-            "meta": {
-              "name": "SubmittedTitle"
-            },
-            "props": {
-              "text": "Demo production requests",
-              "style": {
-                "classes": "Demo/SectionTitle"
-              }
-            },
-            "position": {
-              "shrink": 0,
-              "basis": "auto"
-            }
-          },
-          {
-            "type": "ia.display.label",
-            "meta": {
-              "name": "SubmittedSubtitle"
-            },
-            "props": {
-              "text": "Generated examples and operator requests are retained for at most 90 days.",
-              "style": {
-                "classes": "Demo/Muted"
-              }
-            },
-            "position": {
-              "shrink": 0,
-              "basis": "auto"
-            }
-          },
-          {
-            "type": "ia.display.table",
-            "meta": {
-              "name": "SubmittedOrders"
-            },
-            "props": {
-              "data": [],
-              "columns": [
-                {
-                  "field": "reference",
-                  "visible": true,
-                  "editable": false,
-                  "render": "auto",
-                  "header": {
-                    "title": "Reference"
-                  },
-                  "width": 170,
-                  "strictWidth": false
-                },
-                {
-                  "field": "product",
-                  "visible": true,
-                  "editable": false,
-                  "render": "auto",
-                  "header": {
-                    "title": "Product"
-                  },
-                  "width": 180,
-                  "strictWidth": false
-                },
-                {
-                  "field": "quantity_kg",
-                  "visible": true,
-                  "editable": false,
-                  "render": "auto",
-                  "header": {
-                    "title": "Requested kg"
-                  },
-                  "width": 120,
-                  "strictWidth": false
-                },
-                {
-                  "field": "bags",
-                  "visible": true,
-                  "editable": false,
-                  "render": "auto",
-                  "header": {
-                    "title": "Bags"
-                  },
-                  "width": 90,
-                  "strictWidth": false
-                },
-                {
-                  "field": "mode",
-                  "visible": true,
-                  "editable": false,
-                  "render": "auto",
-                  "header": {
-                    "title": "Mode"
-                  },
-                  "width": 110,
-                  "strictWidth": false
-                },
-                {
-                  "field": "source",
-                  "visible": true,
-                  "editable": false,
-                  "render": "auto",
-                  "header": {
-                    "title": "Source"
-                  },
-                  "width": 150,
-                  "strictWidth": false
-                },
-                {
-                  "field": "submitted",
-                  "visible": true,
-                  "editable": false,
-                  "render": "auto",
-                  "header": {
-                    "title": "Created"
-                  },
-                  "width": 150,
-                  "strictWidth": false
-                }
-              ],
-              "pager": {
-                "top": false,
-                "bottom": true,
-                "initialOption": 10,
-                "options": [
-                  10,
-                  20,
-                  50
-                ]
-              },
-              "selection": {
-                "enabled": true,
-                "mode": "row"
-              },
-              "filter": {
-                "enabled": true
-              },
-              "headerStyle": {
-                "backgroundColor": "#edf2e8",
-                "color": "#355541",
-                "fontWeight": "600",
-                "fontSize": 12
-              },
-              "rows": {
-                "height": 36,
-                "striped": {
-                  "enabled": true,
-                  "color": "#f7f9f4"
-                }
-              },
-              "style": {
-                "classes": "Demo/Table"
-              }
-            },
-            "position": {
-              "shrink": 0,
-              "basis": "260px"
-            },
-            "propConfig": {
-              "props.data": {
-                "binding": {
-                  "type": "property",
-                  "config": {
-                    "path": "view.custom.data.submissions"
-                  }
-                }
-              }
-            }
-          }
-        ],
-        "position": {
-          "shrink": 0,
-          "grow": 0
         }
       }
     ],

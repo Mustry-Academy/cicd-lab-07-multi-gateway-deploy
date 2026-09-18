@@ -1,0 +1,329 @@
+{
+  "custom": {
+    "batch": {
+      "available": false,
+      "product": "",
+      "status": "Loading"
+    },
+    "result": ""
+  },
+  "params": {
+    "reference": ""
+  },
+  "propConfig": {
+    "custom.batch": {
+      "binding": {
+        "type": "property",
+        "config": {
+          "path": "view.params.reference"
+        },
+        "transforms": [
+          {
+            "type": "script",
+            "code": "\treturn application.demo.batchDetails(value)"
+          }
+        ]
+      }
+    },
+    "params.reference": {
+      "paramDirection": "input",
+      "persistent": true
+    },
+    "custom.result": {
+      "persistent": true
+    }
+  },
+  "props": {
+    "defaultSize": {
+      "width": 1280,
+      "height": 400
+    }
+  },
+  "root": {
+    "type": "ia.container.flex",
+    "meta": {
+      "name": "root"
+    },
+    "props": {
+      "direction": "column",
+      "style": {
+        "classes": "Demo/PopupRoot"
+      }
+    },
+    "children": [
+      {
+        "type": "ia.display.label",
+        "meta": {
+          "name": "BatchTitle"
+        },
+        "props": {
+          "text": "",
+          "style": {
+            "classes": "Demo/SectionTitle"
+          }
+        },
+        "position": {
+          "shrink": 0,
+          "basis": "auto"
+        },
+        "propConfig": {
+          "props.text": {
+            "binding": {
+              "type": "property",
+              "config": {
+                "path": "view.params.reference"
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "ia.display.label",
+        "meta": {
+          "name": "Product"
+        },
+        "props": {
+          "text": "",
+          "style": {
+            "classes": "Demo/Subtitle"
+          }
+        },
+        "position": {
+          "shrink": 0,
+          "basis": "auto"
+        },
+        "propConfig": {
+          "props.text": {
+            "binding": {
+              "type": "property",
+              "config": {
+                "path": "view.custom.batch.product"
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "ia.display.label",
+        "meta": {
+          "name": "Status"
+        },
+        "props": {
+          "text": "",
+          "style": {
+            "classes": "Demo/Badge"
+          }
+        },
+        "position": {
+          "shrink": 0,
+          "basis": "auto"
+        },
+        "propConfig": {
+          "props.text": {
+            "binding": {
+              "type": "property",
+              "config": {
+                "path": "view.custom.batch.status"
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "ia.container.flex",
+        "meta": {
+          "name": "Measurements"
+        },
+        "props": {
+          "direction": "row",
+          "wrap": "wrap",
+          "style": {
+            "classes": "Demo/Wrap"
+          }
+        },
+        "children": [
+          {
+            "type": "ia.display.view",
+            "meta": {
+              "name": "Output"
+            },
+            "props": {
+              "path": "Demo/Components/Metric",
+              "params": {
+                "title": "GOOD OUTPUT",
+                "unit": "kg",
+                "hint": ""
+              },
+              "useDefaultViewWidth": false,
+              "useDefaultViewHeight": false
+            },
+            "position": {
+              "shrink": 0,
+              "basis": "240px",
+              "grow": 1
+            },
+            "propConfig": {
+              "props.params.value": {
+                "binding": {
+                  "type": "property",
+                  "config": {
+                    "path": "view.custom.batch"
+                  },
+                  "transforms": [
+                    {
+                      "type": "script",
+                      "code": "\treturn value.get(\"good_kg\", \"n/a\")"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "type": "ia.display.view",
+            "meta": {
+              "name": "Moisture"
+            },
+            "props": {
+              "path": "Demo/Components/Metric",
+              "params": {
+                "title": "PEAK MOISTURE",
+                "unit": "%",
+                "hint": ""
+              },
+              "useDefaultViewWidth": false,
+              "useDefaultViewHeight": false
+            },
+            "position": {
+              "shrink": 0,
+              "basis": "240px",
+              "grow": 1
+            },
+            "propConfig": {
+              "props.params.value": {
+                "binding": {
+                  "type": "property",
+                  "config": {
+                    "path": "view.custom.batch"
+                  },
+                  "transforms": [
+                    {
+                      "type": "script",
+                      "code": "\treturn value.get(\"peak_moisture\", \"n/a\")"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "type": "ia.display.view",
+            "meta": {
+              "name": "Temperature"
+            },
+            "props": {
+              "path": "Demo/Components/Metric",
+              "params": {
+                "title": "AVERAGE TEMPERATURE",
+                "unit": "\u00b0C",
+                "hint": ""
+              },
+              "useDefaultViewWidth": false,
+              "useDefaultViewHeight": false
+            },
+            "position": {
+              "shrink": 0,
+              "basis": "240px",
+              "grow": 1
+            },
+            "propConfig": {
+              "props.params.value": {
+                "binding": {
+                  "type": "property",
+                  "config": {
+                    "path": "view.custom.batch"
+                  },
+                  "transforms": [
+                    {
+                      "type": "script",
+                      "code": "\treturn value.get(\"temperature\", \"n/a\")"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        ],
+        "position": {
+          "shrink": 0
+        }
+      },
+      {
+        "type": "ia.input.button",
+        "meta": {
+          "name": "Inspect"
+        },
+        "props": {
+          "text": "Record demo inspection",
+          "style": {
+            "classes": "Demo/Button"
+          }
+        },
+        "position": {
+          "shrink": 0,
+          "basis": "40px"
+        },
+        "events": {
+          "component": {
+            "onActionPerformed": {
+              "type": "script",
+              "scope": "G",
+              "config": {
+                "script": "\ttry:\n\t\tself.view.custom.result = application.demo.recordInspection(self.view.params.reference)\n\t\tself.view.refreshBinding(\"custom.batch\")\n\texcept (Exception, application.demo.JavaException):\n\t\tself.view.custom.result = \"Inspection could not be recorded for this batch.\""
+              }
+            }
+          }
+        },
+        "propConfig": {
+          "props.enabled": {
+            "binding": {
+              "type": "expr",
+              "config": {
+                "expression": "{view.custom.batch.available} && {view.custom.batch.status} != \"Scheduled\""
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "ia.display.label",
+        "meta": {
+          "name": "Result"
+        },
+        "props": {
+          "text": "",
+          "style": {
+            "classes": "Demo/Muted"
+          }
+        },
+        "position": {
+          "shrink": 0,
+          "basis": "auto"
+        },
+        "propConfig": {
+          "props.text": {
+            "binding": {
+              "type": "property",
+              "config": {
+                "path": "view.custom.result"
+              }
+            }
+          }
+        }
+      }
+    ],
+    "position": {
+      "shrink": 0
+    }
+  }
+}

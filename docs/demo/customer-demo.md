@@ -1,84 +1,74 @@
 # Oatmakers customer demo
 
-Open https://cloud.mustrysolutions.com/data/perspective/client/oatmakers/ or launch **Oatmakers | Connected factory demo** from the gateway's Perspective launcher.
+Open https://cloud.mustrysolutions.com/data/perspective/client/oatmakers/ or launch **Oatmakers | Connected factory demo** from the Perspective launcher. Reload an existing session after a release.
 
-Every value is synthetic. Demo requests and inspections write only to the `oat_demo` database schema. No action controls equipment or changes customer records.
+All measurements and requests are simulated. Writes are confined to the `oat_demo` database schema and `[default]OatmakersDemo` memory tags. No screen controls equipment or changes customer records.
 
 ## Screens
 
 | Route | Purpose |
 |---|---|
-| `/` | Factory summary, production rate, current events and line drill-down |
-| `/production` | Running, scheduled and completed batches, plus operator demo requests |
-| `/process` | Line conditions, the process sequence and recorded events |
-| `/performance` | OEE factors, production rate, power demand and loss reasons |
-| `/quality` | Batch measurements, moisture excursions and recorded inspections |
-| `/operator` | Validated inputs and persistent, idempotent demo requests |
-| `/components` | Working reusable views and the real dashboard in a compact panel |
-| `/demo/health` | Freshness, history coverage and retention readiness |
+| `/` | Five-second throughput, current shift output, line conditions and alerts |
+| `/scada` | Original peeling and heating drawings in Mustry Pan Zoom View; click measurements for history |
+| `/production` | Mustry Resource Timeline with shift, day, hour and week navigation; click a batch for details |
+| `/performance` | Mustry Date Time Range Picker controlling historical charts and aggregate metrics |
+| `/quality` | Mustry Data Grid for batches in the selected dates, with measurement and inspection details |
+| `/operator` | Validated request form alongside an independently scrolling Mustry Data Grid |
+| `/demo/health` | Telemetry age, retained history and continuity status |
 
-The existing `/oee` and `/demo/input-fields` links open Performance and Operator workflow. The course observatory remains available at `/observatory`.
+Legacy `/process`, `/oee` and `/demo/input-fields` links open SCADA, Performance and Operator workflow. The course observatory remains at `/observatory`. The component library is removed from the customer navigation and routes.
 
-## Present a repeatable story
+## Demonstration walkthrough
 
-1. Start at Factory overview with Live production and all lines.
-2. Choose **Replay: line stoppage**. Rolling line 01 stops, throughput reaches zero, temperature drops and base power remains.
-3. Open that line, then Performance. The same replay and line selection follow the navigation.
-4. Choose **Replay: quality deviation** and Cutting line 02. Open a batch in Quality to see its peak moisture, average conditions and yield. Record a demo inspection.
-5. Choose **Replay: recovery** to see controlled ramp-up.
-6. Return to Live production, open Operator workflow, enter a request and submit it. Open Production planning to see the persisted request.
-7. Use **Reset demo filters** to return to the default view. Filters and replays belong to the browser session, so presenters do not change one another's scenario.
+1. Watch the factory throughput and line readings change every five seconds.
+2. Open SCADA. Pan, zoom or use a point of interest. Switch between peeling and heating, then click a temperature or pressure reading.
+3. In the history popup, choose a live preset or exact calendar dates and times. The selected range controls the database query. Manual selections stop following the clock.
+4. Open Production planning, change between shift and week scales, and inspect a batch.
+5. In Quality, choose older dates, select a batch, inspect its measurements and record a demo inspection.
+6. In Operator workflow, create a request. It appears in the grid and remains after reloading. The form has no internal scrollbar.
 
-Replays use a complete recent two-hour cycle from stored data. They move relative to the current date, so they remain available weeks later. A replay is labelled explicitly and never substitutes for live production data.
+## Data lifecycle
 
-## Data lifecycle and definitions
+The dedicated gateway timer runs every five seconds even without a browser. It records deterministic, changing measurements for three lines and writes their latest values to the SCADA memory tags. Tag-history popups query the same recorded source. A disconnected source shows unavailable readings rather than invented browser values.
 
-- The gateway's dedicated fixed-delay timer runs every 30 seconds without an open browser.
-- The database generates deterministic minute measurements for three production lines. Initial deployment seeds the full retained window.
-- A watermark fills missed periods after an outage. Generation is bounded to the retained window even after months offline.
-- A transaction-level advisory lock prevents concurrent workers. Repeating a tick at the same timestamp inserts nothing.
-- Each tick removes samples, demo requests and inspections older than 90 days or three calendar months, whichever is shorter. This is approximately 389,000 retained minute samples, not an ever-growing archive.
-- Period totals and charts read those stored measurements. Rate charts normalize partial intervals to tonnes/hour or kW, avoiding a false drop at the edge of the current hour.
-- OEE is good output divided by nominal capacity. Availability is capacity-weighted when several lines are selected, so availability x performance x quality reconciles with the aggregate OEE.
-- Batch output and quality come from six-hour sample groups. A peak moisture excursion can require review even when average moisture is within limits.
-- Scheduled requests keep the workflow tables populated; actual browser submissions appear alongside them. Duplicate submission IDs cannot create duplicate requests.
-- Operator requests and inspections are demonstration records. Repeating an inspection for the same batch preserves its recorded result.
+Fine telemetry is retained for 48 hours. Minute history, requests and inspections are retained for the shorter of 90 days and three calendar months. First deployment seeds the retained history. Watermarks fill gaps after downtime, bounded by those retention windows. Database advisory locks prevent overlapping generators and repeated timestamps insert nothing.
+
+Five-second production quantities sum to their minute totals. Charts use fine data for recent ranges and minute data for older ranges, with at most approximately 900 plotted points. Line filters and explicit start/end timestamps are applied in SQL. Throughput and power are normalized by the represented duration. The overview emphasizes current operation; slower aggregate efficiency metrics are on Performance.
+
+Batch output and quality are derived from six-hour recorded groups. A peak moisture excursion can require review despite an acceptable average. Requests and inspections are persistent demo records; repeated submission IDs cannot create duplicates.
+
+## Mustry UI module
+
+The pinned signed `Mustry_UI-0.5.1.modl` is built from the source commit and Actions run recorded in `tools/demo/mustry-ui-version.json`. The signed module and signature-verification build steps passed. The dry-run workflow subsequently failed in its unrelated PDF documentation footer step; no public module release was published by this change. The module manifest marks it as free, so it does not rely on a trial license.
+
+Screens use the module's Date Time Range Picker, Resource Timeline, Data Grid and Pan Zoom View. The module has no chart renderer; the shared history view pairs its range picker with a styled native Perspective XY chart. The picker output, not a separate preset dropdown, defines the queried range.
 
 ## Local development
 
-Run `tools/demo/start-local.sh`. The separate compose stack uses Ignition 8.3.8 and PostgreSQL 17.5, with its gateway at http://localhost:18094. Local default credentials are `admin` / `password`. Other local gateways and databases are not stopped or reused.
+`compose.demo.yml` isolates Ignition 8.3.8 and PostgreSQL 17.5 at http://localhost:18096, with local gateway credentials `admin` / `password`. Run `tools/demo/start-local.sh`. Other local gateways are not stopped or reused. The module initializer seeds the native 8.3.8 module registry and the signed UI module on a fresh volume.
 
 After changing resources:
 
 ```sh
-IGNITION_URL=http://localhost:18094 scripts/scan.sh local
+IGNITION_URL=http://localhost:18096 scripts/scan.sh local
 python3 tools/demo/validate.py
-# With ign-lint 0.6.1 installed in a Python 3.10-3.13 environment:
+# With ign-lint 0.6.1 in Python 3.10-3.13:
 python3 tools/demo/lint_config.py oatmakers
 ign-lint --config build/lint/rules.json --files "projects/oatmakers/**/view.json"
 python3 tests/demo/test_database.py
 python3 tests/demo/test_deploy.py
 ```
 
-The database test uses a separate disposable database whose name ends in `_test`. Its time jumps never touch the live demonstration database. `tools/demo/build_views.py` rebuilds the authored Perspective resources from the shared component definitions.
-
-The compact component preview verifies the actual dashboard at 390 px without resizing the presenter's browser. Wide tables scroll horizontally inside their own panels.
+Database tests use a disposable `_test` database. They check real SQL, exact history ranges, line filters, moving fine telemetry, quantity reconciliation, retention, idempotency and recovery after weeks or months offline. Deployment tests preserve unrelated resources and verify idempotent module installation. `build_views.py` regenerates the Perspective resources. The SCADA SVG assets are committed geometry; rebuilding the views requires no external project checkout.
 
 ## Cloud deployment and recovery
 
-Release through the repository's existing project tag and `release.yaml` pin. A release carrying `OatmakersDemo` uses scoped deployment:
+Release through an immutable project tag and the `release.yaml` pin. The scoped workflow checks scan access, resolves the running PostgreSQL service's managed credentials and applies migrations using the separate `oat_demo_schema_migrations` ledger. The demo password stays in the persistent gateway data volume with owner-only access.
 
-- Check existing scan authorization before shipping.
-- Apply the demo's schema migrations before the new project, using the separate `oat_demo_schema_migrations` ledger.
-- Verify the running PostgreSQL service's managed credentials over TCP, then materialize that username and password for the demo. This avoids depending on stale copies of the credentials in Actions secrets. The password lives under the gateway's persistent data volume with owner-only access, so container recreation does not lose it.
-- Back up the previous Oatmakers project and its two owned configuration resources.
-- Replace only the Oatmakers project, `database-connection/OatmakersDemo` and `secret-provider/DemoRuntime`.
-- Scan configuration and projects without restarting the shared gateway or changing modules, identity providers, other projects or unrelated connections.
-- Verify the gateway timer advances, retained history is populated, and all eight page routes answer.
-- Restore the backed-up project/config resources automatically if verification fails. Keep the database records intact for investigation.
+The installer verifies the module checksum and manifest, backs up the existing module registry and binary, then merges only the Mustry UI entry. Other registrations are preserved. A changed module requires one controlled gateway restart; an unchanged install does not restart. If startup fails, the prior registry and binary are restored. Project-only changes continue to use hot scans.
 
-Scoped file backups are removed after 90 days. The server's existing gateway/database backup policy remains independently managed.
+The deployment backs up and replaces only the Oatmakers project and its `OatmakersDemo` connection and `DemoRuntime` secret provider. It verifies that the five-second heartbeat advances, retained history is populated and all seven public routes respond. A failed app verification restores the previous project and owned configuration without deleting database records. The additive free UI module can remain loaded with the previous project.
 
-The **Customer demo readiness** job in the existing **Deploy** workflow checks every six hours from the trusted server runner. It reads the database heartbeat and visits the public Perspective routes. It does not depend on an optional Web Dev license. An optional read-only JSON health resource is also included for gateways licensed for Web Dev.
+The Deploy workflow's readiness job runs every six hours. It reads database health directly and checks public routes, so it does not require a Web Dev license. The optional `/system/webdev/oatmakers/api/demo-health` endpoint also returns health where Web Dev is available. An HTTP route check alone does not validate rendering; release review additionally exercises the real screens in a browser.
 
-If readiness fails, inspect the Actions run and the native Demo health page. Check the database connection `OatmakersDemo`, the `DemoRuntime` secret provider and gateway logger `Oatmakers.Demo`. An unavailable database produces an explicit unavailable state. Restoring the connection lets the timer catch up automatically.
+For failures, inspect Actions, Demo health, database connection `OatmakersDemo`, secret provider `DemoRuntime` and gateway logger `Oatmakers.Demo`. Restoring the connection lets the timer catch up automatically. Scoped project backups expire after 90 days; the server's broader backup policy is managed independently.

@@ -6,7 +6,7 @@ import subprocess
 import time
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
-CONTAINER = os.environ.get('DEMO_TEST_CONTAINER', 'oatmakers-showroom-local-database-1')
+CONTAINER = os.environ.get('DEMO_TEST_CONTAINER', 'oatmakers-ui-local-database-1')
 DB = 'oatmakers_demo_test'
 PREFIX = ['docker','exec','-i',CONTAINER,'psql','-U','ignition'] if CONTAINER else ['psql','-U',os.environ.get('PGUSER','ignition')]
 
@@ -52,12 +52,35 @@ try:
     check(sql("SELECT oat_demo.snapshot('invalid','day',0)",expected=False)!=0,'invalid scenario is rejected')
     check(sql("SELECT oat_demo.tick(now()-interval '1 day')",expected=False)!=0,'clock regression cannot rewind or delete current history')
     check(not value("SELECT oat_demo.health(now()-interval '1 hour')")['ok'],'health detects a regressed clock instead of reporting future data as fresh')
+    live=value('SELECT oat_demo.health_live()')
+    check(live['ok'] and 103000<live['liveSampleCount']<=103680,'five-second telemetry is fresh and bounded to 48 hours')
+    check(value('SELECT oat_demo.tick_live((SELECT last_tick FROM oat_demo.live_runtime))')['inserted']==0,'fine telemetry ticks are idempotent')
+    check(sql("WITH minute AS (SELECT date_trunc('minute',at) t FROM oat_demo.live_sample WHERE line_id=1 AND state='Running' AND at<now()-interval '1 minute' ORDER BY at DESC LIMIT 1) SELECT count(DISTINCT total_kg)>1 FROM oat_demo.live_sample,minute WHERE line_id=1 AND at>=t AND at<t+interval '1 minute'")=='t','production rates visibly change within a minute')
+    check(sql("WITH fine AS (SELECT sum(total_kg) kg FROM generate_series(date_trunc('minute',now()),date_trunc('minute',now())+interval '55 seconds',interval '5 seconds') t CROSS JOIN LATERAL oat_demo.measure_live(t,1)) SELECT abs(fine.kg-m.total_kg)<0.00001 FROM fine CROSS JOIN oat_demo.measure(date_trunc('minute',now()),1) m")=='t','fine production quantities reconcile with minute history')
+    check(sql("SELECT count(*) FROM oat_demo.live_sample WHERE good_kg>total_kg OR good_kg<0 OR total_kg<0 OR energy_kwh<0")=='0','fine production and energy remain physically consistent')
+    check(sql("SELECT oat_demo.tick_live(now()-interval '1 day')",expected=False)!=0,'fine clock regression cannot overwrite current samples')
+    for days,metric in [(1,'rate'),(7,'temperature'),(30,'power'),(89,'moisture')]:
+        query="SELECT oat_demo.history_range((extract(epoch FROM now()-interval '%s days')*1000)::bigint,(extract(epoch FROM now())*1000)::bigint,2,'%s')"%(days,metric)
+        history=value(query)
+        check(0<len(history['points'])<=901,str(days)+'-day '+metric+' history is populated and downsampled')
+        check(all(p['line1'] is None and p['line3'] is None and p['line2'] is not None for p in history['points']),'history line filter is exact for '+metric)
+    bounds="(extract(epoch FROM now()-interval '10 days')*1000)::bigint,(extract(epoch FROM now()-interval '9 days')*1000)::bigint"
+    history=value('SELECT oat_demo.history_range('+bounds+",1,'pressure')")
+    check(history['points'] and history['points'][0]['ts']>=history['startEpochMs'],'a manually selected historical window returns recorded points from that window')
+    batches=value('SELECT oat_demo.batches_range('+bounds+',1)')
+    check(len(batches)>0 and all(b['lineNumber']==1 for b in batches),'planning and quality can inspect an older arbitrary date range')
+    detail=value("SELECT oat_demo.batch_detail('%s')"%batches[0]['reference'])
+    check(detail['available'] and detail['reference']==batches[0]['reference'],'batch popup resolves historical references outside the old three-day window')
+    check(sql("SELECT oat_demo.history_range(1,9999999999999,0,'invalid')",expected=False)!=0,'invalid history measurements are rejected')
     # Keep one minute absent to test a real outage catch-up from a committed watermark.
     count=int(sql('SELECT count(*) FROM oat_demo.sample'))
     future="(SELECT last_tick+interval '21 days' FROM oat_demo.runtime)"
     sql('SELECT oat_demo.tick('+future+')')
     h=value('SELECT oat_demo.health((SELECT last_tick FROM oat_demo.runtime))')
     check(h['ok'] and h['sampleCount']<=388803,'three-week unattended jump catches up and retains a bounded window')
+    sql('SELECT oat_demo.tick_live((SELECT last_tick FROM oat_demo.runtime))')
+    fine=value('SELECT oat_demo.health_live((SELECT last_tick FROM oat_demo.live_runtime))')
+    check(fine['ok'] and fine['liveSampleCount']<=103680,'fine telemetry catches up after three weeks and retains only 48 hours')
     check(sql("SELECT count(*) FROM oat_demo.sample WHERE at<(SELECT greatest(last_tick-interval '90 days',last_tick-interval '3 months') FROM oat_demo.runtime)")=='0','no samples exceed either retention limit')
     sql("INSERT INTO oat_demo.operator_order VALUES('00000000-0000-0000-0000-000000000001',now()-interval '100 days','OLD','Rolled oats',100,4,'Trial','Operator demo')")
     sql("INSERT INTO oat_demo.inspection VALUES('OLD',now()-interval '100 days','Released',11.5,82.0)")
@@ -66,6 +89,8 @@ try:
     check(sql("SELECT count(*) FROM oat_demo.inspection WHERE batch_reference='OLD'")=='0','retention prunes old inspections')
     h=value('SELECT oat_demo.health((SELECT last_tick FROM oat_demo.runtime))')
     check(h['ok'] and h['sampleCount']<=388803,'four-month outage regenerates only the retained history')
+    sql('SELECT oat_demo.tick_live((SELECT last_tick FROM oat_demo.runtime))')
+    check(value('SELECT oat_demo.health_live((SELECT last_tick FROM oat_demo.live_runtime))')['ok'],'both history resolutions recover after a four-month outage')
     # Test the shortest calendar quarter across February.
     sql('TRUNCATE oat_demo.sample; UPDATE oat_demo.runtime SET last_tick=NULL,watermark=NULL;')
     sql("SELECT oat_demo.tick('2027-05-01T12:00:00Z')")
