@@ -27,5 +27,5 @@ if [ "$mode" = progress ]; then
   done
   test "$advanced" = true || { echo 'The gateway continuity timer did not advance.' >&2; exit 1; }
 fi
-docker exec "$gateway" grep -q "REVISION = 'showroom-4.4.2'" /usr/local/bin/ignition/data/projects/oatmakers/ignition/script-python/application/demo/code.py
+docker exec "$gateway" grep -q "REVISION = 'showroom-4.4.4'" /usr/local/bin/ignition/data/projects/oatmakers/ignition/script-python/application/demo/code.py
 python3 tools/demo/check-live.py "$url" --health-file "$tmp"

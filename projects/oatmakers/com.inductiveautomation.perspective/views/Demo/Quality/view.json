@@ -251,7 +251,8 @@
               },
               "style": {
                 "overflow": "visible",
-                "classes": "Demo/DateRange"
+                "classes": "Demo/DateRange",
+                "height": "40px"
               },
               "output": {
                 "startDateTime": "",
@@ -291,12 +292,16 @@
             "props": {
               "text": "Inspect selected batch",
               "style": {
-                "classes": "Demo/Button"
+                "classes": "Demo/Button",
+                "height": "40px",
+                "minWidth": "180px",
+                "whiteSpace": "nowrap"
               }
             },
             "position": {
-              "shrink": 0,
-              "basis": "40px"
+              "basis": "auto",
+              "grow": 0,
+              "shrink": 0
             },
             "events": {
               "component": {
