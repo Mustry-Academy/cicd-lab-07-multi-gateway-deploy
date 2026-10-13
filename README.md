@@ -1,3 +1,6 @@
+> [!IMPORTANT]
+> **This repository has moved and is read-only.** The CI/CD for Ignition course now lives in one repo: [Mustry-Academy/cicd-for-ignition](https://github.com/Mustry-Academy/cicd-for-ignition), in [`labs/07-multi-gateway-deploy/`](https://github.com/Mustry-Academy/cicd-for-ignition/tree/main/labs/07-multi-gateway-deploy). Students now work in [Mustry-Solutions/demo-oatmakers](https://github.com/Mustry-Solutions/demo-oatmakers), the repo behind cloud.mustrysolutions.com. This repo will be deleted after 14 December 2026.
+
 # Lab 07 — Deployments in a multi-gateway architecture
 
 Day 4 (afternoon) of the [CI/CD for Ignition Masterclass](https://github.com/mustry-academy/cicd-masterclass).
